@@ -42,19 +42,19 @@ def index():
 @app.route('/home')
 @login_required
 def home():
-    return render_template('/participant/home.html')
+    return render_template('home.html')
 
 
 @app.route('/experiments')
 @login_required
 def experiments():
-    return render_template('/participant/experiments.html')
+    return render_template('experiments.html')
 
 
 @app.route('/settings')
 @login_required
 def settings():
-    return render_template('/participant/settings.html')
+    return render_template('settings.html')
 
 
 @app.route("/logout")
@@ -121,7 +121,7 @@ def google_login():
 @app.route('/researcher_login')
 @requires_basic_auth
 def researcher_login():
-    return render_template('/researcher/r_home.html', users=User.get_all_users())
+    return render_template('researcher.html', users=User.get_all_users())
 
 
 # Moves
