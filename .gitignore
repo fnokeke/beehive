@@ -1,0 +1,10 @@
+.env
+.DS_Store
+dump.rdb
+.idea/
+*.pyc
+*.log
+.ftpconfig
+.cache/
+secret_keys.py
+celerybeat-schedule

@@ -1,0 +1,19 @@
+/* style.css */
+
+.center-content {
+  text-align: center;
+  color: #f88;
+}
+
+.mfooter {
+    margin-top: 1em;
+    margin-bottom: 2em;
+    margin-right: 3em;
+    color: #aaa;
+    font-size: smaller;
+    text-align: right;
+}
+
+.label-text {
+  margin-bottom: 10px;
+}

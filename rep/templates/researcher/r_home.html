@@ -1,0 +1,135 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Researcher | Home
+{% endblock %}
+
+{% block contents %}
+
+    <div class="container">
+
+        <div class="page-header">
+            {% if users | length > 0 %}
+                <h4>available participants</h4>
+
+                <table class="table table-striped">
+                    <tr>
+                        <th>
+                            User
+                        </th>
+                        <th>
+                            Moves
+                        </th>
+                        <th>
+                            PAM
+                        </th>
+                        <th>
+                            RescueTime
+                        </th>
+                    </tr>
+
+                    {% for user in users %}
+                        <tr>
+                            <td class='info'>
+                                user{{loop.index}}
+                            </td>
+                            <td class={{'success' if user.moves_access_token else 'danger'}}>
+                                {{'connected' if user.moves_access_token else 'not connected'}}
+                            </td>
+                            <td class={{'success' if user.pam_access_token else 'danger'}}>
+                                {{'connected' if user.pam_access_token else 'not connected'}}
+                            </td>
+                            <td class={{'success' if user.rescuetime_access_token else 'danger'}}>
+                                {{'connected' if user.rescuetime_access_token else 'not connected'}}
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                </table>
+
+            {% else %}
+                <h4>There are currently no registered users</h4>
+            {% endif %}
+
+        </div>
+
+        <table class="table">
+            <h4>data analysis</h4>
+            <tr>
+
+                <td>
+                    <div class="col-lg-4">
+                        <span class="dropdown">
+                            <span class="btn btn-default dropdown-toggle" type="button" id="dropdown-cal-label" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                Choose X-Axis
+                                <span class="caret"></span>
+                            </span>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" id="dropdown-calendar">
+                                <li>
+                                    <a>Location</a>
+                                </li>
+                                <li>
+                                    <a>Mood</a>
+                                </li>
+                                <li>
+                                    <a>Social Networks</a>
+                                </li>
+                            </ul>
+                        </span>
+                    </div>
+                </td>
+
+                <td>
+                    <div class="col-lg-4">
+
+                        <span class="dropdown">
+                            <span class="btn btn-default dropdown-toggle" type="button" id="dropdown-cmd-label" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                Choose Y-Axis
+                                <span class="caret"></span>
+                            </span>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" id="dropdown-cmd">
+                                <li>
+                                    <a>Location</a>
+                                </li>
+                                <li>
+                                    <a>Mood</a>
+                                </li>
+                                <li>
+                                    <a>Social Networks</a>
+                                </li>
+                            </ul>
+                        </span>
+
+                    </div>
+                </td>
+
+                <td>
+                    <div class="col-lg-7">
+                        <input data-provide="datepicker" data-date-end-date="-1d" data-date-format="yyyy-mm-dd" data-date-today-highlight=true id="begin-date" class="form-control" placeholder="begin date">
+                    </div>
+                </td>
+
+                <td>
+                    <div class="col-lg-7">
+                        <input data-provide="datepicker" data-date-end-date="-1d" data-date-format="yyyy-mm-dd" data-date-today-highlight=true id="end-date" class="form-control" placeholder="end date">
+                    </div>
+                </td>
+
+                <td>
+                    <div class="col-lg-4">
+                        <button class="btn btn-primary" type="button" id="perform-analysis-btn">Perform Analysis</button>
+                    </div>
+                </td>
+            </tr>
+
+        </table>
+
+        <div class="page-header">
+            <h4>results</h4>
+            <span class="danger" id="error-div"></span>
+            <span id="results-div">Loading...</span>
+        </div>
+
+    </div>
+
+{% endblock %}

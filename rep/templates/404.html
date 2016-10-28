@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}
+404 Error
+{% endblock %}
+
+{% block cover %}
+<link href="{{ url_for('static', filename='cover.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="center-content">
+  <p></p>
+  <img src="{{ url_for('static', filename='images/404.jpg')}}" alt="404 image error" />
+  <h4>page does not exist...</h4>
+</div>
+
+{% endblock %}

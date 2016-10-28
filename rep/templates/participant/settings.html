@@ -1,0 +1,110 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{current_user.firstname + ' | Settings'}}
+{% endblock %}
+
+{% block contents %}
+
+    <div class="container">
+
+        <div class="page-header">
+            <h3>connect apps</h3>
+        </div>
+
+        <div class="">
+
+            {% if not current_user.is_authorized('moves') %}
+                <p>
+                    Moves
+                    <i>not connected</i>
+                    for location tracking.<br>
+                    <button type="submit" id="auth-moves-btn" class="btn btn-primary">Connect Moves</button>
+                    <br>
+                </p>
+            {% endif %}
+
+            {% if not current_user.is_authorized('pam') %}
+                <p>
+                    PAM
+                    <i>not connected</i>
+                    for monitoring mood.<br>
+                    <button type="submit" id="auth-pam-btn" class="btn btn-primary">Connect PAM</button>
+                </p>
+            {% endif %}
+
+            {% if not current_user.rescuetime_access_token %}
+                <p>
+                    RescueTime
+                    <i>not connected</i>
+                    for monitoring social networks.
+                    <br>
+                    <button type="submit" id="auth-rt-btn" class="btn btn-primary">Connect RescueTime</button><br>
+                </p>
+            {% endif %}
+
+            {% if current_user.moves_access_token and current_user.pam_access_token and current_user.rescuetime_access_token %}
+                <span class='success'>
+                    <i>Location, Mood and Social Networks are connected.</i>
+                </span>
+            {% endif %}
+        </div>
+
+        <div class="page-header">
+            <h3>activate tracking</h3>
+        </div>
+
+        <div class="label-text">
+            <label>
+                MOVES (LOCATION)
+                <br>
+                <input type="checkbox" id="location-checkbox-btn" {{'checked' if current_user.is_location_active else 'unchecked'}} data-toggle="toggle" data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger">
+                <span id="location-checkbox-status"></span>
+            </label>
+        </div>
+
+        <div class="label-text">
+            <label>
+                PAM (MOOD)
+                <br>
+                <input type="checkbox" id="mood-checkbox-btn" {{'checked' if current_user.is_mood_active else 'unchecked'}} data-toggle="toggle" data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger">
+                <span id="mood-checkbox-status"></span>
+            </label>
+        </div>
+
+        <div class="label-text">
+            <label>
+                RESCUETIME (SOCIAL NETWORKS)
+                <br>
+                <input type="checkbox" id="sn-checkbox-btn" {{'checked' if current_user.is_sn_active else 'unchecked'}} data-toggle="toggle" data-on="Enabled" data-off="Disabled" data-onstyle="success" data-offstyle="danger">
+                <span id="sn-checkbox-status"></span>
+            </label>
+        </div>
+
+        <div class="page-header">
+            <h3>update profile</h3>
+        </div>
+
+        <div>
+            <div class="form-group">
+                <label for="formGroupExampleInput">Firstname</label>
+                <input type="text" id="firstname-field" class="form-control" id="formGroupExampleInput" placeholder="{{current_user.firstname or 'type your first name'}}">
+            </div>
+
+            <div class="form-group">
+                <label for="formGroupExampleInput2">Lastname</label>
+                <input type="text" id="lastname-field" class="form-control" id="formGroupExampleInput" placeholder="{{current_user.lastname or 'enter your last name'}}">
+            </div>
+
+            <div class="form-group">
+                <label for="formGroupExampleInput2">Gender</label>
+                <input type="text" id="gender-field" class="form-control" id="formGroupExampleInput" placeholder="{{current_user.gender or 'provide your gender'}}">
+            </div>
+
+            <button type="submit" id="update-profile-btn" class="btn btn-primary">update info</button>
+            <span id="update-profile-status"></span>
+        </div>
+        <p></p>
+
+    </div>
+{% endblock %}
