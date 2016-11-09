@@ -14,6 +14,7 @@ from rep import app, login_manager
 from rep.models import User
 from rep.rescuetime import RescueOauth2
 from rep.pam import PamOauth
+from rep.moves import Moves
 from rep.errors import SLMError
 
 from rep import export
@@ -122,6 +123,30 @@ def google_login():
 @requires_basic_auth
 def researcher_login():
     return render_template('researcher.html', users=User.get_all_users())
+
+
+@app.route('/researcher_analysis/<key>/<study_begin>/<int_begin>/<int_end>/<study_end>')
+@requires_basic_auth
+def perform_research_analysis(key, study_begin, int_begin, int_end, study_end):
+    results = {}
+    users = User.get_all_users()
+
+    for user in users:
+        store = results.get(user.email, {})
+        token = user.moves_access_token
+
+        stats = Moves.get_stats(token, begin=study_begin, end=int_begin)
+        store['baseline'] = stats[key]  # stats = {calories: num, duration: num, steps: num}
+
+        stats = Moves.get_stats(token, begin=int_begin, end=int_end)
+        store['intervention'] = stats[key]
+
+        stats = Moves.get_stats(token, begin=int_end, end=study_end)
+        store['follow_up'] = stats[key]
+
+        results[user.email] = store
+
+    return json.dumps(results)
 
 
 # Moves

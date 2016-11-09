@@ -8,10 +8,12 @@
 
     <div class="container">
 
+        {% if users | length > 0 %}
         <div class="page-header">
-            {% if users | length > 0 %}
-                <h4>available participants</h4>
+              <h3>available participants</h3>
+        </div>
 
+        <div>
                 <table class="table table-striped">
                     <tr>
                         <th>
@@ -47,89 +49,88 @@
 
                 </table>
 
-            {% else %}
-                <h4>There are currently no registered users</h4>
-            {% endif %}
+        {% else %}
+            <h4>There are currently no registered users</h4>
+        {% endif %}
 
         </div>
 
+<div class="">
+
         <table class="table">
-            <h4>data analysis</h4>
+            <h3>data analysis</h3>
+
             <tr>
-
                 <td>
-                    <div class="col-lg-4">
+                    <div class="col-lg-2">
+
                         <span class="dropdown">
-                            <span class="btn btn-default dropdown-toggle" type="button" id="dropdown-cal-label" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                Choose X-Axis
+                          <strong>
+                                Select to change datastream:
+                          </strong>
+                                <br>
+                            <span class="btn btn-default dropdown-toggle" type="button" id="dropdown-action-label"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                  Steps
                                 <span class="caret"></span>
                             </span>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" id="dropdown-calendar">
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" id="dropdown-action">
                                 <li>
-                                    <a>Location</a>
+                                    <a>Calories</a>
                                 </li>
                                 <li>
-                                    <a>Mood</a>
+                                    <a>Steps</a>
                                 </li>
                                 <li>
-                                    <a>Social Networks</a>
+                                    <a>Duration</a>
                                 </li>
                             </ul>
                         </span>
-                    </div>
-                </td>
+                        <br> <br>
 
-                <td>
-                    <div class="col-lg-4">
-
-                        <span class="dropdown">
-                            <span class="btn btn-default dropdown-toggle" type="button" id="dropdown-cmd-label" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                Choose Y-Axis
-                                <span class="caret"></span>
-                            </span>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" id="dropdown-cmd">
-                                <li>
-                                    <a>Location</a>
-                                </li>
-                                <li>
-                                    <a>Mood</a>
-                                </li>
-                                <li>
-                                    <a>Social Networks</a>
-                                </li>
-                            </ul>
-                        </span>
 
                     </div>
                 </td>
+            </tr>
+</div>
 
-                <td>
-                    <div class="col-lg-7">
-                        <input data-provide="datepicker" data-date-end-date="-1d" data-date-format="yyyy-mm-dd" data-date-today-highlight=true id="begin-date" class="form-control" placeholder="begin date">
-                    </div>
-                </td>
+      <div class="">
 
-                <td>
-                    <div class="col-lg-7">
-                        <input data-provide="datepicker" data-date-end-date="-1d" data-date-format="yyyy-mm-dd" data-date-today-highlight=true id="end-date" class="form-control" placeholder="end date">
-                    </div>
-                </td>
+        <table class="table">
+            <tr>
+                <div class="col-lg-3">
+                  <strong>
+                Select 4 dates in order:
+                  </strong>
+                <em> Study Begin, Intervention Begin, Intervention End, Study End </em><br>
+                <em>NB: Max of <strong>31 days max</strong> b/w study start and end.</em>
+                <input data-provide="datepicker" data-date-end-date="-1d" data-date-format="yyyy-mm-dd", data-date-multidate=4
+                data-date-multidate-separator=",   " data-date-today-highlight=true id="experiment-dates" class="form-control"
+                placeholder="select four (4) dates">
+                <br>
 
-                <td>
-                    <div class="col-lg-4">
-                        <button class="btn btn-primary" type="button" id="perform-analysis-btn">Perform Analysis</button>
-                    </div>
-                </td>
+                </div>
+
+            </tr>
+
+            <tr>
+              <td>
+                <div class="col-lg-3">
+                    <button class="btn btn-primary" type="button" id="perform-analysis-btn">Perform Analysis</button>
+                </div>
+              </td>
             </tr>
 
         </table>
 
-        <div class="page-header">
-            <h4>results</h4>
-            <span class="danger" id="error-div"></span>
-            <span id="results-div">Loading...</span>
-        </div>
-
     </div>
+
+    <div class="page-header">
+        <h3>results</h3>
+        <span class="danger" id="error-div"></span>
+        <span id="analysis-status">Awaiting input...</span>
+    </div>
+
+</div>
 
 {% endblock %}

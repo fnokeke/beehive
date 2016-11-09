@@ -14,7 +14,7 @@ def to_cal(calname, access_token, date, credentials=None):
 
     if calname == app.config['LOCATION']:
         moves = Moves(access_token)
-        results = moves.get_moves_storyline(date)
+        results = moves.get_user_storyline(access_token, day=date)
         events = EventFactory.from_moves(results, date)
 
     elif calname == app.config['MOOD']:

@@ -4,6 +4,13 @@
 
 $(document).ready(function() {
 
+  String.prototype.format = function() {
+    var args = arguments;
+    return this.replace(/\{(\d+)\}/g, function(m, n) {
+      return args[n];
+    });
+  };
+
   var errors = {
     'internal_server_error': 'oops, cannot complete request at this time. contact admin.',
     'method_not_allowed': 'profile update failed. try again later or contact admin.'
@@ -28,16 +35,23 @@ $(document).ready(function() {
     $(div).html(msg).css('color', 'green');
   }
 
+  function show_plain_msg(div, msg) {
+    $(div).html(msg).css('color', 'black');
+  }
+
   function show_error_msg(div, msg) {
     $(div).html(msg).css('color', 'red');
   }
+
 
   function submit_checkbox_val(field, input) {
     var url = 'settings/tracking/' + field + '/' + input;
     var response_field = '#' + field + '-checkbox-status';
 
     $.get(url, function(resp) {
-      show_success_msg(response_field, resp);
+      // show_success_msg(response_field, resp);
+      var results = JSON.parse(resp);
+      console.log('results: ', results);
     }).fail(function(error) {
       show_error_msg(response_field, errors.internal_server_error);
     });
@@ -85,6 +99,11 @@ $(document).ready(function() {
   // dropdowns
   // #################################################
 
+  $('#dropdown-action li').on('click', function() {
+    var selected = $(this).text();
+    $('#dropdown-action-label').html(selected);
+  });
+
   $('#dropdown-calendar li').on('click', function() {
     var selected = $(this).text();
     $('#dropdown-cal-label').html(selected);
@@ -116,6 +135,45 @@ $(document).ready(function() {
     });
   });
 
+
+  // #################################################
+  // buttons
+  // #################################################
+
+  $('#perform-analysis-btn').click(function() {
+    var datapoint = $('#dropdown-action-label').text().replace(/\s/g, '').toLowerCase(); // regex removes all spaces in string
+    var dates = $('#experiment-dates').val();
+    dates = dates.replace(/\s/g, '').split(',');
+
+    // study_begin, intervention_begin, intervention_end, study_end);
+    var url = 'researcher_analysis/{0}/{1}/{2}/{3}/{4}'.format(datapoint, dates[3], dates[2], dates[1], dates[0]);
+    var response_field = '#analysis-status';
+    $.get(url, function(resp) {
+      var summary, results, uid, counter;
+
+      summary = '<h4> stats for {0} </h4>'.format(datapoint);
+      summary += '<table class="table table-striped">' +
+        '<tr><th> User </th> <th> Baseline </th> <th> Intervention </th> <th> Follow Up </th> </tr>';
+
+      counter = 0;
+      results = JSON.parse(resp);
+
+      for (var row in results) {
+        uid = 'user {0}'.format(counter);
+        counter++;
+
+        info = results[row];
+        summary += '<tr> <td>{0}</td> <td>{1}</td> <td>{2}</td> <td>{3}</td> </tr>'.format(uid, info.baseline,
+          info.intervention, info.follow_up);
+      }
+      summary += '</table>';
+      show_plain_msg(response_field, summary);
+
+    }).fail(function(error) {
+      show_error_msg(response_field, errors.internal_server_error);
+    });
+
+  });
 
   // reset all previous entries
   $('#reset-btn').click(function() {
@@ -188,8 +246,7 @@ $(document).ready(function() {
       }
 
       var result = JSON.parse(resp);
-      console.log('response: ', result);
-      // result = typeof(result) !== 'object' ? JSON.parse(result) : result;
+      result = typeof(result) !== 'object' ? JSON.parse(result) : result;
 
       if ('error' in result) {
         show_error_msg(response_field, 'Error: ' + result.error);

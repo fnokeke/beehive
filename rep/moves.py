@@ -3,6 +3,8 @@ fetches moves app data
 """
 
 import requests
+from datetime import date, timedelta
+import json
 
 
 class Moves(object):
@@ -11,23 +13,62 @@ class Moves(object):
     """
 
     MOVES_BASE_URL = 'https://api.moves-app.com/api/1.1'
-    MOVES_DAILY_SUMMARY = '%s/user/summary/daily/' % MOVES_BASE_URL
-    MOVES_STORYLINE_DAILY = '%s/user/storyline/daily/' % MOVES_BASE_URL
-    MOVES_PLACE_SUMMARY = '%s/user/places/daily/' % MOVES_BASE_URL
+    MOVES_STORYLINE_DAILY = '%s/user/storyline/daily' % MOVES_BASE_URL
 
-    def __init__(self, user_access_token):
+    def __init__(self, user_access_token=''):
         self.access_token = user_access_token
 
-    def get_moves_storyline(self, date):
+    @staticmethod
+    def get_stats(access_token, **kwargs):
+        results = Moves.get_user_storyline(access_token, **kwargs)
+        summary = Moves.summarize(results)
+        return summary
+
+    @staticmethod
+    def get_user_storyline(access_token, **kwargs):
         """
-        Return in text format moves storyline for given date.
+        Return in text format moves storyline using user's access_token.
+        @params: day (single date), begin/end (start and end date)
         """
-        if not self.access_token:
+        if not access_token:
             return '[]'
 
-        url = self.MOVES_STORYLINE_DAILY + date
-        bearer = 'Bearer {}'.format(self.access_token)
+        bearer = 'Bearer {}'.format(access_token)
         headers = {'Authorization': bearer}
 
-        r = requests.get(url, headers=headers)
+        if kwargs.get('begin') and kwargs.get('end'):
+            url = Moves.MOVES_STORYLINE_DAILY
+            params = {'from': kwargs['begin'], 'to': kwargs['end']}
+        else:
+            yesterday = date.today() - timedelta(1)
+            yesterday = yesterday.strftime('%Y%m%d')
+            day = kwargs.get('day') or yesterday
+
+            url = Moves.MOVES_STORYLINE_DAILY + '/' + day
+            params = {}
+
+        r = requests.get(url, headers=headers, params=params)
         return r.text
+
+    @staticmethod
+    def summarize(text):
+        results = {'calories': 0, 'steps': 0, 'duration': 0}
+
+        rows = json.loads(text)
+        if 'error' in rows:
+            print 'Error in summarize: {}'.format(rows)
+            return results
+
+        for row in rows:
+            results['calories'] += row['caloriesIdle']
+
+            if not row['summary']:
+                continue
+
+            for summary in row['summary']:
+                if summary.get('calories'):
+                    results['calories'] += summary['calories']
+                    results['steps'] += summary['steps']
+                    results['duration'] += summary['duration']
+
+        return results
