@@ -67,3 +67,6 @@ RT_BASE_URL = 'https://www.rescuetime.com/oauth/authorize?client_id=' + RT_CLIEN
 LOCATION = 'Location (SLM)'
 MOOD = 'Mood (SLM)'
 SN = 'Social-Networks (SLM)'
+
+# FILE UPLOADS
+UPLOADED_PHOTOS_DEST = secret_keys.UPLOAD_FOLDER

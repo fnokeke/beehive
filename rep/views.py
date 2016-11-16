@@ -4,6 +4,7 @@ Handle all app views
 
 from flask import flash, redirect, url_for, session, render_template, request
 from flask_login import login_user, logout_user, current_user, login_required
+
 from oauth2client.client import OAuth2WebServerFlow
 
 from apiclient import discovery
@@ -16,6 +17,7 @@ from rep.rescuetime import RescueOauth2
 from rep.pam import PamOauth
 from rep.moves import Moves
 from rep.errors import SLMError
+from rep.upload import Upload
 
 from rep import export
 
@@ -56,6 +58,28 @@ def experiments():
 @login_required
 def settings():
     return render_template('settings.html')
+
+
+@app.route('/fetch/images')
+def fetch_uploads():
+    return json.dumps(Upload.get_all_urls())
+    # return '{}'.format(Upload.get_all_urls())
+
+
+@app.route('/upload/image', methods=['POST'])
+def image_upload():
+    image_name = request.form['image_name']
+    image = request.files['image']
+
+    Upload.save(image_name, image)
+    url = Upload.get_url(image_name)
+    return 'Retrieved image: {}'.format(url)
+
+
+@app.route('/upload/txt', methods=['POST'])
+def txt_upload():
+    txt = request.form.get('txt')
+    return 'Got txt: {}'.format(txt)
 
 
 @app.route("/logout")
@@ -342,3 +366,4 @@ def execute_calendar_command(calname, cmd):
 # TODO: handle moves expired access token
 # TODO: only enable activate tracking for an app that has been connected
 # TODO: divide the modules into researcher and participants
+# TODO: remove the CSS table formatting in researcher page

@@ -8,3 +8,4 @@ dump.rdb
 .cache/
 secret_keys.py
 celerybeat-schedule
+uploads/

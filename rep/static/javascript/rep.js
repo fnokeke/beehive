@@ -137,8 +137,76 @@ $(document).ready(function() {
 
 
   // #################################################
-  // buttons
-  // #################################################
+  // other buttons
+
+  $('#send-img-btn').click(function(event) {
+    event.preventDefault();
+    var image = $('#image').get(0).files[0];
+    var formData = new FormData();
+    formData.append('image', image);
+    formData.append('image_name', image.name);
+
+    response_field = '#upload-status';
+    $.ajax({
+      url: '/upload/image',
+      success: function(e) {
+        console.log('resp: ', e);
+        show_success_msg(response_field, 'Image successfully uploaded.');
+      },
+      error: function(e) {
+        show_error_msg(response_field, 'Image upload error. Pls contact admin.');
+      },
+      data: formData,
+      type: 'POST',
+      cache: false,
+      contentType: false,
+      processData: false
+    });
+    return false;
+  }); // #################################################
+
+  $('#send-txt-btn').click(function(event) {
+    event.preventDefault();
+
+    var txt = $('#txt').val();
+    var response_field = '#txt-status';
+    var url = '/upload/txt';
+    var data = {
+      'txt': txt
+    };
+
+    $.post(url, data).done(function(resp) {
+      show_success_msg(response_field, 'Message successfully sent.');
+    }).fail(function(error) {
+      show_error_msg(response_field, 'Message upload error. Pls contact admin.');
+    });
+
+  });
+
+  $('#fetch-all-imgs-btn').click(function(event) {
+    console.log('images fetch clicked');
+    event.preventDefault();
+
+    var response_field = '#stored-img-div';
+    var url = '/fetch/images';
+    $.get(url, function(resp) {
+      var results = JSON.parse(resp);
+      var summary = '<ol>';
+      var row;
+
+      for (var i = 0; i < results.length; i++) {
+        row = '<li> <a href={0}> {0} </a> </li>'.format(results[i]);
+        summary += row;
+      }
+
+      summary += '</ol>';
+
+      show_plain_msg(response_field, summary);
+    }).fail(function(error) {
+      show_error_msg(response_field, 'Error fetching all images. Contact Admin.');
+    });
+
+  });
 
   $('#perform-analysis-btn').click(function() {
     var datapoint = $('#dropdown-action-label').text().replace(/\s/g, '').toLowerCase(); // regex removes all spaces in string
@@ -153,7 +221,7 @@ $(document).ready(function() {
 
       summary = '<h4> stats for {0} </h4>'.format(datapoint);
       summary += '<table class="table table-striped">' +
-        '<tr><th> User </th> <th> Baseline </th> <th> Intervention </th> <th> Follow Up </th> </tr>';
+        '<tr><th> User </th> <th> Baseline </th> <th> Interventions </th> <th> Follow Up </th> </tr>';
 
       counter = 0;
       results = JSON.parse(resp);
