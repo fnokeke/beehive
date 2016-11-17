@@ -7,7 +7,7 @@
   <div class="container">
     {% if mturk_users | length > 0 %}
       <div class="page-header">
-        <h3>available participants</h3>
+        <h3>available mturk participants</h3>
       </div>
 
       <div>
@@ -36,16 +36,16 @@
                 worker{{loop.index}}
               </td>
               <td>
-                muser.worker_id
+								{{muser.worker_id}}
               </td>
               <td>
-                muser.moves_id
+								{{ muser.moves_id }}
               </td>
               <td>
-                muser.code
+								{{ muser.code }}
               </td>
               <td>
-                muser.access_token
+								{{ muser.access_token }}
               </td>
             </tr>
           {% endfor %}
@@ -60,7 +60,7 @@
 
       {% if users | length > 0 %}
         <div class="page-header">
-          <h3>available participants</h3>
+          <h3>available rep participants</h3>
         </div>
 
         <div>
