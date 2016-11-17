@@ -17,3 +17,12 @@
 .label-text {
   margin-bottom: 10px;
 }
+
+.alert-fixed {
+    position:fixed;
+    bottom: 0px;
+    right: 0px;
+    width: 50%;
+    z-index:9999;
+    border-radius:0px
+}
