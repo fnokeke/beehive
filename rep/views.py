@@ -204,7 +204,7 @@ def google_login():
 @app.route('/researcher_login')
 @requires_basic_auth
 def researcher_login():
-    return render_template('researcher.html', users=User.get_all_users())
+    return render_template('researcher.html', users=User.query.all(), mturk_users=Mturk.query.all())
 
 
 @app.route('/researcher_analysis/<key>/<study_begin>/<int_begin>/<int_end>/<study_end>')

@@ -5,8 +5,7 @@
 {% block contents %}
 
   <div class="container">
-
-    {% if users | length > 0 %}
+    {% if mturk_users | length > 0 %}
       <div class="page-header">
         <h3>available participants</h3>
       </div>
@@ -15,32 +14,38 @@
         <table class="table table-striped">
           <tr>
             <th>
-              User
+              NO
             </th>
             <th>
-              Moves
+              Worker ID
             </th>
             <th>
-              PAM
+              Moves ID
             </th>
             <th>
-              RescueTime
+              Code
+            </th>
+            <th>
+              Access Token
             </th>
           </tr>
 
-          {% for user in users %}
+          {% for muser in mturk_users %}
             <tr>
-              <td class='info'>
-                user{{loop.index}}
+              <td>
+                worker{{loop.index}}
               </td>
-              <td class={{ 'success' if user.moves_access_token else 'danger'}}>
-                {{'connected' if user.moves_access_token else 'not connected'}}
+              <td>
+                muser.worker_id
               </td>
-              <td class={{ 'success' if user.pam_access_token else 'danger'}}>
-                {{'connected' if user.pam_access_token else 'not connected'}}
+              <td>
+                muser.moves_id
               </td>
-              <td class={{ 'success' if user.rescuetime_access_token else 'danger'}}>
-                {{'connected' if user.rescuetime_access_token else 'not connected'}}
+              <td>
+                muser.code
+              </td>
+              <td>
+                muser.access_token
               </td>
             </tr>
           {% endfor %}
@@ -48,44 +53,94 @@
         </table>
 
       {% else %}
-        <h4>There are currently no registered users</h4>
+        <div class="page-header">
+          <h4>There are currently no Mturk users.</h4>
+        </div>
       {% endif %}
 
-    </div>
+      {% if users | length > 0 %}
+        <div class="page-header">
+          <h3>available participants</h3>
+        </div>
 
-    <div class="page-header">
-      <h3>Interventions</h3>
-    </div>
+        <div>
+          <table class="table table-striped">
+            <tr>
+              <th>
+                User
+              </th>
+              <th>
+                Moves
+              </th>
+              <th>
+                PAM
+              </th>
+              <th>
+                RescueTime
+              </th>
+            </tr>
 
-    <div>
-      <h4>Images</h4>
-      <form enctype="multipart/form-data">
-        <input type="file" id="image" name="image" accept="Image/*"/>
-        <br>
-        <input type="submit" id="send-img-btn" value="Upload Image" class="btn btn-primary"/>
-        <br>
-        <span id="upload-status"></span>
-      </form>
-      <br>
+            {% for user in users %}
+              <tr>
+                <td class='info'>
+                  user{{loop.index}}
+                </td>
+                <td class={{ 'success' if user.moves_access_token else 'danger'}}>
+                  {{'connected' if user.moves_access_token else 'not connected'}}
+                </td>
+                <td class={{ 'success' if user.pam_access_token else 'danger'}}>
+                  {{'connected' if user.pam_access_token else 'not connected'}}
+                </td>
+                <td class={{ 'success' if user.rescuetime_access_token else 'danger'}}>
+                  {{'connected' if user.rescuetime_access_token else 'not connected'}}
+                </td>
+              </tr>
+            {% endfor %}
 
-      <div class="page-header">
-        <h3>Storage</h3>
-        <input type="button" id="fetch-all-imgs-btn" value="Fetch All Images" class="btn btn-primary"/>
+          </table>
+
+        {% else %}
+          <div class="page-header">
+            <h4>There are currently no REP users.</h4>
+          </div>
+        {% endif %}
+
+        <div class="page-header">
+          <h3>Interventions</h3>
+        </div>
+
+        <div>
+          <h4>Images</h4>
+          <form enctype="multipart/form-data">
+            <input type="file" id="image" name="image" accept="Image/*"/>
+            <br>
+            <input type="submit" id="send-img-btn" value="Upload Image" class="btn btn-primary"/>
+            <br>
+            <span id="upload-status"></span>
+          </form>
+          <br>
+
+          <div class="page-header">
+            <h4>Stored Images</h4>
+            <input type="button" id="fetch-all-imgs-btn" value="Fetch All Images" class="btn btn-primary"/>
+          </div>
+
+          <div id="stored-img-div"></div>
+          <br>
+
+          <h4>Texts</h4>
+          <form enctype="multipart/form-data">
+            <textarea name="txt" id="txt" rows="4" cols="40"></textarea>
+            <br>
+            <input type="submit" id="send-txt-btn" value="Send to Participants" class="btn btn-primary"/>
+            <br>
+            <span id="txt-status"></span>
+          </form>
+          <br>
+        </div>
+
       </div>
-
-      <div id="stored-img-div"></div>
-      <br>
-
-      <h4>Texts</h4>
-      <form enctype="multipart/form-data">
-        <textarea name="txt" id="txt" rows="4" cols="40"></textarea>
-        <br>
-        <input type="submit" id="send-txt-btn" value="Send to Participants" class="btn btn-primary"/>
-        <br>
-        <span id="txt-status"></span>
-      </form>
-      <br>
-    </div>
+    {% endblock %}
 
     <!-- <form id="image-form">
       <label class="btn btn-default" for="uploaded-image">
@@ -197,7 +252,4 @@
       <span class="danger" id="error-div"></span>
       <span id="analysis-status">Awaiting input...</span>
     </div>
-
-  </div>
 -->
-  {% endblock %}
