@@ -17,6 +17,9 @@
               NO
             </th>
             <th>
+              Created
+            </th>
+            <th>
               Worker ID
             </th>
             <th>
@@ -26,7 +29,7 @@
               Code
             </th>
             <th>
-              Access Token
+              IP
             </th>
           </tr>
 
@@ -36,16 +39,19 @@
                 worker{{loop.index}}
               </td>
               <td>
-								{{muser.worker_id}}
+                {{muser.created_at}}
               </td>
               <td>
-								{{ muser.moves_id }}
+                {{muser.worker_id}}
               </td>
               <td>
-								{{ muser.code }}
+                {{ muser.moves_id }}
               </td>
               <td>
-								{{ muser.access_token }}
+                {{ muser.code }}
+              </td>
+              <td>
+                {{ muser.ip }}
               </td>
             </tr>
           {% endfor %}

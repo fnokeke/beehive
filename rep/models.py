@@ -4,6 +4,7 @@ Implements all models (database tables)
 from rep import app
 from flask_sqlalchemy import SQLAlchemy
 import uuid
+import datetime
 
 db = SQLAlchemy(app)
 
@@ -14,6 +15,8 @@ class Mturk(db.Model):
     access_token = db.Column(db.String(120), unique=True)
     refresh_token = db.Column(db.String(120), unique=True)
     code = db.Column(db.String(120), unique=True)
+    ip = db.Column(db.String(24))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, worker_id):
         self.worker_id = worker_id
@@ -44,6 +47,7 @@ class Mturk(db.Model):
         worker.access_token = info['access_token']
         worker.refresh_token = info['refresh_token']
         worker.code = str(uuid.uuid4())
+        worker.ip = str(info['ip'])
 
         db.session.add(worker)
         db.session.commit()

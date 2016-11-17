@@ -31,10 +31,11 @@ from rep.utils import requires_basic_auth
 def mturk():
     return render_template('mturk.html')
 
-
 #################################
 # MTURK
 #################################
+
+
 @app.route("/mturk-auth-moves")
 def mturk_auth_moves():
     c = '&client_id=' + app.config['MTURK_MOVES_CLIENT_ID']
@@ -59,7 +60,8 @@ def mturk_auth_moves():
         'worker_id': session['worker_id'],
         'moves_id': str(results['user_id']),
         'access_token': results['access_token'],
-        'refresh_token': results['refresh_token']
+        'refresh_token': results['refresh_token'],
+        'ip': request.access_route[-1]
     }
     valid, msg, gen_code = Mturk.add_user(info)
 
