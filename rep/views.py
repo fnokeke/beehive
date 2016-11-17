@@ -12,7 +12,7 @@ from apiclient import discovery
 import json, httplib2, requests
 
 from rep import app, login_manager
-from rep.models import User
+from rep.models import User, Mturk
 from rep.rescuetime import RescueOauth2
 from rep.pam import PamOauth
 from rep.moves import Moves
@@ -26,6 +26,64 @@ from rep.utils import requires_basic_auth
 
 
 @app.route('/')
+@app.route('/index')
+@app.route('/mturk')
+def mturk():
+    return render_template('mturk.html')
+
+
+#################################
+# MTURK
+#################################
+@app.route("/mturk-auth-moves")
+def mturk_auth_moves():
+    c = '&client_id=' + app.config['MTURK_MOVES_CLIENT_ID']
+    e = '&client_secret=' + app.config['MTURK_MOVES_CLIENT_SECRET']
+    r = '&redirect_uri=' + app.config['MTURK_MOVES_REDIRECT_URI']
+    s = '&scope=' + app.config['MOVES_SCOPE']
+
+    code = request.args.get('code')
+    if not code:
+        url = app.config['MOVES_WEB_URL'] + c + s
+        return redirect(url)
+
+    url = app.config['MOVES_ACCESS_TOKEN_URL'] + code + c + e + r
+    r = requests.post(url)
+    if r.status_code != 200:
+        msg = 'Moves Connection Error(%s): %s' % (r.status_code, r.reason)
+        flash(msg, 'danger')
+        return redirect(url_for('mturk_auth_moves'))
+
+    results = json.loads(r.text)
+    info = {
+        'worker_id': session['worker_id'],
+        'moves_id': str(results['user_id']),
+        'access_token': results['access_token'],
+        'refresh_token': results['refresh_token']
+    }
+    valid, msg, gen_code = Mturk.add_user(info)
+
+    if valid == 200:
+        flash(msg, 'success')
+        print '{}/{}'.format(msg, gen_code)
+    else:
+        flash(msg, 'danger')
+        print 'sorry, user add error: {} / {}'.format(msg, gen_code)
+
+    return redirect(url_for('mturk', gen_code=gen_code))
+
+
+@app.route('/mturk/worker_id', methods=['POST'])
+def worker_id():
+    worker_id = request.form['worker_id']
+    session['worker_id'] = worker_id
+    return 'Rcvd id: {}'.format(worker_id)
+
+
+#################################
+# MTURK
+#################################
+@app.route('/old_index')
 def index():
 
     if not current_user.is_authenticated:
@@ -367,3 +425,8 @@ def execute_calendar_command(calname, cmd):
 # TODO: only enable activate tracking for an app that has been connected
 # TODO: divide the modules into researcher and participants
 # TODO: remove the CSS table formatting in researcher page
+# TODO: automatically refresh list of all images on image upload
+# TODO: create table to delete any image
+# TODO: allow uploads of multiple images at same time
+# TODO: allow images to be saved by pasting custom url
+# TODO: allow images to be uploaded from drag and drop

@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Mturk Experiment
+{% endblock %}
+
+{% block nav_brand %}
+  <a class="navbar-brand" href="/">Mturk Step Counter Experiment</a>
+{% endblock %}
+
+{% block contents %}
+  {% block nav_signin %}{% endblock %}
+
+  <div class="container">
+
+    <div class="page-header">
+      <h3>Goal</h3>
+      <p>
+        The goal of this experiment is to count how many steps individuals walk per day for 5 days. Your
+        steps will be counted using a smartphone app.
+      </p>
+    </div>
+
+    <div class="page-header">
+      <h3>Step One</h3>
+    </div>
+    <div class="input-group input-group-lg">
+      <span class="input-group-addon">Enter your MTurk worker id:</span>
+      <input type="text" class="form-control" id="mturk-worker-id" placeholder="worker id here...">
+    </div>
+    <span id="mturk-submit-status"></span>
+    <br>
+    <button id="mturk-submit-btn" class="btn btn-primary">Submit</button>
+
+    <div class="page-header">
+      <h3>Step Two</h3>
+    </div>
+
+    <div>
+
+      <ol>
+        <li>Download moves from the appstore to your smartphone (
+          <a href="https://itunes.apple.com/us/app/moves/id509204969?mt=8" target="_blank">iOS</a>
+          /
+          <a href="https://play.google.com/store/apps/details?id=com.protogeo.moves&hl=en" target="_blank">Android</a>
+          ).
+        </li>
+
+        <li>Click button to connect your downloaded moves app to this experiment<br>
+          <button type="submit" id="mturk-auth-moves-btn" class="btn btn-primary btn-sm">Connect Moves to Experiment</button>
+        </li>
+
+        <li>
+          After successfully connecting your app, a code will appear here:
+          <span id="gen-code-id"></span>
+          Copy this code and submit it on the Mturk task. This code is proof that you successfully connected
+          your Moves App.
+        </li>
+      </ol>
+    </div>
+
+    <div class="page-header">
+      <h3>Payment</h3>
+      <p>
+        All done! You don't need to do anything else. You will be paid at the end of the experiment after
+        the researchers confirm your submitted code.
+      </p>
+    </div>
+
+    <br><br>
+    <em>NB: We are not affiliated to moves app.</em>
+
+  </div>
+
+{% endblock %}

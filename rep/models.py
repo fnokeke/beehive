@@ -3,8 +3,60 @@ Implements all models (database tables)
 """
 from rep import app
 from flask_sqlalchemy import SQLAlchemy
+import uuid
 
 db = SQLAlchemy(app)
+
+
+class Mturk(db.Model):
+    worker_id = db.Column(db.String(120), primary_key=True, unique=True)
+    moves_id = db.Column(db.String(120), unique=True)
+    access_token = db.Column(db.String(120), unique=True)
+    refresh_token = db.Column(db.String(120), unique=True)
+    code = db.Column(db.String(120), unique=True)
+
+    def __init__(self, worker_id):
+        self.worker_id = worker_id
+
+    def __repr__(self):
+        return 'worker_id: {}/moves_id: {}'.format(self.worker_id, self.moves_id)
+
+    @staticmethod
+    def get_worker(worker_id):
+        """
+        Return user object from database using primary_key(email).
+        """
+        return Mturk.query.get(worker_id)
+
+    @staticmethod
+    def add_user(info):
+        """ add new mturk user and return worker generated code if adding new worker """
+        existing_worker = Mturk.query.filter_by(worker_id=info['worker_id']).first()
+        existing_moves = Mturk.query.filter_by(moves_id=info['moves_id']).first()
+
+        if existing_worker:
+            return (-1, 'Worker already exists', existing_worker.code)
+        elif existing_moves:
+            return (-1, 'Moves Account Already exists', existing_worker.code)
+
+        worker = Mturk(info['worker_id'])
+        worker.moves_id = info['moves_id']
+        worker.access_token = info['access_token']
+        worker.refresh_token = info['refresh_token']
+        worker.code = str(uuid.uuid4())
+
+        db.session.add(worker)
+        db.session.commit()
+
+        return (200, 'Successfully added', worker.code)
+
+    def update_field(self, key, value):
+        """
+        Set user field with give value and save to database.
+        """
+        worker = Mturk.query.get(self.worker_id)
+        setattr(worker, key, value)
+        db.session.commit()
 
 
 class User(db.Model):

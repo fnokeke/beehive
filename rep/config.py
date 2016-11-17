@@ -49,6 +49,13 @@ MOVES_REDIRECT_URI = 'http://localhost:5000/auth-moves'
 MOVES_REFRESH_TOKEN_URL = 'https://api.moves-app.com/oauth/v1/access_token?grant_type=refresh_token'
 
 ###################
+# MTURK MOVES
+###################
+MTURK_MOVES_CLIENT_ID = secret_keys.MTURK_MOVES_CLIENT_ID
+MTURK_MOVES_CLIENT_SECRET = secret_keys.MTURK_MOVES_CLIENT_SECRET
+MTURK_MOVES_REDIRECT_URI = 'http://localhost:5000/mturk-auth-moves'
+
+###################
 # PAM
 ###################
 PAM_CLIENT_ID = secret_keys.PAM_CLIENT_ID
