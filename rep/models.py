@@ -34,10 +34,10 @@ class Mturk(db.Model):
         existing_worker = Mturk.query.filter_by(worker_id=info['worker_id']).first()
         existing_moves = Mturk.query.filter_by(moves_id=info['moves_id']).first()
 
-        if existing_worker:
-            return (-1, 'Uh oh :/ Worker has already been verified.', existing_worker.code)
-        elif existing_moves:
-            return (-1, 'Uh oh :/ Moves app has already been connected.', existing_worker.code)
+        if existing_moves:
+            return (-1, 'Moves app has already been connected. Contact Mturk requester.', existing_worker.code)
+        elif existing_worker:
+            return (-1, 'Worker has already been verified. Contact Mturk requester.', existing_worker.code)
 
         worker = Mturk(info['worker_id'])
         worker.moves_id = info['moves_id']
