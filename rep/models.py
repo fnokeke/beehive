@@ -35,9 +35,9 @@ class Mturk(db.Model):
         existing_moves = Mturk.query.filter_by(moves_id=info['moves_id']).first()
 
         if existing_worker:
-            return (-1, 'Worker already exists', existing_worker.code)
+            return (-1, 'Uh oh :/ Worker has already been verified.', existing_worker.code)
         elif existing_moves:
-            return (-1, 'Moves Account Already exists', existing_worker.code)
+            return (-1, 'Uh oh :/ Moves app has already been connected.', existing_worker.code)
 
         worker = Mturk(info['worker_id'])
         worker.moves_id = info['moves_id']
@@ -48,7 +48,7 @@ class Mturk(db.Model):
         db.session.add(worker)
         db.session.commit()
 
-        return (200, 'Successfully added', worker.code)
+        return (200, 'Successfully connected your moves app!', worker.code)
 
     def update_field(self, key, value):
         """
