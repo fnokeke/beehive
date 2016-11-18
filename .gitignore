@@ -3,6 +3,7 @@
 dump.rdb
 .idea/
 *.pyc
+*.csv
 *.log
 .ftpconfig
 .cache/
