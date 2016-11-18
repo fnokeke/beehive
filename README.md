@@ -69,6 +69,15 @@ $ python manage.py db --help
 - Start flask server: `python run.py`
 - Go to your server link: [http://localhost:5000](http://localhost:5000)
 
+## Production deployment with gunicorn, supervisor, wsgi
+- `pip install gunicorn supervisor` (NB: supervisor is installed in virtualenv
+		instead of system wide installation) 
+- generate sample supervisor file with `echo_supervisord_conf > supervisord.conf`
+- modify your supervisord.conf to add the program of interest (inside
+		supervisord.conf, our program is titled: rep-webserver)
+- start supervisor: `supervisord -c supervisord.conf`
+- Refresh your browser and good to go!
+
 
 [Google Credentials]: [https://console.developers.google.com/apis/credentials?project=_]
 
