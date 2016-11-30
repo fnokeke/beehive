@@ -2,168 +2,324 @@
 {% block title %}
   Researcher | Home
 {% endblock %}
+
 {% block contents %}
 
+  <!-- hide mturk view for now  -->
   <div class="container">
-    {% if mturk_users | length > 0 %}
+
+    {% if users | length > 0 %}
       <div class="page-header">
-        <h3>available mturk participants</h3>
+        <h3>Participants</h3>
+        <p>
+          Total participants: 17
+          <br>
+
+          Fully connected: 8<br>
+          Not connected at all: 3<br>
+          Only RescueTime left: 4<br>
+          Only Intervention App left: 2<br>
+        </p>
       </div>
 
-      <div>
-        <table class="table table-striped">
+    {% else %}
+      <div class="page-header">
+        <h4>There are currently no Beehive users.</h4>
+      </div>
+    {% endif %}
+
+    <div class="page-header">
+      <h3>Experiments</h3>
+    </div>
+
+    <!-- Modal Button -->
+    <button
+      type="button"
+      class="btn btn-primary"
+      id="add-experiment-btn"
+      data-toggle="modal"
+      data-target="#add-experiment-modal">
+      <span class="glyphicon glyphicon-plus"></span>
+      Add Experiment
+    </button>
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="add-experiment-modal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="">New Experiment</h4>
+          </div>
+          <div class="modal-body">
+
+            <div class="form-group row">
+              <label for="example-text-input" class="col-xs-2 col-form-label">Title</label>
+              <div class="col-xs-10">
+                <input class="form-control" type="text" id="experiment-title-id">
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="example-search-input" class="col-xs-2 col-form-label">RescueTime required</label>
+              <div class="col-xs-10">
+                <input
+                  type="checkbox"
+                  id="rescuetime-checkbox-btn"
+                  'unchecked'
+                  data-toggle="toggle"
+                  data-on="Yes"
+                  data-off="No"
+                  data-onstyle="success"
+                  data-offstyle="danger">
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="example-search-input" class="col-xs-2 col-form-label">Aware App required</label>
+              <div class="col-xs-10">
+                <input
+                  type="checkbox"
+                  id="aware-checkbox-btn"
+                  'unchecked'
+                  data-toggle="toggle"
+                  data-on="Yes"
+                  data-off="No"
+                  data-onstyle="success"
+                  data-offstyle="danger">
+              </div>
+            </div>
+
+            <div class="page-header">
+              <h4>
+                Intervention App Features
+              </h4>
+            </div>
+
+            <div class="form-group row">
+              <label for="example-search-input" class="col-xs-2 col-form-label">Geofence Feature</label>
+              <div class="col-xs-10">
+                <input
+                  type="checkbox"
+                  id="geofence-checkbox-btn"
+                  'unchecked'
+                  data-toggle="toggle"
+                  data-on="Yes"
+                  data-off="No"
+                  data-onstyle="success"
+                  data-offstyle="danger">
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="example-search-input" class="col-xs-2 col-form-label">Text/Image Display</label>
+              <div class="col-xs-10">
+                <input
+                  type="checkbox"
+                  id="geofence-checkbox-btn"
+                  'unchecked'
+                  data-toggle="toggle"
+                  data-on="Yes"
+                  data-off="No"
+                  data-onstyle="success"
+                  data-offstyle="danger">
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="example-search-input" class="col-xs-2 col-form-label">Alarm Reminder</label>
+              <div class="col-xs-10">
+                <input
+                  type="checkbox"
+                  id="alarm-checkbox-btn"
+                  'unchecked'
+                  data-toggle="toggle"
+                  data-on="Yes"
+                  data-off="No"
+                  data-onstyle="success"
+                  data-offstyle="danger">
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="example-search-input" class="col-xs-2 col-form-label">WiFi/<br>Vibration/<br>Media</label>
+              <div class="col-xs-10">
+                <input
+                  type="checkbox"
+                  id="geofence-checkbox-btn"
+                  'unchecked'
+                  data-toggle="toggle"
+                  data-on="Yes"
+                  data-off="No"
+                  data-onstyle="success"
+                  data-offstyle="danger">
+              </div>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Exit</button>
+            <button type="button" class="btn btn-primary" id="create-experiment-btn">Create</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p></p>
+
+    <div>
+      <table class="table table-striped table-bordered">
+        <tr>
+          <th class="col-tiny-2">
+            Edit/Delete
+          </th>
+          <th>
+            Title
+          </th>
+          <th>
+            Code
+          </th>
+          <th>
+            RescueTime
+          </th>
+          <th>
+            Aware App
+          </th>
+          <th>
+            Geofence
+          </th>
+          <th>
+            Text/Image
+          </th>
+          <th>
+            Alarm/Reminder
+          </th>
+          <th>
+            WiFi/Vibration/<br>Media Sounds
+          </th>
+        </tr>
+
+        {% for study in studies %}
           <tr>
-            <th>
-              NO
-            </th>
-            <th>
-              Created
-            </th>
-            <th>
-              Worker ID
-            </th>
-            <th>
-              Moves ID
-            </th>
-            <th>
-              Code
-            </th>
-            <th>
-              IP
-            </th>
+            <td>
+              <button
+                type="button"
+                class="btn btn-sm btn-primary"
+                id="edit-experiment-btn"
+                data-toggle="modal"
+                data-target="#edit-experiment-modal">
+                <span class="glyphicon glyphicon-pencil"></span>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-sm btn-danger"
+                id="delete-experiment-btn"
+                data-toggle="modal"
+                data-target="#delete-experiment-modal">
+                <span class="glyphicon glyphicon-trash"></span>
+              </button>
+            </td>
+
+            <td>
+              {{ study['title']}}
+            </td>
+
+            <td>
+              {{ study['code']}}
+            </td>
+            <td class={{ 'success' if study['rescuetime'] == 'on' else 'danger'}}>
+              {{ study['rescuetime']}}
+            </td>
+            <td class={{ 'success' if study['aware_app'] == 'on' else 'danger'}}>
+              {{ study['aware_app']}}
+            </td>
+            <td class={{ 'success' if study['geofence'] == 'on' else 'danger'}}>
+              {{ study['geofence']}}
+            </td>
+            <td class={{ 'success' if study['text_img'] == 'on' else 'danger'}}>
+              {{ study['text_img']}}
+            </td>
+            <td class={{ 'success' if study['alarm_reminder'] == 'on' else 'danger'}}>
+              {{ study['alarm_reminder']}}
+            </td>
+            <td class={{ 'success' if study['actuators'] == 'on' else 'danger'}}>
+              {{ study['actuators']}}
+            </td>
           </tr>
+        {% endfor %}
 
-          {% for muser in mturk_users %}
-            <tr>
-              <td>
-                worker{{loop.index}}
-              </td>
-              <td>
-                {{muser.created_at}}
-              </td>
-              <td>
-                {{muser.worker_id}}
-              </td>
-              <td>
-                {{ muser.moves_id }}
-              </td>
-              <td>
-                {{ muser.code }}
-              </td>
-              <td>
-                {{ muser.ip }}
-              </td>
-            </tr>
-          {% endfor %}
+      </table>
+    </div>
 
-        </table>
+    <div class="page-header">
+      <h3>Interventions</h3>
+    </div>
 
-      {% else %}
-        <div class="page-header">
-          <h4>There are currently no Mturk users.</h4>
-        </div>
-      {% endif %}
-
-      {% if users | length > 0 %}
-        <div class="page-header">
-          <h3>available rep participants</h3>
-        </div>
-
-        <div>
-          <table class="table table-striped">
-            <tr>
-              <th>
-                User
-              </th>
-              <th>
-                Moves
-              </th>
-              <th>
-                PAM
-              </th>
-              <th>
-                RescueTime
-              </th>
-            </tr>
-
-            {% for user in users %}
-              <tr>
-                <td class='info'>
-                  user{{loop.index}}
-                </td>
-                <td class={{ 'success' if user.moves_access_token else 'danger'}}>
-                  {{'connected' if user.moves_access_token else 'not connected'}}
-                </td>
-                <td class={{ 'success' if user.pam_access_token else 'danger'}}>
-                  {{'connected' if user.pam_access_token else 'not connected'}}
-                </td>
-                <td class={{ 'success' if user.rescuetime_access_token else 'danger'}}>
-                  {{'connected' if user.rescuetime_access_token else 'not connected'}}
-                </td>
-              </tr>
-            {% endfor %}
-
-          </table>
-
-        {% else %}
-          <div class="page-header">
-            <h4>There are currently no REP users.</h4>
+    <button
+      type="button"
+      class="btn btn-primary"
+      id="add-experiment-btn"
+      data-toggle="modal"
+      data-target="#upload-image-modal">
+      <span class="glyphicon glyphicon-plus"></span>
+      New Image / Text
+    </button>
+    <div
+      class="modal fade"
+      id="upload-image-modal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="">Upload New Image / Text</h4>
           </div>
-        {% endif %}
+          <div class="modal-body">
 
-        <div class="page-header">
-          <h3>Interventions</h3>
-        </div>
+            <form enctype="multipart/form-data">
+              <input type="file" id="image" name="image" accept="Image/*"/>
+              <br>
+              <input type="submit" id="send-img-btn" value="Upload Image" class="btn btn-primary"/>
+              <br>
+              <span id="upload-status"></span>
+            </form>
 
-        <div>
-          <h4>Images</h4>
-          <form enctype="multipart/form-data">
-            <input type="file" id="image" name="image" accept="Image/*"/>
-            <br>
-            <input type="submit" id="send-img-btn" value="Upload Image" class="btn btn-primary"/>
-            <br>
-            <span id="upload-status"></span>
-          </form>
-          <br>
+            <div class="page-header">
+              <h4>Text</h4>
+            </div>
 
-          <div class="page-header">
-            <h4>Stored Images</h4>
-            <input type="button" id="fetch-all-imgs-btn" value="Fetch All Images" class="btn btn-primary"/>
+            <form enctype="multipart/form-data">
+              <textarea name="txt" id="txt" rows="4" cols="40"></textarea>
+              <br>
+              <input type="submit" id="send-txt-btn" value="Upload Text" class="btn btn-primary"/>
+              <br>
+              <span id="txt-status"></span>
+            </form>
+
           </div>
 
-          <div id="stored-img-div"></div>
-          <br>
-
-          <h4>Texts</h4>
-          <form enctype="multipart/form-data">
-            <textarea name="txt" id="txt" rows="4" cols="40"></textarea>
-            <br>
-            <input type="submit" id="send-txt-btn" value="Send to Participants" class="btn btn-primary"/>
-            <br>
-            <span id="txt-status"></span>
-          </form>
-          <br>
         </div>
-
       </div>
-    {% endblock %}
+    </div>
 
-    <!-- <form id="image-form">
-      <label class="btn btn-default" for="uploaded-image">
-        <input
-          id="image"
-          type="file"man
-          style="display:none;"
-          onchange="$('#upload-status').html($(this).val());">
-        Upload Image
-      </label>
+    <div class="page-header">
+      <h4>Uploaded images and texts</h4>
+      <input type="button" id="fetch-all-imgs-btn" value="Fetch All Images" class="btn btn-primary"/>
+    </div>
+    <div id="stored-img-div"></div>
 
-
-      <br>
-      <br>
-      <button class="btn btn-primary" type="button" id="send-img-btn">Send to Participants</button>
-    </form> -->
-    <!--
     <div class="">
 
       <table class="table">
@@ -258,4 +414,68 @@
       <span class="danger" id="error-div"></span>
       <span id="analysis-status">Awaiting input...</span>
     </div>
--->
+
+    <div style="display: none">
+
+      {% if mturk_users | length > 0 %}
+        <div class="page-header">
+          <h3>available mturk participants</h3>
+        </div>
+
+        <div>
+          <table class="table table-striped">
+            <tr>
+              <th>
+                NO
+              </th>
+              <th>
+                Created
+              </th>
+              <th>
+                Worker ID
+              </th>
+              <th>
+                Moves ID
+              </th>
+              <th>
+                Code
+              </th>
+              <th>
+                IP
+              </th>
+            </tr>
+
+            {% for muser in mturk_users %}
+              <tr>
+                <td>
+                  worker{{loop.index}}
+                </td>
+                <td>
+                  {{muser.created_at}}
+                </td>
+                <td>
+                  {{muser.worker_id}}
+                </td>
+                <td>
+                  {{ muser.moves_id }}
+                </td>
+                <td>
+                  {{ muser.code }}
+                </td>
+                <td>
+                  {{ muser.ip }}
+                </td>
+              </tr>
+            {% endfor %}
+
+          </table>
+
+        {% else %}
+          <div class="page-header">
+            <h4>There are currently no Mturk users.</h4>
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+  {% endblock %}

@@ -13,7 +13,7 @@ app.wsgi_app = ReverseProxied(app.wsgi_app)
 app.config.from_pyfile('config.py')
 
 login_manager = LoginManager(app)
-login_manager.login_view = 'mturk'
+login_manager.login_view = 'index'
 login_manager.login_message_category = 'warning'
 
 photos = UploadSet('photos', IMAGES)

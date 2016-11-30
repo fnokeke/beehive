@@ -25,8 +25,6 @@ from gcal import Calendar, EventFactory
 from rep.utils import requires_basic_auth
 
 
-@app.route('/')
-@app.route('/index')
 @app.route('/mturk')
 def mturk():
     return render_template('mturk.html')
@@ -83,9 +81,9 @@ def worker_id():
 
 
 #################################
-# MTURK
+# non-mturk starts
 #################################
-@app.route('/old_index')
+@app.route('/')
 def index():
 
     if not current_user.is_authenticated:
@@ -206,7 +204,37 @@ def google_login():
 @app.route('/researcher_login')
 @requires_basic_auth
 def researcher_login():
-    return render_template('researcher.html', users=User.query.all(), mturk_users=Mturk.query.all())
+    studies = [
+        {
+            'title': 'Priming to write more code daily',
+            'code': 'BA823091390',
+            'rescuetime': 'on',
+            'aware_app': 'off',
+            'geofence': 'on',
+            'alarm_reminder': 'on',
+            'actuators': 'off',
+            'text_img': 'on'
+        }, {
+            'title': 'Framing feedback on time spent on computer',
+            'code': 'MZ903322139',
+            'rescuetime': 'on',
+            'aware_app': 'off',
+            'geofence': 'off',
+            'alarm_reminder': 'off',
+            'actuators': 'off',
+            'text_img': 'on'
+        }, {
+            'title': 'Reducing distraction on phone',
+            'code': 'PP820191390',
+            'rescuetime': 'off',
+            'aware_app': 'on',
+            'geofence': 'off',
+            'alarm_reminder': 'off',
+            'actuators': 'on',
+            'text_img': 'on'
+        }
+    ]
+    return render_template('researcher.html', users=User.query.all(), mturk_users=Mturk.query.all(), studies=studies)
 
 
 @app.route('/researcher_analysis/<key>/<study_begin>/<int_begin>/<int_end>/<study_end>')

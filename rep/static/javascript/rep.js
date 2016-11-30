@@ -199,20 +199,32 @@ $(document).ready(function() {
 
   $('#send-img-btn').click(function(event) {
     event.preventDefault();
+    var response_field = '#upload-status';
     var image = $('#image').get(0).files[0];
+    if (!image) {
+      show_error_msg(response_field, 'select an image then click upload.');
+      return;
+    }
     var formData = new FormData();
     formData.append('image', image);
     formData.append('image_name', image.name);
 
-    response_field = '#upload-status';
     $.ajax({
       url: '/upload/image',
       success: function(e) {
         console.log('resp: ', e);
         show_success_msg(response_field, 'Image successfully uploaded.');
+        $('#fetch-all-imgs-btn').click();
       },
       error: function(e) {
         show_error_msg(response_field, 'Image upload error. Pls contact admin.');
+      },
+      complete: function(e) {
+        setTimeout(function() {
+          $('#upload-image-modal').modal('hide');
+          show_plain_msg(response_field, '');
+          $('#image').val('');
+        }, 500);
       },
       data: formData,
       type: 'POST',
@@ -226,9 +238,13 @@ $(document).ready(function() {
 
   $('#send-txt-btn').click(function(event) {
     event.preventDefault();
-
-    var txt = $('#txt').val();
     var response_field = '#txt-status';
+    var txt = $('#txt').val();
+    if (!txt) {
+      show_error_msg(response_field, 'Cannot submit empty text');
+      return;
+    }
+
     var url = '/upload/txt';
     var data = {
       'txt': txt
@@ -238,27 +254,44 @@ $(document).ready(function() {
       show_success_msg(response_field, 'Message successfully sent.');
     }).fail(function(error) {
       show_error_msg(response_field, 'Message upload error. Pls contact admin.');
+    }).always(function(e) {
+      setTimeout(function() {
+        $('#upload-image-modal').modal('hide');
+        show_plain_msg(response_field, '');
+        $('#txt').val('');
+      }, 500);
     });
 
   });
 
   $('#fetch-all-imgs-btn').click(function(event) {
-    console.log('images fetch clicked');
     event.preventDefault();
 
     var response_field = '#stored-img-div';
     var url = '/fetch/images';
     $.get(url, function(resp) {
       var results = JSON.parse(resp);
-      var summary = '<ol>';
+      var summary =
+        '<table class = "table table-striped table-bordered"> <tr> <th class="col-md-2">Intervention Day</th> <th class="">Image</th> <th class="">Text</th><th class="col-md-1">Edit/Delete</th> </tr>';
       var row;
 
+      var texts = [
+        '50 lines of code per day amounts to one library per month',
+        'In 5 minutes, you could set up a server on AWS.',
+        'How much of your work goals have been met this week?',
+        'When next will you update your adviser about your work accomplished'
+      ];
       for (var i = 0; i < results.length; i++) {
-        row = '<li> <a href={0}> {0} </a> </li>'.format(results[i]);
+        row =
+          '<tr> <td>{0}</td> <td><img src="{1}" alt="Image {0}" class="img-thumbnail col-img"></td> <td>{2}</td> <td> <button type="button" class="btn btn-sm btn-primary"' +
+          'data-toggle="modal" data-target="#delete-image-modal"> <span class="glyphicon glyphicon-pencil"></span> </button> ' +
+          '<button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#delete-image-modal">' +
+          '<span class="glyphicon glyphicon-trash"></span> </button> </td> </tr>';
+        row = row.format(i + 1, results[i], texts[i % texts.length]);
         summary += row;
       }
 
-      summary += '</ol>';
+      summary += '</table>';
 
       show_plain_msg(response_field, summary);
     }).fail(function(error) {
@@ -267,18 +300,25 @@ $(document).ready(function() {
 
   });
 
+  $('#fetch-all-imgs-btn').hide();
+  $('#fetch-all-imgs-btn').click(); // show images by default
+
   $('#perform-analysis-btn').click(function() {
     var datapoint = $('#dropdown-action-label').text().replace(/\s/g, '').toLowerCase(); // regex removes all spaces in string
+    var response_field = '#analysis-status';
     var dates = $('#experiment-dates').val();
     dates = dates.replace(/\s/g, '').split(',');
+    if (dates.length < 2) {
+      show_error_msg(response_field, 'You need to select 4 dates in order to perform analysis.');
+      return;
+    }
 
     // study_begin, intervention_begin, intervention_end, study_end);
     var url = 'researcher_analysis/{0}/{1}/{2}/{3}/{4}'.format(datapoint, dates[3], dates[2], dates[1], dates[0]);
-    var response_field = '#analysis-status';
     $.get(url, function(resp) {
       var summary, results, uid, counter;
 
-      summary = '<h4> stats for {0} </h4>'.format(datapoint);
+      summary = '<strong> stats for {0} </strong>'.format(datapoint);
       summary += '<table class="table table-striped">' +
         '<tr><th> User </th> <th> Baseline </th> <th> Interventions </th> <th> Follow Up </th> </tr>';
 

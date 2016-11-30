@@ -9,12 +9,35 @@
   <div class="container">
 
     <div class="page-header">
-      <h3>connect apps</h3>
+      <h3>Participant Code</h3>
+    </div>
+
+    <div class="input-group input-group-lg">
+      <span class="input-group-addon">Enter your participant code:</span>
+      <input type="text" class="form-control" id="participant-code">
+    </div>
+    <span id="code-submit-status"></span>
+    <br>
+    <button id="code-submit-btn" class="btn btn-primary">Submit</button>
+
+    <form class="form-inline">
+      <div class="form-group">
+        <label class="sr-only" for="exampleInputAmount">Amount (in dollars)</label>
+        <div class="input-group">
+          <div class="input-group-addon">Enter Participant Code:</div>
+          <input type="text" class="form-control" id="exampleInputAmount">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <div class="page-header">
+      <h3>Connect Apps</h3>
     </div>
 
     <div class="">
 
-      {% if not current_user.is_authorized('moves') %}
+      <!-- {% if not current_user.is_authorized('moves') %}
         <p>
           Moves
           <i>not connected</i>
@@ -31,16 +54,10 @@
           for monitoring mood.<br>
           <button type="submit" id="auth-pam-btn" class="btn btn-primary">Connect PAM</button>
         </p>
-      {% endif %}
+      {% endif %} -->
 
       {% if not current_user.rescuetime_access_token %}
-        <p>
-          RescueTime
-          <i>not connected</i>
-          for monitoring social networks.
-          <br>
-          <button type="submit" id="auth-rt-btn" class="btn btn-primary">Connect RescueTime</button><br>
-        </p>
+        <button type="submit" id="auth-rt-btn" class="btn btn-primary">Connect RescueTime</button><br>
       {% endif %}
 
       {% if current_user.moves_access_token and current_user.pam_access_token and
@@ -51,7 +68,7 @@
       {% endif %}
     </div>
 
-    <div class="page-header">
+    <!-- <div class="page-header">
       <h3>activate tracking</h3>
     </div>
 
@@ -104,10 +121,10 @@
           data-offstyle="danger">
         <span id="sn-checkbox-status"></span>
       </label>
-    </div>
+    </div> -->
 
     <div class="page-header">
-      <h3>update profile</h3>
+      <h3>Update Profile</h3>
     </div>
 
     <div>
