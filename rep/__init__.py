@@ -7,10 +7,12 @@ from rep.utils import ReverseProxied
 from flask import Flask
 from flask_login import LoginManager
 from flask_uploads import UploadSet, IMAGES, configure_uploads
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 app.config.from_pyfile('config.py')
+CORS(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'index'

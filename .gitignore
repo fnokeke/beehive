@@ -10,3 +10,4 @@ dump.rdb
 secret_keys.py
 celerybeat-schedule
 uploads/
+.imdone/

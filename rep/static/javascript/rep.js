@@ -1,6 +1,6 @@
-//
+////////////////////////////////////////////////
 // rep.js
-//
+////////////////////////////////////////////////
 
 $(document).ready(function() {
 
@@ -27,9 +27,9 @@ $(document).ready(function() {
     'method_not_allowed': 'profile update failed. try again later or contact admin.'
   };
 
-  // #################################################
+  ////////////////////////////////////////////////
   // helper functions
-  // #################################################
+  ////////////////////////////////////////////////
   function disable(btn_id) {
     $(btn_id).prop("disabled", true);
   }
@@ -60,7 +60,6 @@ $(document).ready(function() {
     var response_field = '#' + field + '-checkbox-status';
 
     $.get(url, function(resp) {
-      // show_success_msg(response_field, resp);
       var results = JSON.parse(resp);
       console.log('results: ', results);
     }).fail(function(error) {
@@ -69,9 +68,9 @@ $(document).ready(function() {
   }
 
 
-  // #################################################
+  ////////////////////////////////////////////////
   // authenticate/connect data streams
-  // #################################################
+  ////////////////////////////////////////////////
   $('#signin-btn').click(function() {
     window.location.href = '/google_login';
   });
@@ -99,9 +98,9 @@ $(document).ready(function() {
   });
 
 
-  // #################################################
+  ////////////////////////////////////////////////
   // checkboxes for activating datastreams
-  // #################################################
+  ////////////////////////////////////////////////
   $('#location-checkbox-btn').on('change', function() {
     submit_checkbox_val('location', this.checked);
   });
@@ -115,9 +114,9 @@ $(document).ready(function() {
   });
 
 
-  // #################################################
+  ////////////////////////////////////////////////
   // dropdowns
-  // #################################################
+  ////////////////////////////////////////////////
 
   $('#dropdown-action li').on('click', function() {
     var selected = $(this).text();
@@ -155,8 +154,9 @@ $(document).ready(function() {
     });
   });
 
-  // #################################################
+  ////////////////////////////////////////////////
   // other buttons
+  ////////////////////////////////////////////////
 
   var gen_code = $.url_param('gen_code');
   if (gen_code) {
@@ -197,20 +197,210 @@ $(document).ready(function() {
   });
 
 
-  $('#send-img-btn').click(function(event) {
+  ////////////////////////////////////////////////
+  // experiment and intervention functions
+  ////////////////////////////////////////////////
+  $('#create-experiment-btn').click(function(event) {
     event.preventDefault();
-    var response_field = '#upload-status';
-    var image = $('#image').get(0).files[0];
-    if (!image) {
-      show_error_msg(response_field, 'select an image then click upload.');
+    var title = $('#experiment-title-id').val();
+    var rescuetime = $('#rescuetime-checkbox-btn').is(':checked');
+    var aware = $('#aware-checkbox-btn').is(':checked');
+    var geofence = $('#geofence-checkbox-btn').is(':checked');
+    var text_image = $('#text-image-checkbox-btn').is(':checked');
+    var reminder = $('#reminder-checkbox-btn').is(':checked');
+    var actuators = $('#actuators-checkbox-btn').is(':checked');
+    var response_field = '#create-experiment-status';
+
+    console.log(rescuetime, aware, geofence);
+
+    if (title === '') {
+      show_error_msg(response_field, 'You need to add a title for your experiment.');
       return;
     }
+
+    $('#add-experiment-modal').modal('hide');
+
+    var url = '/add/experiment';
+    var data = {
+      'title': title,
+      'rescuetime': rescuetime,
+      'aware': aware,
+      'geofence': geofence,
+      'text_image': text_image,
+      'reminder': reminder,
+      'actuators': actuators
+    };
+
+    $.post(url, data).done(function(resp) {
+      show_success_msg(response_field, resp);
+      update_experiment_view();
+    }).fail(function(error) {
+      show_error_msg(response_field, error);
+    });
+
+  });
+
+  update_experiment_view();
+
+  function update_experiment_view() {
+    var view, exp, row, response_field;
+    response_field = '#experiment-view-status';
+
+    $.get('/fetch/experiments', function(results) {
+      var experiments = JSON.parse(results);
+      var view = create_experiment_view(experiments);
+      $('#experiment-view-id').html(view);
+    }).fail(function(error) {
+      show_error_msg(response_field, 'Could not load experiment view.');
+      console.warn(error);
+    });
+  }
+
+  function create_experiment_view(experiments) {
+    view = '<table id="exp-view-id" class="table table-striped table-bordered"><tr>' +
+      '<th> Title </th>' +
+      '<th> Code </th>' +
+      '<th> RescueTime </th>' +
+      '<th> Aware </th>' +
+      '<th> Geofence </th>' +
+      '<th> Text/Image </th>' +
+      '<th> Reminder </th>' +
+      '<th> Actuators </th>' +
+      '</tr>';
+
+    // show css background class for cell to provide visual effect for enable/disable buttons
+    var rescuetime_c, aware_c, geofence_c, text_image_c, reminder_c, actuators_c;
+
+    for (var i = experiments.length - 1; i >= 0; i--) {
+      exp = experiments[i];
+
+      rescuetime_c = exp.rescuetime ? 'success' : 'danger';
+      aware_c = exp.aware ? 'success' : 'danger';
+      geofence_c = exp.geofence ? 'success' : 'danger';
+      text_image_c = exp.text_image ? 'success' : 'danger';
+      reminder_c = exp.reminder ? 'success' : 'danger';
+      actuators_c = exp.actuators ? 'success' : 'danger';
+
+      row = '<tr>' +
+        '<td><button id={1} class="btn btn-link">{0}</button></td>'.format(exp.title, exp.code) +
+        '<td>' + exp.code + '</td>' +
+        '<td class={0}> {1} </td>'.format(rescuetime_c, exp.rescuetime) +
+        '<td class={0}> {1} </td>'.format(aware_c, exp.aware) +
+        '<td class={0}> {1} </td>'.format(geofence_c, exp.geofence) +
+        '<td class={0}> {1} </td>'.format(text_image_c, exp.text_image) +
+        '<td class={0}> {1} </td>'.format(reminder_c, exp.reminder) +
+        '<td class={0}> {1} </td>'.format(actuators_c, exp.actuators) +
+        '</tr>';
+
+      view += row;
+    }
+
+    view += '</table>';
+    return view;
+  }
+
+  /////////////////////////////
+  // edit / delete experiment
+  /////////////////////////////
+  $(document).on('click', '#exp-view-id .btn-link', function() {
+    var code = this.id;
+    window.location.href = '/edit-experiment/{0}'.format(code);
+
+    // var url = 'fetch/experiment/{0}'.format(code);
+    // $.get(url, function(resp) {
+    //   var experiment = JSON.parse(resp);
+    //
+    //   $('#edit-header-title').text(experiment.title);
+    //   $('#edit-exp-title').val(experiment.title);
+    //   $('#edit-rescuetime-checkbox-btn').prop('checked', experiment.rescuetime).change();
+    //   $('#edit-aware-checkbox-btn').prop('checked', experiment.aware).change();
+    //   $('#edit-geofence-checkbox-btn').prop('checked', experiment.geofence).change();
+    //   $('#edit-text-image-checkbox-btn').prop('checked', experiment.text_image).change();
+    //   $('#edit-reminder-checkbox-btn').prop('checked', experiment.reminder).change();
+    //   $('#edit-actuators-checkbox-btn').prop('checked', experiment.actuators).change();
+    //
+    //   // $('#edit-exp-modal').modal('show');
+    // }).fail(function(error) {
+    //   console.log('fetch single experiment error: ', error);
+    // });
+  });
+
+  $('#go-back-btn').click(function() {
+    window.location.href = '/researcher_login';
+  });
+
+  $('#save-single-experiment-btn').click(function() {
+    var title = $('#edit-exp-title').val();
+    var code = $('#save-single-experiment-btn').val();
+    var rescuetime = $('#edit-rescuetime-checkbox-btn').is(':checked');
+    var aware = $('#edit-aware-checkbox-btn').is(':checked');
+    var geofence = $('#edit-geofence-checkbox-btn').is(':checked');
+    var text_image = $('#edit-text-image-checkbox-btn').is(':checked');
+    var reminder = $('#edit-reminder-checkbox-btn').is(':checked');
+    var actuators = $('#edit-actuators-checkbox-btn').is(':checked');
+    var response_field = '#edit-experiment-status';
+
+    var url = '/update/experiment';
+    var data = {
+      'title': title,
+      'code': code,
+      'rescuetime': rescuetime,
+      'aware': aware,
+      'geofence': geofence,
+      'text_image': text_image,
+      'reminder': reminder,
+      'actuators': actuators
+    };
+
+    $.post(url, data).done(function(resp) {
+      show_success_msg(response_field, 'Experiment successfully updated. Refreshing title...');
+
+      var cur_url = window.location.href;
+      window.location.href = cur_url;
+
+    }).fail(function(error) {
+      show_error_msg(response_field, error);
+    });
+
+  });
+
+  $('#delete-single-experiment-btn').click(function() {
+    if (confirm("Are you sure you want to delete this experiment permanently?") === true) {
+      var code = $('#delete-single-experiment-btn').val();
+      window.location.href = '/delete/experiment/{0}'.format(code);
+    }
+
+  });
+
+  $(".btn-link").on("click", function(e) {});
+
+  $('#submit-intervention-btn').click(function(event) {
+    event.preventDefault();
+    var image = $('#image').get(0).files[0];
+    var txt = $('#txt').val();
+    var date = $('#intervention-date').val();
+    var response_field = '#intervention-status';
+
+    if (date === '') {
+      show_error_msg('#intervention-date-status', 'You need to select an intervention date.');
+      return;
+    }
+
+    if (!image && !txt) {
+      show_error_msg(response_field, 'You need to add either an image or a text.');
+      return;
+    }
+
     var formData = new FormData();
+    formData.append('date', date);
+    formData.append('txt', txt);
     formData.append('image', image);
-    formData.append('image_name', image.name);
+
+    var image_name = image ? image.name : 'Nada';
+    formData.append('image_name', image_name);
 
     $.ajax({
-      url: '/upload/image',
+      url: '/upload/intervention',
       success: function(e) {
         console.log('resp: ', e);
         show_success_msg(response_field, 'Image successfully uploaded.');
@@ -236,43 +426,15 @@ $(document).ready(function() {
   });
   // #################################################
 
-  $('#send-txt-btn').click(function(event) {
-    event.preventDefault();
-    var response_field = '#txt-status';
-    var txt = $('#txt').val();
-    if (!txt) {
-      show_error_msg(response_field, 'Cannot submit empty text');
-      return;
-    }
-
-    var url = '/upload/txt';
-    var data = {
-      'txt': txt
-    };
-
-    $.post(url, data).done(function(resp) {
-      show_success_msg(response_field, 'Message successfully sent.');
-    }).fail(function(error) {
-      show_error_msg(response_field, 'Message upload error. Pls contact admin.');
-    }).always(function(e) {
-      setTimeout(function() {
-        $('#upload-image-modal').modal('hide');
-        show_plain_msg(response_field, '');
-        $('#txt').val('');
-      }, 500);
-    });
-
-  });
-
   $('#fetch-all-imgs-btn').click(function(event) {
     event.preventDefault();
 
     var response_field = '#stored-img-div';
-    var url = '/fetch/images';
+    var url = '/fetch/interventions';
     $.get(url, function(resp) {
       var results = JSON.parse(resp);
       var summary =
-        '<table class = "table table-striped table-bordered"> <tr> <th class="col-md-2">Intervention Day</th> <th class="">Image</th> <th class="">Text</th><th class="col-md-1">Edit/Delete</th> </tr>';
+        '<table class = "table table-striped table-bordered"> <tr> <th class="col-md-1">No</th><th class="col-md-2">Intervention Date</th> <th class="">Image</th> <th class="">Text</th><th class="col-md-1">Edit/Delete</th> </tr>';
       var row;
 
       var texts = [
@@ -281,13 +443,15 @@ $(document).ready(function() {
         'How much of your work goals have been met this week?',
         'When next will you update your adviser about your work accomplished'
       ];
+
       for (var i = 0; i < results.length; i++) {
         row =
-          '<tr> <td>{0}</td> <td><img src="{1}" alt="Image {0}" class="img-thumbnail col-img"></td> <td>{2}</td> <td> <button type="button" class="btn btn-sm btn-primary"' +
+          '<tr> <td>{0}</td> <td>{1}</td><td><img src="{2}" alt="Image {0}" class="img-thumbnail col-img"></td> <td>{3}</td> <td> <button type="button" class="btn btn-sm btn-primary"' +
           'data-toggle="modal" data-target="#delete-image-modal"> <span class="glyphicon glyphicon-pencil"></span> </button> ' +
           '<button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#delete-image-modal">' +
           '<span class="glyphicon glyphicon-trash"></span> </button> </td> </tr>';
-        row = row.format(i + 1, results[i], texts[i % texts.length]);
+        var result = results[i];
+        row = row.format(i + 1, result.date, result.image_url, result.txt);
         summary += row;
       }
 

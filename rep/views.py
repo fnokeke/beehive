@@ -12,7 +12,7 @@ from apiclient import discovery
 import json, httplib2, requests
 
 from rep import app, login_manager
-from rep.models import User, Mturk
+from rep.models import Experiment, Intervention, Mturk, User
 from rep.rescuetime import RescueOauth2
 from rep.pam import PamOauth
 from rep.moves import Moves
@@ -25,63 +25,8 @@ from gcal import Calendar, EventFactory
 from rep.utils import requires_basic_auth
 
 
-@app.route('/mturk')
-def mturk():
-    return render_template('mturk.html')
-
 #################################
-# MTURK
-#################################
-
-
-@app.route("/mturk-auth-moves")
-def mturk_auth_moves():
-    c = '&client_id=' + app.config['MTURK_MOVES_CLIENT_ID']
-    e = '&client_secret=' + app.config['MTURK_MOVES_CLIENT_SECRET']
-    r = '&redirect_uri=' + app.config['MTURK_MOVES_REDIRECT_URI']
-    s = '&scope=' + app.config['MOVES_SCOPE']
-
-    code = request.args.get('code')
-    if not code:
-        url = app.config['MOVES_WEB_URL'] + c + s
-        return redirect(url)
-
-    url = app.config['MOVES_ACCESS_TOKEN_URL'] + code + c + e + r
-    r = requests.post(url)
-    if r.status_code != 200:
-        msg = 'Moves Connection Error(%s): %s' % (r.status_code, r.reason)
-        flash(msg, 'danger')
-        return redirect(url_for('mturk_auth_moves'))
-
-    results = json.loads(r.text)
-    info = {
-        'worker_id': session['worker_id'],
-        'moves_id': str(results['user_id']),
-        'access_token': results['access_token'],
-        'refresh_token': results['refresh_token'],
-        'ip': request.access_route[-1]
-    }
-    valid, msg, gen_code = Mturk.add_user(info)
-
-    if valid == 200:
-        flash(msg, 'success')
-        print '{}/{}'.format(msg, gen_code)
-    else:
-        flash(msg, 'danger')
-        print 'sorry, user add error: {} / {}'.format(msg, gen_code)
-
-    return redirect(url_for('mturk', gen_code=gen_code))
-
-
-@app.route('/mturk/worker_id', methods=['POST'])
-def worker_id():
-    worker_id = request.form['worker_id']
-    session['worker_id'] = worker_id
-    return 'Rcvd id: {}'.format(worker_id)
-
-
-#################################
-# non-mturk starts
+# template views
 #################################
 @app.route('/')
 def index():
@@ -100,44 +45,16 @@ def index():
     return redirect(url_for('home'))
 
 
-@app.route('/home')
-@login_required
-def home():
-    return render_template('home.html')
-
-
 @app.route('/experiments')
 @login_required
 def experiments():
     return render_template('experiments.html')
 
 
-@app.route('/settings')
+@app.route('/home')
 @login_required
-def settings():
-    return render_template('settings.html')
-
-
-@app.route('/fetch/images')
-def fetch_uploads():
-    return json.dumps(Upload.get_all_urls())
-    # return '{}'.format(Upload.get_all_urls())
-
-
-@app.route('/upload/image', methods=['POST'])
-def image_upload():
-    image_name = request.form['image_name']
-    image = request.files['image']
-
-    Upload.save(image_name, image)
-    url = Upload.get_url(image_name)
-    return 'Retrieved image: {}'.format(url)
-
-
-@app.route('/upload/txt', methods=['POST'])
-def txt_upload():
-    txt = request.form.get('txt')
-    return 'Got txt: {}'.format(txt)
+def home():
+    return render_template('home.html')
 
 
 @app.route("/logout")
@@ -148,57 +65,28 @@ def logout():
     return redirect(url_for('index'))
 
 
-@login_manager.user_loader
-def user_loader(user_id):
-    return User.get_user(user_id)
+@app.route('/researcher_analysis/<key>/<study_begin>/<int_begin>/<int_end>/<study_end>')
+@requires_basic_auth
+def perform_research_analysis(key, study_begin, int_begin, int_end, study_end):
+    results = {}
+    users = User.get_all_users()
 
+    for user in users:
+        store = results.get(user.email, {})
+        token = user.moves_access_token
 
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html'), 404
+        stats = Moves.get_stats(token, begin=study_begin, end=int_begin)
+        store['baseline'] = stats[key]  # stats = {calories: num, duration: num, steps: num}
 
+        stats = Moves.get_stats(token, begin=int_begin, end=int_end)
+        store['intervention'] = stats[key]
 
-@app.errorhandler(500)
-def internal_server_error(e):
-    app.logger.error('Server Error: %s', (e))
-    return SLMError.internal_server_error
+        stats = Moves.get_stats(token, begin=int_end, end=study_end)
+        store['follow_up'] = stats[key]
 
-#######################################
-# Authenticate Services
-#######################################
+        results[user.email] = store
 
-
-# Google login and calendar
-@app.route('/google_login')
-def google_login():
-    if current_user.is_authenticated:
-        return redirect(url_for('home'))
-
-    flow = OAuth2WebServerFlow(
-        client_id=app.config['GOOGLE_CLIENT_ID'],
-        client_secret=app.config['GOOGLE_CLIENT_SECRET'],
-        scope=app.config['GOOGLE_SCOPE'],
-        redirect_uri=url_for(
-            'google_login', _external=True))
-
-    auth_code = request.args.get('code')
-    if not auth_code:
-        auth_uri = flow.step1_get_authorize_url()
-        return redirect(auth_uri)
-
-    credentials = flow.step2_exchange(auth_code, http=httplib2.Http())
-    if credentials.access_token_expired:
-        credentials.refresh(httplib2.Http())
-
-    http = credentials.authorize(httplib2.Http())
-    service = discovery.build('oauth2', 'v2', http=http)
-
-    profile = service.userinfo().get().execute()
-    user = User.from_profile(profile)
-    user.update_field('google_credentials', credentials.to_json())
-
-    login_user(user)
-    return redirect(url_for('home'))
+    return json.dumps(results)
 
 
 @app.route('/researcher_login')
@@ -237,28 +125,162 @@ def researcher_login():
     return render_template('researcher.html', users=User.query.all(), mturk_users=Mturk.query.all(), studies=studies)
 
 
-@app.route('/researcher_analysis/<key>/<study_begin>/<int_begin>/<int_end>/<study_end>')
-@requires_basic_auth
-def perform_research_analysis(key, study_begin, int_begin, int_end, study_end):
-    results = {}
-    users = User.get_all_users()
+@app.route('/settings')
+@login_required
+def settings():
+    return render_template('settings.html')
 
-    for user in users:
-        store = results.get(user.email, {})
-        token = user.moves_access_token
 
-        stats = Moves.get_stats(token, begin=study_begin, end=int_begin)
-        store['baseline'] = stats[key]  # stats = {calories: num, duration: num, steps: num}
+@login_manager.user_loader
+def user_loader(user_id):
+    return User.get_user(user_id)
 
-        stats = Moves.get_stats(token, begin=int_begin, end=int_end)
-        store['intervention'] = stats[key]
+#################################
+# Handle Errors
+#################################
 
-        stats = Moves.get_stats(token, begin=int_end, end=study_end)
-        store['follow_up'] = stats[key]
 
-        results[user.email] = store
+@app.errorhandler(500)
+def internal_server_error(e):
+    app.logger.error('Server Error: %s', (e))
+    return SLMError.internal_server_error
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+
+#################################
+# Handle REST/Server requests
+#################################
+@app.route('/add/experiment', methods=['POST'])
+def add_experiment():
+    experiment = {
+        'title': request.form.get('title'),
+        'rescuetime': True if request.form.get('rescuetime') == 'true' else False,
+        'aware': True if request.form.get('aware') == 'true' else False,
+        'geofence': True if request.form.get('geofence') == 'true' else False,
+        'text_image': True if request.form.get('text_image') == 'true' else False,
+        'reminder': True if request.form.get('reminder') == 'true' else False,
+        'actuators': True if request.form.get('actuators') == 'true' else False
+    }
+
+    _, response, __ = Experiment.add_experiment(experiment)
+    return response
+
+
+@app.route('/edit-experiment/<code>')
+def edit_experiment(code):
+    experiment = Experiment.query.filter_by(code=code).first()
+    return render_template('edit-experiment.html', experiment=experiment)
+
+
+@app.route('/delete/experiment/<code>')
+def delete_experiment(code):
+    Experiment.delete_experiment(code)
+    flash('Experiment deleted.', 'success')
+    return redirect(url_for('researcher_login'))
+
+
+@app.route('/update/experiment', methods=['POST'])
+def update_experiment():
+    update = {
+        'title': request.form.get('title'),
+        'code': request.form.get('code'),
+        'rescuetime': True if request.form.get('rescuetime') == 'true' else False,
+        'aware': True if request.form.get('aware') == 'true' else False,
+        'geofence': True if request.form.get('geofence') == 'true' else False,
+        'text_image': True if request.form.get('text_image') == 'true' else False,
+        'reminder': True if request.form.get('reminder') == 'true' else False,
+        'actuators': True if request.form.get('actuators') == 'true' else False
+    }
+    updated_exp = Experiment.update_experiment(update)
+    return str(updated_exp)
+    # flash('Experiment successfully updated.', 'success')
+    # return redirect(url_for('edit_experiment', experiment=updated_experiment))
+
+
+@app.route('/fetch/experiments', methods=['GET'])
+def fetch_experiments():
+    results = []
+
+    for exp in Experiment.query.all():
+        exp_json = json.loads(str(exp))
+        results.append(exp_json)
 
     return json.dumps(results)
+
+
+@app.route('/fetch/experiment/<code>')
+def fetch_experiment_by_code(code):
+    experiment = Experiment.query.filter_by(code=code).first()
+    return str(experiment)
+
+
+@app.route('/fetch/interventions', methods=['GET'])
+def fetch_uploads():
+    interventions = Intervention.query.all()
+    results = []
+
+    for interv in interventions:
+        results.append({'image_url': interv.image_url, 'txt': interv.txt, 'date': interv.date})
+
+    return json.dumps(results)
+
+
+@app.route('/upload/intervention', methods=['POST'])
+def intervention_upload():
+    image_name = request.form['image_name']
+    image = request.files['image']
+
+    url = ''
+    if image:
+        Upload.save(image_name, image)
+        url = Upload.get_url(image_name)
+
+    interv_date = request.form['date']
+    txt = request.form['txt']
+
+    _, response, __ = Intervention.add_intervention({'image_url': url, 'date': interv_date, 'txt': txt})
+    return response
+
+#######################################
+# Connect Service Providers
+#######################################
+
+
+# Google login and calendar
+@app.route('/google_login')
+def google_login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+
+    flow = OAuth2WebServerFlow(
+        client_id=app.config['GOOGLE_CLIENT_ID'],
+        client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+        scope=app.config['GOOGLE_SCOPE'],
+        redirect_uri=url_for(
+            'google_login', _external=True))
+
+    auth_code = request.args.get('code')
+    if not auth_code:
+        auth_uri = flow.step1_get_authorize_url()
+        return redirect(auth_uri)
+
+    credentials = flow.step2_exchange(auth_code, http=httplib2.Http())
+    if credentials.access_token_expired:
+        credentials.refresh(httplib2.Http())
+
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('oauth2', 'v2', http=http)
+
+    profile = service.userinfo().get().execute()
+    user = User.from_profile(profile)
+    user.update_field('google_credentials', credentials.to_json())
+
+    login_user(user)
+    return redirect(url_for('home'))
 
 
 # Moves
@@ -383,6 +405,11 @@ def get_rt_data(date):
     return resp
 
 
+@app.route("/data-rt/user/<email>/<date>")
+def get_user_rt_data(email, date):
+    return json.dumps({'email': email, 'date': date})
+
+
 ########################
 # Configure Settings
 ########################
@@ -447,16 +474,65 @@ def execute_calendar_command(calname, cmd):
 
     return response or 'Successfully completed!'
 
-# TODO: http://stackoverflow.com/questions/25065194/google-sign-in-uncaught-securityerror
-# TODO: catch calendar insert errors and update UI errors accordingly
-# TODO: fix calendar CSS view to make it render the dates properly
-# TODO: change everywhere you have MOOD to PAM
+#################################
+# MTURK
+#################################
+
+
+@app.route('/mturk')
+def mturk():
+    return render_template('mturk.html')
+
+
+@app.route("/mturk-auth-moves")
+def mturk_auth_moves():
+    c = '&client_id=' + app.config['MTURK_MOVES_CLIENT_ID']
+    e = '&client_secret=' + app.config['MTURK_MOVES_CLIENT_SECRET']
+    r = '&redirect_uri=' + app.config['MTURK_MOVES_REDIRECT_URI']
+    s = '&scope=' + app.config['MOVES_SCOPE']
+
+    code = request.args.get('code')
+    if not code:
+        url = app.config['MOVES_WEB_URL'] + c + s
+        return redirect(url)
+
+    url = app.config['MOVES_ACCESS_TOKEN_URL'] + code + c + e + r
+    r = requests.post(url)
+    if r.status_code != 200:
+        msg = 'Moves Connection Error(%s): %s' % (r.status_code, r.reason)
+        flash(msg, 'danger')
+        return redirect(url_for('mturk_auth_moves'))
+
+    results = json.loads(r.text)
+    info = {
+        'worker_id': session['worker_id'],
+        'moves_id': str(results['user_id']),
+        'access_token': results['access_token'],
+        'refresh_token': results['refresh_token'],
+        'ip': request.access_route[-1]
+    }
+    valid, msg, gen_code = Mturk.add_user(info)
+
+    if valid == 200:
+        flash(msg, 'success')
+        print '{}/{}'.format(msg, gen_code)
+    else:
+        flash(msg, 'danger')
+        print 'sorry, user add error: {} / {}'.format(msg, gen_code)
+
+    return redirect(url_for('mturk', gen_code=gen_code))
+
+
+@app.route('/mturk/worker_id', methods=['POST'])
+def worker_id():
+    worker_id = request.form['worker_id']
+    session['worker_id'] = worker_id
+    return 'Rcvd id: {}'.format(worker_id)
+
 # TODO: handle moves expired access token
 # TODO: only enable activate tracking for an app that has been connected
-# TODO: divide the modules into researcher and participants
-# TODO: remove the CSS table formatting in researcher page
-# TODO: automatically refresh list of all images on image upload
 # TODO: create table to delete any image
 # TODO: allow uploads of multiple images at same time
 # TODO: allow images to be saved by pasting custom url
 # TODO: allow images to be uploaded from drag and drop
+# TODO: prevent inserting interventions for the same date

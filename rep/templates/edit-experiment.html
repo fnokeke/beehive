@@ -1,0 +1,318 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Edit Experiment
+{% endblock %}
+
+{% block contents %}
+  <button type="button" class="btn btn-link btn-lg" id="go-back-btn">
+    <span class="glyphicon glyphicon-triangle-left text-muted"></span>
+    <span class="text-muted">
+      Go Back
+    </span>
+  </button>
+
+  <button
+    type="button"
+    class="btn btn-link btn-lg"
+    id="save-single-experiment-btn"
+    value={{experiment.code}}>
+    <span class="glyphicon glyphicon-floppy-saved text-primary"></span>
+    <span class="text-primary">
+      Save
+    </span>
+  </button>
+
+  <button
+    type="button"
+    class="btn btn-link btn-lg"
+    id="delete-single-experiment-btn"
+    value={{experiment.code}}
+    data-toggle="confirmation"
+    data-popout="true">
+    <span class="glyphicon glyphicon-trash text-danger"></span>
+    <span class="text-danger">
+      Delete
+    </span>
+  </button>
+
+  <div class="container">
+    <div class="page-header">
+      <h3>
+        {{experiment.title}}
+      </h3>
+      <br>
+      <span id="edit-experiment-status"></span>
+    </div>
+
+    <div>
+      <div class="form-group row">
+        <label class="col-xs-2 col-form-label">Title</label>
+        <div class="col-xs-10">
+          <input class="form-control" type="text" id="edit-exp-title" placeholder="{{experiment.title}}"></input>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-xs-2 col-form-label">RescueTime required</label>
+        <div class="col-xs-10">
+          <input
+            type="checkbox"
+            id="edit-rescuetime-checkbox-btn"
+            {{ 'checked' if experiment.rescuetime else 'unchecked' }}
+            data-toggle="toggle"
+            data-on="Yes"
+            data-off="No"
+            data-onstyle="success"
+            data-offstyle="danger">
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-xs-2 col-form-label">Aware App required</label>
+        <div class="col-xs-10">
+          <input
+            type="checkbox"
+            id="edit-aware-checkbox-btn"
+            {{ 'checked' if experiment.aware else 'unchecked' }}
+            data-toggle="toggle"
+            data-on="Yes"
+            data-off="No"
+            data-onstyle="success"
+            data-offstyle="danger">
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-xs-2 col-form-label">Geofence Feature</label>
+        <div class="col-xs-10">
+          <input
+            type="checkbox"
+            id="edit-geofence-checkbox-btn"
+            {{ 'checked' if experiment.geofence else 'unchecked' }}
+            data-toggle="toggle"
+            data-on="Yes"
+            data-off="No"
+            data-onstyle="success"
+            data-offstyle="danger">
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-xs-2 col-form-label">Text/Image Display</label>
+        <div class="col-xs-10">
+          <input
+            type="checkbox"
+            id="edit-text-image-checkbox-btn"
+            {{ 'checked' if experiment.text_image else 'unchecked' }}
+            data-toggle="toggle"
+            data-on="Yes"
+            data-off="No"
+            data-onstyle="success"
+            data-offstyle="danger">
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-xs-2 col-form-label">Alarm Reminder</label>
+        <div class="col-xs-10">
+          <input
+            type="checkbox"
+            id="edit-reminder-checkbox-btn"
+            {{ 'checked' if experiment.reminder else 'unchecked' }}
+            data-toggle="toggle"
+            data-on="Yes"
+            data-off="No"
+            data-onstyle="success"
+            data-offstyle="danger">
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-xs-2 col-form-label">WiFi/<br>Vibration/<br>Media</label>
+        <div class="col-xs-10">
+          <input
+            type="checkbox"
+            id="edit-actuators-checkbox-btn"
+            {{ 'checked' if experiment.actuators else 'unchecked' }}
+            data-toggle="toggle"
+            data-on="Yes"
+            data-off="No"
+            data-onstyle="success"
+            data-offstyle="danger">
+        </div>
+      </div>
+
+    </div>
+
+    <div class="page-header">
+      <h3>Interventions</h3>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-primary"
+      id="add-experiment-btn"
+      data-toggle="modal"
+      data-target="#upload-image-modal">
+      <span class="glyphicon glyphicon-plus"></span>
+      New Image / Text
+    </button>
+    <div
+      class="modal fade"
+      id="upload-image-modal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="">Upload New Image / Text</h4>
+          </div>
+          <div class="modal-body">
+
+            <input
+              data-provide="datepicker"
+              data-date-format="yyyy-mm-dd"
+              data-date-today-highlight=true
+              data-date-start-date="+1d"
+              id="intervention-date"
+              class="form-control"
+              placeholder="select date to apply intervention">
+            <span id="intervention-date-status"></span>
+
+            <div class="page-header">
+              <h4>Image</h4>
+            </div>
+
+            <form enctype="multipart/form-data">
+              <input type="file" id="image" name="image" accept="Image/*"/>
+              <br>
+            </form>
+
+            <div class="page-header">
+              <h4>Text</h4>
+            </div>
+
+            <form enctype="multipart/form-data">
+              <textarea name="txt" id="txt" rows="4" cols="40"></textarea>
+              <br>
+
+              <input type="submit" id="submit-intervention-btn" value="Upload Info" class="btn btn-primary"/>
+              <br>
+              <span id="intervention-status"></span>
+            </form>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="page-header">
+      <h4>Uploaded images and texts</h4>
+      <input type="button" id="fetch-all-imgs-btn" value="Fetch All Images" class="btn btn-primary"/>
+    </div>
+    <div id="stored-img-div"></div>
+
+    <div class>
+
+      <table class="table">
+        <h3>data analysis</h3>
+
+        <tr>
+          <td>
+            <div class="col-lg-8">
+
+              <span class="dropdown">
+                <strong>
+                  Select datastream:
+                </strong>
+                <br>
+                <span
+                  class="btn btn-default dropdown-toggle"
+                  type="button"
+                  id="dropdown-action-label"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="true">
+                  Steps
+                  <span class="caret"></span>
+                </span>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" id="dropdown-action">
+                  <li>
+                    <a>Calories</a>
+                  </li>
+                  <li>
+                    <a>Steps</a>
+                  </li>
+                  <li>
+                    <a>Duration</a>
+                  </li>
+                </ul>
+              </span>
+              <br>
+              <br>
+
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+
+      <table class="table">
+        <tr>
+          <div class="col-lg-6">
+            <strong>
+              Select 4 dates in order:
+            </strong>
+            <em>
+              Study Begin, Intervention Begin, Intervention End, Study End
+            </em><br>
+            <em>
+              <small>NB: Max of
+                <strong>31 days max</strong>
+                b/w study start and end.
+              </small>
+            </em>
+
+            <input
+              data-provide="datepicker"
+              data-date-end-date="-1d"
+              data-date-format="yyyy-mm-dd"
+              data-date-multidate=4
+              data-date-multidate-separator=",   "
+              data-date-today-highlight=true
+              id="experiment-dates"
+              class="form-control"
+              placeholder="select four (4) dates">
+            <br>
+          </div>
+
+        </tr>
+
+        <tr>
+          <td>
+            <div class="col-lg-3">
+              <button class="btn btn-primary" type="button" id="perform-analysis-btn">Perform Analysis</button>
+            </div>
+          </td>
+        </tr>
+
+      </table>
+
+    </div>
+
+    <div class="page-header">
+      <h3>results</h3>
+      <span class="danger" id="error-div"></span>
+      <span id="analysis-status">Awaiting input...</span>
+    </div>
+
+  </div>
+
+{% endblock %}
