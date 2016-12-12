@@ -10,24 +10,139 @@ import json
 db = SQLAlchemy(app)
 
 
+class Imageintv(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    image_url = db.Column(db.String(100))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, image_url):
+        id = db.Column(db.Integer, primary_key=True)
+        self.image_url = image_url
+        created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __repr__(self):
+        result = {'image_url': self.image_url, 'created_at': str(self.created_at)}
+        return json.dumps(result)
+
+    @staticmethod
+    def add_image_url(image_url):
+        if Imageintv.query.filter_by(image_url=image_url).first():
+            return
+
+        new_image_url = Imageintv(image_url)
+        db.session.add(new_image_url)
+        db.session.commit()
+
+
+class Textintv(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(1500))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, text):
+        self.text = text
+        created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __repr__(self):
+        result = {'text': self.text, 'created_at': str(self.created_at)}
+        return json.dumps(result)
+
+    @staticmethod
+    def add_text(text):
+        if Textintv.query.filter_by(text=text).first():
+            return
+
+        new_text = Textintv(text)
+        db.session.add(new_text)
+        db.session.commit()
+
+
+class Intervention(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    group = db.Column(db.String(1500))
+    start = db.Column(db.String(120))
+    every = db.Column(db.String(30))
+    when = db.Column(db.String(30))
+    repeat = db.Column(db.String(30))
+
+    def __init__(self, info):
+        group = info['group']
+        start = info['start']
+        every = info['every']
+        when = info['when']
+        repeat = info['repeat']
+
+    def __repr__(self):
+        result = {
+            'group': self.group,
+            'start': self.start,
+            'every': self.every,
+            'when': self.when,
+            'repeat': self.repeat
+        }
+        return json.dumps(result)
+
+    @staticmethod
+    def add_intervention(info):
+        new_intervention = Intervention(info)
+        db.session.add(new_intervention)
+        db.session.commit()
+        latest_intervention = Intervention.query.order_by('created_at desc').first()
+        return (200, 'Successfully added intervention', latest_intervention)
+
+
+class MobileUser(db.Model):
+    firstname = db.Column(db.String(120))
+    lastname = db.Column(db.String(120))
+    code = db.Column(db.String(10))
+    email = db.Column(db.String(120), primary_key=True, unique=True)
+
+    def __init__(self, info):
+        self.firstname = info['firstname']
+        self.lastname = info['lastname']
+        self.email = info['email']
+        self.code = info['code']
+
+    def __rep__(self):
+        result = {'firstname': self.firstname, 'lastname': self.lastname, 'email': self.email, 'code': self.code}
+        return json.dumps(result)
+
+    @staticmethod
+    def add_user(info):
+        existing_user = MobileUser.query.filter_by(email=info['email']).first()
+        if existing_user:
+            return (-1, 'Welcome back.', existing_user)
+
+        new_user = MobileUser(info)
+        db.session.add(new_user)
+        db.session.commit()
+
+        new_user = MobileUser.query.filter_by(email=info['email']).first()
+        return (200, 'Successfully added as a new user.', new_user)
+
+
 class Experiment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(120), unique=True)
+    code = db.Column(db.String(10), unique=True)
     title = db.Column(db.String(120))
     rescuetime = db.Column(db.Boolean, default=False)
     aware = db.Column(db.Boolean, default=False)
     geofence = db.Column(db.Boolean, default=False)
-    text_image = db.Column(db.Boolean, default=False)
+    text = db.Column(db.Boolean, default=False)
+    image = db.Column(db.Boolean, default=False)
     reminder = db.Column(db.Boolean, default=False)
     actuators = db.Column(db.Boolean, default=False)
 
     def __init__(self, info):
         self.title = info.get('title')
-        self.code = str(uuid.uuid4())
+        self.code = Experiment.generate_unique_id()
         self.rescuetime = info.get('rescuetime')
         self.aware = info.get('aware')
         self.geofence = info.get('geofence')
-        self.text_image = info.get('text_image')
+        self.text = info.get('text')
+        self.image = info.get('image')
         self.reminder = info.get('reminder')
         self.actuators = info.get('actuators')
 
@@ -38,11 +153,19 @@ class Experiment(db.Model):
             'rescuetime': self.rescuetime,
             'aware': self.aware,
             'geofence': self.geofence,
-            'text_image': self.text_image,
+            'text': self.text,
+            'image': self.image,
             'reminder': self.reminder,
             'actuators': self.actuators
         }
         return json.dumps(result)
+
+    @staticmethod
+    def generate_unique_id():
+        code = str(uuid.uuid4())[:6]
+        while Experiment.query.filter_by(code=code).first():
+            code = str(uuid.uuid4())[:6]
+        return code
 
     @staticmethod
     def add_experiment(info):
@@ -53,6 +176,7 @@ class Experiment(db.Model):
         new_experiment = Experiment(info)
         db.session.add(new_experiment)
         db.session.commit()
+        new_experiment = Experiment.query.filter_by(title=info['title']).first()
         return (200, 'Successfully added experiment', new_experiment)
 
     @staticmethod
@@ -72,39 +196,14 @@ class Experiment(db.Model):
         experiment.rescuetime = update.get('rescuetime')
         experiment.aware = update.get('aware')
         experiment.geofence = update.get('geofence')
-        experiment.text_image = update.get('text_image')
+        experiment.text = update.get('text')
+        experiment.image = update.get('image')
         experiment.reminder = update.get('reminder')
         experiment.actuators = update.get('actuators')
         db.session.commit()
 
         # experiment = Experiment.query.filter_by(code=update['code']).first()
         return experiment
-
-
-class Intervention(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    image_url = db.Column(db.String(120))
-    txt = db.Column(db.String(120))
-    date = db.Column(db.String(120), unique=True)
-
-    def __init__(self, image_url, txt, date):
-        self.image_url = image_url
-        self.txt = txt
-        self.date = date
-
-    def __repr__(self):
-        return 'date: {} / has_image: {} / has_txt: {}'.format(self.date, self.image_url != None, self.txt != None)
-
-    @staticmethod
-    def add_intervention(info):
-        existing_intervention = Intervention.query.filter_by(image_url=info['image_url']).first()
-        if existing_intervention:
-            return (-1, 'Intervention already exits.', existing_intervention)
-
-        new_intervention = Intervention(info['image_url'], info['txt'], info['date'])
-        db.session.add(new_intervention)
-        db.session.commit()
-        return (200, 'Successfully added intervention', new_intervention)
 
 
 class Mturk(db.Model):
@@ -118,9 +217,17 @@ class Mturk(db.Model):
 
     def __init__(self, worker_id):
         self.worker_id = worker_id
+        self.code = Mturk.generate_unique_id()
 
     def __repr__(self):
         return 'worker_id: {}/moves_id: {}'.format(self.worker_id, self.moves_id)
+
+    @staticmethod
+    def generate_unique_id():
+        code = str(uuid.uuid4())[:6]
+        while Mturk.query.filter_by(code=code).first():
+            code = str(uuid.uuid4())[:6]
+        return code
 
     @staticmethod
     def get_worker(worker_id):

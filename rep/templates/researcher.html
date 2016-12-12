@@ -12,13 +12,14 @@
       <div class="page-header">
         <h3>Participants</h3>
         <p>
-          Total participants: 17
+          Total participants:
+          {{users | length }}
           <br>
 
-          Fully connected: 8<br>
-          Not connected at all: 3<br>
+          Fully connected: 0<br>
+          <!-- Not connected at all: 3<br>
           Only RescueTime left: 4<br>
-          Only Intervention App left: 2<br>
+          Only Intervention App left: 2<br> -->
         </p>
       </div>
 
@@ -103,12 +104,6 @@
               </div>
             </div>
 
-            <div class="page-header">
-              <h4>
-                Intervention App Features
-              </h4>
-            </div>
-
             <div class="form-group row">
               <label class="col-xs-2 col-form-label">Geofence Feature</label>
               <div class="col-xs-10">
@@ -125,11 +120,26 @@
             </div>
 
             <div class="form-group row">
-              <label class="col-xs-2 col-form-label">Text/Image Display</label>
+              <label class="col-xs-2 col-form-label">Text Display</label>
               <div class="col-xs-10">
                 <input
                   type="checkbox"
-                  id="text-image-checkbox-btn"
+                  id="text-checkbox-btn"
+                  'unchecked'
+                  data-toggle="toggle"
+                  data-on="Yes"
+                  data-off="No"
+                  data-onstyle="success"
+                  data-offstyle="danger">
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label class="col-xs-2 col-form-label">Image Display</label>
+              <div class="col-xs-10">
+                <input
+                  type="checkbox"
+                  id="image-checkbox-btn"
                   'unchecked'
                   data-toggle="toggle"
                   data-on="Yes"

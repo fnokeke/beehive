@@ -40,6 +40,7 @@
     <div class="page-header">
       <h3>
         {{experiment.title}}
+        ({{ experiment.code }})
       </h3>
       <br>
       <span id="edit-experiment-status"></span>
@@ -49,7 +50,7 @@
       <div class="form-group row">
         <label class="col-xs-2 col-form-label">Title</label>
         <div class="col-xs-10">
-          <input class="form-control" type="text" id="edit-exp-title" placeholder="{{experiment.title}}"></input>
+          <input class="form-control" type="text" id="edit-exp-title" value="{{experiment.title}}"></input>
         </div>
       </div>
 
@@ -99,12 +100,27 @@
       </div>
 
       <div class="form-group row">
-        <label class="col-xs-2 col-form-label">Text/Image Display</label>
+        <label class="col-xs-2 col-form-label">Text Display</label>
         <div class="col-xs-10">
           <input
             type="checkbox"
-            id="edit-text-image-checkbox-btn"
-            {{ 'checked' if experiment.text_image else 'unchecked' }}
+            id="edit-text-checkbox-btn"
+            {{ 'checked' if experiment.text else 'unchecked' }}
+            data-toggle="toggle"
+            data-on="Yes"
+            data-off="No"
+            data-onstyle="success"
+            data-offstyle="danger">
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-xs-2 col-form-label">Image Display</label>
+        <div class="col-xs-10">
+          <input
+            type="checkbox"
+            id="edit-image-checkbox-btn"
+            {{ 'checked' if experiment.image else 'unchecked' }}
             data-toggle="toggle"
             data-on="Yes"
             data-off="No"
@@ -149,18 +165,85 @@
       <h3>Interventions</h3>
     </div>
 
-    <button
-      type="button"
-      class="btn btn-primary"
-      id="add-experiment-btn"
-      data-toggle="modal"
-      data-target="#upload-image-modal">
-      <span class="glyphicon glyphicon-plus"></span>
-      New Image / Text
-    </button>
-    <div
-      class="modal fade"
-      id="upload-image-modal"
+    <div>
+      <div class="row">
+        <label class="col-md-1">No of groups</label>
+        <div class="col-md-1">
+          <input class="form-control" type="number" min=1 id="no-of-groups" value=1></input>
+        </div>
+      </div>
+      <div class="row">
+        <label class="col-md-1">Participants per group</label>
+        <div class="col-md-1">
+          <input class="form-control" type="number" min=1 id="ps-per-group" value=1></input>
+        </div>
+      </div>
+
+      <br>
+      <div class="text-center">
+
+        <!-- <button type="button" class="btn btn-link btn-md" id="add-row-btn">
+          <span class="glyphicon glyphicon-plus text-primary"></span>
+          <span class="text-primary">
+            Add Row
+          </span>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-link btn-md"
+          id="remove-row-btn"
+          value="deleteRow"
+          data-toggle="confirmation"
+          data-popout="true">
+          <span class="glyphicon glyphicon-minus text-danger"></span>
+          <span class="text-danger">
+            Remove Row
+          </span>
+        </button>
+        -->
+        <button type="button" class="btn btn-link btn-md" id="update-table-btn">
+          <span class="glyphicon glyphicon-level-up text-primary"></span>
+          <span class="text-primary">
+            Update Table
+          </span>
+        </button>
+
+        <button type="button" class="btn btn-link btn-md" id="save-table-btn" value="">
+          <span class="glyphicon glyphicon-floppy-saved text-primary"></span>
+          <span class="text-primary">
+            Save Table
+          </span>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-link btn-md"
+          id="delete-table-btn"
+          value="deleteRow"
+          data-toggle="confirmation"
+          data-popout="true">
+          <span class="glyphicon glyphicon-trash text-danger"></span>
+          <span class="text-danger">
+            Delete Table
+          </span>
+        </button>
+
+      </div>
+
+      <br>
+      <br>
+      <span id='ps-prompt'></span>
+      <span id='intvn-table-view'></span>
+    </div>
+
+    <div class="page-header">
+      <h3>Archived Interventions</h3>
+    </div>
+
+    <!-- <div
+      class="collapse fade"
+      id="intervention-modal"
       tabindex="-1"
       role="dialog"
       aria-labelledby="myModalLabel">
@@ -201,9 +284,66 @@
               <textarea name="txt" id="txt" rows="4" cols="40"></textarea>
               <br>
 
-              <input type="submit" id="submit-intervention-btn" value="Upload Info" class="btn btn-primary"/>
+              <input type="submit" id="upload-image-text-btn" class="btn btn-primary"/>
               <br>
-              <span id="intervention-status"></span>
+              <span id="upload-image-text-status"></span>
+            </form>
+
+          </div>
+
+        </div>
+      </div>
+    </div> -->
+
+    <div class="page-header">
+      <h3>Image / Text</h3>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-primary"
+      id="add-intervention-btn"
+      data-toggle="modal"
+      data-target="#upload-image-modal">
+      <span class="glyphicon glyphicon-plus"></span>
+      Add Image / Text
+    </button>
+
+    <div
+      class="modal fade"
+      id="upload-image-modal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="">Upload New Image / Text</h4>
+          </div>
+          <div class="modal-body">
+            <div>
+              <h4>Image</h4>
+            </div>
+
+            <form enctype="multipart/form-data">
+              <input type="file" id="image" name="image" accept="Image/*"/>
+              <br>
+            </form>
+
+            <div>
+              <h4>Text</h4>
+            </div>
+
+            <form enctype="multipart/form-data">
+              <textarea name="txt" id="txt" rows="4" cols="40"></textarea>
+              <br>
+
+              <input type="submit" id="upload-image-text-btn" value="Upload Info" class="btn btn-primary"/>
+              <br>
+              <span id="upload-image-text-status"></span>
             </form>
 
           </div>
@@ -213,16 +353,78 @@
     </div>
 
     <div class="page-header">
-      <h4>Uploaded images and texts</h4>
-      <input type="button" id="fetch-all-imgs-btn" value="Fetch All Images" class="btn btn-primary"/>
+      <h3>Archived Images</h3>
     </div>
-    <div id="stored-img-div"></div>
 
+    <div>
+      <table class="table table-striped">
+        <tr>
+          <th>
+            No
+          </th>
+          <th>
+            Created
+          </th>
+          <th>
+            Images
+          </th>
+        </tr>
+
+        {% for image in images %}
+          <tr>
+            <td>
+              {{loop.index}}
+            </td>
+            <td>
+              {{image.created_at}}
+            </td>
+            <td>
+              <img src="{{image.image_url}}" alt="{{image.image_url}}" width="50" height="50">
+            </td>
+          </tr>
+        {% endfor %}
+
+      </table>
+    </div>
+
+    <div class="page-header">
+      <h3>Archived Texts</h3>
+    </div>
+
+    <div>
+      <table class="table table-striped">
+        <tr>
+          <th>
+            No
+          </th>
+          <th>
+            Created
+          </th>
+          <th>
+            Images
+          </th>
+        </tr>
+
+        {% for text in texts %}
+          <tr>
+            <td>
+              {{loop.index}}
+            </td>
+            <td>
+              {{text.created_at}}
+            </td>
+            <td>
+              {{text.text}}
+            </td>
+          </tr>
+        {% endfor %}
+
+      </table>
+    </div>
     <div class>
 
-      <table class="table">
+      <!-- <table class="table">
         <h3>data analysis</h3>
-
         <tr>
           <td>
             <div class="col-lg-8">
@@ -313,6 +515,7 @@
       <span id="analysis-status">Awaiting input...</span>
     </div>
 
-  </div>
+ -->
+    </div>
 
-{% endblock %}
+  {% endblock %}

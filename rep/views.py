@@ -12,7 +12,7 @@ from apiclient import discovery
 import json, httplib2, requests
 
 from rep import app, login_manager
-from rep.models import Experiment, Intervention, Mturk, User
+from rep.models import Experiment, Intervention, Imageintv, Mturk, MobileUser, Textintv, User
 from rep.rescuetime import RescueOauth2
 from rep.pam import PamOauth
 from rep.moves import Moves
@@ -152,6 +152,19 @@ def page_not_found(e):
 
 
 #################################
+# Handle Mobile User Registration
+#################################
+@app.route('/connect/study', methods=['POST'])
+def connect_study():
+    data = json.loads(request.data)
+    user = {'firstname': data['firstname'], 'lastname': data['lastname'], 'email': data['email'], 'code': data['code']}
+    _, response, __ = MobileUser.add_user(user)
+    experiment = Experiment.query.filter_by(code=data['code']).first()
+    result = {'user_response': response, 'experiment': '{}'.format(experiment)}
+    return json.dumps(result)
+
+
+#################################
 # Handle REST/Server requests
 #################################
 @app.route('/add/experiment', methods=['POST'])
@@ -161,7 +174,8 @@ def add_experiment():
         'rescuetime': True if request.form.get('rescuetime') == 'true' else False,
         'aware': True if request.form.get('aware') == 'true' else False,
         'geofence': True if request.form.get('geofence') == 'true' else False,
-        'text_image': True if request.form.get('text_image') == 'true' else False,
+        'text': True if request.form.get('text') == 'true' else False,
+        'image': True if request.form.get('image') == 'true' else False,
         'reminder': True if request.form.get('reminder') == 'true' else False,
         'actuators': True if request.form.get('actuators') == 'true' else False
     }
@@ -173,13 +187,15 @@ def add_experiment():
 @app.route('/edit-experiment/<code>')
 def edit_experiment(code):
     experiment = Experiment.query.filter_by(code=code).first()
-    return render_template('edit-experiment.html', experiment=experiment)
+    images = Imageintv.query.all()
+    texts = Textintv.query.all()
+    return render_template('edit-experiment.html', experiment=experiment, images=images, texts=texts)
 
 
 @app.route('/delete/experiment/<code>')
 def delete_experiment(code):
     Experiment.delete_experiment(code)
-    flash('Experiment deleted.', 'success')
+    flash('Returning to experiment page.', 'success')
     return redirect(url_for('researcher_login'))
 
 
@@ -191,7 +207,8 @@ def update_experiment():
         'rescuetime': True if request.form.get('rescuetime') == 'true' else False,
         'aware': True if request.form.get('aware') == 'true' else False,
         'geofence': True if request.form.get('geofence') == 'true' else False,
-        'text_image': True if request.form.get('text_image') == 'true' else False,
+        'text': True if request.form.get('text') == 'true' else False,
+        'image': True if request.form.get('image') == 'true' else False,
         'reminder': True if request.form.get('reminder') == 'true' else False,
         'actuators': True if request.form.get('actuators') == 'true' else False
     }
@@ -221,29 +238,45 @@ def fetch_experiment_by_code(code):
 @app.route('/fetch/interventions', methods=['GET'])
 def fetch_uploads():
     interventions = Intervention.query.all()
-    results = []
-
-    for interv in interventions:
-        results.append({'image_url': interv.image_url, 'txt': interv.txt, 'date': interv.date})
-
+    results = [str(x) for x in interventions]
     return json.dumps(results)
 
 
-@app.route('/upload/intervention', methods=['POST'])
-def intervention_upload():
+@app.route('/fetch/images', methods=['GET'])
+def fetch_images():
+    images = Imageintv.query.all()
+    return '{}'.format(images)
+
+
+@app.route('/fetch/texts', methods=['GET'])
+def fetch_texts():
+    texts = Textintv.query.all()
+    return '{}'.format(texts)
+
+
+@app.route('/add/image_text', methods=['POST'])
+def add_image_text():
+    text = request.form['text']
+    if text:
+        Textintv.add_text(text)
+
     image_name = request.form['image_name']
     image = request.files['image']
 
-    url = ''
-    if image:
+    if image_name and image:
         Upload.save(image_name, image)
         url = Upload.get_url(image_name)
+        Imageintv.add_image_url(url)
 
-    interv_date = request.form['date']
-    txt = request.form['txt']
+    msg = ''
+    if image and image_name and text:
+        msg = 'Image and text added.'
+    elif image and image_name:
+        msg = 'Image added.'
+    elif text:
+        msg = 'Text added.'
 
-    _, response, __ = Intervention.add_intervention({'image_url': url, 'date': interv_date, 'txt': txt})
-    return response
+    return msg
 
 #######################################
 # Connect Service Providers
