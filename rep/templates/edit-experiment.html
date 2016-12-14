@@ -42,6 +42,7 @@
         {{experiment.title}}
         ({{ experiment.code }})
       </h3>
+      <div data-experiment-code="{{experiment.code}}"></div>
       <br>
       <span id="edit-experiment-status"></span>
     </div>
@@ -162,7 +163,144 @@
     </div>
 
     <div class="page-header">
-      <h3>Interventions</h3>
+      <h3>Add Images/Texts</h3>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-primary"
+      id=""
+      data-toggle="modal"
+      data-target="#upload-image-modal">
+      <span class="glyphicon glyphicon-upload"></span>
+      Upload image/text
+    </button>
+
+    <div
+      class="modal fade"
+      id="upload-image-modal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="">Upload New Image / Text</h4>
+          </div>
+          <div class="modal-body">
+            <div>
+              <h4>Image</h4>
+            </div>
+
+            <form enctype="multipart/form-data">
+              <input type="file" id="image" name="image" accept="Image/*"/>
+              <br>
+            </form>
+
+            <div>
+              <h4>Text</h4>
+            </div>
+
+            <form enctype="multipart/form-data">
+              <textarea name="txt" id="txt" rows="4" cols="40"></textarea>
+              <br>
+
+              <input type="submit" id="upload-image-text-btn" value="Upload Info" class="btn btn-primary"/>
+              <br>
+              <span id="upload-image-text-status"></span>
+            </form>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="page-header">
+      <h3>Archived Images
+        <small>(Last 10)</small>
+      </h3>
+    </div>
+
+    <div>
+      <table class="table table-striped">
+        <tr>
+          <th>
+            No
+          </th>
+          <th>
+            Created
+          </th>
+          <th>
+            Label
+          </th>
+          <th>
+            Image
+          </th>
+        </tr>
+
+        {% for image in images[: -11 : -1] %}
+          <tr>
+            <td>
+              {{loop.index}}
+            </td>
+            <td>
+              {{ image.created_at | nyc | fancydatetime }}
+            </td>
+            <td>
+              {{image.image_name}}
+            </td>
+            <td>
+              <img src="{{image.image_url}}" alt="{{image.image_url}}" width="50" height="50">
+            </td>
+          </tr>
+        {% endfor %}
+
+      </table>
+    </div>
+
+    <div class="page-header">
+      <h3>Archived Texts
+        <small>(Last 10)</small>
+      </h3>
+    </div>
+
+    <div>
+      <table class="table table-striped">
+        <tr>
+          <th>
+            No
+          </th>
+          <th>
+            Created
+          </th>
+          <th>
+            Texts
+          </th>
+        </tr>
+
+        {% for text in texts[: -11 : -1] %}
+          <tr>
+            <td>
+              {{loop.index}}
+            </td>
+            <td>
+              {{ text.created_at | nyc | fancydatetime }}
+            </td>
+            <td>
+              {{text.text}}
+            </td>
+          </tr>
+        {% endfor %}
+
+      </table>
+    </div>
+
+    <div class="page-header">
+      <h3>Apply Interventions</h3>
     </div>
 
     <div>
@@ -212,7 +350,7 @@
         <button type="button" class="btn btn-link btn-md" id="save-table-btn" value="">
           <span class="glyphicon glyphicon-floppy-saved text-primary"></span>
           <span class="text-primary">
-            Save Table
+            Save Entry
           </span>
         </button>
 
@@ -231,199 +369,77 @@
 
       </div>
 
+      <span id='intv-table-view'></span>
+      <span id='intv-table-status'></span>
       <br>
-      <br>
-      <span id='ps-prompt'></span>
-      <span id='intvn-table-view'></span>
+      <span id='randomized-group-status'></span>
     </div>
 
     <div class="page-header">
-      <h3>Archived Interventions</h3>
+      <h3>Archived Interventions
+        <small>(Last 10)</small>
+      </h3>
+
     </div>
+    <table class="table table-striped">
+      <tr>
+        <th>
+          No
+        </th>
+        <th>
+          Created At
+        </th>
+        <th>
+          Intervention
+        </th>
+        <th>
+          Start
+        </th>
+        <th>
+          Every
+        </th>
+        <th>
+          When
+        </th>
+        <th>
+          Repeat
+        </th>
+      </tr>
 
-    <!-- <div
-      class="collapse fade"
-      id="intervention-modal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-            <h4 class="modal-title" id="">Upload New Image / Text</h4>
-          </div>
-          <div class="modal-body">
-
-            <input
-              data-provide="datepicker"
-              data-date-format="yyyy-mm-dd"
-              data-date-today-highlight=true
-              data-date-start-date="+1d"
-              id="intervention-date"
-              class="form-control"
-              placeholder="select date to apply intervention">
-            <span id="intervention-date-status"></span>
-
-            <div class="page-header">
-              <h4>Image</h4>
-            </div>
-
-            <form enctype="multipart/form-data">
-              <input type="file" id="image" name="image" accept="Image/*"/>
-              <br>
-            </form>
-
-            <div class="page-header">
-              <h4>Text</h4>
-            </div>
-
-            <form enctype="multipart/form-data">
-              <textarea name="txt" id="txt" rows="4" cols="40"></textarea>
-              <br>
-
-              <input type="submit" id="upload-image-text-btn" class="btn btn-primary"/>
-              <br>
-              <span id="upload-image-text-status"></span>
-            </form>
-
-          </div>
-
-        </div>
-      </div>
-    </div> -->
-
-    <div class="page-header">
-      <h3>Image / Text</h3>
-    </div>
-
-    <button
-      type="button"
-      class="btn btn-primary"
-      id="add-intervention-btn"
-      data-toggle="modal"
-      data-target="#upload-image-modal">
-      <span class="glyphicon glyphicon-plus"></span>
-      Add Image / Text
-    </button>
-
-    <div
-      class="modal fade"
-      id="upload-image-modal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-            <h4 class="modal-title" id="">Upload New Image / Text</h4>
-          </div>
-          <div class="modal-body">
-            <div>
-              <h4>Image</h4>
-            </div>
-
-            <form enctype="multipart/form-data">
-              <input type="file" id="image" name="image" accept="Image/*"/>
-              <br>
-            </form>
-
-            <div>
-              <h4>Text</h4>
-            </div>
-
-            <form enctype="multipart/form-data">
-              <textarea name="txt" id="txt" rows="4" cols="40"></textarea>
-              <br>
-
-              <input type="submit" id="upload-image-text-btn" value="Upload Info" class="btn btn-primary"/>
-              <br>
-              <span id="upload-image-text-status"></span>
-            </form>
-
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <div class="page-header">
-      <h3>Archived Images</h3>
-    </div>
-
-    <div>
-      <table class="table table-striped">
+      {% for intv in interventions[: -11 : -1] %}
         <tr>
-          <th>
-            No
-          </th>
-          <th>
-            Created
-          </th>
-          <th>
-            Images
-          </th>
+          <td>
+            {{ loop.index }}
+          </td>
+          <td>
+            {{ intv.created_at | nyc | fancydatetime }}
+          </td>
+          <td>
+            {{ intv.group }}
+          </td>
+          <td>
+            {{ intv.start }}
+          </td>
+          <td>
+            {{ intv.every if intv.every == 'Day' else intv.every + '/Week'}}
+          </td>
+          <td>
+            {{ intv.when }}
+          </td>
+          <td>
+            {{ intv.repeat }}
+          </td>
+
         </tr>
+      {% endfor %}
 
-        {% for image in images %}
-          <tr>
-            <td>
-              {{loop.index}}
-            </td>
-            <td>
-              {{image.created_at}}
-            </td>
-            <td>
-              <img src="{{image.image_url}}" alt="{{image.image_url}}" width="50" height="50">
-            </td>
-          </tr>
-        {% endfor %}
+    </table>
 
-      </table>
-    </div>
+  </div>
 
-    <div class="page-header">
-      <h3>Archived Texts</h3>
-    </div>
-
-    <div>
-      <table class="table table-striped">
-        <tr>
-          <th>
-            No
-          </th>
-          <th>
-            Created
-          </th>
-          <th>
-            Images
-          </th>
-        </tr>
-
-        {% for text in texts %}
-          <tr>
-            <td>
-              {{loop.index}}
-            </td>
-            <td>
-              {{text.created_at}}
-            </td>
-            <td>
-              {{text.text}}
-            </td>
-          </tr>
-        {% endfor %}
-
-      </table>
-    </div>
+  <!--
     <div class>
-
-      <!-- <table class="table">
+      <table class="table">
         <h3>data analysis</h3>
         <tr>
           <td>
@@ -515,7 +531,141 @@
       <span id="analysis-status">Awaiting input...</span>
     </div>
 
- -->
-    </div>
+    <!-- <div>
+      <table class="table table-striped table-bordered" id="my-intv-table">
+        <tr>
+          <th class="col-md-1">
+            Group1
+          </th>
+          <th class="col-md-1">
+            Start
+          </th>
+          <th class="col-md-1">
+            Every
+          </th>
+          <th class="col-md-1">
+            When
+          </th>
+          <th class="col-md-1">
+            Repeat
+          </th>
+        </tr>
 
-  {% endblock %}
+        <tr>
+          <td>
+
+            <select class="form-control" name="" style="">
+
+              <optgroup label="Texts">
+                {% for txt in texts %}
+                  <option>{{ txt.text }}</option>
+                {% endfor %}
+              </optgroup>
+
+              <optgroup label="Images">
+                {% for img in images %}
+                  <option>{{ img.image_name }}</option>
+                {% endfor %}
+              </optgroup>
+
+            </select>
+          </td>
+
+          <td>
+            <input
+              data-provide="datepicker"
+              data-date-format="yyyy-mm-dd"
+              data-date-today-highlight=true
+              data-date-start-date="+0d"
+              id="my-start-date"
+              class="form-control"
+              placeholder="select start date">
+          </td>
+
+          <td>
+            <select class="form-control" name="">
+              <optgroup label="Daily">
+                <option>Day</option>
+              </optgroup>
+
+              <optgroup label="Once per Week">
+                <option>Mon</option>
+                <option>Tues</option>
+                <option>Wed</option>
+                <option>Thurs</option>
+                <option>Fri</option>
+                <option>Sat</option>
+                <option>Sun</option>
+              </optgroup>
+
+            </select>
+
+          </td>
+
+          <td>
+            <input type="time" class="form-control" id="my-intv-time">
+          </td>
+
+          <td>
+            <input type="number" class="form-control" id="my-intv-repeat" value="1" style="width: 80px">
+          </td>
+        </tr>
+
+      </table>
+    </div>
+<div
+      class="collapse fade"
+      id="intervention-modal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="">Upload New Image / Text</h4>
+          </div>
+          <div class="modal-body">
+
+            <input
+              data-provide="datepicker"
+              data-date-format="yyyy-mm-dd"
+              data-date-today-highlight=true
+              data-date-start-date="+1d"
+              id="intervention-date"
+              class="form-control"
+              placeholder="select date to apply intervention">
+            <span id="intervention-date-status"></span>
+
+            <div class="page-header">
+              <h4>Image</h4>
+            </div>
+
+            <form enctype="multipart/form-data">
+              <input type="file" id="image" name="image" accept="Image/*"/>
+              <br>
+            </form>
+
+            <div class="page-header">
+              <h4>Text</h4>
+            </div>
+
+            <form enctype="multipart/form-data">
+              <textarea name="txt" id="txt" rows="4" cols="40"></textarea>
+              <br>
+
+              <input type="submit" id="upload-image-text-btn" class="btn btn-primary"/>
+              <br>
+              <span id="upload-image-text-status"></span>
+            </form>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+ -->
+
+{% endblock %}

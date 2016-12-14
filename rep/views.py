@@ -9,10 +9,10 @@ from oauth2client.client import OAuth2WebServerFlow
 
 from apiclient import discovery
 
-import json, httplib2, requests
+import json, httplib2, pytz, requests
 
 from rep import app, login_manager
-from rep.models import Experiment, Intervention, Imageintv, Mturk, MobileUser, Textintv, User
+from rep.models import *
 from rep.rescuetime import RescueOauth2
 from rep.pam import PamOauth
 from rep.moves import Moves
@@ -186,10 +186,13 @@ def add_experiment():
 
 @app.route('/edit-experiment/<code>')
 def edit_experiment(code):
-    experiment = Experiment.query.filter_by(code=code).first()
-    images = Imageintv.query.all()
-    texts = Textintv.query.all()
-    return render_template('edit-experiment.html', experiment=experiment, images=images, texts=texts)
+    ctx = {
+        'experiment': Experiment.query.filter_by(code=code).first(),
+        'images': Imageintv.query.all(),
+        'texts': Textintv.query.all(),
+        'interventions': Intervention.query.filter_by(code=code)
+    }
+    return render_template('edit-experiment.html', **ctx)
 
 
 @app.route('/delete/experiment/<code>')
@@ -214,8 +217,6 @@ def update_experiment():
     }
     updated_exp = Experiment.update_experiment(update)
     return str(updated_exp)
-    # flash('Experiment successfully updated.', 'success')
-    # return redirect(url_for('edit_experiment', experiment=updated_experiment))
 
 
 @app.route('/fetch/experiments', methods=['GET'])
@@ -235,23 +236,18 @@ def fetch_experiment_by_code(code):
     return str(experiment)
 
 
-@app.route('/fetch/interventions', methods=['GET'])
-def fetch_uploads():
-    interventions = Intervention.query.all()
-    results = [str(x) for x in interventions]
-    return json.dumps(results)
-
-
-@app.route('/fetch/images', methods=['GET'])
-def fetch_images():
-    images = Imageintv.query.all()
-    return '{}'.format(images)
-
-
-@app.route('/fetch/texts', methods=['GET'])
-def fetch_texts():
-    texts = Textintv.query.all()
-    return '{}'.format(texts)
+@app.route('/add/intervention', methods=['POST'])
+def add_intervention():
+    intv = {
+        'group': request.form.get('group'),
+        'code': request.form.get('code'),
+        'start': request.form.get('start'),
+        'every': request.form.get('every'),
+        'when': request.form.get('when'),
+        'repeat': request.form.get('repeat')
+    }
+    _, response, added_intv = Intervention.add_intervention(intv)
+    return str(added_intv)
 
 
 @app.route('/add/image_text', methods=['POST'])
@@ -266,7 +262,8 @@ def add_image_text():
     if image_name and image:
         Upload.save(image_name, image)
         url = Upload.get_url(image_name)
-        Imageintv.add_image_url(url)
+        new_image = {'image_name': image_name, 'image_url': url}
+        Imageintv.add_image(new_image)
 
     msg = ''
     if image and image_name and text:
@@ -277,6 +274,30 @@ def add_image_text():
         msg = 'Text added.'
 
     return msg
+
+
+@app.route('/fetch/interventions/<code>', methods=['GET'])
+def fetch_interventions(code):
+    interventions = Intervention.query.filter_by(code=code).all()
+    return '{}'.format(interventions)
+
+
+@app.route('/fetch/ordered/interventions/<code>', methods=['GET'])
+def fetch_ordered_interventions(code):
+    interventions = Intervention.query.filter_by(code=code).order_by('created_at desc').all()
+    return '{}'.format(interventions)
+
+
+@app.route('/fetch/images', methods=['GET'])
+def fetch_images():
+    images = Imageintv.query.all()
+    return '{}'.format(images)
+
+
+@app.route('/fetch/texts', methods=['GET'])
+def fetch_texts():
+    texts = Textintv.query.all()
+    return '{}'.format(texts)
 
 #######################################
 # Connect Service Providers
@@ -561,6 +582,17 @@ def worker_id():
     worker_id = request.form['worker_id']
     session['worker_id'] = worker_id
     return 'Rcvd id: {}'.format(worker_id)
+
+
+@app.template_filter('nyc')
+def _jinja2_filter_israeltime(date, fmt=None):
+    return pytz.utc.localize(date).astimezone(pytz.timezone('America/New_York'))
+
+
+@app.template_filter('fancydatetime')
+def _jinja2_strformat_datetime(date, fmt=None):
+    # return date.strftime('%Y-%m-%d, %-I:%M %p')
+    return date.strftime('%b %d, %Y / %-I:%M %p')
 
 # TODO: handle moves expired access token
 # TODO: only enable activate tracking for an app that has been connected

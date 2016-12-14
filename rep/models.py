@@ -14,24 +14,26 @@ class Imageintv(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     image_url = db.Column(db.String(100))
+    image_name = db.Column(db.String(30))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-    def __init__(self, image_url):
+    def __init__(self, info):
         id = db.Column(db.Integer, primary_key=True)
-        self.image_url = image_url
+        self.image_url = info['image_url']
+        self.image_name = info['image_name']
         created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __repr__(self):
-        result = {'image_url': self.image_url, 'created_at': str(self.created_at)}
+        result = {'image_url': self.image_url, 'image_name': self.image_name, 'created_at': str(self.created_at)}
         return json.dumps(result)
 
     @staticmethod
-    def add_image_url(image_url):
-        if Imageintv.query.filter_by(image_url=image_url).first():
+    def add_image(info):
+        if Imageintv.query.filter_by(image_url=info['image_url']).first():
             return
 
-        new_image_url = Imageintv(image_url)
-        db.session.add(new_image_url)
+        new_image = Imageintv(info)
+        db.session.add(new_image)
         db.session.commit()
 
 
@@ -61,6 +63,7 @@ class Textintv(db.Model):
 class Intervention(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    code = db.Column(db.String(10))
     group = db.Column(db.String(1500))
     start = db.Column(db.String(120))
     every = db.Column(db.String(30))
@@ -68,15 +71,18 @@ class Intervention(db.Model):
     repeat = db.Column(db.String(30))
 
     def __init__(self, info):
-        group = info['group']
-        start = info['start']
-        every = info['every']
-        when = info['when']
-        repeat = info['repeat']
+        self.group = info['group']
+        self.code = info['code']
+        self.start = info['start']
+        self.every = info['every']
+        self.when = info['when']
+        self.repeat = info['repeat']
 
     def __repr__(self):
         result = {
+            'created_at': str(self.created_at),
             'group': self.group,
+            'code': self.code,
             'start': self.start,
             'every': self.every,
             'when': self.when,
@@ -181,7 +187,8 @@ class Experiment(db.Model):
 
     @staticmethod
     def delete_experiment(code):
-        experiment = Experiment.query.filter_by(code=code).delete()
+        Experiment.query.filter_by(code=code).delete()
+        Intervention.query.filter_by(code=code).delete()
         db.session.commit()
 
     @staticmethod
