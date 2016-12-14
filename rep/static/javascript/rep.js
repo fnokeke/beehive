@@ -543,6 +543,9 @@ $(document).ready(function() {
   $('#update-table-btn').click(function() {
     create_new_intv_table();
     add_intv_row();
+
+    var ps_per_group = $('#ps-per-group').val();
+    $('#randomized-group-status').html("<em>Randomized participants per group: {0} </em>".format(ps_per_group));
   });
 
 

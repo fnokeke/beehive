@@ -164,6 +164,7 @@
 
     <div class="page-header">
       <h3>Add Images/Texts</h3>
+      <em>Contents added will be available as options to select from when applying interventions.</em>
     </div>
 
     <button
@@ -219,13 +220,13 @@
       </div>
     </div>
 
-    <div class="page-header">
+    <div class="page-header" style="display: none">
       <h3>Archived Images
         <small>(Last 10)</small>
       </h3>
     </div>
 
-    <div>
+    <div style="display: none">
       <table class="table table-striped">
         <tr>
           <th>
@@ -262,13 +263,13 @@
       </table>
     </div>
 
-    <div class="page-header">
+    <div class="page-header" style="display: none">
       <h3>Archived Texts
         <small>(Last 10)</small>
       </h3>
     </div>
 
-    <div>
+    <div style="display: none">
       <table class="table table-striped">
         <tr>
           <th>
@@ -320,26 +321,6 @@
       <br>
       <div class="text-center">
 
-        <!-- <button type="button" class="btn btn-link btn-md" id="add-row-btn">
-          <span class="glyphicon glyphicon-plus text-primary"></span>
-          <span class="text-primary">
-            Add Row
-          </span>
-        </button>
-
-        <button
-          type="button"
-          class="btn btn-link btn-md"
-          id="remove-row-btn"
-          value="deleteRow"
-          data-toggle="confirmation"
-          data-popout="true">
-          <span class="glyphicon glyphicon-minus text-danger"></span>
-          <span class="text-danger">
-            Remove Row
-          </span>
-        </button>
-        -->
         <button type="button" class="btn btn-link btn-md" id="update-table-btn">
           <span class="glyphicon glyphicon-level-up text-primary"></span>
           <span class="text-primary">
@@ -371,7 +352,6 @@
 
       <span id='intv-table-view'></span>
       <span id='intv-table-status'></span>
-      <br>
       <span id='randomized-group-status'></span>
     </div>
 
@@ -415,7 +395,11 @@
             {{ intv.created_at | nyc | fancydatetime }}
           </td>
           <td>
-            {{ intv.group }}
+            {% if not 'photos' in intv.group %}
+              {{ intv.group }}
+            {% else %}
+              <img src="{{ intv.group }}" alt="intervention" width="50" height="50">
+            {% endif %}
           </td>
           <td>
             {{ intv.start }}
