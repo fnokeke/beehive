@@ -122,7 +122,12 @@ def researcher_login():
             'text_img': 'on'
         }
     ]
-    return render_template('researcher.html', users=User.query.all(), mturk_users=Mturk.query.all(), studies=studies)
+
+    ctx = {'users': User.query.all(),
+           'mobile_users': MobileUser.query.all(),
+           'mturk_users': Mturk.query.all(),
+           'studies': studies}
+    return render_template('researcher.html', **ctx)
 
 
 @app.route('/settings')
@@ -239,9 +244,11 @@ def fetch_experiment_by_code(code):
 @app.route('/add/intervention', methods=['POST'])
 def add_intervention():
     intv = {
-        'group': request.form.get('group'),
         'code': request.form.get('code'),
+        'condition': request.form.get('condition'),
+        'treatment': request.form.get('treatment'),
         'start': request.form.get('start'),
+        'end': request.form.get('end'),
         'every': request.form.get('every'),
         'when': request.form.get('when'),
         'repeat': request.form.get('repeat')
@@ -591,7 +598,6 @@ def _jinja2_filter_israeltime(date, fmt=None):
 
 @app.template_filter('fancydatetime')
 def _jinja2_strformat_datetime(date, fmt=None):
-    # return date.strftime('%Y-%m-%d, %-I:%M %p')
     return date.strftime('%b %d, %Y / %-I:%M %p')
 
 # TODO: handle moves expired access token
@@ -601,3 +607,7 @@ def _jinja2_strformat_datetime(date, fmt=None):
 # TODO: allow images to be saved by pasting custom url
 # TODO: allow images to be uploaded from drag and drop
 # TODO: prevent inserting interventions for the same date
+# TODO: disable save entry button until preview has been done.
+# TODO: change start & end datetime from string to datetime format in models
+# TODO: after save, jump to apply intv anchor on web page
+# TODO: format stnd and end time

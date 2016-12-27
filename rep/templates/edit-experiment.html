@@ -39,8 +39,10 @@
   <div class="container">
     <div class="page-header">
       <h3>
-        {{experiment.title}}
-        ({{ experiment.code }})
+        {% if experiment %}
+          {{experiment.title}}
+          ({{ experiment.code }})
+        {% endif %}
       </h3>
       <div data-experiment-code="{{experiment.code}}"></div>
       <br>
@@ -324,7 +326,7 @@
         <button type="button" class="btn btn-link btn-md" id="update-table-btn">
           <span class="glyphicon glyphicon-level-up text-primary"></span>
           <span class="text-primary">
-            Update Table
+            Preview Table
           </span>
         </button>
 
@@ -373,10 +375,13 @@
           Intervention
         </th>
         <th>
+          Frequency
+        </th>
+        <th>
           Start
         </th>
         <th>
-          Every
+          End
         </th>
         <th>
           When
@@ -387,34 +392,67 @@
       </tr>
 
       {% for intv in interventions[: -11 : -1] %}
+        {% with all_intv_str = intv.treatment.split('%%&&') %}
         <tr>
           <td>
             {{ loop.index }}
           </td>
+
           <td>
             {{ intv.created_at | nyc | fancydatetime }}
           </td>
+
           <td>
-            {% if not 'photos' in intv.group %}
-              {{ intv.group }}
+            {% if all_intv_str | length <= 1 %}
+              {{ all_intv_str[0] }}
             {% else %}
-              <img src="{{ intv.group }}" alt="intervention" width="50" height="50">
+              <ul>
+                {% for intv_str in all_intv_str %}
+
+                  <li>
+
+                    <em>
+                      Group{{ loop.index }}:
+                    </em>
+
+                    {% if not 'photos' in intv_str %}
+                      {{ intv_str }}
+                    {% else %}
+                      <img src="{{ intv_str }}" alt="intervention" width="50" height="50">
+                    {% endif %}
+
+                  </li>
+
+                {% endfor %}
+              </ul>
+
             {% endif %}
+
           </td>
+
+          <td>
+            {{ intv.every }}
+          </td>
+
           <td>
             {{ intv.start }}
           </td>
+
           <td>
-            {{ intv.every if intv.every == 'Day' else intv.every + '/Week'}}
+            {{ intv.end }}
           </td>
+
           <td>
             {{ intv.when }}
           </td>
+
           <td>
             {{ intv.repeat }}
           </td>
 
         </tr>
+
+        {% endwith %}
       {% endfor %}
 
     </table>
@@ -515,7 +553,7 @@
       <span id="analysis-status">Awaiting input...</span>
     </div>
 
-    <!-- <div>
+     <div>
       <table class="table table-striped table-bordered" id="my-intv-table">
         <tr>
           <th class="col-md-1">

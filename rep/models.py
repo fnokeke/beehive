@@ -64,16 +64,20 @@ class Intervention(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     code = db.Column(db.String(10))
-    group = db.Column(db.String(1500))
+    condition = db.Column(db.Integer)
+    treatment = db.Column(db.String(250))
     start = db.Column(db.String(120))
+    end = db.Column(db.String(120))
     every = db.Column(db.String(30))
     when = db.Column(db.String(30))
     repeat = db.Column(db.String(30))
 
     def __init__(self, info):
-        self.group = info['group']
         self.code = info['code']
+        self.condition = info['condition']
+        self.treatment = info['treatment']
         self.start = info['start']
+        self.end = info['end']
         self.every = info['every']
         self.when = info['when']
         self.repeat = info['repeat']
@@ -81,9 +85,11 @@ class Intervention(db.Model):
     def __repr__(self):
         result = {
             'created_at': str(self.created_at),
-            'group': self.group,
             'code': self.code,
+            'condition': self.condition,
+            'treatment': self.treatment,
             'start': self.start,
+            'end': self.end,
             'every': self.every,
             'when': self.when,
             'repeat': self.repeat

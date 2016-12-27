@@ -305,7 +305,6 @@ $(document).ready(function() {
   }
 
 
-
   /////////////////////////////
   // edit / delete experiment
   /////////////////////////////
@@ -449,7 +448,7 @@ $(document).ready(function() {
   add_intv_row();
 
   function add_intv_row() {
-    var no_of_groups, group_rows, new_row, img_text_options;
+    var no_of_groups, group_rows, new_row, img_text_options, treat_id;
 
     no_of_groups = parseInt($('#no-of-groups').val());
     group_rows = '';
@@ -457,9 +456,9 @@ $(document).ready(function() {
     $.get('/fetch/images').done(function(img_resp) {
       $.get('/fetch/texts').done(function(text_resp) {
 
-        img_text_options = create_img_text_options(img_resp, text_resp);
-
-        for (var j = 0; j < no_of_groups; j++) {
+        for (var j = 1; j <= no_of_groups; j++) {
+          treat_id = 'treat-{0}'.format(j);
+          img_text_options = create_img_text_options(img_resp, text_resp, treat_id);
           group_rows += '<td>{0}</td>'.format(img_text_options);
         }
 
@@ -484,23 +483,13 @@ $(document).ready(function() {
 
   function create_every_options() {
     var options = '<select id="intv-every" class="form-control">' +
-      ' <optgroup label="Daily">' +
-      ' <option>Day</option> ' +
-      ' </optgroup>' +
-      ' <optgroup label="Once per Week">' +
-      ' <option>Mon</option> ' +
-      ' <option>Tues</option> ' +
-      ' <option>Wed</option> ' +
-      ' <option>Thurs</option> ' +
-      ' <option>Fri</option> ' +
-      ' <option>Sat</option> ' +
-      ' <option>Sun</option> ' +
-      ' </optgroup>' +
+      ' <option>Daily</option> ' +
+      ' <option>Weekly</option> ' +
       ' </select>';
     return options;
   }
 
-  function create_img_text_options(img_resp, text_resp) {
+  function create_img_text_options(img_resp, text_resp, treat_id) {
     var i, images, texts, image_options, text_options;
 
     images = JSON.parse(img_resp);
@@ -518,7 +507,7 @@ $(document).ready(function() {
       text_options += '<option>{0}</option>'.format(txt.text);
     }
 
-    var options = '<select id="intv-img-text" class="form-control">' +
+    var options = '<select id="{0}" class="form-control">'.format(treat_id) +
       ' <optgroup label="Texts">' + text_options +
       ' </optgroup>' +
       ' <optgroup label="Images">' + image_options +
@@ -528,17 +517,21 @@ $(document).ready(function() {
     return options;
   }
 
+
   $('#add-row-btn').click(function() {
     add_intv_row();
   });
+
 
   $('#remove-row-btn').click(function() {
     $('#intvn-table-id tr:last').remove();
   });
 
+
   $('#delete-table-btn').click(function() {
     create_new_intv_table();
   });
+
 
   $('#update-table-btn').click(function() {
     create_new_intv_table();
@@ -557,20 +550,35 @@ $(document).ready(function() {
     var no_of_groups = parseInt($('#no-of-groups').val());
     console.log('no of groups: ', no_of_groups);
 
-    var intv_img_text = $('#intv-img-text').val();
-    console.log('intv_img_text:', intv_img_text);
+    var treatments = [];
+    for (var k = 1; k <= no_of_groups; k++) {
+      var btn_id = '#treat-{0}'.format(k);
+      var treat = $(btn_id).val();
+      treatments.push(treat);
+    }
 
-    var intv_start_date = $('#intv-start-date').val();
-    console.log('intv_start_date : ', intv_start_date);
-
-    var intv_every = $('#intv-every').val();
-    console.log('intv_every:', intv_every);
+    var delim = '%%&&';
+    var all_treat_str = treatments.join(delim);
 
     var intv_time = $('#intv-time').val();
-    console.log('intv_time:', intv_time);
+    intv_time = intv_time.indexOf('.') > -1 ? intv_time : '{0}:00.000'.format(intv_time);
 
+    var intv_start_date = $('#intv-start-date').val();
+    var intv_start_datetime = '{0}T{1}'.format(intv_start_date, intv_time);
+    console.log('intv_start: ', intv_start_datetime);
+
+    var intv_every = $('#intv-every').val();
     var intv_repeat = $('#intv-repeat').val();
-    console.log('intv_repeat:', intv_repeat);
+    intv_repeat = parseInt(intv_repeat);
+
+    var factor = intv_every === 'Daily' ? 1 : 7;
+    var no_of_days = intv_repeat * factor;
+
+    var intv_end_datetime = '{0}T{1}'.format(intv_start_date, intv_time);
+    intv_end_datetime = new Date(intv_end_datetime);
+    intv_end_datetime.setDate(intv_end_datetime.getDate() + no_of_days);
+    intv_end_datetime = intv_end_datetime.toJSON();
+    console.log('intv_end:', intv_end_datetime);
 
     var exp_code = $('#save-single-experiment-btn').val(); // code hidden in button
     console.log('exp_code:', exp_code);
@@ -578,9 +586,11 @@ $(document).ready(function() {
     var response_field = '#intv-table-status';
     var url = '/add/intervention';
     var data = {
-      'group': intv_img_text,
       'code': exp_code,
-      'start': intv_start_date,
+      'condition': no_of_groups,
+      'treatment': all_treat_str,
+      'start': intv_start_datetime,
+      'end': intv_end_datetime,
       'every': intv_every,
       'when': intv_time,
       'repeat': intv_repeat
@@ -591,7 +601,7 @@ $(document).ready(function() {
       console.log('added intv resp: ', resp);
 
       setTimeout(function() {
-        window.location.href = window.location.href;
+        // window.location.href = '{0}/{1}'.format(window.location.href, '#apply-intervention');
       }, 1000);
 
     }).fail(function(error) {
