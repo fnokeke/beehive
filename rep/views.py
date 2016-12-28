@@ -23,6 +23,7 @@ from rep import export
 
 from gcal import Calendar, EventFactory
 from rep.utils import requires_basic_auth
+from datetime import datetime
 
 
 #################################
@@ -253,6 +254,10 @@ def add_intervention():
         'when': request.form.get('when'),
         'repeat': request.form.get('repeat')
     }
+
+    intv['start'] = datetime.strptime(intv['start'], '%Y-%m-%dT%H:%M:%S.000Z')
+    intv['end'] = datetime.strptime(intv['end'], '%Y-%m-%dT%H:%M:%S.000Z')
+
     _, response, added_intv = Intervention.add_intervention(intv)
     return str(added_intv)
 
@@ -592,13 +597,28 @@ def worker_id():
 
 
 @app.template_filter('nyc')
-def _jinja2_filter_israeltime(date, fmt=None):
+def _jinja2_filter_nyctime(date, fmt=None):
     return pytz.utc.localize(date).astimezone(pytz.timezone('America/New_York'))
 
 
 @app.template_filter('fancydatetime')
 def _jinja2_strformat_datetime(date, fmt=None):
     return date.strftime('%b %d, %Y / %-I:%M %p')
+
+
+@app.template_filter('onlyfancydate')
+def _jinja2_strformat_only_date(date):
+    return date.strftime('%b %d, %Y')
+
+
+@app.template_filter('onlyfancytime')
+def _jinja2_strformatonly_time(date):
+    return date.strftime('%-I:%M %p')
+
+
+@app.template_filter('todatetime')
+def _jinja2_strformat_ftime(datestr):
+    return datetime.strptime(datestr, '%Y-%m-%d %H:%M:%S')
 
 # TODO: handle moves expired access token
 # TODO: only enable activate tracking for an app that has been connected

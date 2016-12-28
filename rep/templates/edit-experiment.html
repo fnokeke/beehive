@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block contents %}
+
   <button type="button" class="btn btn-link btn-lg" id="go-back-btn">
     <span class="glyphicon glyphicon-triangle-left text-muted"></span>
     <span class="text-muted">
@@ -33,6 +34,13 @@
     <span class="glyphicon glyphicon-trash text-danger"></span>
     <span class="text-danger">
       Delete
+    </span>
+  </button>
+
+  <button type="button" class="btn btn-link btn-lg" onclick="window.location.href='#intervention'">
+    <span class="glyphicon glyphicon-floppy-saved text-primary"></span>
+    <span class="text-primary">
+      Apply Intervention
     </span>
   </button>
 
@@ -199,7 +207,7 @@
             </div>
 
             <form enctype="multipart/form-data">
-              <input type="file" id="image" name="image" accept="Image/*"/>
+              <input type="file" id="upload-image-file-btn" accept="Image/*"/>
               <br>
             </form>
 
@@ -303,7 +311,7 @@
     </div>
 
     <div class="page-header">
-      <h3>Apply Interventions</h3>
+      <h3 id="intervention">Apply Interventions</h3>
     </div>
 
     <div>
@@ -378,16 +386,16 @@
           Frequency
         </th>
         <th>
+          Repeat
+        </th>
+        <th>
           Start
         </th>
         <th>
           End
         </th>
         <th>
-          When
-        </th>
-        <th>
-          Repeat
+          Time
         </th>
       </tr>
 
@@ -404,7 +412,17 @@
 
           <td>
             {% if all_intv_str | length <= 1 %}
-              {{ all_intv_str[0] }}
+
+              {% with intv_str = all_intv_str[0] %}
+
+              {% if not 'photos' in intv_str %}
+                {{ intv_str }}
+              {% else %}
+                <img src="{{ intv_str }}" alt="intervention" width="50" height="50">
+              {% endif %}
+
+              {% endwith %}
+
             {% else %}
               <ul>
                 {% for intv_str in all_intv_str %}
@@ -435,21 +453,20 @@
           </td>
 
           <td>
-            {{ intv.start }}
-          </td>
-
-          <td>
-            {{ intv.end }}
-          </td>
-
-          <td>
-            {{ intv.when }}
-          </td>
-
-          <td>
             {{ intv.repeat }}
           </td>
 
+          <td>
+            {{ intv.start | todatetime | onlyfancydate }}
+          </td>
+
+          <td>
+            {{ intv.end | todatetime | onlyfancydate }}
+          </td>
+
+          <td>
+            {{ intv.start | todatetime | onlyfancytime }}
+          </td>
         </tr>
 
         {% endwith %}

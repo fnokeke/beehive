@@ -371,7 +371,7 @@ $(document).ready(function() {
     console.log('image text clicked');
     event.preventDefault();
 
-    var image = $('#image').get(0).files[0];
+    var image = $('#upload-image-file-btn').get(0).files[0];
     var txt = $('#txt').val();
     var response_field = '#upload-image-text-status';
 
@@ -544,17 +544,23 @@ $(document).ready(function() {
 
   $('#save-table-btn').click(function() {
 
+    var response_field = '#intv-table-status';
     var ps_per_group = $('#ps-per-group').val();
     $('#randomized-group-status').html("<em>Randomized participants per group: {0} </em>".format(ps_per_group));
 
     var no_of_groups = parseInt($('#no-of-groups').val());
-    console.log('no of groups: ', no_of_groups);
 
     var treatments = [];
     for (var k = 1; k <= no_of_groups; k++) {
       var btn_id = '#treat-{0}'.format(k);
       var treat = $(btn_id).val();
-      treatments.push(treat);
+      if (treat) treatments.push(treat);
+    }
+
+    if (treatments.length === 0) {
+      show_error_msg(response_field,
+        'Error: You need to upload images and/or texts before you apply any intervention.<br/>');
+      return;
     }
 
     var delim = '%%&&';
@@ -565,7 +571,7 @@ $(document).ready(function() {
 
     var intv_start_date = $('#intv-start-date').val();
     var intv_start_datetime = '{0}T{1}'.format(intv_start_date, intv_time);
-    console.log('intv_start: ', intv_start_datetime);
+    intv_start_datetime = new Date(intv_start_datetime);
 
     var intv_every = $('#intv-every').val();
     var intv_repeat = $('#intv-repeat').val();
@@ -577,35 +583,34 @@ $(document).ready(function() {
     var intv_end_datetime = '{0}T{1}'.format(intv_start_date, intv_time);
     intv_end_datetime = new Date(intv_end_datetime);
     intv_end_datetime.setDate(intv_end_datetime.getDate() + no_of_days);
-    intv_end_datetime = intv_end_datetime.toJSON();
-    console.log('intv_end:', intv_end_datetime);
+    intv_end_datetime = intv_end_datetime;
 
     var exp_code = $('#save-single-experiment-btn').val(); // code hidden in button
-    console.log('exp_code:', exp_code);
 
-    var response_field = '#intv-table-status';
+    if (exp_code === '') {
+      show_error_msg(response_field,
+        'Error: this experiment does not exist / has invalid code. You need to create a new one.<br/>');
+      return;
+    }
+
     var url = '/add/intervention';
     var data = {
       'code': exp_code,
       'condition': no_of_groups,
       'treatment': all_treat_str,
-      'start': intv_start_datetime,
-      'end': intv_end_datetime,
+      'start': intv_start_datetime.toJSON(),
+      'end': intv_end_datetime.toJSON(),
       'every': intv_every,
       'when': intv_time,
       'repeat': intv_repeat
     };
 
     $.post(url, data).done(function(resp) {
-      show_success_msg(response_field, 'Intervention successfully saved.');
-      console.log('added intv resp: ', resp);
-
-      setTimeout(function() {
-        // window.location.href = '{0}/{1}'.format(window.location.href, '#apply-intervention');
-      }, 1000);
-
+      show_success_msg(response_field, 'Intervention successfully saved.<br/>');
+      console.log('success intv resp: ', resp);
+      window.location.href = window.location.origin + window.location.pathname;
     }).fail(function(error) {
-      show_error_msg(response_field, 'Error saving intervention.');
+      show_error_msg(response_field, 'Error saving intervention: ' + error.statusText);
       console.log('intv save error:', error);
     });
 

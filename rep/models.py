@@ -65,9 +65,9 @@ class Intervention(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     code = db.Column(db.String(10))
     condition = db.Column(db.Integer)
-    treatment = db.Column(db.String(250))
-    start = db.Column(db.String(120))
-    end = db.Column(db.String(120))
+    treatment = db.Column(db.String(2000))
+    start = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    end = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     every = db.Column(db.String(30))
     when = db.Column(db.String(30))
     repeat = db.Column(db.String(30))
@@ -88,8 +88,8 @@ class Intervention(db.Model):
             'code': self.code,
             'condition': self.condition,
             'treatment': self.treatment,
-            'start': self.start,
-            'end': self.end,
+            'start': str(self.start),
+            'end': str(self.end),
             'every': self.every,
             'when': self.when,
             'repeat': self.repeat
