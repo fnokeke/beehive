@@ -64,7 +64,6 @@ class Intervention(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     code = db.Column(db.String(10))
-    condition = db.Column(db.Integer)
     treatment = db.Column(db.String(2000))
     start = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     end = db.Column(db.DateTime, default=datetime.datetime.utcnow)
@@ -74,7 +73,6 @@ class Intervention(db.Model):
 
     def __init__(self, info):
         self.code = info['code']
-        self.condition = info['condition']
         self.treatment = info['treatment']
         self.start = info['start']
         self.end = info['end']
@@ -86,7 +84,6 @@ class Intervention(db.Model):
         result = {
             'created_at': str(self.created_at),
             'code': self.code,
-            'condition': self.condition,
             'treatment': self.treatment,
             'start': str(self.start),
             'end': str(self.end),
@@ -104,21 +101,35 @@ class Intervention(db.Model):
         latest_intervention = Intervention.query.order_by('created_at desc').first()
         return (200, 'Successfully added intervention', latest_intervention)
 
+    @staticmethod
+    def delete_intervention(created_at):
+        Intervention.query.filter_by(created_at=created_at).delete()
+        db.session.commit()
+
 
 class MobileUser(db.Model):
     firstname = db.Column(db.String(120))
     lastname = db.Column(db.String(120))
+    gender = db.Column(db.String(10))
     code = db.Column(db.String(10))
+    condition = db.Column(db.Integer)
     email = db.Column(db.String(120), primary_key=True, unique=True)
 
     def __init__(self, info):
         self.firstname = info['firstname']
         self.lastname = info['lastname']
         self.email = info['email']
+        self.gender = info['gender']
         self.code = info['code']
+        self.condition = info['condition']
 
     def __rep__(self):
-        result = {'firstname': self.firstname, 'lastname': self.lastname, 'email': self.email, 'code': self.code}
+        result = {'firstname': self.firstname,
+                  'lastname': self.lastname,
+                  'email': self.email,
+                  'gender': self.gender,
+                  'code': self.code,
+                  'condition': self.condition}
         return json.dumps(result)
 
     @staticmethod
@@ -138,6 +149,8 @@ class MobileUser(db.Model):
 class Experiment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(10), unique=True)
+    no_of_condition = db.Column(db.Integer, default=1)
+    ps_per_condition = db.Column(db.Integer, default=1)
     title = db.Column(db.String(120))
     rescuetime = db.Column(db.Boolean, default=False)
     aware = db.Column(db.Boolean, default=False)
@@ -150,6 +163,8 @@ class Experiment(db.Model):
     def __init__(self, info):
         self.title = info.get('title')
         self.code = Experiment.generate_unique_id()
+        self.no_of_condition = info.get('no_of_condition')
+        self.ps_per_condition = info.get('ps_per_condition')
         self.rescuetime = info.get('rescuetime')
         self.aware = info.get('aware')
         self.geofence = info.get('geofence')
@@ -199,11 +214,7 @@ class Experiment(db.Model):
 
     @staticmethod
     def update_experiment(update):
-        print '***********'
-        print update
-        print '***********'
         experiment = Experiment.query.filter_by(code=update['code']).first()
-
         experiment.title = update.get('title')
         experiment.code = update.get('code')
         experiment.rescuetime = update.get('rescuetime')
@@ -213,9 +224,17 @@ class Experiment(db.Model):
         experiment.image = update.get('image')
         experiment.reminder = update.get('reminder')
         experiment.actuators = update.get('actuators')
-        db.session.commit()
 
-        # experiment = Experiment.query.filter_by(code=update['code']).first()
+        db.session.commit()
+        return experiment
+
+    @staticmethod
+    def update_group(update):
+        experiment = Experiment.query.filter_by(code=update['code']).first()
+        experiment.no_of_condition = update.get('no_of_condition')
+        experiment.ps_per_condition = update.get('ps_per_condition')
+
+        db.session.commit()
         return experiment
 
 

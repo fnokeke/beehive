@@ -156,17 +156,32 @@ def internal_server_error(e):
 def page_not_found(e):
     return render_template('404.html'), 404
 
-
 #################################
 # Handle Mobile User Registration
 #################################
+
+
+def get_next_condition(no_of_users, ps_per_condition):
+    return 1 + (no_of_users % ps_per_condition)
+
+
 @app.route('/connect/study', methods=['POST'])
 def connect_study():
+    experiment = Experiment.query.filter_by(code=data['code']).first()
+    no_of_users = len(MobileUser.query.all())
+
     data = json.loads(request.data)
-    user = {'firstname': data['firstname'], 'lastname': data['lastname'], 'email': data['email'], 'code': data['code']}
+    user = {'firstname': data['firstname'],
+            'lastname': data['lastname'],
+            'email': data['email'],
+            'gender': data['gender'],
+            'condition': get_next_condition(no_of_users, experiment.ps_per_condition),
+            'code': data['code']}
+
     _, response, __ = MobileUser.add_user(user)
     experiment = Experiment.query.filter_by(code=data['code']).first()
     result = {'user_response': response, 'experiment': '{}'.format(experiment)}
+
     return json.dumps(result)
 
 
@@ -225,6 +240,17 @@ def update_experiment():
     return str(updated_exp)
 
 
+@app.route('/update/group', methods=['POST'])
+def update_group():
+    update = {
+        'code': request.form.get('code'),
+        'no_of_condition': request.form.get('no_of_condition'),
+        'ps_per_condition': request.form.get('ps_per_condition')
+    }
+    updated_exp = Experiment.update_group(update)
+    return str(updated_exp)
+
+
 @app.route('/fetch/experiments', methods=['GET'])
 def fetch_experiments():
     results = []
@@ -246,7 +272,6 @@ def fetch_experiment_by_code(code):
 def add_intervention():
     intv = {
         'code': request.form.get('code'),
-        'condition': request.form.get('condition'),
         'treatment': request.form.get('treatment'),
         'start': request.form.get('start'),
         'end': request.form.get('end'),
@@ -260,6 +285,13 @@ def add_intervention():
 
     _, response, added_intv = Intervention.add_intervention(intv)
     return str(added_intv)
+
+
+@app.route('/delete/intervention', methods=['POST'])
+def delete_intervention():
+    created_at = request.form.get('created_at')
+    Intervention.delete_intervention(created_at)
+    return 'intervention deleted.'
 
 
 @app.route('/add/image_text', methods=['POST'])
@@ -631,3 +663,4 @@ def _jinja2_strformat_ftime(datestr):
 # TODO: change start & end datetime from string to datetime format in models
 # TODO: after save, jump to apply intv anchor on web page
 # TODO: format stnd and end time
+# TODO: merge update group and update experiment functions

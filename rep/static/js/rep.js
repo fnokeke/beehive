@@ -397,20 +397,22 @@ $(document).ready(function() {
   /////////////////////////////
   // create intervention table
   /////////////////////////////
-  create_new_intv_table();
+  update_intv_table();
+
+  function update_intv_table() {
+    create_new_intv_table();
+    add_intv_row();
+  }
 
   function create_new_intv_table() {
 
-    var view, no_of_groups, participants, other_headers, group_rows, row;
+    var view, no_of_condition, other_headers, group_rows, row;
 
-    participants = $('#ps-per-group').val();
-    $('#ps-prompt').html("<em>randomized participants per group: {0} </em>".format(participants));
-
-    no_of_groups = parseInt($('#no-of-groups').val());
+    no_of_condition = parseInt($('#no-of-condition').val());
     other_headers = 4;
 
     group_rows = '';
-    for (var i = 0; i < no_of_groups; i++) {
+    for (var i = 0; i < no_of_condition; i++) {
       group_rows += '<th class="col-md-1"> Group{0} </th>'.format(i + 1);
     }
 
@@ -424,18 +426,16 @@ $(document).ready(function() {
     $('#intv-table-view').html(view);
   }
 
-  add_intv_row();
-
   function add_intv_row() {
-    var no_of_groups, group_rows, new_row, img_text_options, treat_id;
+    var no_of_condition, group_rows, new_row, img_text_options, treat_id;
 
-    no_of_groups = parseInt($('#no-of-groups').val());
+    no_of_condition = parseInt($('#no-of-condition').val());
     group_rows = '';
 
     $.get('/fetch/images').done(function(img_resp) {
       $.get('/fetch/texts').done(function(text_resp) {
 
-        for (var j = 1; j <= no_of_groups; j++) {
+        for (var j = 1; j <= no_of_condition; j++) {
           treat_id = 'treat-{0}'.format(j);
           img_text_options = create_intv_options(img_resp, text_resp, treat_id);
           group_rows += '<td>{0}</td>'.format(img_text_options);
@@ -516,36 +516,45 @@ $(document).ready(function() {
     return options;
   }
 
-
-  $('#remove-row-btn').click(function() {
-    $('#intvn-table-id tr:last').remove();
+  $('#reset-table-btn').click(function() {
+    $('#intv-table-view').html('');
+    update_intv_table();
   });
 
 
-  $('#delete-table-btn').click(function() {
-    create_new_intv_table();
-  });
+  $('#save-group-btn').click(function() {
 
+    var experiment_code = $('#save-single-experiment-btn').val(); // code hidden in button
+    var no_of_condition = parseInt($('#no-of-condition').val());
+    var ps_per_condition = $('#ps-per-condition').val();
 
-  $('#update-table-btn').click(function() {
-    create_new_intv_table();
-    add_intv_row();
+    var response_field = '#group-status';
+    var url = '/update/group';
+    var data = {
+      'code': experiment_code,
+      'no_of_condition': no_of_condition,
+      'ps_per_condition': ps_per_condition,
+    };
 
-    var ps_per_group = $('#ps-per-group').val();
-    $('#randomized-group-status').html("<em>Randomized participants per group: {0} </em>".format(ps_per_group));
+    $.post(url, data).done(function(resp) {
+      show_success_msg(response_field, 'Group info successfully updated. Refreshing...<br/>');
+      setTimeout(function() {
+        window.location.href = window.location.origin + window.location.pathname;
+      }, 1000);
+    }).fail(function(error) {
+      show_error_msg(response_field, 'Error saving: ' + error.statusText);
+    });
+
   });
 
 
   $('#save-table-btn').click(function() {
 
     var response_field = '#intv-table-status';
-    var ps_per_group = $('#ps-per-group').val();
-    $('#randomized-group-status').html("<em>Randomized participants per group: {0} </em>".format(ps_per_group));
-
-    var no_of_groups = parseInt($('#no-of-groups').val());
-
+    var no_of_condition = parseInt($('#no-of-condition').val());
     var treatments = [];
-    for (var k = 1; k <= no_of_groups; k++) {
+
+    for (var k = 1; k <= no_of_condition; k++) {
       var btn_id = '#treat-{0}'.format(k);
       var treat = $(btn_id).val();
       if (treat) treatments.push(treat);
@@ -579,9 +588,9 @@ $(document).ready(function() {
     intv_end_datetime.setDate(intv_end_datetime.getDate() + no_of_days);
     intv_end_datetime = intv_end_datetime;
 
-    var exp_code = $('#save-single-experiment-btn').val(); // code hidden in button
+    var experiment_code = $('#save-single-experiment-btn').val(); // code hidden in button
 
-    if (exp_code === '') {
+    if (experiment_code === '') {
       show_error_msg(response_field,
         'Error: this experiment does not exist / has invalid code. You need to create a new one.<br/>');
       return;
@@ -589,8 +598,8 @@ $(document).ready(function() {
 
     var url = '/add/intervention';
     var data = {
-      'code': exp_code,
-      'condition': no_of_groups,
+      'code': experiment_code,
+      'condition': no_of_condition,
       'treatment': all_treat_str,
       'start': intv_start_datetime.toJSON(),
       'end': intv_end_datetime.toJSON(),
@@ -608,6 +617,11 @@ $(document).ready(function() {
       console.log('intv save error:', error);
     });
 
+  });
+
+
+  $('#remove-row-btn').click(function() {
+    $('#intvn-table-id tr:last').remove();
   });
 
   /////////////////////////////

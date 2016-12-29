@@ -38,7 +38,7 @@
   </button>
 
   <button type="button" class="btn btn-link btn-lg" onclick="window.location.href='#intervention'">
-    <span class="glyphicon glyphicon-floppy-saved text-primary"></span>
+    <span class="glyphicon glyphicon-arrow-down text-primary"></span>
     <span class="text-primary">
       Apply Intervention
     </span>
@@ -48,11 +48,11 @@
     <div class="page-header">
       <h3>
         {% if experiment %}
-          {{experiment.title}}
+          {{ experiment.title }}
           ({{ experiment.code }})
         {% endif %}
       </h3>
-      <div data-experiment-code="{{experiment.code}}"></div>
+      <div data-experiment-code="{{ experiment.code }}"></div>
       <br>
       <span id="edit-experiment-status"></span>
     </div>
@@ -184,7 +184,7 @@
       data-toggle="modal"
       data-target="#upload-image-modal">
       <span class="glyphicon glyphicon-upload"></span>
-      Upload image/text
+      Upload Image/Text
     </button>
 
     <div
@@ -311,32 +311,57 @@
     </div>
 
     <div class="page-header">
-      <h3 id="intervention">Apply Interventions</h3>
+      <h3 id="intervention">Specify groups</h3>
+      Current no of groups:
+      {{ experiment.no_of_condition }}
+      <br>
+      Participants per group:
+      {{ experiment.ps_per_condition }}
     </div>
 
     <div>
       <div class="row">
-        <label class="col-md-1">No of groups</label>
+        <label class="col-md-1">No of conditions</label>
         <div class="col-md-1">
-          <input class="form-control" type="number" min=1 id="no-of-groups" value=1></input>
+          <input
+            class="form-control"
+            type="number"
+            min=1
+            id="no-of-condition"
+            value={{ experiment.no_of_condition }}></input>
         </div>
       </div>
       <div class="row">
-        <label class="col-md-1">Participants per group</label>
+        <label class="col-md-1">Participants per condition</label>
         <div class="col-md-1">
-          <input class="form-control" type="number" min=1 id="ps-per-group" value=1></input>
+          <input
+            class="form-control"
+            type="number"
+            min=1
+            id="ps-per-condition"
+            value={{ experiment.ps_per_condition}}></input>
         </div>
       </div>
 
+      <span id='group-status'></span>
       <br>
+      <button type="button" class="btn btn-primary" id="save-group-btn">
+        <span class="glyphicon glyphicon-floppy-saved"></span>
+        Save Group Info
+      </button>
+
+      <div class="page-header">
+        <h3 id="intervention">Apply Interventions</h3>
+      </div>
+
       <div class="text-center">
 
-        <button type="button" class="btn btn-link btn-md" id="update-table-btn">
+        <!-- <button type="button" class="btn btn-link btn-md" id="update-table-btn">
           <span class="glyphicon glyphicon-level-up text-primary"></span>
           <span class="text-primary">
             Preview Table
           </span>
-        </button>
+        </button> -->
 
         <button type="button" class="btn btn-link btn-md" id="save-table-btn" value="">
           <span class="glyphicon glyphicon-floppy-saved text-primary"></span>
@@ -348,13 +373,13 @@
         <button
           type="button"
           class="btn btn-link btn-md"
-          id="delete-table-btn"
+          id="reset-table-btn"
           value="deleteRow"
           data-toggle="confirmation"
           data-popout="true">
           <span class="glyphicon glyphicon-trash text-danger"></span>
           <span class="text-danger">
-            Delete Table
+            Reset Entry
           </span>
         </button>
 
@@ -362,7 +387,6 @@
 
       <span id='intv-table-view'></span>
       <span id='intv-table-status'></span>
-      <span id='randomized-group-status'></span>
     </div>
 
     <div class="page-header">
@@ -371,6 +395,8 @@
       </h3>
 
     </div>
+
+    <span id='delete-intv-status'></span>
     <table class="table table-striped">
       <tr>
         <th>
@@ -404,6 +430,8 @@
         <tr>
           <td>
             {{ loop.index }}
+
+            <span onclick="delete_intv({{ intv }})" class="glyphicon glyphicon-trash text-danger"></span>
           </td>
 
           <td>
