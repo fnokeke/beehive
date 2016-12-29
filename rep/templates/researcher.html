@@ -8,24 +8,26 @@
   <!-- hide mturk view for now  -->
   <div class="container">
 
-    {% if users | length > 0 %}
-      <div class="page-header">
-        <h3>Participants</h3>
-        <p>
-          Desktop participants:
-          {{users | length }}
-          <br>
-          Mobile participants:
-          {{ mobile_users | length }}
-          <br>
-        </p>
-      </div>
+    <div class="page-header">
+      <h3>Quick Stats</h3>
+    </div>
 
-    {% else %}
-      <div class="page-header">
-        <h4>There are currently no Beehive users.</h4>
-      </div>
-    {% endif %}
+    <div>
+      <p>
+        Total active experiment:
+        {{ experiments | length }}
+        <br>
+        Total active interventions:
+        {{ interventions | length }}
+        <br>
+        Desktop participants across all experiments:
+        {{ users | length }}
+        <br>
+        Mobile participants across all experiments:
+        {{ mobile_users | length }}
+        <br>
+      </p>
+    </div>
 
     <div class="page-header">
       <h3>Experiments</h3>

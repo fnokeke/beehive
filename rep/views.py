@@ -93,41 +93,11 @@ def perform_research_analysis(key, study_begin, int_begin, int_end, study_end):
 @app.route('/researcher_login')
 @requires_basic_auth
 def researcher_login():
-    studies = [
-        {
-            'title': 'Priming to write more code daily',
-            'code': 'BA823091390',
-            'rescuetime': 'on',
-            'aware_app': 'off',
-            'geofence': 'on',
-            'alarm_reminder': 'on',
-            'actuators': 'off',
-            'text_img': 'on'
-        }, {
-            'title': 'Framing feedback on time spent on computer',
-            'code': 'MZ903322139',
-            'rescuetime': 'on',
-            'aware_app': 'off',
-            'geofence': 'off',
-            'alarm_reminder': 'off',
-            'actuators': 'off',
-            'text_img': 'on'
-        }, {
-            'title': 'Reducing distraction on phone',
-            'code': 'PP820191390',
-            'rescuetime': 'off',
-            'aware_app': 'on',
-            'geofence': 'off',
-            'alarm_reminder': 'off',
-            'actuators': 'on',
-            'text_img': 'on'
-        }
-    ]
-
     ctx = {'users': User.query.all(),
            'mobile_users': MobileUser.query.all(),
            'mturk_users': Mturk.query.all(),
-           'studies': studies}
+           'experiments': Experiment.query.all(),
+           'interventions': Intervention.query.all()}
     return render_template('researcher.html', **ctx)
 
 
@@ -178,9 +148,9 @@ def connect_study():
             'condition': get_next_condition(no_of_users, experiment.ps_per_condition),
             'code': data['code']}
 
-    _, response, __ = MobileUser.add_user(user)
+    _, response, user = MobileUser.add_user(user)
     experiment = Experiment.query.filter_by(code=data['code']).first()
-    result = {'user_response': response, 'experiment': '{}'.format(experiment)}
+    result = {'user_response': response, 'user': user, 'experiment': '{}'.format(experiment)}
 
     return json.dumps(result)
 
@@ -208,6 +178,7 @@ def add_experiment():
 @app.route('/edit-experiment/<code>')
 def edit_experiment(code):
     ctx = {
+        'enrolled_users': MobileUser.query.filter_by(code=code).all(),
         'experiment': Experiment.query.filter_by(code=code).first(),
         'images': Imageintv.query.all(),
         'texts': Textintv.query.all(),
@@ -664,3 +635,5 @@ def _jinja2_strformat_ftime(datestr):
 # TODO: after save, jump to apply intv anchor on web page
 # TODO: format stnd and end time
 # TODO: merge update group and update experiment functions
+# TODO: add proper confirmation prompty library
+# FIXME: python linter not working!!

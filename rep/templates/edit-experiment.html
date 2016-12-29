@@ -173,6 +173,22 @@
     </div>
 
     <div class="page-header">
+      <h3>Enrolled Participants</h3>
+    </div>
+    {% if enrolled_users | length > 0 %}
+      <p>
+        Total participants enrolled:
+        {{ enrolled_users | length }}
+      </p>
+    {% else %}
+      <p>
+        <em>
+          No participant enrolled in this experiment.
+        </em>
+      </p>
+    {% endif %}
+
+    <div class="page-header">
       <h3>Add Images/Texts</h3>
       <em>Contents added will be available as options to select from when applying interventions.</em>
     </div>
