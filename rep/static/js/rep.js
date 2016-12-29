@@ -4,14 +4,6 @@
 
 $(document).ready(function() {
 
-  // enable string formatting: '{0}{1}'.format(var1, var2)
-  String.prototype.format = function() {
-    var args = arguments;
-    return this.replace(/\{(\d+)\}/g, function(m, n) {
-      return args[n];
-    });
-  };
-
   // fetch param from url: xyz.com?enable=yes ---> urlParam(enable) returns yes
   $.url_param = function(name) {
     var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
@@ -41,19 +33,6 @@ $(document).ready(function() {
   function show_busy_div(div) {
     $(div).html('Processing...').css('color', 'orange');
   }
-
-  function show_success_msg(div, msg) {
-    $(div).html(msg).css('color', 'green');
-  }
-
-  function show_plain_msg(div, msg) {
-    $(div).html(msg).css('color', 'black');
-  }
-
-  function show_error_msg(div, msg) {
-    $(div).html(msg).css('color', 'red');
-  }
-
 
   function submit_checkbox_val(field, input) {
     var url = 'settings/tracking/' + field + '/' + input;
@@ -458,7 +437,7 @@ $(document).ready(function() {
 
         for (var j = 1; j <= no_of_groups; j++) {
           treat_id = 'treat-{0}'.format(j);
-          img_text_options = create_img_text_options(img_resp, text_resp, treat_id);
+          img_text_options = create_intv_options(img_resp, text_resp, treat_id);
           group_rows += '<td>{0}</td>'.format(img_text_options);
         }
 
@@ -481,6 +460,54 @@ $(document).ready(function() {
     });
   }
 
+  function create_intv_options(img_resp, text_resp, treat_id) {
+    var i, images, texts, image_options, text_options, rt_options, blank_options, show_img, show_txt, show_rt;
+
+    images = JSON.parse(img_resp);
+    texts = JSON.parse(text_resp);
+
+    show_img = $('#edit-image-checkbox-btn').is(':checked');
+    show_txt = $('#edit-text-checkbox-btn').is(':checked');
+    show_rt = $('#edit-rescuetime-checkbox-btn').is(':checked');
+
+    image_options = '';
+    if (show_img) {
+      for (i = 0; i < images.length; i++) {
+        var img = images[i];
+        image_options += '<option value="{0}">{1}</option>'.format(img.image_url, img.image_name);
+      }
+      image_options = '<optgroup label="Images">' + image_options + '</optgroup>';
+    }
+
+    text_options = '';
+    if (show_txt) {
+      for (i = 0; i < texts.length; i++) {
+        var txt = texts[i];
+        text_options += '<option>{0}</option>'.format(txt.text);
+      }
+      text_options = '<optgroup label="Texts">' + text_options + '</optgroup>';
+    }
+
+    rt_options = '';
+    if (show_rt) {
+      rt_options = '<option> focus & distracting time </option>' +
+        '<option> only focus time </option>' +
+        '<option> only distracting time </option';
+      rt_options = '<optgroup label="RescueTime">' + rt_options + '</optgroup>';
+    }
+
+    blank_options = '<optgroup label="No Intervention">' + '<option> ------ </option' + '</optgroup>';
+
+    var options = '<select id="{0}" class="form-control">'.format(treat_id) +
+      text_options +
+      image_options +
+      rt_options +
+      blank_options +
+      ' </select>';
+
+    return options;
+  }
+
   function create_every_options() {
     var options = '<select id="intv-every" class="form-control">' +
       ' <option>Daily</option> ' +
@@ -488,39 +515,6 @@ $(document).ready(function() {
       ' </select>';
     return options;
   }
-
-  function create_img_text_options(img_resp, text_resp, treat_id) {
-    var i, images, texts, image_options, text_options;
-
-    images = JSON.parse(img_resp);
-    texts = JSON.parse(text_resp);
-
-    image_options = '';
-    for (i = 0; i < images.length; i++) {
-      var img = images[i];
-      image_options += '<option value="{0}">{1}</option>'.format(img.image_url, img.image_name);
-    }
-
-    text_options = '';
-    for (i = 0; i < texts.length; i++) {
-      var txt = texts[i];
-      text_options += '<option>{0}</option>'.format(txt.text);
-    }
-
-    var options = '<select id="{0}" class="form-control">'.format(treat_id) +
-      ' <optgroup label="Texts">' + text_options +
-      ' </optgroup>' +
-      ' <optgroup label="Images">' + image_options +
-      ' </optgroup>' +
-      ' </select>';
-
-    return options;
-  }
-
-
-  $('#add-row-btn').click(function() {
-    add_intv_row();
-  });
 
 
   $('#remove-row-btn').click(function() {
@@ -616,6 +610,21 @@ $(document).ready(function() {
 
   });
 
+  /////////////////////////////
+  /// delete archived intv ////
+  /////////////////////////////
+  $('#delete-intv-btn').click(function() {
+    if (confirm("Are you sure you want to delete permanently?") === true) {
+      var resp = $('#delete-intv-btn').val();
+      console.log('confirm resp: ', resp);
+      // window.location.href = '/delete/experiment/{0}'.format(code);
+    }
+  });
+
+
+  ////////////////////////////////
+  ///// calendar functions ///////
+  ////////////////////////////////
 
   // reset all previous entries
   $('#reset-btn').click(function() {
