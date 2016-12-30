@@ -12,7 +12,7 @@ from apiclient import discovery
 import json, httplib2, pytz, requests
 
 from rep import app, login_manager
-from rep.models import *
+from rep.models import Experiment, Intervention, MobileUser, Mturk, User, Imageintv, Textintv
 from rep.rescuetime import RescueOauth2
 from rep.pam import PamOauth
 from rep.moves import Moves
@@ -131,27 +131,43 @@ def page_not_found(e):
 #################################
 
 
-def get_next_condition(no_of_users, ps_per_condition):
-    return 1 + (no_of_users % ps_per_condition)
+def get_next_condition(total_enrolled, ps_per_condition):
+    return 1 + (total_enrolled % ps_per_condition)
 
 
 @app.route('/connect/study', methods=['POST'])
 def connect_study():
-    experiment = Experiment.query.filter_by(code=data['code']).first()
-    no_of_users = len(MobileUser.query.all())
-
     data = json.loads(request.data)
-    user = {'firstname': data['firstname'],
-            'lastname': data['lastname'],
-            'email': data['email'],
-            'gender': data['gender'],
-            'condition': get_next_condition(no_of_users, experiment.ps_per_condition),
-            'code': data['code']}
-
-    _, response, user = MobileUser.add_user(user)
     experiment = Experiment.query.filter_by(code=data['code']).first()
-    result = {'user_response': response, 'user': user, 'experiment': '{}'.format(experiment)}
+    if not experiment:
+        return json.dumps({'experiment': 'None'})
 
+    # already in experiment so no need to change anything
+    already_in_experiment = MobileUser.query.filter_by(email=data['email'], code=data['code']).first()
+    if already_in_experiment:
+        response = 'Already enrolled in experiment.'
+        user = already_in_experiment
+        result = {'response': response, 'user': str(user), 'experiment': str(experiment)}
+        return json.dumps(result)
+
+    # condition needs to be updated for remaining operation
+    total_enrolled = len(MobileUser.query.filter_by(code=data['code']).all())
+    condition = get_next_condition(total_enrolled, experiment.ps_per_condition)
+
+    # in one experiment and moving to another
+    user_exists = MobileUser.query.filter_by(email=data['email']).first()
+    if user_exists:
+        MobileUser.update_field(data['email'], 'condition', condition)
+        _, __, user = MobileUser.update_field(data['email'], 'code', data['code'])
+        response = 'Successfully switched to another experiment ({}).'.format(data['code'])
+        result = {'response': response, 'user': str(user), 'experiment': str(experiment)}
+        return json.dumps(result)
+
+    # enrolling as first timer in an experiment
+    # data contains all attributes for new user except condition so add that property
+    data['condition'] = condition
+    _, response, user = MobileUser.add_user(data)
+    result = {'response': response, 'user': str(user), 'experiment': str(experiment)}
     return json.dumps(result)
 
 
@@ -315,7 +331,9 @@ def fetch_texts():
     return '{}'.format(texts)
 
 #######################################
+#
 # Connect Service Providers
+#
 #######################################
 
 
@@ -636,4 +654,4 @@ def _jinja2_strformat_ftime(datestr):
 # TODO: format stnd and end time
 # TODO: merge update group and update experiment functions
 # TODO: add proper confirmation prompty library
-# FIXME: python linter not working!!
+# TODO: add testing

@@ -18,13 +18,14 @@ class Imageintv(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, info):
-        id = db.Column(db.Integer, primary_key=True)
         self.image_url = info['image_url']
         self.image_name = info['image_name']
-        created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __repr__(self):
-        result = {'image_url': self.image_url, 'image_name': self.image_name, 'created_at': str(self.created_at)}
+        result = {'id': self.id,
+                  'image_url': self.image_url,
+                  'image_name': self.image_name,
+                  'created_at': str(self.created_at)}
         return json.dumps(result)
 
     @staticmethod
@@ -44,7 +45,6 @@ class Textintv(db.Model):
 
     def __init__(self, text):
         self.text = text
-        created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __repr__(self):
         result = {'text': self.text, 'created_at': str(self.created_at)}
@@ -123,7 +123,7 @@ class MobileUser(db.Model):
         self.code = info['code']
         self.condition = info['condition']
 
-    def __rep__(self):
+    def __repr__(self):
         result = {'firstname': self.firstname,
                   'lastname': self.lastname,
                   'email': self.email,
@@ -136,14 +136,37 @@ class MobileUser(db.Model):
     def add_user(info):
         existing_user = MobileUser.query.filter_by(email=info['email']).first()
         if existing_user:
-            return (-1, 'Welcome back.', existing_user)
+            return (-1, 'Successfully reconnected. Welcome back, ' + existing_user.firstname, existing_user)
 
         new_user = MobileUser(info)
         db.session.add(new_user)
         db.session.commit()
 
         new_user = MobileUser.query.filter_by(email=info['email']).first()
-        return (200, 'Successfully added as a new user.', new_user)
+        return (200, 'Successfully enrolled in experiment. Welcome, ' + new_user.firstname, new_user)
+
+    @staticmethod
+    def update_user(info):
+        user = MobileUser.query.filter_by(email=info['email']).first()
+        user.firstname = info['firstname']
+        user.lastname = info['lastname']
+        user.email = info['email']
+        user.code = info['code']
+        user.condition = info['condition']
+
+        db.session.commit()
+        return 200, 'Successfully updated info for {}'.format(user.firstname), user
+
+    @staticmethod
+    def update_field(email, key, value):
+        """
+        Set user field with give value and save to database.
+        """
+        user = MobileUser.query.filter_by(email=email).first()
+        setattr(user, key, value)
+        db.session.commit()
+
+        return 200, 'Successfully updated {} for {}'.format(key, user.firstname), user
 
 
 class Experiment(db.Model):
@@ -162,7 +185,7 @@ class Experiment(db.Model):
 
     def __init__(self, info):
         self.title = info.get('title')
-        self.code = Experiment.generate_unique_id()
+        self.code = info.get('code') if info.get('code') else Experiment.generate_unique_id()
         self.no_of_condition = info.get('no_of_condition')
         self.ps_per_condition = info.get('ps_per_condition')
         self.rescuetime = info.get('rescuetime')
