@@ -106,6 +106,31 @@ class Intervention(db.Model):
         Intervention.query.filter_by(created_at=created_at).delete()
         db.session.commit()
 
+# class RescuetimeUser(db.Model):
+#     email = db.Column(db.String(120), primary_key=True, unique=True)
+#     rt_access_token = db.Column(db.String(120), unique=True)
+#
+#     def __init__(self, info):
+#         self.email = info['email']
+#         self.rt_access_token = info['rt_access_token']
+#
+#     def __repr__(self):
+#         result = {'email': self.email, 'rt_access_token': self.rt_access_token}
+#         return json.dumps(result)
+#
+#     @staticmethod
+#     def add_rt_user(info):
+#         existing_user = RescuetimeUser.query.filter_by(email=info['email']).first()
+#         if existing_user:
+#             existing_user.rt_access_token = info['rt_access_token']
+#             db.session.commit()
+#             return (200, 'Successfully reconnected to RescueTime.', existing_user)
+#
+#         new_user = RescuetimeUser(info)
+#         db.session.add(new_user)
+#         db.session.commit()
+#         return (200, 'You are now connected to RescueTime.', new_user)
+
 
 class MobileUser(db.Model):
     firstname = db.Column(db.String(120))

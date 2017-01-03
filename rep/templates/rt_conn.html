@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  Beehive RescueTime Connected
+{% endblock %}
+
+{% block contents %}
+
+  {% block nav_brand %}{% endblock %}
+  {% block nav_signin %}{% endblock %}
+
+  <div class="container">
+
+    <div class="page-header">
+      <h3>RescueTime successfully connected for
+        {{ rt_email }}
+      </h3>
+      <br>
+      You can now close this page.
+    </div>
+  </div>
+
+{% endblock %}

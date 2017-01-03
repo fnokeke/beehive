@@ -71,16 +71,42 @@ class RescueTime(object):
 
     def get_feed_by_date(self, date):
         """
-        Returns time spent in: social_networking, entertainment, news and shopping
+        Returns rescuetime stats for given date
+        date: yyyy-mm-dd
         """
-        results = json.loads(self.fetch_all_feeds())
-        summary = {'socialmedia': 'no time', 'entertainment': 'no time', 'news': 'no time', 'shopping': 'no time'}
+        summary = {
+            'date': date,
+            'productivity_pulse': 'no time',
+            #
+            'social_networking_duration_formatted': 'no time',
+            'social_networking_hours': 'no time',
+            'social_networking_percentage': 'no time',
+            #
+            'software_development_duration_formatted': 'no time',
+            'software_development_hours': 'no time',
+            'software_development_percentage': 'no time',
+            #
+            'all_distracting_duration_formatted': 'no time',
+            'all_distracting_hours': 'no time',
+            'all_distracting_percentage': 'no time',
+            #
+            'all_productive_duration_formatted': 'no time',
+            'all_productive_hours': 'no time',
+            'all_productive_percentage': 'no time'
+        }
 
+        results = json.loads(self.fetch_all_feeds())
         for row in results:
             if row['date'] == date:
-                summary['socialmedia'] = row.get('social_networking_duration_formatted')
-                summary['entertainment'] = row.get('entertainment_duration_formatted')
-                summary['news'] = row.get('news_duration_formatted')
-                summary['shopping'] = row.get('shopping_duration_formatted')
+
+                for key in summary:
+                    summary[key] = row[key]
                 break
+
         return json.dumps(summary)
+
+    @staticmethod
+    def fetch_intv_feed(access_token, date):
+        rt = RescueTime(access_token)
+        json_result = rt.get_feed_by_date(date)
+        return {'rt_feed': json_result}

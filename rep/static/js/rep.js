@@ -441,11 +441,12 @@ $(document).ready(function() {
           group_rows += '<td>{0}</td>'.format(img_text_options);
         }
 
+        var today = new Date().toJSON().slice(0, 10);
         var date_input = '<input class="form-control" id="intv-start-date" data-provide="datepicker"' +
           'data-date-start-date="+0d"' +
           'data-date-format="yyyy-mm-dd"' +
           'data-date-today-highlight=true' +
-          'placeholder="select start date" value="2016-12-30">';
+          'placeholder="select start date" value="{0}">'.format(today);
 
         new_row = '<tr class="del-row">' + group_rows +
           '<td> {0} </td>'.format(date_input) +
@@ -461,7 +462,8 @@ $(document).ready(function() {
   }
 
   function create_intv_options(img_resp, text_resp, treat_id) {
-    var i, images, texts, image_options, text_options, rt_options, blank_options, show_img, show_txt, show_rt;
+    var i, images, texts, image_options, text_options, rt_options, rt_specific, blank_options, show_img, show_txt,
+      show_rt;
 
     images = JSON.parse(img_resp);
     texts = JSON.parse(text_resp);
@@ -493,7 +495,16 @@ $(document).ready(function() {
       rt_options = '<option> focus & distracting time </option>' +
         '<option> only focus time </option>' +
         '<option> only distracting time </option';
-      rt_options = '<optgroup label="RescueTime">' + rt_options + '</optgroup>';
+      rt_options = '<optgroup label="RescueTime General">' + rt_options + '</optgroup>';
+
+    }
+
+    rt_specific = '';
+    if (show_rt) {
+      rt_specific = '<option> software development </option>' +
+        '<option> social networking </option>' +
+        '<option> productivity pulse </option>';
+      rt_specific = '<optgroup label="RescueTime Specific">' + rt_specific + '</optgroup>';
     }
 
     blank_options = '<optgroup label="No Intervention">' + '<option> ------ </option' + '</optgroup>';
@@ -502,6 +513,7 @@ $(document).ready(function() {
       text_options +
       image_options +
       rt_options +
+      rt_specific +
       blank_options +
       ' </select>';
 

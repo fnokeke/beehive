@@ -13,7 +13,7 @@ import json, httplib2, pytz, requests
 
 from rep import app, login_manager
 from rep.models import Experiment, Intervention, MobileUser, Mturk, User, Imageintv, Textintv
-from rep.rescuetime import RescueOauth2
+from rep.rescuetime import RescueOauth2, RescueTime
 from rep.pam import PamOauth
 from rep.moves import Moves
 from rep.errors import SLMError
@@ -330,6 +330,24 @@ def fetch_texts():
     texts = Textintv.query.all()
     return '{}'.format(texts)
 
+
+@app.route("/beehive-check-rt", methods=['POST'])
+def beehive_check_rt():
+    data = json.loads(request.data)
+    user = User.query.filter_by(email=data['email']).first()
+
+    response = False
+    if user:
+        if user.rescuetime_access_token:
+            response = True
+
+    result = {'response': response, 'rt_email': data['email']}
+    return json.dumps(result)
+
+# @app.route('/beehive-rt')
+# def show_beehive_rt():
+#     return render_template('rt_conn.html', rt_email='fnokeke@gmail.com')
+#
 #######################################
 #
 # Connect Service Providers
@@ -492,9 +510,17 @@ def get_rt_data(date):
     return resp
 
 
+########################################
+# mBeehive
+########################################
 @app.route("/data-rt/user/<email>/<date>")
 def get_user_rt_data(email, date):
-    return json.dumps({'email': email, 'date': date})
+    rt_user = User.query.filter_by(email=email).first()
+    if not rt_user:
+        return {}
+
+    result = RescueTime.fetch_intv_feed(rt_user.rescuetime_access_token, date)
+    return json.dumps(result)
 
 
 ########################
