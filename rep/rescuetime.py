@@ -109,4 +109,28 @@ class RescueTime(object):
     def fetch_intv_feed(access_token, date):
         rt = RescueTime(access_token)
         json_result = rt.get_feed_by_date(date)
-        return {'rt_feed': json_result}
+        return {'rt_summary': json_result}
+
+    def get_all_activity(self, date):
+        if not self.access_token:
+            return '[]'
+
+        activity_url = 'https://www.rescuetime.com/api/oauth/data'
+        params = {
+            'access_token': self.access_token,
+            'restrict_begin': date,
+            'restrict_end': date,
+            'perspective': 'interval',
+            'restrict_kind': 'activity',
+            'interval': 'hour',
+            'format': 'json',
+            'resolution_time': 'minute'
+        }
+        r = requests.get(activity_url, params=params)
+        return r.text
+
+    @staticmethod
+    def fetch_realtime_feed(access_token, date):
+        rt = RescueTime(access_token)
+        text = rt.get_all_activity(date)
+        return {'rt_realtime': text}

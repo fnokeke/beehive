@@ -513,13 +513,23 @@ def get_rt_data(date):
 ########################################
 # mBeehive
 ########################################
-@app.route("/data-rt/user/<email>/<date>")
-def get_user_rt_data(email, date):
+@app.route("/rescuetime/summary/<email>/<date>")
+def get_summary_rt_data(email, date):
     rt_user = User.query.filter_by(email=email).first()
     if not rt_user:
         return {}
 
     result = RescueTime.fetch_intv_feed(rt_user.rescuetime_access_token, date)
+    return json.dumps(result)
+
+
+@app.route("/rescuetime/realtime/<email>/<date>")
+def get_rt_realtime_activity(email, date):
+    rt_user = User.query.filter_by(email=email).first()
+    if not rt_user:
+        return {}
+
+    result = RescueTime.fetch_realtime_feed(rt_user.rescuetime_access_token, date)
     return json.dumps(result)
 
 
