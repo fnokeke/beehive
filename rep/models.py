@@ -10,53 +10,34 @@ import json
 db = SQLAlchemy(app)
 
 
-class Imageintv(db.Model):
+class Uploaded_Intv(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     image_url = db.Column(db.String(100))
-    image_name = db.Column(db.String(30))
+    image_name = db.Column(db.String(100))
+    text = db.Column(db.String(1500))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, info):
         self.image_url = info['image_url']
         self.image_name = info['image_name']
+        self.text = info['text']
 
     def __repr__(self):
         result = {'id': self.id,
                   'image_url': self.image_url,
                   'image_name': self.image_name,
+                  'text': self.text,
                   'created_at': str(self.created_at)}
         return json.dumps(result)
 
     @staticmethod
-    def add_image(info):
-        if Imageintv.query.filter_by(image_url=info['image_url']).first():
+    def add_intv(info):
+        if Uploaded_Intv.query.filter_by(image_url=info['image_url'], text=info['text']).first():
             return
 
-        new_image = Imageintv(info)
+        new_image = Uploaded_Intv(info)
         db.session.add(new_image)
-        db.session.commit()
-
-
-class Textintv(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String(1500))
-    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-
-    def __init__(self, text):
-        self.text = text
-
-    def __repr__(self):
-        result = {'text': self.text, 'created_at': str(self.created_at)}
-        return json.dumps(result)
-
-    @staticmethod
-    def add_text(text):
-        if Textintv.query.filter_by(text=text).first():
-            return
-
-        new_text = Textintv(text)
-        db.session.add(new_text)
         db.session.commit()
 
 

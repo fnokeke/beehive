@@ -12,7 +12,7 @@ from apiclient import discovery
 import json, httplib2, pytz, requests
 
 from rep import app, login_manager
-from rep.models import Experiment, Intervention, MobileUser, Mturk, User, Imageintv, Textintv
+from rep.models import Experiment, Intervention, MobileUser, Mturk, User, Uploaded_Intv
 from rep.rescuetime import RescueOauth2, RescueTime
 from rep.pam import PamOauth
 from rep.moves import Moves
@@ -126,16 +126,15 @@ def internal_server_error(e):
 def page_not_found(e):
     return render_template('404.html'), 404
 
-#################################
-# Handle Mobile User Registration
-#################################
-
 
 def get_next_condition(total_enrolled, ps_per_condition):
     return 1 + (total_enrolled % ps_per_condition)
 
 
-@app.route('/connect/study', methods=['POST'])
+#//////////////////////////////////////
+# Beehive mobile user study connection
+#//////////////////////////////////////
+@app.route('/mobile/connect/study', methods=['POST'])
 def connect_study():
     data = json.loads(request.data)
     experiment = Experiment.query.filter_by(code=data['code']).first()
@@ -171,9 +170,52 @@ def connect_study():
     return json.dumps(result)
 
 
-#################################
-# Handle REST/Server requests
-#################################
+#////////////////////////////////////////////
+# mobile Beehive rescuetime && interventions
+#////////////////////////////////////////////
+@app.route("/rescuetime/summary/<email>/<date>")
+def get_summary_rt_data(email, date):
+    rt_user = User.query.filter_by(email=email).first()
+    if not rt_user:
+        return {}
+
+    result = RescueTime.fetch_intv_feed(rt_user.rescuetime_access_token, date)
+    return json.dumps(result)
+
+
+@app.route("/rescuetime/realtime/<email>/<date>")
+def get_rt_realtime_activity(email, date):
+    rt_user = User.query.filter_by(email=email).first()
+    if not rt_user:
+        return {}
+
+    result = RescueTime.fetch_realtime_feed(rt_user.rescuetime_access_token, date)
+    return json.dumps(result)
+
+
+@app.route("/mobile/check/rescuetime", methods=['POST'])
+def check_rt_conn():
+    data = json.loads(request.data)
+    user = User.query.filter_by(email=data['email']).first()
+
+    response = False
+    if user:
+        if user.rescuetime_access_token:
+            response = True
+
+    result = {'response': response, 'rt_email': data['email']}
+    return json.dumps(result)
+
+
+@app.route('/mobile/ordered/interventions/<code>', methods=['GET'])
+def fetch_ordered_interventions(code):
+    interventions = Intervention.query.filter_by(code=code).order_by('created_at desc').all()
+    return '{}'.format(interventions)
+
+
+#////////////////////////////////////
+# Researcher modify experiments
+#////////////////////////////////////
 @app.route('/add/experiment', methods=['POST'])
 def add_experiment():
     experiment = {
@@ -196,9 +238,8 @@ def edit_experiment(code):
     ctx = {
         'enrolled_users': MobileUser.query.filter_by(code=code).all(),
         'experiment': Experiment.query.filter_by(code=code).first(),
-        'images': Imageintv.query.all(),
-        'texts': Textintv.query.all(),
-        'interventions': Intervention.query.filter_by(code=code)
+        'uploaded_intvs': Uploaded_Intv.query.all(),
+        'interventions': Intervention.query.filter_by(code=code).order_by('created_at desc').all()
     }
     return render_template('edit-experiment.html', **ctx)
 
@@ -255,6 +296,9 @@ def fetch_experiment_by_code(code):
     return str(experiment)
 
 
+#////////////////////////////////////
+# Researcher modify interventions
+#////////////////////////////////////
 @app.route('/add/intervention', methods=['POST'])
 def add_intervention():
     intv = {
@@ -281,78 +325,39 @@ def delete_intervention():
     return 'intervention deleted.'
 
 
-@app.route('/add/image_text', methods=['POST'])
-def add_image_text():
-    text = request.form['text']
-    if text:
-        Textintv.add_text(text)
+@app.route('/upload/intervention', methods=['POST'])
+def upload_intv():
+    text = request.form.get('text')
+    image_name = request.form.get('image_name')
+    image = request.files.get('image')
 
-    image_name = request.form['image_name']
-    image = request.files['image']
-
+    image_url = None
     if image_name and image:
         Upload.save(image_name, image)
-        url = Upload.get_url(image_name)
-        new_image = {'image_name': image_name, 'image_url': url}
-        Imageintv.add_image(new_image)
+        image_url = Upload.get_url(image_name)
+
+    new_intv = {'text': text, 'image_name': image_name, 'image_url': image_url}
+    Uploaded_Intv.add_intv(new_intv)
 
     msg = ''
     if image and image_name and text:
-        msg = 'Image and text added.'
+        msg = 'image with text added.'
     elif image and image_name:
-        msg = 'Image added.'
+        msg = 'only image added.'
     elif text:
-        msg = 'Text added.'
+        msg = 'only text added.'
 
     return msg
 
 
-@app.route('/fetch/interventions/<code>', methods=['GET'])
-def fetch_interventions(code):
-    interventions = Intervention.query.filter_by(code=code).all()
-    return '{}'.format(interventions)
+@app.route('/fetch/uploaded/intervention', methods=['GET'])
+def fetch_uploaded_intv():
+    all_intv = Uploaded_Intv.query.all()
+    return '{}'.format(all_intv)
 
-
-@app.route('/fetch/ordered/interventions/<code>', methods=['GET'])
-def fetch_ordered_interventions(code):
-    interventions = Intervention.query.filter_by(code=code).order_by('created_at desc').all()
-    return '{}'.format(interventions)
-
-
-@app.route('/fetch/images', methods=['GET'])
-def fetch_images():
-    images = Imageintv.query.all()
-    return '{}'.format(images)
-
-
-@app.route('/fetch/texts', methods=['GET'])
-def fetch_texts():
-    texts = Textintv.query.all()
-    return '{}'.format(texts)
-
-
-@app.route("/beehive-check-rt", methods=['POST'])
-def beehive_check_rt():
-    data = json.loads(request.data)
-    user = User.query.filter_by(email=data['email']).first()
-
-    response = False
-    if user:
-        if user.rescuetime_access_token:
-            response = True
-
-    result = {'response': response, 'rt_email': data['email']}
-    return json.dumps(result)
-
-# @app.route('/beehive-rt')
-# def show_beehive_rt():
-#     return render_template('rt_conn.html', rt_email='fnokeke@gmail.com')
-#
-#######################################
-#
+# /////////////////////////////////////
 # Connect Service Providers
-#
-#######################################
+# /////////////////////////////////////
 
 
 # Google login and calendar
@@ -508,29 +513,6 @@ def get_rt_data(date):
     calname = app.config['SN']
     resp = export.to_cal(calname, current_user.rescuetime_access_token, date)
     return resp
-
-
-########################################
-# mBeehive
-########################################
-@app.route("/rescuetime/summary/<email>/<date>")
-def get_summary_rt_data(email, date):
-    rt_user = User.query.filter_by(email=email).first()
-    if not rt_user:
-        return {}
-
-    result = RescueTime.fetch_intv_feed(rt_user.rescuetime_access_token, date)
-    return json.dumps(result)
-
-
-@app.route("/rescuetime/realtime/<email>/<date>")
-def get_rt_realtime_activity(email, date):
-    rt_user = User.query.filter_by(email=email).first()
-    if not rt_user:
-        return {}
-
-    result = RescueTime.fetch_realtime_feed(rt_user.rescuetime_access_token, date)
-    return json.dumps(result)
 
 
 ########################

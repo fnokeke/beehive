@@ -13,34 +13,10 @@
     </span>
   </button>
 
-  <button
-    type="button"
-    class="btn btn-link btn-lg"
-    id="save-single-experiment-btn"
-    value={{experiment.code}}>
-    <span class="glyphicon glyphicon-floppy-saved text-primary"></span>
-    <span class="text-primary">
-      Save
-    </span>
-  </button>
-
-  <button
-    type="button"
-    class="btn btn-link btn-lg"
-    id="delete-single-experiment-btn"
-    value={{experiment.code}}
-    data-toggle="confirmation"
-    data-popout="true">
-    <span class="glyphicon glyphicon-trash text-danger"></span>
-    <span class="text-danger">
-      Delete
-    </span>
-  </button>
-
   <button type="button" class="btn btn-link btn-lg" onclick="window.location.href='#intervention'">
     <span class="glyphicon glyphicon-arrow-down text-primary"></span>
     <span class="text-primary">
-      Apply Intervention
+      Jump to Intervention
     </span>
   </button>
 
@@ -52,9 +28,12 @@
           ({{ experiment.code }})
         {% endif %}
       </h3>
-      <div data-experiment-code="{{ experiment.code }}"></div>
-      <br>
       <span id="edit-experiment-status"></span>
+      <button
+        style="display: none"
+        type="button"
+        id="code_from_hidden_element"
+        value="{{ experiment.code }}"></button>
     </div>
 
     <div>
@@ -75,7 +54,7 @@
             data-toggle="toggle"
             data-on="Yes"
             data-off="No"
-            data-onstyle="success"
+            data-onstyle="primary"
             data-offstyle="danger">
         </div>
       </div>
@@ -90,7 +69,7 @@
             data-toggle="toggle"
             data-on="Yes"
             data-off="No"
-            data-onstyle="success"
+            data-onstyle="primary"
             data-offstyle="danger">
         </div>
       </div>
@@ -105,7 +84,7 @@
             data-toggle="toggle"
             data-on="Yes"
             data-off="No"
-            data-onstyle="success"
+            data-onstyle="primary"
             data-offstyle="danger">
         </div>
       </div>
@@ -120,7 +99,7 @@
             data-toggle="toggle"
             data-on="Yes"
             data-off="No"
-            data-onstyle="success"
+            data-onstyle="primary"
             data-offstyle="danger">
         </div>
       </div>
@@ -135,7 +114,7 @@
             data-toggle="toggle"
             data-on="Yes"
             data-off="No"
-            data-onstyle="success"
+            data-onstyle="primary"
             data-offstyle="danger">
         </div>
       </div>
@@ -150,7 +129,7 @@
             data-toggle="toggle"
             data-on="Yes"
             data-off="No"
-            data-onstyle="success"
+            data-onstyle="primary"
             data-offstyle="danger">
         </div>
       </div>
@@ -165,10 +144,20 @@
             data-toggle="toggle"
             data-on="Yes"
             data-off="No"
-            data-onstyle="success"
+            data-onstyle="primary"
             data-offstyle="danger">
         </div>
       </div>
+
+      <button type="button" class="btn btn-primary" id="update-experiment-btn">
+        <span class="glyphicon glyphicon-floppy-saved"></span>
+        Update Experiment
+      </button>
+
+      <button type="button" class="btn btn-danger" id="delete-experiment-btn">
+        <span class="glyphicon glyphicon-trash"></span>
+        Delete Experiment
+      </button>
 
     </div>
 
@@ -188,20 +177,17 @@
       </p>
     {% endif %}
 
-    <div class="page-header">
-      <h3>Add Images/Texts</h3>
-      <em>Contents added will be available as options to select from when applying interventions.</em>
-    </div>
+    <div style="display: {{ 'block' if experiment.text or experiment.image else 'none' }}">
+      <div class="page-header">
+        <h3>Add Images/Texts</h3>
+        <em>Contents added will be available as options to select from when applying interventions.</em>
+      </div>
 
-    <button
-      type="button"
-      class="btn btn-primary"
-      id=""
-      data-toggle="modal"
-      data-target="#upload-image-modal">
-      <span class="glyphicon glyphicon-upload"></span>
-      Upload Image/Text
-    </button>
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#upload-image-modal">
+        <span class="glyphicon glyphicon-upload"></span>
+        Upload Image/Text
+      </button>
+    </div>
 
     <div
       class="modal fade"
@@ -215,7 +201,7 @@
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
-            <h4 class="modal-title" id="">Upload New Image / Text</h4>
+            <h4 class="modal-title">Upload New Image / Text</h4>
           </div>
           <div class="modal-body">
             <div>
@@ -223,7 +209,7 @@
             </div>
 
             <form enctype="multipart/form-data">
-              <input type="file" id="upload-image-file-btn" accept="Image/*"/>
+              <input type="file" id="uploaded-image" accept="Image/*"/>
               <br>
             </form>
 
@@ -232,98 +218,18 @@
             </div>
 
             <form enctype="multipart/form-data">
-              <textarea name="txt" id="txt" rows="4" cols="40"></textarea>
+              <textarea name="text" id="uploaded-text" rows="4" cols="40"></textarea>
               <br>
 
-              <input type="submit" id="upload-image-text-btn" value="Upload Info" class="btn btn-primary"/>
+              <input type="submit" id="upload-btn" value="Upload Info" class="btn btn-primary"/>
               <br>
-              <span id="upload-image-text-status"></span>
+              <span id="upload-status"></span>
             </form>
 
           </div>
 
         </div>
       </div>
-    </div>
-
-    <div class="page-header" style="display: none">
-      <h3>Archived Images
-        <small>(Last 10)</small>
-      </h3>
-    </div>
-
-    <div style="display: none">
-      <table class="table table-striped">
-        <tr>
-          <th>
-            No
-          </th>
-          <th>
-            Created
-          </th>
-          <th>
-            Label
-          </th>
-          <th>
-            Image
-          </th>
-        </tr>
-
-        {% for image in images[: -11 : -1] %}
-          <tr>
-            <td>
-              {{loop.index}}
-            </td>
-            <td>
-              {{ image.created_at | nyc | fancydatetime }}
-            </td>
-            <td>
-              {{image.image_name}}
-            </td>
-            <td>
-              <img src="{{image.image_url}}" alt="{{image.image_url}}" width="50" height="50">
-            </td>
-          </tr>
-        {% endfor %}
-
-      </table>
-    </div>
-
-    <div class="page-header" style="display: none">
-      <h3>Archived Texts
-        <small>(Last 10)</small>
-      </h3>
-    </div>
-
-    <div style="display: none">
-      <table class="table table-striped">
-        <tr>
-          <th>
-            No
-          </th>
-          <th>
-            Created
-          </th>
-          <th>
-            Texts
-          </th>
-        </tr>
-
-        {% for text in texts[: -11 : -1] %}
-          <tr>
-            <td>
-              {{loop.index}}
-            </td>
-            <td>
-              {{ text.created_at | nyc | fancydatetime }}
-            </td>
-            <td>
-              {{text.text}}
-            </td>
-          </tr>
-        {% endfor %}
-
-      </table>
     </div>
 
     <div class="page-header">
@@ -371,13 +277,6 @@
       </div>
 
       <div class="text-center">
-
-        <!-- <button type="button" class="btn btn-link btn-md" id="update-table-btn">
-          <span class="glyphicon glyphicon-level-up text-primary"></span>
-          <span class="text-primary">
-            Preview Table
-          </span>
-        </button> -->
 
         <button type="button" class="btn btn-link btn-md" id="save-table-btn" value="">
           <span class="glyphicon glyphicon-floppy-saved text-primary"></span>
@@ -441,12 +340,11 @@
         </th>
       </tr>
 
-      {% for intv in interventions[: -11 : -1] %}
-        {% with all_intv_str = intv.treatment.split('%%&&') %}
+      {% for intv in interventions%}
+        {% with all_intv_arr = intv.treatment.split('%%&&') %}
         <tr>
           <td>
             {{ loop.index }}
-
             <span onclick="delete_intv({{ intv }})" class="glyphicon glyphicon-trash text-danger"></span>
           </td>
 
@@ -455,40 +353,33 @@
           </td>
 
           <td>
-            {% if all_intv_str | length <= 1 %}
 
-              {% with intv_str = all_intv_str[0] %}
+            <ul>
+              {% for treat in all_intv_arr %}
 
-              {% if not 'photos' in intv_str %}
-                {{ intv_str }}
-              {% else %}
-                <img src="{{ intv_str }}" alt="intervention" width="50" height="50">
-              {% endif %}
+                <li>
 
-              {% endwith %}
-
-            {% else %}
-              <ul>
-                {% for intv_str in all_intv_str %}
-
-                  <li>
-
+                  {% if all_intv_arr | length > 1 %}
                     <em>
-                      Group{{ loop.index }}:
+                      Group
+                      {{ loop.index }}:
                     </em>
+                  {% endif %}
 
-                    {% if not 'photos' in intv_str %}
-                      {{ intv_str }}
-                    {% else %}
-                      <img src="{{ intv_str }}" alt="intervention" width="50" height="50">
-                    {% endif %}
+                  {% if '**&&&&**' in treat %}
+                    <!-- show photo / image -->
+                    <img src="{{ treat.split('**&&&&**')[0] }}" alt="intervention" width="50" height="50">
+                    /
+                    {{ treat.split('**&&&&**')[1] }}
+                  {% elif 'photos' in treat %}
+                    <img src="{{ treat }}" alt="intervention" width="50" height="50">
+                  {% else %}
+                    {{ treat }}
+                  {% endif %}
+                </li>
 
-                  </li>
-
-                {% endfor %}
-              </ul>
-
-            {% endif %}
+              {% endfor %}
+            </ul>
 
           </td>
 
@@ -519,236 +410,5 @@
     </table>
 
   </div>
-
-  <!--
-    <div class>
-      <table class="table">
-        <h3>data analysis</h3>
-        <tr>
-          <td>
-            <div class="col-lg-8">
-
-              <span class="dropdown">
-                <strong>
-                  Select datastream:
-                </strong>
-                <br>
-                <span
-                  class="btn btn-default dropdown-toggle"
-                  type="button"
-                  id="dropdown-action-label"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="true">
-                  Steps
-                  <span class="caret"></span>
-                </span>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" id="dropdown-action">
-                  <li>
-                    <a>Calories</a>
-                  </li>
-                  <li>
-                    <a>Steps</a>
-                  </li>
-                  <li>
-                    <a>Duration</a>
-                  </li>
-                </ul>
-              </span>
-              <br>
-              <br>
-
-            </div>
-          </td>
-        </tr>
-      </table>
-    </div>
-    <div>
-
-      <table class="table">
-        <tr>
-          <div class="col-lg-6">
-            <strong>
-              Select 4 dates in order:
-            </strong>
-            <em>
-              Study Begin, Intervention Begin, Intervention End, Study End
-            </em><br>
-            <em>
-              <small>NB: Max of
-                <strong>31 days max</strong>
-                b/w study start and end.
-              </small>
-            </em>
-
-            <input
-              data-provide="datepicker"
-              data-date-end-date="-1d"
-              data-date-format="yyyy-mm-dd"
-              data-date-multidate=4
-              data-date-multidate-separator=",   "
-              data-date-today-highlight=true
-              id="experiment-dates"
-              class="form-control"
-              placeholder="select four (4) dates">
-            <br>
-          </div>
-
-        </tr>
-
-        <tr>
-          <td>
-            <div class="col-lg-3">
-              <button class="btn btn-primary" type="button" id="perform-analysis-btn">Perform Analysis</button>
-            </div>
-          </td>
-        </tr>
-
-      </table>
-
-    </div>
-
-    <div class="page-header">
-      <h3>results</h3>
-      <span class="danger" id="error-div"></span>
-      <span id="analysis-status">Awaiting input...</span>
-    </div>
-
-     <div>
-      <table class="table table-striped table-bordered" id="my-intv-table">
-        <tr>
-          <th class="col-md-1">
-            Group1
-          </th>
-          <th class="col-md-1">
-            Start
-          </th>
-          <th class="col-md-1">
-            Every
-          </th>
-          <th class="col-md-1">
-            When
-          </th>
-          <th class="col-md-1">
-            Repeat
-          </th>
-        </tr>
-
-        <tr>
-          <td>
-
-            <select class="form-control" name="" style="">
-
-              <optgroup label="Texts">
-                {% for txt in texts %}
-                  <option>{{ txt.text }}</option>
-                {% endfor %}
-              </optgroup>
-
-              <optgroup label="Images">
-                {% for img in images %}
-                  <option>{{ img.image_name }}</option>
-                {% endfor %}
-              </optgroup>
-
-            </select>
-          </td>
-
-          <td>
-            <input
-              data-provide="datepicker"
-              data-date-format="yyyy-mm-dd"
-              data-date-today-highlight=true
-              data-date-start-date="+0d"
-              id="my-start-date"
-              class="form-control"
-              placeholder="select start date">
-          </td>
-
-          <td>
-            <select class="form-control" name="">
-              <optgroup label="Daily">
-                <option>Day</option>
-              </optgroup>
-
-              <optgroup label="Once per Week">
-                <option>Mon</option>
-                <option>Tues</option>
-                <option>Wed</option>
-                <option>Thurs</option>
-                <option>Fri</option>
-                <option>Sat</option>
-                <option>Sun</option>
-              </optgroup>
-
-            </select>
-
-          </td>
-
-          <td>
-            <input type="time" class="form-control" id="my-intv-time">
-          </td>
-
-          <td>
-            <input type="number" class="form-control" id="my-intv-repeat" value="1" style="width: 80px">
-          </td>
-        </tr>
-
-      </table>
-    </div>
-<div
-      class="collapse fade"
-      id="intervention-modal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-            <h4 class="modal-title" id="">Upload New Image / Text</h4>
-          </div>
-          <div class="modal-body">
-
-            <input
-              data-provide="datepicker"
-              data-date-format="yyyy-mm-dd"
-              data-date-today-highlight=true
-              data-date-start-date="+1d"
-              id="intervention-date"
-              class="form-control"
-              placeholder="select date to apply intervention">
-            <span id="intervention-date-status"></span>
-
-            <div class="page-header">
-              <h4>Image</h4>
-            </div>
-
-            <form enctype="multipart/form-data">
-              <input type="file" id="image" name="image" accept="Image/*"/>
-              <br>
-            </form>
-
-            <div class="page-header">
-              <h4>Text</h4>
-            </div>
-
-            <form enctype="multipart/form-data">
-              <textarea name="txt" id="txt" rows="4" cols="40"></textarea>
-              <br>
-
-              <input type="submit" id="upload-image-text-btn" class="btn btn-primary"/>
-              <br>
-              <span id="upload-image-text-status"></span>
-            </form>
-
-          </div>
-
-        </div>
-      </div>
-    </div>
- -->
 
 {% endblock %}

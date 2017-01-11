@@ -296,9 +296,9 @@ $(document).ready(function() {
     window.location.href = '/researcher_login';
   });
 
-  $('#save-single-experiment-btn').click(function() {
+  $('#update-experiment-btn').click(function() {
+    var code = $('#code_from_hidden_element').val();
     var title = $('#edit-exp-title').val();
-    var code = $('#save-single-experiment-btn').val();
     var rescuetime = $('#edit-rescuetime-checkbox-btn').is(':checked');
     var aware = $('#edit-aware-checkbox-btn').is(':checked');
     var geofence = $('#edit-geofence-checkbox-btn').is(':checked');
@@ -327,7 +327,7 @@ $(document).ready(function() {
     };
 
     $.post(url, data).done(function(resp) {
-      show_success_msg(response_field, 'Experiment successfully updated. Refreshing title...');
+      show_success_msg(response_field, '<br/>Experiment successfully updated. Reloading experiment...');
       window.location.href = window.location.href;
     }).fail(function(error) {
       show_error_msg(response_field, error);
@@ -335,9 +335,9 @@ $(document).ready(function() {
 
   });
 
-  $('#delete-single-experiment-btn').click(function() {
+  $('#delete-experiment-btn').click(function() {
     if (confirm("Are you sure you want to delete this experiment permanently?") === true) {
-      var code = $('#delete-single-experiment-btn').val();
+      var code = $('#code_from_hidden_element').val();
       window.location.href = '/delete/experiment/{0}'.format(code);
     }
   });
@@ -346,51 +346,57 @@ $(document).ready(function() {
   /////////////////////////////
   // upload images and texts
   /////////////////////////////
-  $('#upload-image-text-btn').click(function(event) {
-    console.log('image text clicked');
+  $('#upload-btn').click(function(event) {
+    var image, text, response_field, form_data;
     event.preventDefault();
 
-    var image = $('#upload-image-file-btn').get(0).files[0];
-    var txt = $('#txt').val();
-    var response_field = '#upload-image-text-status';
+    image = $('#uploaded-image').get(0).files[0];
+    text = $('#uploaded-text').val();
+    response_field = '#upload-status';
 
-    if (!image && !txt) {
-      show_error_msg(response_field, 'You need to add either an image or a text.');
+    if (!image && !text) {
+      show_error_msg(response_field, 'You need to add either an image and/or a text.');
       return;
     }
 
-    var formData = new FormData();
-    formData.append('text', txt);
-    formData.append('image', image);
+    form_data = new FormData();
 
-    var image_name = image ? image.name : '';
-    formData.append('image_name', image_name);
+    if (image) {
+      form_data.append('image', image);
+      form_data.append('image_name', image.name);
+    }
+
+    if (text) {
+      form_data.append('text', text);
+    }
+    console.log('text going:', text);
+
 
     $.ajax({
-      url: '/add/image_text',
-      success: function(e) {
-        console.log('resp: ', e);
-        show_success_msg(response_field, 'Image successfully uploaded.');
-        // $('#fetch-all-imgs-btn').click();
+      url: '/upload/intervention',
+      success: function(resp) {
+        show_success_msg(response_field, 'Successfully uploaded: ' + resp);
       },
       error: function(e) {
-        show_error_msg(response_field, 'Image upload error. Pls contact admin.');
+        show_error_msg(response_field, 'Upload error. Pls contact researcher. ' + e.statusText);
       },
       complete: function(e) {
         setTimeout(function() {
-          $('#upload-image-modal').modal('hide');
           show_plain_msg(response_field, '');
-          $('#image').val('');
+          $('#upload-image-modal').modal('hide');
+          $('#uploaded-image').val('');
+          $('#uploaded-text').val('');
           window.location.href = window.location.href;
-        }, 1000);
+        }, 1500);
       },
-      data: formData,
+      data: form_data,
       type: 'POST',
       cache: false,
       contentType: false,
       processData: false
     });
     return false;
+
   });
 
 
@@ -419,75 +425,77 @@ $(document).ready(function() {
     view = '<table id="intvn-table-id" class="table table-striped table-bordered table-hover"><tr>' + group_rows +
       '<th class=col-md-1> Start </th>' +
       '<th class="col-md-1"> Every </th>' +
-      '<th class="col-md-1"> When </th>' +
+      '<th class="col-md-1"> Alarm Time </th>' +
       '<th class="col-md-1"> Repeat </th>' +
       '</tr><tbody></tbody></table>';
 
     $('#intv-table-view').html(view);
   }
 
+  function to_date_fmt(date) {
+    var mm = date.getMonth() + 1; // getMonth() is zero-based
+    var dd = date.getDate();
+    return [date.getFullYear(), (mm > 9 ? '' : '0') + mm, (dd > 9 ? '' : '0') + dd].join('-');
+  }
+
   function add_intv_row() {
-    var no_of_condition, group_rows, new_row, img_text_options, treat_id;
+    var no_of_condition, group_rows, new_row, intv_options, treat_id;
 
     no_of_condition = parseInt($('#no-of-condition').val());
     group_rows = '';
 
-    $.get('/fetch/images').done(function(img_resp) {
-      $.get('/fetch/texts').done(function(text_resp) {
+    $.get('/fetch/uploaded/intervention').done(function(uploaded_intv) {
+      for (var j = 1; j <= no_of_condition; j++) {
+        treat_id = 'treat-{0}'.format(j);
+        intv_options = create_intv_options(uploaded_intv, treat_id);
+        group_rows += '<td>{0}</td>'.format(intv_options);
+      }
 
-        for (var j = 1; j <= no_of_condition; j++) {
-          treat_id = 'treat-{0}'.format(j);
-          img_text_options = create_intv_options(img_resp, text_resp, treat_id);
-          group_rows += '<td>{0}</td>'.format(img_text_options);
-        }
+      var today = to_date_fmt(new Date());
+      var date_input = '<input class="form-control" id="intv-start-date" data-provide="datepicker"' +
+        'data-date-start-date="+0d"' +
+        'data-date-format="yyyy-mm-dd"' +
+        'data-date-today-highlight=true' +
+        'placeholder="select start date" value="{0}">'.format(today);
 
-        var today = new Date().toJSON().slice(0, 10);
-        var date_input = '<input class="form-control" id="intv-start-date" data-provide="datepicker"' +
-          'data-date-start-date="+0d"' +
-          'data-date-format="yyyy-mm-dd"' +
-          'data-date-today-highlight=true' +
-          'placeholder="select start date" value="{0}">'.format(today);
+      new_row = '<tr class="del-row">' + group_rows +
+        '<td> {0} </td>'.format(date_input) +
+        '<td> {0} </td>'.format(create_every_options()) +
+        '<td> <input type="time" class="form-control" id="intv-time" value="00:00:00.000"/> </td>' +
+        '<td> <input type="number" id="intv-repeat" class="form-control" style="width: 80px" min=1 value=1 /> </td>' +
+        '</tr>';
 
-        new_row = '<tr class="del-row">' + group_rows +
-          '<td> {0} </td>'.format(date_input) +
-          '<td> {0} </td>'.format(create_every_options()) +
-          '<td> <input type="time" class="form-control" id="intv-time" value="00:00:00.000"/> </td>' +
-          '<td> <input type="number" id="intv-repeat" class="form-control" style="width: 80px" min=1 value=1 /> </td>' +
-          '</tr>';
+      $('#intvn-table-id').append(new_row);
 
-        $('#intvn-table-id').append(new_row);
-
-      });
     });
   }
 
-  function create_intv_options(img_resp, text_resp, treat_id) {
-    var i, images, texts, image_options, text_options, rt_options, rt_specific, blank_options, show_img, show_txt,
-      show_rt;
+  function create_intv_options(uploaded_intv, treat_id) {
+    var i, delim, uploads, uploaded_options, rt_options, rt_specific, blank_options, show_img, show_txt, show_rt;
 
-    images = JSON.parse(img_resp);
-    texts = JSON.parse(text_resp);
+    uploads = JSON.parse(uploaded_intv);
 
     show_img = $('#edit-image-checkbox-btn').is(':checked');
     show_txt = $('#edit-text-checkbox-btn').is(':checked');
     show_rt = $('#edit-rescuetime-checkbox-btn').is(':checked');
+    delim = '**&&&&**';
 
-    image_options = '';
-    if (show_img) {
-      for (i = 0; i < images.length; i++) {
-        var img = images[i];
-        image_options += '<option value="{0}">{1}</option>'.format(img.image_url, img.image_name);
-      }
-      image_options = '<optgroup label="Images">' + image_options + '</optgroup>';
-    }
+    uploaded_options = '';
+    if (show_img || show_txt) {
+      for (i = 0; i < uploads.length; i++) {
+        var upl = uploads[i];
 
-    text_options = '';
-    if (show_txt) {
-      for (i = 0; i < texts.length; i++) {
-        var txt = texts[i];
-        text_options += '<option>{0}</option>'.format(txt.text);
+        if (upl.image_name && upl.text) {
+          uploaded_options += '<option value="{1}{0}{3}">{1} / {3}</option>'.format(delim, upl.image_url, upl.image_name,
+            upl.text);
+        } else if (upl.image_name) {
+          uploaded_options += '<option value="{0}">{1}</option>'.format(upl.image_url, upl.image_name);
+        } else if (upl.text) {
+          uploaded_options += '<option value="{0}">{0}</option>'.format(upl.text);
+        }
+
       }
-      text_options = '<optgroup label="Texts">' + text_options + '</optgroup>';
+      uploaded_options = '<optgroup label="Uploads">' + uploaded_options + '</optgroup>';
     }
 
     rt_options = '';
@@ -510,8 +518,7 @@ $(document).ready(function() {
     blank_options = '<optgroup label="No Intervention">' + '<option> ------ </option' + '</optgroup>';
 
     var options = '<select id="{0}" class="form-control">'.format(treat_id) +
-      text_options +
-      image_options +
+      uploaded_options +
       rt_options +
       rt_specific +
       blank_options +
@@ -536,7 +543,7 @@ $(document).ready(function() {
 
   $('#save-group-btn').click(function() {
 
-    var experiment_code = $('#save-single-experiment-btn').val(); // code hidden in button
+    var experiment_code = $('#code_from_hidden_element').val();
     var no_of_condition = parseInt($('#no-of-condition').val());
     var ps_per_condition = $('#ps-per-condition').val();
 
@@ -565,13 +572,16 @@ $(document).ready(function() {
     var response_field = '#intv-table-status';
     var no_of_condition = parseInt($('#no-of-condition').val());
     var treatments = [];
+    var treat_delim = '**&&&&**';
 
     for (var k = 1; k <= no_of_condition; k++) {
       var btn_id = '#treat-{0}'.format(k);
       var treat = $(btn_id).val();
+      console.log('treat: ', treat);
       if (treat) treatments.push(treat);
     }
 
+    console.log('all_treaments: ', treatments);
     if (treatments.length === 0) {
       show_error_msg(response_field,
         'Error: You need to upload images and/or texts before you apply any intervention.<br/>');
@@ -600,8 +610,7 @@ $(document).ready(function() {
     intv_end_datetime.setDate(intv_end_datetime.getDate() + no_of_days);
     intv_end_datetime = intv_end_datetime;
 
-    var experiment_code = $('#save-single-experiment-btn').val(); // code hidden in button
-
+    var experiment_code = $('#code_from_hidden_element').val();
     if (experiment_code === '') {
       show_error_msg(response_field,
         'Error: this experiment does not exist / has invalid code. You need to create a new one.<br/>');
