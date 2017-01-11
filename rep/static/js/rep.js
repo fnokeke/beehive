@@ -568,6 +568,7 @@ $(document).ready(function() {
 
 
   $('#save-table-btn').click(function() {
+    console.log('save table clicked.');
 
     var response_field = '#intv-table-status';
     var no_of_condition = parseInt($('#no-of-condition').val());
@@ -592,10 +593,15 @@ $(document).ready(function() {
     var all_treat_str = treatments.join(delim);
 
     var intv_time = $('#intv-time').val();
-    intv_time = intv_time.indexOf('.') > -1 ? intv_time : '{0}:00.000'.format(intv_time);
+    intv_time = intv_time.indexOf('.') > -1 ? intv_time : '{0}:00'.format(intv_time);
+    console.log('intv_time: ', intv_time);
 
+    ////////////////////////////////////////////////
+    // all experiments start and end at midnight
+    // use NYC timezone
+    ////////////////////////////////////////////////
     var intv_start_date = $('#intv-start-date').val();
-    var intv_start_datetime = '{0}T{1}'.format(intv_start_date, intv_time);
+    var intv_start_datetime = '{0}T00:00:00-05:00'.format(intv_start_date);
     intv_start_datetime = new Date(intv_start_datetime);
 
     var intv_every = $('#intv-every').val();
@@ -605,7 +611,7 @@ $(document).ready(function() {
     var factor = intv_every === 'Daily' ? 1 : 7;
     var no_of_days = intv_repeat * factor;
 
-    var intv_end_datetime = '{0}T{1}'.format(intv_start_date, intv_time);
+    var intv_end_datetime = '{0}T00:00:00-05:00'.format(intv_start_date);
     intv_end_datetime = new Date(intv_end_datetime);
     intv_end_datetime.setDate(intv_end_datetime.getDate() + no_of_days);
     intv_end_datetime = intv_end_datetime;
@@ -622,8 +628,8 @@ $(document).ready(function() {
       'code': experiment_code,
       'condition': no_of_condition,
       'treatment': all_treat_str,
-      'start': intv_start_datetime.toJSON(),
-      'end': intv_end_datetime.toJSON(),
+      'start': intv_start_datetime.toJSON(), // UTC
+      'end': intv_end_datetime.toJSON(), // UTC
       'every': intv_every,
       'when': intv_time,
       'repeat': intv_repeat
