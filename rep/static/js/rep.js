@@ -635,6 +635,7 @@ $(document).ready(function() {
       'repeat': intv_repeat
     };
 
+
     $.post(url, data).done(function(resp) {
       show_success_msg(response_field, 'Intervention successfully saved.<br/>');
       console.log('success intv resp: ', resp);

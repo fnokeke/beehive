@@ -274,6 +274,7 @@
 
       <div class="page-header">
         <h3 id="intervention">Apply Interventions</h3>
+        <em>All interventions start/end at midnight.</em>
       </div>
 
       <div class="text-center">
@@ -392,15 +393,17 @@
           </td>
 
           <td>
-            {{ intv.start | todatetime | onlyfancydate }}
+            {{ intv.start }}
+            <br>
+            {{ intv.start | todatetime | nyc | onlyfancydate }}
           </td>
 
           <td>
-            {{ intv.end | todatetime | onlyfancydate }}
+            {{ intv.end | todatetime | nyc | onlyfancydate }}
           </td>
 
           <td>
-            {{ intv.start | todatetime | onlyfancytime }}
+            {{ intv.when | onlyfancytime }}
           </td>
         </tr>
 

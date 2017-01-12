@@ -651,7 +651,12 @@ def _jinja2_strformat_only_date(date):
 
 
 @app.template_filter('onlyfancytime')
-def _jinja2_strformatonly_time(date):
+def _jinja2_strformatonly_time(time_str):
+    date = datetime.now()
+    hr, mins, secs = time_str.split(':')
+    if '.' in secs:
+        secs, _ = secs.split('.')
+    date = date.replace(hour=int(hr), minute=int(mins), second=int(secs))
     return date.strftime('%-I:%M %p')
 
 
