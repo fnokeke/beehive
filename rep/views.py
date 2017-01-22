@@ -136,7 +136,7 @@ def get_next_condition(total_enrolled, ps_per_condition):
 #//////////////////////////////////////
 @app.route('/mobile/connect/study', methods=['POST'])
 def connect_study():
-    data = json.loads(request.data)
+    data = json.loads(request.data) if request.data else request.form.to_dict()
     experiment = Experiment.query.filter_by(code=data['code']).first()
     if not experiment:
         return json.dumps({'experiment': 'None'})
