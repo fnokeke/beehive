@@ -231,10 +231,18 @@ def get_all_events():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     email, date = data['email'], data['date']
     user = User.query.filter_by(email=email).first()
-    events = [-1]
+    events = {'events': -1}
     if user and date:
         events = Calendar(email, email, user.google_credentials).get_all_events(date)
-    return json.dumps(events)
+        events = minimize_events(events)
+    return json.dumps({'events': events})
+
+
+def minimize_events(events):
+    minimal_events = []
+    for ev in events:
+        minimal_events.append({'summary': ev['summary'], 'start': ev['start'], 'end': ev['end']})
+    return minimal_events
 
 
 @app.route('/mobile/ordered/interventions/<code>', methods=['GET'])
