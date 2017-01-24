@@ -195,7 +195,7 @@ def get_rt_realtime_activity(email, date):
 
 @app.route("/mobile/check/rescuetime", methods=['POST'])
 def check_rt_conn():
-    data = json.loads(request.data)
+    data = json.loads(request.data) if request.data else request.form.to_dict()
     user = User.query.filter_by(email=data['email']).first()
 
     response = False
@@ -203,7 +203,21 @@ def check_rt_conn():
         if user.rescuetime_access_token:
             response = True
 
-    result = {'response': response, 'rt_email': data['email']}
+    result = {'rt_response': response, 'rt_email': data['email']}
+    return json.dumps(result)
+
+
+@app.route("/mobile/check/calendar", methods=['POST'])
+def check_cal_conn():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    user = User.query.filter_by(email=data['email']).first()
+
+    response = False
+    if user:
+        if user.google_credentials:
+            response = True
+
+    result = {'cal_response': response, 'cal_email': data['email']}
     return json.dumps(result)
 
 
