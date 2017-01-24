@@ -26,6 +26,11 @@ from rep.utils import requires_basic_auth
 from datetime import datetime
 
 
+@app.route('/googlebcabee7122e5544b.html')
+def google_domain_verification():
+    return render_template('googlebcabee7122e5544b.html')
+
+
 #################################
 # template views
 #################################
@@ -219,6 +224,17 @@ def check_cal_conn():
 
     result = {'cal_response': response, 'cal_email': data['email']}
     return json.dumps(result)
+
+
+@app.route("/mobile/calendar/events", methods=['POST'])
+def get_all_events():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    email, date = data['email'], data['date']
+    user = User.query.filter_by(email=email).first()
+    events = [-1]
+    if user and date:
+        events = Calendar(email, email, user.google_credentials).get_all_events(date)
+    return json.dumps(events)
 
 
 @app.route('/mobile/ordered/interventions/<code>', methods=['GET'])

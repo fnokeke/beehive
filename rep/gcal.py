@@ -46,11 +46,16 @@ class Calendar(object):
     Perform Google Calendar Operations
     """
 
-    def __init__(self, calname, credentials=None):
-        service = CalendarService.create_service(credentials or current_user.google_credentials)
-        self.cal_id = CalendarService.fetch_id(calname, service)
+    def __init__(self, calname, cal_id=None, credentials=None):
+        self.service = CalendarService.create_service(credentials or current_user.google_credentials)
+        self.cal_id = cal_id or CalendarService.fetch_id(calname, self.service)
         self.calname = calname
-        self.service = service
+
+    def get_all_events(self, date):
+        tmin = '{}T00:00:00-00:00'.format(date)
+        tmax = '{}T23:59:59-00:00'.format(date)
+        stored_events = self.service.events().list(calendarId=self.cal_id, timeMin=tmin, timeMax=tmax).execute()
+        return stored_events['items']
 
     def insert_event(self, events):
         """
