@@ -39,7 +39,7 @@ def justdoit():
 #################################
 # template views
 #################################
-@app.route('/index')
+@app.route('/')
 def index():
 
     if not current_user.is_authenticated:
