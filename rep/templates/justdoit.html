@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}
+  JUST-DO-IT
+{% endblock %}
+
+{% block cover %}
+  <link href="{{ url_for('static', filename='cover.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+  <div class="center-content">
+    <p></p>
+    <img src="{{ url_for('static', filename='images/justdoit.gif')}}" alt="just do it gif"/>
+  </div>
+
+{% endblock %}

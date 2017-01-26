@@ -31,10 +31,15 @@ def google_domain_verification():
     return render_template('googlebcabee7122e5544b.html')
 
 
+@app.route('/focus')
+def justdoit():
+    return render_template('justdoit.html')
+
+
 #################################
 # template views
 #################################
-@app.route('/')
+@app.route('/index')
 def index():
 
     if not current_user.is_authenticated:
@@ -231,7 +236,7 @@ def get_all_events():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     email, date = data['email'], data['date']
     user = User.query.filter_by(email=email).first()
-    events = {'events': -1}
+    events = -1
     if user and date:
         events = Calendar(email, email, user.google_credentials).get_all_events(date)
         events = minimize_events(events)
