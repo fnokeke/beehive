@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Download
+{% endblock %}
+
+{% block cover %}
+  <link href="{{ url_for('static', filename='cover.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+
+  <div class="container">
+
+    <div class="page-header">
+      <h2>Download Android App</h2>
+    </div>
+
+    <div>
+      <p></p>
+      <a href="{{ url_for('static', filename='downloads/beehive-monitor.apk') }}">Beehive Monitor App</a>
+    </div>
+
+  </div>
+{% endblock %}

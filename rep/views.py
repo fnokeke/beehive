@@ -36,6 +36,11 @@ def justdoit():
     return render_template('justdoit.html')
 
 
+@app.route('/download')
+def download():
+    return render_template('download.html')
+
+
 #################################
 # template views
 #################################
