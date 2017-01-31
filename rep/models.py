@@ -178,9 +178,11 @@ class MobileUser(db.Model):
 class Experiment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(10), unique=True)
+    title = db.Column(db.String(120))
+    start = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    end = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     no_of_condition = db.Column(db.Integer, default=1)
     ps_per_condition = db.Column(db.Integer, default=1)
-    title = db.Column(db.String(120))
     rescuetime = db.Column(db.Boolean, default=False)
     aware = db.Column(db.Boolean, default=False)
     geofence = db.Column(db.Boolean, default=False)
@@ -191,6 +193,8 @@ class Experiment(db.Model):
 
     def __init__(self, info):
         self.title = info.get('title')
+        self.start = info['start']
+        self.end = info['end']
         self.code = info.get('code') if info.get('code') else Experiment.generate_unique_id()
         self.no_of_condition = info.get('no_of_condition')
         self.ps_per_condition = info.get('ps_per_condition')
@@ -205,6 +209,8 @@ class Experiment(db.Model):
     def __repr__(self):
         result = {
             'title': self.title,
+            'start': str(self.start),
+            'end': str(self.end),
             'code': self.code,
             'rescuetime': self.rescuetime,
             'aware': self.aware,

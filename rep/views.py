@@ -173,7 +173,7 @@ def connect_study():
     if user_exists:
         MobileUser.update_field(data['email'], 'condition', condition)
         _, __, user = MobileUser.update_field(data['email'], 'code', data['code'])
-        response = 'Successfully switched to another experiment ({}).'.format(data['code'])
+        response = 'Successfully switched experiment.'
         result = {'response': response, 'user': str(user), 'experiment': str(experiment)}
         return json.dumps(result)
 
@@ -268,6 +268,8 @@ def fetch_ordered_interventions(code):
 def add_experiment():
     experiment = {
         'title': request.form.get('title'),
+        'start': request.form.get('start'),
+        'end': request.form.get('end'),
         'rescuetime': True if request.form.get('rescuetime') == 'true' else False,
         'aware': True if request.form.get('aware') == 'true' else False,
         'geofence': True if request.form.get('geofence') == 'true' else False,
@@ -276,6 +278,9 @@ def add_experiment():
         'reminder': True if request.form.get('reminder') == 'true' else False,
         'actuators': True if request.form.get('actuators') == 'true' else False
     }
+
+    experiment['start'] = datetime.strptime(experiment['start'], '%Y-%m-%dT%H:%M:%S.000Z')
+    experiment['end'] = datetime.strptime(experiment['end'], '%Y-%m-%dT%H:%M:%S.000Z')
 
     _, response, __ = Experiment.add_experiment(experiment)
     return response

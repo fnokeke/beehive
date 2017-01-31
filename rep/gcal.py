@@ -54,8 +54,21 @@ class Calendar(object):
     def get_all_events(self, date):
         tmin = '{}T00:00:00-00:00'.format(date)
         tmax = '{}T23:59:59-00:00'.format(date)
-        stored_events = self.service.events().list(calendarId=self.cal_id, timeMin=tmin, timeMax=tmax).execute()
-        return stored_events['items']
+        filtered_events = self.service.events().list(calendarId=self.cal_id, timeMin=tmin, timeMax=tmax).execute()
+        stored_events = []
+        for ev in filtered_events['items']:
+            if self.is_same_date(ev['start'], ev['end'], tmin):
+                stored_events.append(ev)
+
+        return filtered_events['items']
+
+    def is_same_date(self, start, end, tmin):
+        if start.get('dateTime'):
+            startTime = start['dateTime']
+            endTime = end['dateTime']
+            return True
+        else:
+            return True
 
     def insert_event(self, events):
         """

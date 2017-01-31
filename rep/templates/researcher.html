@@ -75,6 +75,34 @@
             </div>
 
             <div class="form-group row">
+              <label class="col-xs-2 col-form-label">Dates</label>
+              <div class="col-xs-10">
+                <div class="input-group input-daterange">
+                  <input
+                    type="text"
+                    id="exp-start-date"
+                    class="form-control"
+                    placeholder="start date"
+                    data-date-start-date="+1d"
+                    data-date-today-highlight=true
+                    data-date-format='yyyy-mm-dd'>
+
+                  <div class="input-group-addon">to</div>
+                  <input
+                    type="text"
+                    id="exp-end-date"
+                    class="form-control"
+                    placeholder="end date"
+                    data-date-start-date="+1d"
+                    data-date-today-highlight=true
+                    data-date-format='yyyy-mm-dd'>
+                </div>
+              </div>
+            </div>
+
+            <script type="text/javascript"></script>
+
+            <div class="form-group row">
               <label class="col-xs-2 col-form-label">RescueTime required</label>
               <div class="col-xs-10">
                 <input

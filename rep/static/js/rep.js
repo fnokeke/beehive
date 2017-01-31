@@ -4,6 +4,12 @@
 
 $(document).ready(function() {
 
+  // add date range values for experiment start and end dates
+  $('.input-daterange input').each(function () {
+    $(this).datepicker('clearDates');
+  });
+
+
   // fetch param from url: xyz.com?enable=yes ---> urlParam(enable) returns yes
   $.url_param = function(name) {
     var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
@@ -182,6 +188,8 @@ $(document).ready(function() {
   $('#create-experiment-btn').click(function(event) {
     event.preventDefault();
     var title = $('#experiment-title-id').val();
+    var start = $('#exp-start-date').val();
+    var end = $('#exp-end-date').val();
     var rescuetime = $('#rescuetime-checkbox-btn').is(':checked');
     var aware = $('#aware-checkbox-btn').is(':checked');
     var geofence = $('#geofence-checkbox-btn').is(':checked');
@@ -198,11 +206,28 @@ $(document).ready(function() {
       return;
     }
 
-    $('#add-experiment-modal').modal('hide');
+    if (start === '' || end === '') {
+      show_error_msg(response_field, 'Experiment start and end dates needed.');
+      return;
+    }
 
+    var exp_start_datetime = '{0}T00:00:00-05:00'.format(start);
+    exp_start_datetime = new Date(exp_start_datetime);
+
+    var exp_end_datetime = '{0}T00:00:00-05:00'.format(end);
+    exp_end_datetime = new Date(exp_end_datetime);
+
+    if (exp_start_datetime.getTime() > exp_end_datetime.getTime()) {
+      show_error_msg(response_field, 'Start date must come before end date.');
+      return;
+    }
+
+    $('#add-experiment-modal').modal('hide');
     var url = '/add/experiment';
     var data = {
       'title': title,
+      'start': exp_start_datetime.toJSON(),
+      'end': exp_end_datetime.toJSON(),
       'rescuetime': rescuetime,
       'aware': aware,
       'geofence': geofence,

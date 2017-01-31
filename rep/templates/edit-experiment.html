@@ -26,6 +26,12 @@
         {% if experiment %}
           {{ experiment.title }}
           ({{ experiment.code }})
+          <br>
+          <small>
+            {{ experiment.start | nyc | onlyfancydate }}
+            to
+            {{ experiment.end | nyc | onlyfancydate }}
+          </small>
         {% endif %}
       </h3>
       <span id="edit-experiment-status"></span>
