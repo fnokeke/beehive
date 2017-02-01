@@ -173,7 +173,7 @@ def connect_study():
     if user_exists:
         MobileUser.update_field(data['email'], 'condition', condition)
         _, __, user = MobileUser.update_field(data['email'], 'code', data['code'])
-        response = 'Successfully switched experiment.'
+        response = 'Successfully switched experiment.'.format(data['code'])
         result = {'response': response, 'user': str(user), 'experiment': str(experiment)}
         return json.dumps(result)
 
@@ -423,6 +423,8 @@ def google_login():
         client_id=app.config['GOOGLE_CLIENT_ID'],
         client_secret=app.config['GOOGLE_CLIENT_SECRET'],
         scope=app.config['GOOGLE_SCOPE'],
+        access_type='offline',
+        prompt='consent',
         redirect_uri=url_for(
             'google_login', _external=True))
 
