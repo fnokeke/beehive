@@ -9,121 +9,6 @@
   <div class="container">
 
     <div class="page-header">
-      <h3>Participant Code</h3>
-    </div>
-
-    <div class="input-group input-group-lg">
-      <span class="input-group-addon">Enter your participant code:</span>
-      <input type="text" class="form-control" id="participant-code">
-    </div>
-    <span id="code-submit-status"></span>
-    <br>
-    <button id="code-submit-btn" class="btn btn-primary">Submit</button>
-
-    <form class="form-inline">
-      <div class="form-group">
-        <label class="sr-only" for="exampleInputAmount">Amount (in dollars)</label>
-        <div class="input-group">
-          <div class="input-group-addon">Enter Participant Code:</div>
-          <input type="text" class="form-control" id="exampleInputAmount">
-        </div>
-      </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-
-    <div class="page-header">
-      <h3>Connect Apps</h3>
-    </div>
-
-    <div class="">
-
-      <!-- {% if not current_user.is_authorized('moves') %}
-        <p>
-          Moves
-          <i>not connected</i>
-          for location tracking.<br>
-          <button type="submit" id="auth-moves-btn" class="btn btn-primary">Connect Moves</button>
-          <br>
-        </p>
-      {% endif %}
-
-      {% if not current_user.is_authorized('pam') %}
-        <p>
-          PAM
-          <i>not connected</i>
-          for monitoring mood.<br>
-          <button type="submit" id="auth-pam-btn" class="btn btn-primary">Connect PAM</button>
-        </p>
-      {% endif %} -->
-
-      {% if not current_user.rescuetime_access_token %}
-        <button type="submit" id="auth-rt-btn" class="btn btn-primary">Connect RescueTime</button><br>
-      {% endif %}
-
-      {% if current_user.moves_access_token and current_user.pam_access_token and
-      current_user.rescuetime_access_token %}
-        <span class='success'>
-          <i>Location, Mood and Social Networks are connected.</i>
-        </span>
-      {% endif %}
-    </div>
-
-    <!-- <div class="page-header">
-      <h3>activate tracking</h3>
-    </div>
-
-    <div class="label-text">
-      <label>
-        MOVES (LOCATION)
-        <br>
-        <input
-          type="checkbox"
-          id="location-checkbox-btn"
-          {{'checked' if current_user.is_location_active else 'unchecked'}}
-          data-toggle="toggle"
-          data-on="Enabled"
-          data-off="Disabled"
-          data-onstyle="success"
-          data-offstyle="danger">
-        <span id="location-checkbox-status"></span>
-      </label>
-    </div>
-
-    <div class="label-text">
-      <label>
-        PAM (MOOD)
-        <br>
-        <input
-          type="checkbox"
-          id="mood-checkbox-btn"
-          {{'checked' if current_user.is_mood_active else 'unchecked'}}
-          data-toggle="toggle"
-          data-on="Enabled"
-          data-off="Disabled"
-          data-onstyle="success"
-          data-offstyle="danger">
-        <span id="mood-checkbox-status"></span>
-      </label>
-    </div>
-
-    <div class="label-text">
-      <label>
-        RESCUETIME (SOCIAL NETWORKS)
-        <br>
-        <input
-          type="checkbox"
-          id="sn-checkbox-btn"
-          {{'checked' if current_user.is_sn_active else 'unchecked'}}
-          data-toggle="toggle"
-          data-on="Enabled"
-          data-off="Disabled"
-          data-onstyle="success"
-          data-offstyle="danger">
-        <span id="sn-checkbox-status"></span>
-      </label>
-    </div> -->
-
-    <div class="page-header">
       <h3>Update Profile</h3>
     </div>
 
@@ -158,10 +43,35 @@
           placeholder="{{current_user.gender or 'provide your gender'}}">
       </div>
 
-      <button type="submit" id="update-profile-btn" class="btn btn-primary">update info</button>
+      <button type="submit" id="update-profile-btn" class="btn btn-primary">Update Profile</button>
       <span id="update-profile-status"></span>
     </div>
     <p></p>
 
   </div>
+
+  <!-- <div class="page-header">
+      <h3>Participant Code</h3>
+    </div>
+
+    <div class="input-group input-group-lg">
+      <span class="input-group-addon">Enter your participant code:</span>
+      <input type="text" class="form-control" id="participant-code">
+    </div>
+    <span id="code-submit-status"></span>
+    <br>
+    <button id="code-submit-btn" class="btn btn-primary">Submit</button>
+
+    <form class="form-inline">
+      <div class="form-group">
+        <label class="sr-only" for="exampleInputAmount">Amount (in dollars)</label>
+        <div class="input-group">
+          <div class="input-group-addon">Enter Participant Code:</div>
+          <input type="text" class="form-control" id="participant-code">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+ -->
+
 {% endblock %}
