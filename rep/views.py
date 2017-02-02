@@ -188,24 +188,20 @@ def connect_study():
 #////////////////////////////////////////////
 # mobile Beehive rescuetime && interventions
 #////////////////////////////////////////////
-@app.route("/rescuetime/summary/<email>/<date>")
-def get_summary_rt_data(email, date):
-    rt_user = User.query.filter_by(email=email).first()
-    if not rt_user:
-        return {}
-
-    result = RescueTime.fetch_intv_feed(rt_user.rescuetime_access_token, date)
-    return json.dumps(result)
+@app.route("/rescuetime/summary", methods=['POST'])
+def fetch_rt_summary():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    rt_user = User.query.filter_by(email=data['email']).first()
+    if not rt_user: return {}
+    return RescueTime.fetch_summary(rt_user.rescuetime_access_token, data['date'])
 
 
-@app.route("/rescuetime/realtime/<email>/<date>")
-def get_rt_realtime_activity(email, date):
-    rt_user = User.query.filter_by(email=email).first()
-    if not rt_user:
-        return {}
-
-    result = RescueTime.fetch_realtime_feed(rt_user.rescuetime_access_token, date)
-    return json.dumps(result)
+@app.route("/rescuetime/realtime", methods=['POST'])
+def fetch_rt_realtime_activity():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    rt_user = User.query.filter_by(email=data['email']).first()
+    if not rt_user: return {}
+    return RescueTime.fetch_activity(rt_user.rescuetime_access_token, data['date'])
 
 
 @app.route("/mobile/check/rescuetime", methods=['POST'])

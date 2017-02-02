@@ -54,27 +54,21 @@ class RescueTime(object):
     Provide access to fetch user's RescueTime data.
     """
 
-    def __init__(self, access_token):
-        self.access_token = access_token
-
-    def fetch_all_feeds(self):
+    @staticmethod
+    def fetch_all_summary(access_token):
         """
-        Return RescueTime data for given date
+        The Daily Summary Feed API returns an array of JSON for each day logged by the user in the previous two weeks.
+        It does not include the current day, and new summaries for the previous day are available at 12:01 am in the user's local time zone.
         """
-        if not self.access_token:
-            return '[]'
-
+        if not access_token: return '[]'
         daily_feed_url = 'https://www.rescuetime.com/api/oauth/daily_summary_feed'
-        params = {'access_token': self.access_token}
+        params = {'access_token': access_token}
         r = requests.get(daily_feed_url, params=params)
         return r.text
 
-    def get_feed_by_date(self, date):
-        """
-        Returns rescuetime stats for given date
-        date: yyyy-mm-dd
-        """
-        summary = {
+    @staticmethod
+    def get_default_summary(date):
+        return {
             'date': date,
             'productivity_pulse': 'no time',
             #
@@ -95,29 +89,28 @@ class RescueTime(object):
             'all_productive_percentage': 'no time'
         }
 
-        results = json.loads(self.fetch_all_feeds())
-        for row in results:
+    @staticmethod
+    def fetch_summary(access_token, date):
+        """
+        Returns rescuetime stats for given date
+        date: yyyy-mm-dd
+        """
+        summary = RescueTime.get_default_summary(date)
+        all_summary = json.loads(RescueTime.fetch_all_summary(access_token))
+        for row in all_summary:
             if row['date'] == date:
-
                 for key in summary:
                     summary[key] = row[key]
                 break
-
         return json.dumps(summary)
 
     @staticmethod
-    def fetch_intv_feed(access_token, date):
-        rt = RescueTime(access_token)
-        json_result = rt.get_feed_by_date(date)
-        return {'rt_summary': json_result}
-
-    def get_all_activity(self, date):
-        if not self.access_token:
-            return '[]'
-
+    def fetch_activity(access_token, date):
+        """ Can fetch current activities from RescueTime server (updated every 5 mins by RescueTime) """
+        if not access_token: return '[]'
         activity_url = 'https://www.rescuetime.com/api/oauth/data'
         params = {
-            'access_token': self.access_token,
+            'access_token': access_token,
             'restrict_begin': date,
             'restrict_end': date,
             'perspective': 'interval',
@@ -128,9 +121,3 @@ class RescueTime(object):
         }
         r = requests.get(activity_url, params=params)
         return r.text
-
-    @staticmethod
-    def fetch_realtime_feed(access_token, date):
-        rt = RescueTime(access_token)
-        text = rt.get_all_activity(date)
-        return {'rt_realtime': text}
