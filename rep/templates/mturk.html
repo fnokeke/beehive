@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block nav_brand %}
-  <a class="navbar-brand" href="/">Mturk Step Counter Experiment</a>
+  <a class="navbar-brand" href="#">Mturk Digital Distraction Experiment</a>
 {% endblock %}
 
 {% block contents %}
@@ -14,68 +14,157 @@
   <div class="container">
 
     <div class="page-header">
-      <h3>Goal</h3>
+      <h3>
+        Goal
+      </h3>
       <p>
-        The goal of this experiment is to count how many steps individuals walk per day for 5 days. Your
-        steps will be counted using a smartphone app.
+        By participating in this experiment, you contribute to the body of scientific research on digital
+        distractions.
+      </p>
+
+    </div>
+
+    <div class="page-header">
+      <h3>
+        Duration
+      </h3>
+      <p>
+        This experiment will run for 3 weeks.
       </p>
     </div>
 
     <div class="page-header">
-      <h3>Step One</h3>
-    </div>
-    <div class="input-group input-group-lg">
-      <span class="input-group-addon">Enter your MTurk worker id:</span>
-      <input type="text" class="form-control" id="mturk-worker-id" placeholder="worker id here...">
-    </div>
-    <span id="mturk-submit-status"></span>
-    <br>
-    <button id="mturk-submit-btn" class="btn btn-primary">Submit</button>
+      <h3>
+        Compensation
+      </h3>
 
-    <div class="page-header">
-      <h3>Step Two</h3>
-    </div>
-
-    <div>
-
-      <ol>
-        <li>Download moves from the appstore to your smartphone (
-          <a href="https://itunes.apple.com/us/app/moves/id509204969?mt=8" target="_blank">iOS</a>
-          /
-          <a href="https://play.google.com/store/apps/details?id=com.protogeo.moves&hl=en" target="_blank">Android</a>
-          ). Ignore sign in on the app and click
-          <em>Get Started</em>.
-        </li>
-
-        <li>Click the button below to connect your downloaded moves app to this experiment<br>
-          <button type="submit" id="mturk-auth-moves-btn" class="btn btn-primary btn-sm">Connect Moves to Experiment</button>
-        </li>
-
+      <ul>
         <li>
-          After successfully connecting your app, a code will appear here:
-          <span id="gen-code-id"></span>
-          Copy this code and submit it on the Mturk task. This code is proof that you successfully connected
-          your Moves App.
+          $10 (USD)
         </li>
-      </ol>
+        <li>
+          No payment if you don’t meet all eligibility criteria.
+        </li>
+        <li>
+          No payment if you exit study before it ends.
+        </li>
+      </ul>
     </div>
 
     <div class="page-header">
-      <h3>Payment</h3>
-      <p>
-        All done! You will be paid at the end of the experiment after the researchers confirm your submitted
-        code and daily steps.
-        <br>To qualify for payment, you need to have
-        <strong>at least 10 steps every day.</strong>
-      </p>
+      <h3>
+        Eligibility
+      </h3>
+
+      <ul>
+        <li>
+          ONLY android phone users.
+        </li>
+        <li>
+          You have Facebook app already installed on your phone.
+        </li>
+        <li>
+          You already actively use Facebook on your smartphone (at least 1 hour daily).
+        </li>
+      </ul>
     </div>
 
     <div class="page-header">
-      <h3>Uninstall</h3>
-      At the end of the experiment, uninstall moves app from your phone. If you find the app useful, feel
-      free to continue using it but it will no longer be part of this experiment.
-      <br><br>
-      <em>NB: We are not in any way affiliated to moves app or the companies involved.</em>
+      <h3>
+        How to join?
+      </h3>
+
+      <ul>
+        <li>
+          Download 2 android applications to your smartphone and scan their QR codes:
+          <ul>
+            <li>
+              <a href="https://play.google.com/store/apps/details?id=com.aware.phone&hl=en" target="_blank">Download aware framework app</a>
+              and then
+              <a
+                href="https://docs.google.com/document/d/11uvdO4dJhHg-jpE8aq3c3WQnBOG7uZRQIjsyGLUcc7M/edit?usp=sharing"
+                target="_blank">Scan QR</a>.
+            </li>
+            <li>
+              <a href="https://play.google.com/store/apps/details?id=com.deploygate&hl=en" target="_blank">Download deploy gate app</a>
+              and then
+              <a
+                href="https://docs.google.com/document/d/1YC-I4_zchFDyU4s6Z6ydgtXIZ5KV898cDT2pND5xFlk/edit?usp=sharing"
+                target="_blank">Scan QR</a>.
+            </li>
+          </ul>
+        </li>
+        <li>
+          Complete 3 surveys at the beginning of the experiment:
+          <ul>
+            <li>
+              <a href="https://goo.gl/forms/XbxgVfi2CYazLK0b2" target="_blank">experiment start survey</a>
+            </li>
+            <li>
+              <a href="https://goo.gl/forms/M9haYl6XefUhNqMr1" target="_blank">personality survey</a>
+            </li>
+            <li>
+              <a href="https://goo.gl/forms/K2doPmuSVPuXJmiC2" target="_blank">impulse survey</a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          Complete one survey at the end of experiment:
+          <ul>
+            <li>
+              <a href="https://goo.gl/forms/RNNPuPIp8Vt4Mgua2" target="_blank">experiment end survey</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <div class="page-header">
+      <h3>What our apps do?</h3>
+      <ul>
+        <li>
+          The mobile apps you downloaded will monitor all apps you use on your phone throughout the
+          experiment.
+        </li>
+        <li>
+          Data collected will automatically be stored in our remote server for research analysis at the end of
+          the experiment.
+        </li>
+        <li>
+          Your phone will vibrate anytime you use your mobile Facebook app for
+          <strong>more than 20 minutes</strong>
+          per day or you open the app
+          <strong>more than 10 times</strong>
+          per day.
+        </li>
+        <li>
+          <em>
+            <strong>Note</strong>: Phone vibration will NOT happen in 1st and 3rd week of experiment; ONLY during 2nd week.
+          </em>
+        </li>
+      </ul>
+
+    </div>
+
+    <div class="page-header">
+      <h3>
+        Consent
+      </h3>
+      <ul>
+        <li>
+          You may uninstall all apps from your device and exit from the study at any time. However, there will
+          be no payment unless you stay till the end of the study.
+        </li>
+        <li>
+          After the study, you should uninstall all the mobile apps you downloaded for this study as all apps
+          may completely stop working at the end of the study.
+        </li>
+      </ul>
+
+      <br>
+      <em>NB: We are not in any way affiliated to Aware framework or DeployGate mobile apps. We only use
+        these apps primarily for conducting research experiments.
+      </em>
     </div>
 
   </div>
