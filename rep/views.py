@@ -12,7 +12,7 @@ from apiclient import discovery
 import json, httplib2, pytz, requests
 
 from rep import app, login_manager
-from rep.models import Experiment, Intervention, MobileUser, MturkMobile, Mturk, User, Uploaded_Intv
+from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkFBStats, MturkMobile, User, Uploaded_Intv
 from rep.rescuetime import RescueOauth2, RescueTime
 from rep.pam import PamOauth
 from rep.moves import Moves
@@ -685,6 +685,18 @@ def mobile_worker_id():
     worker = {'worker_id': data['workerID'], 'device_id': data['deviceID']}
     _, response, worker_id = MturkMobile.add_user(worker)
     result = {'response': response, 'worker': str(worker_id)}
+    return json.dumps(result)
+
+
+@app.route('/mobile/mturk/stats/fb', methods=['POST'])
+def mobile_worker_fb_stats():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    stats = {'worker_id': data['workerID'],
+             'device_id': data['deviceID'],
+             'time_spent': data['timeSpent'],
+             'time_open': data['timeOpen']}
+    _, response, summarized_stats = MturkFBStats.add_stats(stats)
+    result = {'response': response, 'summary': summarized_stats}
     return json.dumps(result)
 
 

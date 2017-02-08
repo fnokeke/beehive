@@ -310,6 +310,49 @@ class MturkMobile(db.Model):
         return (200, 'Successfully connected worker!', worker.worker_id)
 
 
+class MturkFBStats(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    worker_id = db.Column(db.String(120))
+    device_id = db.Column(db.String(120))
+    time_spent = db.Column(db.Integer)
+    time_open = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, info):
+        self.worker_id = info['worker_id']
+        self.device_id = info['device_id']
+        self.time_spent = info['time_spent']
+        self.time_open = info['time_open']
+
+    def __repr__(self):
+        result = {
+            'worker_id': self.worker_id,
+            'device_id': self.device_id,
+            'time_spent': self.time_spent,
+            'time_open': self.time_open,
+            'created_at': self.created_at
+        }
+        return json.dumps(result)
+
+    @staticmethod
+    def add_stats(info):
+        existing_worker = MturkMobile.query.filter_by(worker_id=info['worker_id']).first()
+        existing_device = MturkMobile.query.filter_by(device_id=info['device_id']).first()
+
+        if not existing_worker:
+            return (-1, 'Weird error. Worker should have been registered. Contact researcher.', -1)
+
+        if not existing_device:
+            return (-1, 'Weird error. Device should have been registered. Contact researcher.', -1)
+
+        new_stats = MturkFBStats(info)
+        db.session.add(new_stats)
+        db.session.commit()
+
+        summarized_stats = "{} secs: {}x".format(info['time_spent'], info['time_open'])
+        return (200, 'Successfully added stats!', summarized_stats)
+
+
 class Mturk(db.Model):
     worker_id = db.Column(db.String(120), primary_key=True, unique=True)
     moves_id = db.Column(db.String(120), unique=True)
