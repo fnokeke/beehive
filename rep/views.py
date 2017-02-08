@@ -12,7 +12,7 @@ from apiclient import discovery
 import json, httplib2, pytz, requests
 
 from rep import app, login_manager
-from rep.models import Experiment, Intervention, MobileUser, Mturk, User, Uploaded_Intv
+from rep.models import Experiment, Intervention, MobileUser, MturkMobile, Mturk, User, Uploaded_Intv
 from rep.rescuetime import RescueOauth2, RescueTime
 from rep.pam import PamOauth
 from rep.moves import Moves
@@ -677,6 +677,15 @@ def mturk_auth_moves():
         print 'sorry, user add error: {} / {}'.format(msg, gen_code)
 
     return redirect(url_for('mturk', gen_code=gen_code))
+
+
+@app.route('/mobile/mturk', methods=['POST'])
+def mobile_worker_id():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    worker = {'worker_id': data['workerID'], 'device_id': data['deviceID']}
+    _, response, worker_id = MturkMobile.add_user(worker)
+    result = {'response': response, 'worker': str(worker_id)}
+    return json.dumps(result)
 
 
 @app.route('/mturk/worker_id', methods=['POST'])

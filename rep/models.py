@@ -273,6 +273,43 @@ class Experiment(db.Model):
         return experiment
 
 
+class MturkMobile(db.Model):
+    worker_id = db.Column(db.String(120), primary_key=True, unique=True)
+    device_id = db.Column(db.String(120), primary_key=True, unique=True)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, info):
+        self.worker_id = info['worker_id']
+        self.device_id = info['device_id']
+
+    def __repr__(self):
+        result = {'worker_id': self.worker_id, 'device_id': self.device_id, 'created_at': self.created_at}
+        return json.dumps(result)
+
+    @staticmethod
+    def add_user(info):
+        """ add new mturk mobile user and return worker generated code if adding new worker """
+        existing_worker = MturkMobile.query.filter_by(worker_id=info['worker_id']).first()
+        existing_device = MturkMobile.query.filter_by(device_id=info['device_id']).first()
+
+        if existing_worker:
+            return (
+                -1,
+                'Worker already registered. If you think this is an error and you haven\'t registered before then contact researcher.',
+                existing_worker.worker_id)
+        if existing_device:
+            return (
+                -1,
+                'Device already connected. If you think this is an error and you haven\'t connected before then contact researcher.',
+                existing_device.worker_id)
+
+        worker = MturkMobile(info)
+        db.session.add(worker)
+        db.session.commit()
+
+        return (200, 'Successfully connected worker!', worker.worker_id)
+
+
 class Mturk(db.Model):
     worker_id = db.Column(db.String(120), primary_key=True, unique=True)
     moves_id = db.Column(db.String(120), unique=True)
