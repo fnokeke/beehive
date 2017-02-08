@@ -314,6 +314,7 @@ class MturkFBStats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     worker_id = db.Column(db.String(120))
     device_id = db.Column(db.String(120))
+    total_seconds = db.Column(db.Integer)
     time_spent = db.Column(db.Integer)
     time_open = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
@@ -321,6 +322,7 @@ class MturkFBStats(db.Model):
     def __init__(self, info):
         self.worker_id = info['worker_id']
         self.device_id = info['device_id']
+        self.total_seconds = info['total_seconds']
         self.time_spent = info['time_spent']
         self.time_open = info['time_open']
 
@@ -328,6 +330,7 @@ class MturkFBStats(db.Model):
         result = {
             'worker_id': self.worker_id,
             'device_id': self.device_id,
+            'total_seconds': self.total_seconds,
             'time_spent': self.time_spent,
             'time_open': self.time_open,
             'created_at': self.created_at

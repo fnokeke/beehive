@@ -693,6 +693,7 @@ def mobile_worker_fb_stats():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     stats = {'worker_id': data['workerID'],
              'device_id': data['deviceID'],
+             'total_seconds': data['totalSeconds'],
              'time_spent': data['timeSpent'],
              'time_open': data['timeOpen']}
     _, response, summarized_stats = MturkFBStats.add_stats(stats)
