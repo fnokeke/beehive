@@ -1,0 +1,78 @@
+<div id="group-settings">
+
+  <div class="page-header">
+    <h3 id="intervention">Specify groups</h3>
+    Current no of groups:
+    {{ experiment.no_of_condition }}
+    <br>
+    Participants per group:
+    {{ experiment.ps_per_condition }}
+  </div>
+
+  <div class="row">
+    <label class="col-md-1">No of conditions</label>
+    <div class="col-md-1">
+      <input
+        class="form-control"
+        type="number"
+        min=1
+        id="no-of-condition"
+        value={{ experiment.no_of_condition }}></input>
+    </div>
+  </div>
+
+  <div class="row">
+    <label class="col-md-1">Participants per condition</label>
+    <div class="col-md-1">
+      <input
+        class="form-control"
+        type="number"
+        min=1
+        id="ps-per-condition"
+        value={{ experiment.ps_per_condition}}></input>
+    </div>
+  </div>
+
+  <span id='group-status'></span>
+  <br>
+  <button type="button" class="btn btn-primary" id="save-group-btn">
+    <span class="glyphicon glyphicon-floppy-saved"></span>
+    Save Group Info
+  </button>
+
+</div>
+
+<div id="apply-interventions-settings">
+
+  <div class="page-header">
+    <h3 id="intervention">Apply Interventions</h3>
+    <em>All interventions start/end at midnight.</em>
+  </div>
+
+  <div class="text-center">
+
+    <button type="button" class="btn btn-link btn-md" id="save-table-btn" value="">
+      <span class="glyphicon glyphicon-floppy-saved text-primary"></span>
+      <span class="text-primary">
+        Save Entry
+      </span>
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-link btn-md"
+      id="reset-table-btn"
+      value="deleteRow"
+      data-toggle="confirmation"
+      data-popout="true">
+      <span class="glyphicon glyphicon-trash text-danger"></span>
+      <span class="text-danger">
+        Reset Entry
+      </span>
+    </button>
+
+  </div>
+
+  <span id='intv-table-view'></span>
+  <span id='intv-table-status'></span>
+</div>

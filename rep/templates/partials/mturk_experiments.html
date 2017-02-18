@@ -1,0 +1,63 @@
+<div id="mturk_experiments">
+
+  {% if mturk_users | length > 0 %}
+    <div class="page-header">
+      <h3>available mturk participants</h3>
+    </div>
+
+    <div>
+      <table class="table table-striped">
+        <tr>
+          <th>
+            NO
+          </th>
+          <th>
+            Created
+          </th>
+          <th>
+            Worker ID
+          </th>
+          <th>
+            Moves ID
+          </th>
+          <th>
+            Code
+          </th>
+          <th>
+            IP
+          </th>
+        </tr>
+
+        {% for muser in mturk_users %}
+          <tr>
+            <td>
+              worker{{loop.index}}
+            </td>
+            <td>
+              {{muser.created_at}}
+            </td>
+            <td>
+              {{muser.worker_id}}
+            </td>
+            <td>
+              {{ muser.moves_id }}
+            </td>
+            <td>
+              {{ muser.code }}
+            </td>
+            <td>
+              {{ muser.ip }}
+            </td>
+          </tr>
+        {% endfor %}
+
+      </table>
+
+    {% else %}
+      <div class="page-header">
+        <h4>There are currently no Mturk experiments.</h4>
+      </div>
+    {% endif %}
+  </div>
+
+</div>

@@ -1,0 +1,145 @@
+<div class="page-header">
+  <h3>
+    {% if experiment %}
+      Title:
+      {{ experiment.title }}
+      ({{ experiment.code }})
+      <br>
+      <small>
+        {{ experiment.start | nyc | onlyfancydate }}
+        to
+        {{ experiment.end | nyc | onlyfancydate }}
+      </small>
+    {% endif %}
+  </h3>
+  <span id="edit-experiment-status"></span>
+  <button
+    style="display: none"
+    type="button"
+    id="code_from_hidden_element"
+    value="{{ experiment.code }}"></button>
+</div>
+
+<div>
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Title</label>
+    <div class="col-xs-10">
+      <input class="form-control" type="text" id="edit-exp-title" value="{{experiment.title}}"></input>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">RescueTime required</label>
+    <div class="col-xs-10">
+      <input
+        type="checkbox"
+        id="edit-rescuetime-checkbox-btn"
+        {{ 'checked' if experiment.rescuetime else 'unchecked' }}
+        data-toggle="toggle"
+        data-on="Yes"
+        data-off="No"
+        data-onstyle="primary"
+        data-offstyle="danger">
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Aware App required</label>
+    <div class="col-xs-10">
+      <input
+        type="checkbox"
+        id="edit-aware-checkbox-btn"
+        {{ 'checked' if experiment.aware else 'unchecked' }}
+        data-toggle="toggle"
+        data-on="Yes"
+        data-off="No"
+        data-onstyle="primary"
+        data-offstyle="danger">
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Geofence Feature</label>
+    <div class="col-xs-10">
+      <input
+        type="checkbox"
+        id="edit-geofence-checkbox-btn"
+        {{ 'checked' if experiment.geofence else 'unchecked' }}
+        data-toggle="toggle"
+        data-on="Yes"
+        data-off="No"
+        data-onstyle="primary"
+        data-offstyle="danger">
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Text Display</label>
+    <div class="col-xs-10">
+      <input
+        type="checkbox"
+        id="edit-text-checkbox-btn"
+        {{ 'checked' if experiment.text else 'unchecked' }}
+        data-toggle="toggle"
+        data-on="Yes"
+        data-off="No"
+        data-onstyle="primary"
+        data-offstyle="danger">
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Image Display</label>
+    <div class="col-xs-10">
+      <input
+        type="checkbox"
+        id="edit-image-checkbox-btn"
+        {{ 'checked' if experiment.image else 'unchecked' }}
+        data-toggle="toggle"
+        data-on="Yes"
+        data-off="No"
+        data-onstyle="primary"
+        data-offstyle="danger">
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Alarm Reminder</label>
+    <div class="col-xs-10">
+      <input
+        type="checkbox"
+        id="edit-reminder-checkbox-btn"
+        {{ 'checked' if experiment.reminder else 'unchecked' }}
+        data-toggle="toggle"
+        data-on="Yes"
+        data-off="No"
+        data-onstyle="primary"
+        data-offstyle="danger">
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">WiFi/<br>Vibration/<br>Media</label>
+    <div class="col-xs-10">
+      <input
+        type="checkbox"
+        id="edit-actuators-checkbox-btn"
+        {{ 'checked' if experiment.actuators else 'unchecked' }}
+        data-toggle="toggle"
+        data-on="Yes"
+        data-off="No"
+        data-onstyle="primary"
+        data-offstyle="danger">
+    </div>
+  </div>
+
+  <button type="button" class="btn btn-primary" id="update-experiment-btn">
+    <span class="glyphicon glyphicon-floppy-saved"></span>
+    Update Experiment
+  </button>
+
+  <button type="button" class="btn btn-danger" id="delete-experiment-btn">
+    <span class="glyphicon glyphicon-trash"></span>
+    Delete Experiment
+  </button>
+</div>

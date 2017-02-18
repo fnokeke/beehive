@@ -1,0 +1,54 @@
+<div style="display: {{ 'block' if experiment.text or experiment.image else 'none' }}">
+  <div class="page-header">
+    <h3>Upload Images/Texts</h3>
+    <em>Contents added will be available as options to select from when applying interventions.</em>
+  </div>
+
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#upload-image-modal">
+    <span class="glyphicon glyphicon-upload"></span>
+    Upload Image/Text
+  </button>
+</div>
+
+<div
+  class="modal fade"
+  id="upload-image-modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Upload New Image / Text</h4>
+      </div>
+      <div class="modal-body">
+        <div>
+          <h4>Image</h4>
+        </div>
+
+        <form enctype="multipart/form-data">
+          <input type="file" id="uploaded-image" accept="Image/*"/>
+          <br>
+        </form>
+
+        <div>
+          <h4>Text</h4>
+        </div>
+
+        <form enctype="multipart/form-data">
+          <textarea name="text" id="uploaded-text" rows="4" cols="40"></textarea>
+          <br>
+
+          <input type="submit" id="upload-btn" value="Upload Info" class="btn btn-primary"/>
+          <br>
+          <span id="upload-status"></span>
+        </form>
+
+      </div>
+
+    </div>
+  </div>
+</div>

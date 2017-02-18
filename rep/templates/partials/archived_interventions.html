@@ -1,0 +1,103 @@
+<div class="page-header">
+  <h3>Archived Interventions
+    <small>(Last 10)</small>
+  </h3>
+</div>
+
+<span id='delete-intv-status'></span>
+<table class="table table-striped">
+  <tr>
+    <th>
+      No
+    </th>
+    <th>
+      Start
+    </th>
+    <th>
+      End
+    </th>
+    <th>
+      Frequency
+    </th>
+    <th>
+      Repeat
+    </th>
+    <th>
+      Alarm
+    </th>
+    <th>
+      Created At
+    </th>
+    <th>
+      Intervention
+    </th>
+  </tr>
+
+  {% for intv in interventions%}
+    {% with all_intv_arr = intv.treatment.split('%%&&') %}
+    <tr>
+      <td>
+        {{ loop.index }}
+        <span onclick="delete_intv({{ intv }})" class="glyphicon glyphicon-trash text-danger"></span>
+      </td>
+
+      <td>
+        {{ intv.start | todatetime | nyc | onlyfancydate }}
+      </td>
+
+      <td>
+        {{ intv.end | todatetime | nyc | onlyfancydate }}
+      </td>
+
+      <td>
+        {{ intv.every }}
+      </td>
+
+      <td>
+        {{ intv.repeat }}
+      </td>
+
+      <td>
+        {{ intv.when | onlyfancytime }}
+      </td>
+
+      <td>
+        {{ intv.created_at | nyc | fancydatetime }}
+      </td>
+
+      <td>
+
+        <ul>
+          {% for treat in all_intv_arr %}
+
+            <li>
+
+              {% if all_intv_arr | length > 1 %}
+                <em>
+                  Group
+                  {{ loop.index }}:
+                </em>
+              {% endif %}
+
+              {% if '**&&&&**' in treat %}
+                <!-- show photo / image -->
+                <img src="{{ treat.split('**&&&&**')[0] }}" alt="intervention" width="50" height="50">
+                /
+                {{ treat.split('**&&&&**')[1] }}
+              {% elif 'photos' in treat %}
+                <img src="{{ treat }}" alt="intervention" width="50" height="50">
+              {% else %}
+                {{ treat }}
+              {% endif %}
+            </li>
+
+          {% endfor %}
+        </ul>
+
+      </td>
+    </tr>
+
+    {% endwith %}
+  {% endfor %}
+
+</table>

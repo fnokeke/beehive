@@ -1,0 +1,373 @@
+<!-- Configure Experiment Features -->
+<div class="page-header">
+  <h3>Select Experiment Features</h3>
+</div>
+
+<div class="config">
+
+  <div class="" id="reminder_config">
+    <i class="glyphicon glyphicon-plus"></i>
+    Daily Reminder
+  </div>
+
+  <div class="" id="calendar_config">
+    <i class="glyphicon glyphicon-plus"></i>
+    Calendar Settings
+  </div>
+
+  <div class="" id="status_notif_config">
+    <i class="glyphicon glyphicon-plus"></i>
+    General notification settings
+  </div>
+
+  <div class="chip" id="rescuetime_config">
+    <span class="glyphicon glyphicon-plus"></span>
+    RescueTime Events
+  </div>
+
+  <div class="chip" id="vibration_config">
+    <span class="glyphicon glyphicon-plus"></span>
+    Vibration Strength
+  </div>
+
+</div>
+<br>
+<br>
+
+<div id="selected_configs"></div>
+<div id="summary_entry"></div>
+
+<!-- Small Modal -->
+<div
+  class="modal fade"
+  id="reminder-modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="mySmallModalLabel">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Set Daily Reminder</h4>
+      </div>
+
+      <div class="modal-body">
+        <div class="input-group" id="user-pref-response">
+          <span class="input-group-addon">
+            <input type="radio" name="options">
+          </span>
+          <input
+            type="text"
+            readonly="true"
+            value="user personal preference"
+            class="form-control"
+            aria-label="...">
+        </div>
+
+        <div class="input-group">
+          <span class="input-group-addon">
+            <input type="radio" name="options" checked aria-label="...">
+          </span>
+          <input type="time" class="form-control" id="custom-time" value="10:00" aria-label="...">
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="save-reminder-modal">Save changes</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="calendar-modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="mySmallModalLabel">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Calendar Daily Busy Settings</h4>
+      </div>
+
+      <div class="modal-body" id="calendar-settings">
+
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon3">Busy Hours</span>
+          <input
+            type="number"
+            class="form-control"
+            id="calendar-max-hours"
+            placeholder="decimal / hard limit">
+        </div>
+        <br>
+
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon3">Busy Events</span>
+          <input
+            type="number"
+            class="form-control"
+            id="calendar-max-events"
+            placeholder="decimal / hard limit">
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="save-calendar-modal">Save changes</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Status Notif Modal Begins -->
+<div
+  class="modal fade"
+  id="status-notif-modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="mySmallModalLabel">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">General Notification Settings</h4>
+      </div>
+
+      <div class="modal-body" id="status-notif-settings">
+
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon3">Title</span>
+          <input
+            type="text"
+            class="form-control"
+            id="notif-title"
+            maxlength="20"
+            placeholder="max of 20 characters">
+        </div>
+        <br>
+
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon3">Content</span>
+          <input
+            type="text"
+            class="form-control"
+            id="notif-content"
+            maxlength="40"
+            placeholder="max of 40 characters">
+        </div>
+        <br>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="save-status-notif-modal">Save changes</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Status Notif Modal Ends -->
+
+<!-- Vibration Modal Begins -->
+<div
+  class="modal fade"
+  id="vibration-modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="mySmallModalLabel">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Daily Usage Limit</h4>
+      </div>
+
+      <div class="modal-body" id="vibration-strength-response">
+
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon3">App id</span>
+          <input
+            type="text"
+            class="form-control"
+            id="vibration-app-id"
+            placeholder="e.g. com.facebook.katana">
+        </div>
+        <br>
+
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon3">Time</span>
+          <input
+            type="number"
+            class="form-control"
+            id="vibration-time-limit"
+            placeholder="decimal OR hard limit">
+        </div>
+        <br>
+
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon3">Opens</span>
+          <input
+            type="number"
+            class="form-control"
+            id="vibration-opens-limit"
+            placeholder="decimal OR hard limit">
+        </div>
+
+        <div class="page-header">
+          <h4>Show App Stats in Status Bar</h4>
+        </div>
+
+        <div class="form-group row">
+          <div class="col-xs-6">
+            <input
+              type="checkbox"
+              id="show-vibration-stats"
+              data-toggle="toggle"
+              data-on="Yes"
+              data-off="No"
+              data-onstyle="primary"
+              data-offstyle="danger">
+          </div>
+        </div>
+
+        <div class="page-header">
+          <h4>Vibration Strength</h4>
+        </div>
+
+        <div class="input-group" id="high_vibration">
+          <span class="input-group-addon">
+            <input type="radio" name="vibration" value="high">
+          </span>
+
+          <input
+            type="text"
+            readonly="true"
+            value="High (every 5 seconds)"
+            class="form-control"
+            aria-label="...">
+        </div>
+
+        <div class="input-group" id="medium_vibration">
+          <span class="input-group-addon">
+            <input type="radio" name="vibration" value="medium">
+          </span>
+
+          <input
+            type="text"
+            readonly="true"
+            value="Medium (every minute)"
+            class="form-control"
+            aria-label="...">
+        </div>
+
+        <div class="input-group" id="low_vibration">
+          <span class="input-group-addon">
+            <input type="radio" name="vibration" value="low">
+          </span>
+
+          <input
+            type="text"
+            readonly="true"
+            value="Low (vibration every 5 mins)"
+            class="form-control"
+            aria-label="...">
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="save-vibration-modal">Save changes</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Vibration Modal Ends -->
+
+<div
+  class="modal fade"
+  id="rescuetime-modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="mySmallModalLabel">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Daily Computer Usage Limit</h4>
+      </div>
+
+      <div class="modal-body" id="vibration-strength-response">
+
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon3">Productive</span>
+          <input
+            type="number"
+            class="form-control"
+            id="rescuetime-time-productive"
+            placeholder="decimal OR hard limit">
+        </div>
+
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon3">Msg</span>
+          <input type="text" class="form-control" id="productive-notif-msg" placeholder="40 characters max">
+        </div>
+        <br>
+
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon3">Distracted</span>
+          <input
+            type="number"
+            class="form-control"
+            id="rescuetime-time-distracted"
+            placeholder="decimal OR hard limit">
+        </div>
+
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon3">Msg</span>
+          <input type="text" class="form-control" id="distracted-notif-msg" placeholder="40 characters max">
+        </div>
+
+        <div class="page-header">
+          <h4>Show Persistent Notification</h4>
+        </div>
+
+        <div class="form-group row">
+          <div class="col-xs-6">
+            <input
+              type="checkbox"
+              id="show-persistent-rescuetime-stats"
+              data-toggle="toggle"
+              data-on="Yes"
+              data-off="No"
+              data-onstyle="primary"
+              data-offstyle="danger">
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="save-rescuetime-modal">Save changes</button>
+      </div>
+
+    </div>
+  </div>
+</div>

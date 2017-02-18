@@ -1,0 +1,192 @@
+<div id="new_experiments">
+
+  <div class="page-header">
+    <h3>Local Experiments</h3>
+  </div>
+
+  <button
+    type="button"
+    class="btn btn-primary"
+    data-toggle="modal"
+    data-target="#new-experiment-modal">
+    <span class="glyphicon glyphicon-plus"></span>
+    Add Experiment
+  </button>
+  <br>
+
+  <div id="display_existing_experiments">
+    <span id="experiment-view-id"></span>
+    <span id="experiment-view-status"></span>
+  </div>
+
+  <div
+    class="modal fade"
+    id="new-experiment-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel">
+
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">New Experiment
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="form-group row">
+            <label class="col-xs-2 col-form-label">Title</label>
+            <div class="col-xs-10">
+              <input class="form-control" type="text" id="experiment-title-id">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-xs-2 col-form-label">Dates</label>
+            <div class="col-xs-10">
+              <div class="input-group input-daterange">
+                <input
+                  type="text"
+                  id="exp-start-date"
+                  class="form-control"
+                  placeholder="start date"
+                  data-date-start-date="+1d"
+                  data-date-today-highlight=true
+                  data-date-format='yyyy-mm-dd'>
+
+                <div class="input-group-addon">to</div>
+                <input
+                  type="text"
+                  id="exp-end-date"
+                  class="form-control"
+                  placeholder="end date"
+                  data-date-start-date="+1d"
+                  data-date-today-highlight=true
+                  data-date-format='yyyy-mm-dd'>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-xs-2 col-form-label">RescueTime required</label>
+            <div class="col-xs-10">
+              <input
+                type="checkbox"
+                id="rescuetime-checkbox-btn"
+                'unchecked'
+                data-toggle="toggle"
+                data-on="Yes"
+                data-off="No"
+                data-onstyle="success"
+                data-offstyle="danger">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-xs-2 col-form-label">Aware App required</label>
+            <div class="col-xs-10">
+              <input
+                type="checkbox"
+                id="aware-checkbox-btn"
+                'unchecked'
+                data-toggle="toggle"
+                data-on="Yes"
+                data-off="No"
+                data-onstyle="success"
+                data-offstyle="danger">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-xs-2 col-form-label">Geofence Feature</label>
+            <div class="col-xs-10">
+              <input
+                type="checkbox"
+                id="geofence-checkbox-btn"
+                'unchecked'
+                data-toggle="toggle"
+                data-on="Yes"
+                data-off="No"
+                data-onstyle="success"
+                data-offstyle="danger">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-xs-2 col-form-label">Text Display</label>
+            <div class="col-xs-10">
+              <input
+                type="checkbox"
+                id="text-checkbox-btn"
+                'unchecked'
+                data-toggle="toggle"
+                data-on="Yes"
+                data-off="No"
+                data-onstyle="success"
+                data-offstyle="danger">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-xs-2 col-form-label">Image Display</label>
+            <div class="col-xs-10">
+              <input
+                type="checkbox"
+                id="image-checkbox-btn"
+                'unchecked'
+                data-toggle="toggle"
+                data-on="Yes"
+                data-off="No"
+                data-onstyle="success"
+                data-offstyle="danger">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-xs-2 col-form-label">Alarm Reminder</label>
+            <div class="col-xs-10">
+              <input
+                type="checkbox"
+                id="reminder-checkbox-btn"
+                'unchecked'
+                data-toggle="toggle"
+                data-on="Yes"
+                data-off="No"
+                data-onstyle="success"
+                data-offstyle="danger">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-xs-2 col-form-label">WiFi/<br>Vibration/<br>Media</label>
+            <div class="col-xs-10">
+              <input
+                type="checkbox"
+                id="actuators-checkbox-btn"
+                'unchecked'
+                data-toggle="toggle"
+                data-on="Yes"
+                data-off="No"
+                data-onstyle="success"
+                data-offstyle="danger">
+            </div>
+          </div>
+
+          <span id="create-experiment-status"></span>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Exit</button>
+          <button type="button" class="btn btn-primary" id="create-experiment-btn">Create</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
