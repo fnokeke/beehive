@@ -107,16 +107,23 @@
   $("#save-status-notif-modal").click(function() {
     var title;
     var content;
+    var app_to_launch;
 
     var msg;
 
     title = $('#notif-title').val();
     content = $('#notif-content').val();
+    app_to_launch = $('#app-id-to-launch').val();
 
     console.log('title: ', title);
     console.log('content: ', content);
+    console.log('app_to_launch: ', app_to_launch);
 
-    msg = "title: {0} / content: {1}".format(title, content);
+    if (app_to_launch === '') {
+      app_to_launch = 'default';
+    }
+
+    msg = "title: {0} / content: {1} / app-to-launch: {2}".format(title, content, app_to_launch);
     $('#summary_entry').empty();
     var entry = '<p>General Status Notification: ' + msg + '</p>';
     $(entry).appendTo('#summary_entry');
