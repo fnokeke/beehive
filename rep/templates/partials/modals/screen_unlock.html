@@ -1,0 +1,132 @@
+<div
+  class="modal fade"
+  id="screen-unlock-modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="screenUnlockModal">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Daily Usage Limit</h4>
+      </div>
+
+      <div class="modal-body" id="screen-unlock-response">
+
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon3">Time</span>
+          <input
+            type="number"
+            class="form-control"
+            id="unlock-time-limit"
+            placeholder="decimal OR hard limit">
+        </div>
+        <br>
+
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon3">Unlocked</span>
+          <input type="number" class="form-control" id="unlocked-limit" placeholder="decimal OR hard limit">
+        </div>
+
+        <div class="page-header">
+          <h4>Daily Monitoring Period</h4>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-xs-8 col-form-label">Override start/end time with user preference</label>
+          <div class="col-xs-4">
+            <input
+              type="checkbox"
+              id="user-monitor-pref"
+              data-toggle="toggle"
+              data-on="Yes"
+              data-off="No"
+              data-onstyle="primary"
+              data-offstyle="danger">
+          </div>
+        </div>
+
+        <div id="custom-monitoring-pref">
+
+          <div class="input-group">
+            <span class="input-group-addon" id="basic-addon3">Start Monitor</span>
+            <input type="time" class="form-control" value="22:00" id="monitor-unlock-start">
+          </div>
+          <br>
+
+          <div class="input-group">
+            <span class="input-group-addon" id="basic-addon3">End Monitor</span>
+            <input type="time" class="form-control" value="06:00" id="monitor-unlock-end">
+          </div>
+
+        </div>
+
+        <div class="form-group row page-header">
+          <h4>
+            <label class="col-xs-8 col-form-label">Show Persistent Stats in Status Bar</label>
+            <div class="col-xs-4">
+              <input
+                type="checkbox"
+                id="show-unlock-stats"
+                data-toggle="toggle"
+                data-on="Yes"
+                data-off="No"
+                data-onstyle="primary"
+                data-offstyle="danger">
+            </div>
+          </h4>
+        </div>
+        <div class="page-header">
+          <h4>Unlock Vibration Strength</h4>
+        </div>
+
+        <div class="input-group" id="unlock_high_vibration">
+          <span class="input-group-addon">
+            <input type="radio" name="unlock_vibration" value="high">
+          </span>
+
+          <input
+            type="text"
+            readonly="true"
+            value="High (every 5 seconds)"
+            class="form-control"
+            aria-label="...">
+        </div>
+
+        <div class="input-group" id="unlock_medium_vibration">
+          <span class="input-group-addon">
+            <input type="radio" name="unlock_vibration" value="medium">
+          </span>
+
+          <input
+            type="text"
+            readonly="true"
+            value="Medium (every minute)"
+            class="form-control"
+            aria-label="...">
+        </div>
+
+        <div class="input-group" id="low_vibration">
+          <span class="input-group-addon">
+            <input type="radio" name="unlock_vibration" value="low">
+          </span>
+
+          <input
+            type="text"
+            readonly="true"
+            value="Low (vibration every 5 mins)"
+            class="form-control"
+            aria-label="...">
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="save-screen-unlock-modal">Save changes</button>
+      </div>
+
+    </div>
+  </div>
+</div>

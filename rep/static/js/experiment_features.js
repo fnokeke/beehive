@@ -40,6 +40,13 @@
     $(entry).appendTo('#selected_configs');
   });
 
+  $('#screen_unlock_config').click(function() {
+    $('#screen_unlock_config').hide();
+    entry = '<div id="screen_unlock_entry"> <a onclick="edit_screen_unlock()">Screen Unlock Settings</a>' +
+      '<span onclick="x_screen_unlock() "' + x_glyph + '</div>';
+    $(entry).appendTo('#selected_configs');
+  });
+
   ///////////////////////
   // modal save buttons
   ///////////////////////
@@ -142,7 +149,7 @@
     }
 
     if (max_hours > -1) {
-      settings += 'Max seconds: ' + max_hours;
+      settings += 'Max hours: ' + max_hours;
     }
 
     if (settings === '') {
@@ -152,6 +159,21 @@
     $('#summary_entry').empty();
     var entry = '<p>Calendar setting: ' + settings + '</p>';
     $(entry).appendTo('#summary_entry');
+  });
+
+  $("#save-screen-unlock-modal").click(function() {
+    var summary = '<p>screen unlock save tapped.</p>';
+    console.log(summary);
+    $(summary).appendTo('#summary_entry');
+  });
+
+  $('#user-monitor-pref').change(function() {
+    var is_checked = $('#user-monitor-pref').is(':checked');
+    if (is_checked) {
+      $('#custom-monitoring-pref :input').prop("disabled", true);
+    } else {
+      $('#custom-monitoring-pref :input').prop("disabled", false);
+    }
   });
 
 })(window, document);
@@ -179,6 +201,10 @@ function edit_vibration() {
   $('#vibration-modal').modal('show');
 }
 
+function edit_screen_unlock() {
+  $('#screen-unlock-modal').modal('show');
+}
+
 /////////////////////////////////
 // remove config
 /////////////////////////////////
@@ -201,11 +227,18 @@ function x_rescuetime() {
   $('#rescuetime_entry').remove();
   $('#rescuetime_config').show();
 }
+
 function x_text_image() {
   $('#text_image_entry').remove();
   $('#text_image_config').show();
 }
+
 function x_vibration() {
   $('#vibration_entry').remove();
   $('#vibration_config').show();
+}
+
+function x_screen_unlock() {
+  $('#screen_unlock_entry').remove();
+  $('#screen_unlock_config').show();
 }
