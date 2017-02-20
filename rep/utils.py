@@ -5,6 +5,7 @@ utility functions
 from functools import wraps
 from flask import request, Response
 import secret_keys
+import json
 
 
 class ReverseProxied(object):
@@ -68,3 +69,7 @@ def requires_basic_auth(f):
         return f(*args, **kwargs)
 
     return decorated
+
+
+def to_json(param):
+    return json.loads(str(param))

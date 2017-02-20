@@ -12,7 +12,11 @@ from apiclient import discovery
 import json, httplib2, pytz, requests
 
 from rep import app, login_manager
-from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkFBStats, MturkMobile, User, Uploaded_Intv
+from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkFBStats
+from rep.models import MturkMobile, User, Uploaded_Intv
+from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
+from rep.models import RescuetimeConfig, ScreenUnlockConfig
+
 from rep.rescuetime import RescueOauth2, RescueTime
 from rep.pam import PamOauth
 from rep.moves import Moves
@@ -23,6 +27,7 @@ from rep import export
 
 from gcal import Calendar, EventFactory
 from rep.utils import requires_basic_auth
+from rep.utils import to_json
 from datetime import datetime
 
 
@@ -152,37 +157,79 @@ def get_next_condition(total_enrolled, ps_per_condition):
 @app.route('/mobile/connect/study', methods=['POST'])
 def connect_study():
     data = json.loads(request.data) if request.data else request.form.to_dict()
-    experiment = Experiment.query.filter_by(code=data['code']).first()
+    code = data['code']
+    experiment = Experiment.query.filter_by(code=code).first()
     if not experiment:
-        return json.dumps({'experiment': 'None'})
+        return json.dumps({'response': jsonify_responses('', ''), 'user': {}, 'experiment': {}})
 
     # already in experiment so no need to change anything
-    already_in_experiment = MobileUser.query.filter_by(email=data['email'], code=data['code']).first()
-    if already_in_experiment:
-        response = 'Already enrolled in experiment.'
-        user = already_in_experiment
-        result = {'response': response, 'user': str(user), 'experiment': str(experiment)}
-        return json.dumps(result)
+    user_in_experiment = MobileUser.query.filter_by(email=data['email'], code=code).first()
+    if user_in_experiment:
+        return json.dumps({'response': jsonify_responses('Already enrolled in experiment', ''),
+                           'user': to_json(user_in_experiment),
+                           'experiment': to_json(experiment)})
 
-    # condition needs to be updated for remaining operation
-    total_enrolled = len(MobileUser.query.filter_by(code=data['code']).all())
-    condition = get_next_condition(total_enrolled, experiment.ps_per_condition)
+    # at this point user needs to be enrolled either as switching experiment or new user
+    total_enrolled = len(MobileUser.query.filter_by(code=code).all())
+    data['condition'] = get_next_condition(total_enrolled, experiment.ps_per_condition)
 
-    # in one experiment and moving to another
-    user_exists = MobileUser.query.filter_by(email=data['email']).first()
-    if user_exists:
-        MobileUser.update_field(data['email'], 'condition', condition)
-        _, __, user = MobileUser.update_field(data['email'], 'code', data['code'])
-        response = 'Successfully switched experiment.'.format(data['code'])
-        result = {'response': response, 'user': str(user), 'experiment': str(experiment)}
-        return json.dumps(result)
+    # user in one experiment and moving to another
+    existing_user = MobileUser.query.filter_by(email=data['email']).first()
+    if existing_user:
+        _, response, user = existing_user.update_experiment_info(code, data['condition'])
+        return json.dumps({'response': response, 'user': to_json(user), 'experiment': to_json(experiment)})
 
     # enrolling as first timer in an experiment
-    # data contains all attributes for new user except condition so add that property
-    data['condition'] = condition
-    _, response, user = MobileUser.add_user(data)
-    result = {'response': response, 'user': str(user), 'experiment': str(experiment)}
-    return json.dumps(result)
+    _, user_response, new_user = MobileUser.add_user(data)
+    _, cal_response, __ = CalendarConfig.add(data)
+    response = jsonify_responses(user_response, cal_response)
+    return json.dumps({'response': response, 'user': to_json(new_user), 'experiment': to_json(experiment)})
+
+
+def jsonify_responses(user_response, cal_response):
+    return {'user_response': user_response, 'cal_response': cal_response}
+
+
+@app.route('/mobile/add/calendar-config', methods=['POST'])
+def add_calendar_setting():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    _, response, setting = CalendarConfig.add(data)
+    return json.dumps({'response': response, 'cal_setting': to_json(setting)})
+
+
+@app.route('/mobile/add/daily-reminder-config', methods=['POST'])
+def add_daily_reminder():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    _, response, reminder = DailyReminderConfig.add(data)
+    return json.dumps({'response': response, 'reminder': to_json(reminder)})
+
+
+@app.route('/mobile/add/general-notification-config', methods=['POST'])
+def add_notif_setting():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    _, response, setting = GeneralNotificationConfig.add(data)
+    return json.dumps({'response': response, 'general_notif_setting': to_json(setting)})
+
+
+@app.route('/mobile/add/rescuetime-config', methods=['POST'])
+def add_rescuetime_config():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    _, response, rt_config = RescuetimeConfig.add(data)
+    return json.dumps({'response': response, 'rescuetime_config': to_json(rt_config)})
+
+
+@app.route('/mobile/add/screen-unlock-config', methods=['POST'])
+def add_screen_unlock_config():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    _, response, unlock_config = ScreenUnlockConfig.add(data)
+    return json.dumps({'response': response, 'screen_unlock_config': to_json(unlock_config)})
+
+
+@app.route('/mobile/add/vibration-config', methods=['POST'])
+def add_vibration_config():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    _, response, vibr_config = VibrationConfig.add(data)
+    return json.dumps({'response': response, 'vibration_config': to_json(vibr_config)})
 
 
 #////////////////////////////////////////////
@@ -251,10 +298,12 @@ def minimize_events(events):
     return minimal_events
 
 
-@app.route('/mobile/ordered/interventions/<code>', methods=['GET'])
-def fetch_ordered_interventions(code):
-    interventions = Intervention.query.filter_by(code=code).order_by('created_at desc').all()
-    return '{}'.format(interventions)
+@app.route('/mobile/interventions', methods=['POST'])
+def fetch_interventions():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    interventions = Intervention.query.filter_by(code=data['code']).order_by('start').all()
+    intv_response = [str(x) for x in interventions]
+    return json.dumps({"intv_response": intv_response})
 
 
 #////////////////////////////////////
@@ -288,7 +337,7 @@ def edit_experiment(code):
         'enrolled_users': MobileUser.query.filter_by(code=code).all(),
         'experiment': Experiment.query.filter_by(code=code).first(),
         'uploaded_intvs': Uploaded_Intv.query.all(),
-        'interventions': Intervention.query.filter_by(code=code).order_by('created_at desc').all()
+        'interventions': Intervention.query.filter_by(code=code).order_by('start').all()
     }
     return render_template('edit-experiment.html', **ctx)
 
@@ -378,6 +427,7 @@ def delete_intervention():
 def upload_intv():
     text = request.form.get('text')
     image_name = request.form.get('image_name')
+    experiment_code = request.form.get('experiment_code')
     image = request.files.get('image')
 
     image_url = None
@@ -385,7 +435,7 @@ def upload_intv():
         Upload.save(image_name, image)
         image_url = Upload.get_url(image_name)
 
-    new_intv = {'text': text, 'image_name': image_name, 'image_url': image_url}
+    new_intv = {'text': text, 'image_name': image_name, 'image_url': image_url, 'experiment_code': experiment_code}
     Uploaded_Intv.add_intv(new_intv)
 
     msg = ''

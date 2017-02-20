@@ -15,7 +15,7 @@
     Calendar Settings
   </div>
 
-  <div class="" id="status_notif_config">
+  <div class="" id="general_notif_config">
     <i class="glyphicon glyphicon-plus"></i>
     General notification settings
   </div>
@@ -135,10 +135,10 @@
   </div>
 </div>
 
-<!-- Status Notif Modal Begins -->
+<!-- General Notif Modal Begins -->
 <div
   class="modal fade"
-  id="status-notif-modal"
+  id="general-notif-modal"
   tabindex="-1"
   role="dialog"
   aria-labelledby="mySmallModalLabel">
@@ -151,7 +151,7 @@
         <h4 class="modal-title">General Notification Settings</h4>
       </div>
 
-      <div class="modal-body" id="status-notif-settings">
+      <div class="modal-body" id="general-notif-settings">
 
         <div class="input-group">
           <span class="input-group-addon" id="basic-addon3">Title</span>
@@ -159,8 +159,8 @@
             type="text"
             class="form-control"
             id="notif-title"
-            maxlength="20"
-            placeholder="max of 20 characters">
+            maxlength="30"
+            placeholder="max of 30 characters">
         </div>
         <br>
 
@@ -186,7 +186,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="save-status-notif-modal">Save changes</button>
+        <button type="button" class="btn btn-primary" id="save-general-notif-modal">Save changes</button>
       </div>
 
     </div>
@@ -223,7 +223,7 @@
         <br>
 
         <div class="input-group">
-          <span class="input-group-addon" id="basic-addon3">Time</span>
+          <span class="input-group-addon" id="basic-addon3">Time Limit</span>
           <input
             type="number"
             class="form-control"
@@ -233,7 +233,7 @@
         <br>
 
         <div class="input-group">
-          <span class="input-group-addon" id="basic-addon3">Opens</span>
+          <span class="input-group-addon" id="basic-addon3">Opens Limit</span>
           <input
             type="number"
             class="form-control"

@@ -19,10 +19,10 @@
     $(entry).appendTo('#selected_configs');
   });
 
-  $('#status_notif_config').click(function() {
-    $('#status_notif_config').hide();
-    entry = '<div id="status_notif_entry"> <a onclick="edit_status_notif()">General Notification Settings</a>' +
-      '<span onclick="x_status_notif() "' + x_glyph + '</div>';
+  $('#general_notif_config').click(function() {
+    $('#general_notif_config').hide();
+    entry = '<div id="status_notif_entry"> <a onclick="edit_general_notif()">General Notification Settings</a>' +
+      '<span onclick="x_general_notif() "' + x_glyph + '</div>';
     $(entry).appendTo('#selected_configs');
   });
 
@@ -65,6 +65,13 @@
     $('#summary_entry').empty();
     var entry = '<p>Alarm Reminder: ' + result + '</p>';
     $(entry).appendTo('#summary_entry');
+
+    post_data('/mobile/add/daily-reminder-config',
+      {
+        'code': $('#code_from_hidden_element').val(),
+        'reminder_time': result
+      },
+      '#summary_entry');
   });
 
   $("#save-vibration-modal").click(function() {
@@ -87,6 +94,18 @@
     $('#summary_entry').empty();
     entry = '<p>Vibration settings: ' + summary + '</p>';
     $(entry).appendTo('#summary_entry');
+
+    post_data('/mobile/add/vibration-config',
+      {
+        'code': $('#code_from_hidden_element').val(),
+        'app_id': app_id,
+        'time_limit': app_time_limit,
+        'open_limit': app_opens_limit,
+        'show_stats': show_stats,
+        'vibration_strength': strength
+      },
+      '#summary_entry');
+
   });
 
   $("#save-rescuetime-modal").click(function() {
@@ -109,9 +128,20 @@
     $('#summary_entry').empty();
     entry = '<p>Rescuetime settings: ' + summary + '</p>';
     $(entry).appendTo('#summary_entry');
+
+    post_data('/mobile/add/rescuetime-config',
+      {
+        'code': $('#code_from_hidden_element').val(),
+        'productive_duration': productive_time,
+        'distracted_duration': distracted_time,
+        'productive_msg': productive_msg,
+        'distracted_msg': distracted_msg,
+        'show_stats': persistence
+      },
+      '#summary_entry');
   });
 
-  $("#save-status-notif-modal").click(function() {
+  $("#save-general-notif-modal").click(function() {
     var title;
     var content;
     var app_to_launch;
@@ -134,22 +164,31 @@
     $('#summary_entry').empty();
     var entry = '<p>General Status Notification: ' + msg + '</p>';
     $(entry).appendTo('#summary_entry');
+
+    post_data('/mobile/add/general-notification-config',
+      {
+        'code': $('#code_from_hidden_element').val(),
+        'title': title,
+        'content': content,
+        'app_id': app_to_launch
+      },
+      '#summary_entry');
   });
 
   $("#save-calendar-modal").click(function() {
     var max_events = -1;
-    var max_hours = -1;
+    var max_minutes = -1;
     var settings = '';
 
     max_events = $('#calendar-max-events').val();
-    max_hours = $('#calendar-max-hours').val();
+    max_minutes = $('#calendar-max-hours').val();
 
     if (max_events > -1) {
-      settings += 'Max events: ' + max_events + " ";
+      settings += 'Max events: ' + max_events + " / ";
     }
 
-    if (max_hours > -1) {
-      settings += 'Max hours: ' + max_hours;
+    if (max_minutes > -1) {
+      settings += 'Max minutes: ' + max_minutes;
     }
 
     if (settings === '') {
@@ -159,12 +198,33 @@
     $('#summary_entry').empty();
     var entry = '<p>Calendar setting: ' + settings + '</p>';
     $(entry).appendTo('#summary_entry');
+
+    post_data('/mobile/add/calendar-config',
+      {
+        'code': $('#code_from_hidden_element').val(),
+        'event_time_limit': max_minutes,
+        'event_num_limit': max_events
+      },
+      '#summary_entry');
   });
 
   $("#save-screen-unlock-modal").click(function() {
     var summary = '<p>screen unlock save tapped.</p>';
     console.log(summary);
     $(summary).appendTo('#summary_entry');
+
+    post_data('/mobile/add/screen-unlock-config',
+      {
+        'code': $('#code_from_hidden_element').val(),
+        'time_limit': $('#time-limit').val(),
+        'unlocked_limit': $('#unlocked-limit').val(),
+        'vibration_strength': $('#unlock-vibration-strength input:radio:checked').val(),
+        'show_stats': $('#show-unlock-stats').is(':checked'),
+        'enable_user_pref': $('#user-monitor-pref').is(':checked'),
+        'start_time': $('#monitor-unlock-start').val(),
+        'end_time': $('#monitor-unlock-end').val()
+      },
+      '#summary_entry');
   });
 
   $('#user-monitor-pref').change(function() {
@@ -189,8 +249,8 @@ function edit_calendar() {
   $('#calendar-modal').modal('show');
 }
 
-function edit_status_notif() {
-  $('#status-notif-modal').modal('show');
+function edit_general_notif() {
+  $('#general-notif-modal').modal('show');
 }
 
 function edit_rescuetime() {
@@ -218,9 +278,9 @@ function x_calendar() {
   $('#calendar_config').show();
 }
 
-function x_status_notif() {
-  $('#status_notif_entry').remove();
-  $('#status_notif_config').show();
+function x_general_notif() {
+  $('#general_notif_entry').remove();
+  $('#general_notif_config').show();
 }
 
 function x_rescuetime() {
@@ -241,4 +301,14 @@ function x_vibration() {
 function x_screen_unlock() {
   $('#screen_unlock_entry').remove();
   $('#screen_unlock_config').show();
+}
+
+function post_data(url, data, response_field) {
+  $.post(url, data).done(function(json_string) {
+    var results = JSON.parse(json_string);
+    show_success_msg(response_field, results.response);
+  }).fail(function(error) {
+    var msg = 'Error. Pls contact researcher (Error: {0} / {1}).'.format(error.status, error.statusText);
+    show_error_msg(response_field, msg);
+  });
 }

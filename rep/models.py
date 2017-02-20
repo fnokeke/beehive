@@ -6,173 +6,82 @@ from flask_sqlalchemy import SQLAlchemy
 import uuid
 import datetime
 import json
+from utils import to_json
 
 db = SQLAlchemy(app)
 
 
-class Uploaded_Intv(db.Model):
-
+class CalendarConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    image_url = db.Column(db.String(100))
-    image_name = db.Column(db.String(100))
-    text = db.Column(db.String(1500))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    event_num_limit = db.Column(db.String(5))
+    event_time_limit = db.Column(db.String(10))
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
 
     def __init__(self, info):
-        self.image_url = info['image_url']
-        self.image_name = info['image_name']
-        self.text = info['text']
+        self.event_num_limit = info.get('event_num_limit')
+        self.event_time_limit = info.get('event_time_limit')
+        self.code = info.get('code')
 
     def __repr__(self):
         result = {'id': self.id,
-                  'image_url': self.image_url,
-                  'image_name': self.image_name,
-                  'text': self.text,
+                  'event_time_limit': self.event_time_limit,
+                  'event_num_limit': self.event_num_limit,
+                  'code': self.code,
                   'created_at': str(self.created_at)}
         return json.dumps(result)
 
     @staticmethod
-    def add_intv(info):
-        if Uploaded_Intv.query.filter_by(image_url=info['image_url'], text=info['text']).first():
-            return
+    def add(info):
+        if not info.get('event_num_limit') and not info.get('event_time_limit'):
+            print '**********************'
+            print 'calendar params: {}'.format(info)
+            print '**********************'
+            return (-1, 'No calendar params', -1)
 
-        new_image = Uploaded_Intv(info)
-        db.session.add(new_image)
+        existing_experiment = Experiment.query.filter_by(code=info['code']).first()
+        if not existing_experiment:
+            invalid_response = 'Invalid experiment code({})'.format(info['code'])
+            return (-1, invalid_response, -1)
+
+        new_setting = CalendarConfig(info)
+        db.session.add(new_setting)
         db.session.commit()
 
+        return (200, 'Successfully added cal setting.', new_setting)
 
-class Intervention(db.Model):
+
+class DailyReminderConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    code = db.Column(db.String(10))
-    treatment = db.Column(db.String(2000))
-    start = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    end = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    every = db.Column(db.String(30))
-    when = db.Column(db.String(30))
-    repeat = db.Column(db.String(30))
+    reminder_time = db.Column(db.String(10))
 
     def __init__(self, info):
-        self.code = info['code']
-        self.treatment = info['treatment']
-        self.start = info['start']
-        self.end = info['end']
-        self.every = info['every']
-        self.when = info['when']
-        self.repeat = info['repeat']
+        self.reminder_time = info.get('reminder_time')
+        self.code = info.get('code')
 
     def __repr__(self):
-        result = {
-            'created_at': str(self.created_at),
-            'code': self.code,
-            'treatment': self.treatment,
-            'start': str(self.start),
-            'end': str(self.end),
-            'every': self.every,
-            'when': self.when,
-            'repeat': self.repeat
-        }
-        return json.dumps(result)
-
-    @staticmethod
-    def add_intervention(info):
-        new_intervention = Intervention(info)
-        db.session.add(new_intervention)
-        db.session.commit()
-        latest_intervention = Intervention.query.order_by('created_at desc').first()
-        return (200, 'Successfully added intervention', latest_intervention)
-
-    @staticmethod
-    def delete_intervention(created_at):
-        Intervention.query.filter_by(created_at=created_at).delete()
-        db.session.commit()
-
-# class RescuetimeUser(db.Model):
-#     email = db.Column(db.String(120), primary_key=True, unique=True)
-#     rt_access_token = db.Column(db.String(120), unique=True)
-#
-#     def __init__(self, info):
-#         self.email = info['email']
-#         self.rt_access_token = info['rt_access_token']
-#
-#     def __repr__(self):
-#         result = {'email': self.email, 'rt_access_token': self.rt_access_token}
-#         return json.dumps(result)
-#
-#     @staticmethod
-#     def add_rt_user(info):
-#         existing_user = RescuetimeUser.query.filter_by(email=info['email']).first()
-#         if existing_user:
-#             existing_user.rt_access_token = info['rt_access_token']
-#             db.session.commit()
-#             return (200, 'Successfully reconnected to RescueTime.', existing_user)
-#
-#         new_user = RescuetimeUser(info)
-#         db.session.add(new_user)
-#         db.session.commit()
-#         return (200, 'You are now connected to RescueTime.', new_user)
-
-
-class MobileUser(db.Model):
-    firstname = db.Column(db.String(120))
-    lastname = db.Column(db.String(120))
-    gender = db.Column(db.String(10))
-    code = db.Column(db.String(10))
-    condition = db.Column(db.Integer)
-    email = db.Column(db.String(120), primary_key=True, unique=True)
-
-    def __init__(self, info):
-        self.firstname = info['firstname']
-        self.lastname = info['lastname']
-        self.email = info['email']
-        self.gender = info['gender']
-        self.code = info['code']
-        self.condition = info['condition']
-
-    def __repr__(self):
-        result = {'firstname': self.firstname,
-                  'lastname': self.lastname,
-                  'email': self.email,
-                  'gender': self.gender,
+        result = {'id': self.id,
+                  'reminder_time': self.reminder_time,
                   'code': self.code,
-                  'condition': self.condition}
+                  'created_at': str(self.created_at)}
         return json.dumps(result)
 
     @staticmethod
-    def add_user(info):
-        existing_user = MobileUser.query.filter_by(email=info['email']).first()
-        if existing_user:
-            return (-1, 'Successfully reconnected. Welcome back, ' + existing_user.firstname, existing_user)
+    def add(info):
+        if not info.get('reminder_time'):
+            return (-1, 'No reminder_time params', -1)
 
-        new_user = MobileUser(info)
-        db.session.add(new_user)
+        existing_experiment = Experiment.query.filter_by(code=info['code']).first()
+        if not existing_experiment:
+            invalid_response = 'Invalid experiment code({})'.format(info['code'])
+            return (-1, invalid_response, -1)
+
+        new_reminder = DailyReminderConfig(info)
+        db.session.add(new_reminder)
         db.session.commit()
-
-        new_user = MobileUser.query.filter_by(email=info['email']).first()
-        return (200, 'Successfully enrolled in experiment. Welcome, ' + new_user.firstname, new_user)
-
-    @staticmethod
-    def update_user(info):
-        user = MobileUser.query.filter_by(email=info['email']).first()
-        user.firstname = info['firstname']
-        user.lastname = info['lastname']
-        user.email = info['email']
-        user.code = info['code']
-        user.condition = info['condition']
-
-        db.session.commit()
-        return 200, 'Successfully updated info for {}'.format(user.firstname), user
-
-    @staticmethod
-    def update_field(email, key, value):
-        """
-        Set user field with give value and save to database.
-        """
-        user = MobileUser.query.filter_by(email=email).first()
-        setattr(user, key, value)
-        db.session.commit()
-
-        return 200, 'Successfully updated {} for {}'.format(key, user.firstname), user
+        return (200, 'Successfully added daily reminder.', new_reminder)
 
 
 class Experiment(db.Model):
@@ -190,6 +99,17 @@ class Experiment(db.Model):
     image = db.Column(db.Boolean, default=False)
     reminder = db.Column(db.Boolean, default=False)
     actuators = db.Column(db.Boolean, default=False)
+
+    interventions = db.relationship('Intervention', backref='experiment', lazy='select')
+    mobile_user = db.relationship('MobileUser', backref='experiment', lazy='select')
+    uploaded_intv = db.relationship('Uploaded_Intv', backref='experiment', lazy='select')
+
+    calendar_config = db.relationship('CalendarConfig', backref='experiment', lazy='select')
+    daily_reminder_config = db.relationship('DailyReminderConfig', backref='experiment', lazy='select')
+    general_notification_config = db.relationship('GeneralNotificationConfig', backref='experiment', lazy='select')
+    rescuetime_config = db.relationship('RescuetimeConfig', backref='experiment', lazy='select')
+    screen_unlock_config = db.relationship('ScreenUnlockConfig', backref='experiment', lazy='select')
+    vibration_config = db.relationship('VibrationConfig', backref='experiment', lazy='select')
 
     def __init__(self, info):
         self.title = info.get('title')
@@ -218,7 +138,15 @@ class Experiment(db.Model):
             'text': self.text,
             'image': self.image,
             'reminder': self.reminder,
-            'actuators': self.actuators
+            'actuators': self.actuators,
+            'calendar_config': to_json(self.calendar_config),
+            'daily_reminder_config': to_json(self.daily_reminder_config),
+            'general_notification_config': to_json(self.general_notification_config),
+            'interventions': to_json(self.interventions),
+            'rescuetime_config': to_json(self.rescuetime_config),
+            'screen_unlock_config': to_json(self.screen_unlock_config),
+            'vibration_config': to_json(self.vibration_config),
+            'daily_reminder_config': to_json(self.daily_reminder_config),
         }
         return json.dumps(result)
 
@@ -273,87 +201,165 @@ class Experiment(db.Model):
         return experiment
 
 
-class MturkMobile(db.Model):
-    worker_id = db.Column(db.String(120), primary_key=True, unique=True)
-    device_id = db.Column(db.String(120), primary_key=True, unique=True)
+class GeneralNotificationConfig(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    title = db.Column(db.String(50))
+    content = db.Column(db.String(50))
+    app_id = db.Column(db.String(50))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, info):
-        self.worker_id = info['worker_id']
-        self.device_id = info['device_id']
+        self.title = info.get('title')
+        self.content = info.get('content')
+        self.app_id = info.get('app_id')
+        self.code = info.get('code')
 
     def __repr__(self):
-        result = {'worker_id': self.worker_id, 'device_id': self.device_id, 'created_at': self.created_at}
+        result = {'id': self.id,
+                  'title': self.title,
+                  'content': self.content,
+                  'app_id': self.app_id,
+                  'code': self.code,
+                  'created_at': str(self.created_at)}
         return json.dumps(result)
 
     @staticmethod
-    def add_user(info):
-        """ add new mturk mobile user and return worker generated code if adding new worker """
-        existing_worker = MturkMobile.query.filter_by(worker_id=info['worker_id']).first()
-        existing_device = MturkMobile.query.filter_by(device_id=info['device_id']).first()
+    def add(info):
+        existing_experiment = Experiment.query.filter_by(code=info['code']).first()
+        if not existing_experiment:
+            invalid_response = 'Invalid experiment code({})'.format(info['code'])
+            return (-1, invalid_response, -1)
 
-        if existing_worker:
-            return (
-                -1,
-                'Worker already registered. If you think this is an error and you haven\'t registered before then contact researcher.',
-                existing_worker.worker_id)
-        if existing_device:
-            return (
-                -1,
-                'Device already connected. If you think this is an error and you haven\'t connected before then contact researcher.',
-                existing_device.worker_id)
-
-        worker = MturkMobile(info)
-        db.session.add(worker)
+        new_notif = GeneralNotificationConfig(info)
+        db.session.add(new_notif)
         db.session.commit()
+        return (200, 'Successfully added general notification setting.', new_notif)
 
-        return (200, 'Successfully connected worker!', worker.worker_id)
 
-
-class MturkFBStats(db.Model):
+class Intervention(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    worker_id = db.Column(db.String(120))
-    device_id = db.Column(db.String(120))
-    total_seconds = db.Column(db.Integer)
-    time_spent = db.Column(db.Integer)
-    time_open = db.Column(db.Integer)
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    treatment = db.Column(db.String(2000))
+    start = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    end = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    every = db.Column(db.String(30))
+    when = db.Column(db.String(30))
+    repeat = db.Column(db.String(30))
 
     def __init__(self, info):
-        self.worker_id = info['worker_id']
-        self.device_id = info['device_id']
-        self.total_seconds = info['total_seconds']
-        self.time_spent = info['time_spent']
-        self.time_open = info['time_open']
+        self.code = info['code']
+        self.treatment = info['treatment']
+        self.start = info['start']
+        self.end = info['end']
+        self.every = info['every']
+        self.when = info['when']
+        self.repeat = info['repeat']
 
     def __repr__(self):
+        treatment_image, treatment_text = '', ''
+
+        if '**&&&&**' in self.treatment:
+            treatment_image, treatment_text = self.treatment.split('**&&&&**')
+        elif 'photos' in self.treatment:
+            treatment_image = self.treatment
+        else:
+            treatment_text = self.treatment
+
         result = {
-            'worker_id': self.worker_id,
-            'device_id': self.device_id,
-            'total_seconds': self.total_seconds,
-            'time_spent': self.time_spent,
-            'time_open': self.time_open,
-            'created_at': self.created_at
+            'created_at': str(self.created_at),
+            'code': self.code,
+            'treatment_image': treatment_image,
+            'treatment_text': treatment_text,
+            'start': str(self.start),
+            'end': str(self.end),
+            'every': self.every,
+            'when': self.when,
+            'repeat': self.repeat
         }
         return json.dumps(result)
 
     @staticmethod
-    def add_stats(info):
-        existing_worker = MturkMobile.query.filter_by(worker_id=info['worker_id']).first()
-        existing_device = MturkMobile.query.filter_by(device_id=info['device_id']).first()
+    def add_intervention(info):
+        new_intervention = Intervention(info)
+        db.session.add(new_intervention)
+        db.session.commit()
+        latest_intervention = Intervention.query.order_by('created_at desc').first()
+        return (200, 'Successfully added intervention', latest_intervention)
 
-        if not existing_worker:
-            return (-1, 'Weird error. Worker should have been registered. Contact researcher.', -1)
-
-        if not existing_device:
-            return (-1, 'Weird error. Device should have been registered. Contact researcher.', -1)
-
-        new_stats = MturkFBStats(info)
-        db.session.add(new_stats)
+    @staticmethod
+    def delete_intervention(created_at):
+        Intervention.query.filter_by(created_at=created_at).delete()
         db.session.commit()
 
-        summarized_stats = "{} secs: {}x".format(info['time_spent'], info['time_open'])
-        return (200, 'Successfully added stats!', summarized_stats)
+
+class MobileUser(db.Model):
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    firstname = db.Column(db.String(120))
+    lastname = db.Column(db.String(120))
+    gender = db.Column(db.String(10))
+    condition = db.Column(db.Integer)
+    email = db.Column(db.String(120), primary_key=True, unique=True)
+    last_installed_ms = db.Column(db.String(30))
+    pretty_last_installed = db.Column(db.String(30))
+    app_version_name = db.Column(db.String(10))
+    app_version_code = db.Column(db.String(10))
+    phone_model = db.Column(db.String(30))
+    android_version = db.Column(db.String(10))
+    device_country = db.Column(db.String(10))
+    device_id = db.Column(db.String(30))
+
+    def __init__(self, info):
+        self.firstname = info['firstname']
+        self.lastname = info['lastname']
+        self.email = info['email']
+        self.gender = info['gender']
+        self.code = info['code']
+        self.condition = info['condition']
+        self.last_installed_ms = info['last_installed_ms']
+        self.pretty_last_installed = info['pretty_last_installed']
+        self.app_version_name = info['app_version_name']
+        self.app_version_code = info['app_version_code']
+        self.phone_model = info['phone_model']
+        self.android_version = info['android_version']
+        self.device_country = info['device_country']
+        self.device_id = info['device_id']
+
+    def __repr__(self):
+        result = {'firstname': self.firstname,
+                  'lastname': self.lastname,
+                  'email': self.email,
+                  'gender': self.gender,
+                  'code': self.code,
+                  'condition': self.condition,
+                  'last_installed_ms': self.last_installed_ms,
+                  'pretty_last_installed': self.pretty_last_installed,
+                  'app_version_name': self.app_version_name,
+                  'app_version_code': self.app_version_code,
+                  'phone_model': self.phone_model,
+                  'device_id': self.device_id,
+                  'device_country': self.device_country,
+                  'android_version': self.android_version}
+        return json.dumps(result)
+
+    def update_experiment_info(self, code, condition):
+        self.code = code
+        self.condition = condition
+        db.session.commit()
+        return (200, 'Successfully switched experiment.', self)
+
+    @staticmethod
+    def add_user(info):
+        existing_user = MobileUser.query.filter_by(email=info['email']).first()
+        if existing_user:
+            return (-1, 'Welcome back ' + existing_user.firstname, existing_user)
+
+        new_user = MobileUser(info)
+        db.session.add(new_user)
+        db.session.commit()
+
+        return (200, 'Successfully enrolled in experiment.', new_user)
 
 
 class Mturk(db.Model):
@@ -415,6 +421,212 @@ class Mturk(db.Model):
         """
         worker = Mturk.query.get(self.worker_id)
         setattr(worker, key, value)
+        db.session.commit()
+
+
+class MturkFBStats(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    worker_id = db.Column(db.String(120))
+    device_id = db.Column(db.String(120))
+    total_seconds = db.Column(db.Integer)
+    time_spent = db.Column(db.Integer)
+    time_open = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, info):
+        self.worker_id = info['worker_id']
+        self.device_id = info['device_id']
+        self.total_seconds = info['total_seconds']
+        self.time_spent = info['time_spent']
+        self.time_open = info['time_open']
+
+    def __repr__(self):
+        result = {
+            'worker_id': self.worker_id,
+            'device_id': self.device_id,
+            'total_seconds': self.total_seconds,
+            'time_spent': self.time_spent,
+            'time_open': self.time_open,
+            'created_at': self.created_at
+        }
+        return json.dumps(result)
+
+    @staticmethod
+    def add_stats(info):
+        existing_worker = MturkMobile.query.filter_by(worker_id=info['worker_id']).first()
+        existing_device = MturkMobile.query.filter_by(device_id=info['device_id']).first()
+
+        if not existing_worker:
+            return (-1, 'Weird error. Worker should have been registered. Contact researcher.', -1)
+
+        if not existing_device:
+            return (-1, 'Weird error. Device should have been registered. Contact researcher.', -1)
+
+        new_stats = MturkFBStats(info)
+        db.session.add(new_stats)
+        db.session.commit()
+
+        summarized_stats = "{} secs: {}x".format(info['time_spent'], info['time_open'])
+        return (200, 'Successfully added stats!', summarized_stats)
+
+
+class MturkMobile(db.Model):
+    worker_id = db.Column(db.String(120), primary_key=True, unique=True)
+    device_id = db.Column(db.String(120), primary_key=True, unique=True)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, info):
+        self.worker_id = info['worker_id']
+        self.device_id = info['device_id']
+
+    def __repr__(self):
+        result = {'worker_id': self.worker_id, 'device_id': self.device_id, 'created_at': self.created_at}
+        return json.dumps(result)
+
+    @staticmethod
+    def add_user(info):
+        """ add new mturk mobile user and return worker generated code if adding new worker """
+        existing_worker = MturkMobile.query.filter_by(worker_id=info['worker_id']).first()
+        existing_device = MturkMobile.query.filter_by(device_id=info['device_id']).first()
+
+        if existing_worker:
+            return (
+                -1,
+                'Worker already registered. If you think this is an error and you haven\'t registered before then contact researcher.',
+                existing_worker.worker_id)
+        if existing_device:
+            return (
+                -1,
+                'Device already connected. If you think this is an error and you haven\'t connected before then contact researcher.',
+                existing_device.worker_id)
+
+        worker = MturkMobile(info)
+        db.session.add(worker)
+        db.session.commit()
+        return (200, 'Successfully connected worker!', worker.worker_id)
+
+
+class RescuetimeConfig(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    productive_duration = db.Column(db.String(50))
+    distracted_duration = db.Column(db.String(50))
+    productive_msg = db.Column(db.String(50))
+    distracted_msg = db.Column(db.String(50))
+    show_stats = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, info):
+        self.code = info.get('code')
+        self.productive_duration = info.get('productive_duration')
+        self.distracted_duration = info.get('distracted_duration')
+        self.productive_msg = info.get('productive_msg')
+        self.distracted_msg = info.get('distracted_msg')
+        self.show_stats = info.get('show_stats')
+
+    def __repr__(self):
+        result = {'id': self.id,
+                  'code': self.code,
+                  'productive_duration': self.productive_duration,
+                  'distracted_duration': self.distracted_duration,
+                  'productive_msg': self.productive_msg,
+                  'distracted_msg': self.distracted_msg,
+                  'show_stats': self.show_stats,
+                  'created_at': str(self.created_at)}
+        return json.dumps(result)
+
+    @staticmethod
+    def add(info):
+        existing_experiment = Experiment.query.filter_by(code=info['code']).first()
+        if not existing_experiment:
+            invalid_response = 'Invalid experiment code({})'.format(info['code'])
+            return (-1, invalid_response, -1)
+
+        rt_config = RescuetimeConfig(info)
+        db.session.add(rt_config)
+        db.session.commit()
+        return (200, 'Successfully added rescuetime config.', rt_config)
+
+
+class ScreenUnlockConfig(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    time_limit = db.Column(db.Integer)
+    unlocked_limit = db.Column(db.Integer)
+    vibration_strength = db.Column(db.String(10))
+    show_stats = db.Column(db.Boolean, default=False)
+    enable_user_pref = db.Column(db.Boolean, default=False)
+    start_time = db.Column(db.String(50))
+    end_time = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, info):
+        self.code = info.get('code')
+        self.time_limit = info.get('time_limit')
+        self.unlocked_limit = info.get('unlocked_limit')
+        self.vibration_strength = info.get('vibration_strength')
+        self.show_stats = info.get('show_stats')
+        self.enable_user_pref = info.get('enable_user_pref')
+        self.start_time = info.get('start_time')
+        self.end_time = info.get('end_time')
+
+    def __repr__(self):
+        result = {'id': self.id,
+                  'code': self.code,
+                  'time_limit': self.time_limit,
+                  'unlocked_limit': self.unlocked_limit,
+                  'vibration_strength': self.vibration_strength,
+                  'show_stats': self.show_stats,
+                  'enable_user_pref': self.enable_user_pref,
+                  'start_time': self.start_time,
+                  'end_time': self.end_time,
+                  'created_at': str(self.created_at)}
+        return json.dumps(result)
+
+    @staticmethod
+    def add(info):
+        existing_experiment = Experiment.query.filter_by(code=info['code']).first()
+        if not existing_experiment:
+            invalid_response = 'Invalid experiment code({})'.format(info['code'])
+            return (-1, invalid_response, -1)
+
+        unlock_setting = ScreenUnlockConfig(info)
+        db.session.add(unlock_setting)
+        db.session.commit()
+        return (200, 'Successfully added screen unlock setting.', unlock_setting)
+
+
+class Uploaded_Intv(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    image_url = db.Column(db.String(100))
+    image_name = db.Column(db.String(100))
+    text = db.Column(db.String(1500))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+
+    def __init__(self, info):
+        self.image_url = info['image_url']
+        self.image_name = info['image_name']
+        self.text = info['text']
+        self.code = info['code']
+
+    def __repr__(self):
+        result = {'id': self.id,
+                  'image_url': self.image_url,
+                  'image_name': self.image_name,
+                  'text': self.text,
+                  'code': self.code,
+                  'created_at': str(self.created_at)}
+        return json.dumps(result)
+
+    @staticmethod
+    def add_intv(info):
+        if Uploaded_Intv.query.filter_by(image_url=info['image_url'], text=info['text']).first():
+            return
+
+        new_image = Uploaded_Intv(info)
+        db.session.add(new_image)
         db.session.commit()
 
 
@@ -533,3 +745,45 @@ class User(db.Model):
 
         user = cls.query.get(email)
         return user
+
+
+class VibrationConfig(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    app_id = db.Column(db.String(50))
+    time_limit = db.Column(db.Integer)
+    open_limit = db.Column(db.Integer)
+    vibration_strength = db.Column(db.String(10))
+    show_stats = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, info):
+        self.code = info.get('code')
+        self.app_id = info.get('app_id')
+        self.time_limit = info.get('time_limit')
+        self.open_limit = info.get('open_limit')
+        self.vibration_strength = info.get('vibration_strength')
+        self.show_stats = info.get('show_stats')
+
+    def __repr__(self):
+        result = {'id': self.id,
+                  'code': self.code,
+                  'app_id': self.app_id,
+                  'time_limit': self.time_limit,
+                  'open_limit': self.open_limit,
+                  'vibration_strength': self.vibration_strength,
+                  'show_stats': self.show_stats,
+                  'created_at': str(self.created_at)}
+        return json.dumps(result)
+
+    @staticmethod
+    def add(info):
+        existing_experiment = Experiment.query.filter_by(code=info['code']).first()
+        if not existing_experiment:
+            invalid_response = 'Invalid experiment code({})'.format(info['code'])
+            return (-1, invalid_response, -1)
+
+        new_vibr_setting = VibrationConfig(info)
+        db.session.add(new_vibr_setting)
+        db.session.commit()
+        return (200, 'Successfully added vibration setting.', new_vibr_setting)
