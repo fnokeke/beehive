@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block nav_brand %}
-  <a class="navbar-brand" href="#">Mturk Digital Distraction Experiment</a>
+  <a class="navbar-brand" href="#">Mturk App Test Experiment</a>
 {% endblock %}
 
 {% block contents %}
@@ -15,50 +15,12 @@
 
     <div class="page-header">
       <h3>
-        Who are we?
-      </h3>
-      <p>
-        <br>We are researchers in the
-        <a href="http://smalldata.io/" target="_blank">Small Data Lab</a>
-        at
-        <a href="https://tech.cornell.edu" target="_blank">Cornell Tech</a>, which is part of
-        <a href="https://cornell.edu" target="_blank">Cornell University</a>.
-      </p>
-    </div>
-
-    <div class="page-header">
-      <h3>
         Goal
       </h3>
       <p>
-        By participating in this experiment, you contribute to the growing body of scientific research on
-        digital distractions.
+        The goal of this experiment is to test an app that measures Facebook usage. This experiment does not
+        store any of your data.
       </p>
-
-    </div>
-
-    <div class="page-header">
-      <h3>
-        Duration
-      </h3>
-      <p>
-        This experiment will run for 5 days.
-      </p>
-    </div>
-
-    <div class="page-header">
-      <h3>
-        Your tasks
-      </h3>
-
-      <ul>
-        <li>Complete three surveys at the beginning of experiment.</li>
-        <li>Download three apps that will automatically record which apps you use on your phone. You don't
-          need to do anything manually.</li>
-        <li>Complete two surveys at the end of experiment.</li>
-        <li>That's it. All done!</li>
-      </ul>
-
     </div>
 
     <div class="page-header">
@@ -66,175 +28,68 @@
         Compensation
       </h3>
       <p>
-        You will be paid $1 at the end of each day for a total of $5 at the end of the experiment.
+        You will be paid $1.00 after submitting your generated code. Payment will be made within 48 hours of
+        your submission.
+        <br>
       </p>
+      <strong>
+        **No need to continue with this experiment if you don't already have Facebook app on your android
+        phone.
+        <br>
+        If you continue, no code will be automatically generated and you will not be paid.**
+      </strong>
     </div>
 
     <div class="page-header">
       <h3>
-        Disqualification
+        Your tasks (3 - 5 minutes)
+      </h3>
+
+      <ol>
+        <li>First,
+          <a href="{{ url_for('static', filename='downloads/FgPrelimApp.apk') }}">download the app</a>
+          and install on your android phone.</li>
+        <li>Tap
+          <strong>Request Permission</strong>
+          button and toggle
+          <strong>Beehive Monitor</strong>
+          to
+          <strong>on</strong>
+          position.
+        </li>
+        <li>Return back to app and tap
+          <strong>Start Service</strong>.
+        </li>
+        <li>Open Facebook app and leave it for 30 seconds (you'll see the timer automatically update in the
+          status bar).
+        </li>
+        <li>Then navigate from Facebook app to your home screen and wait for
+          <strong>10 seconds (do this 3x)</strong>.
+        </li>
+        <li>If you successfully did this, then a code will be automatically generated in the status bar.
+          <strong>Submit this code</strong>
+          on the HIT.
+        </li>
+        <li>
+          After submitting the code, complete
+          <strong>
+            <a href="https://goo.gl/forms/q5pU6SDlH1HkbNHu1" target="_blank">this survey.</a>
+          </strong>
+        </li>
+        <li>Uninstall the app after submiting your generated code and the survey.</li>
+        <li>That's it. All done!</li>
+      </ol>
+
+    </div>
+
+    <div class="page-header">
+      <h3>
+        Disclaimer
       </h3>
       <p>
-        You will not be paid and will be automatically removed from the experiment if:
-      </p>
-
-      <ul>
-        <li>
-          you don’t meet all eligibility criteria listed in the next section.
-        </li>
-        <li>
-          if you provide fake responses to surveys that you complete.
-        </li>
-        <li>
-          if you don't have experiment apps running throughout the study.
-        </li>
-      </ul>
-    </div>
-
-    <div class="page-header">
-      <h3>
-        Eligibility
-      </h3>
-
-      <ul>
-        <li>
-          ONLY android phone users can participate.
-        </li>
-        <li>
-          You actively use Facebook on your smartphone (at least 1 hour daily).
-        </li>
-      </ul>
-    </div>
-
-    <div class="page-header">
-      <h3>
-        How to join?
-      </h3>
-
-      <ul>
-        <li>
-          Download 2 android applications to your android smartphone:
-          <ul>
-            <li>
-              Install 1st app by following
-              <a
-                href="https://docs.google.com/document/d/11uvdO4dJhHg-jpE8aq3c3WQnBOG7uZRQIjsyGLUcc7M/edit?usp=sharing"
-                target="_blank">Aware app installation instructions</a>.
-            </li>
-            <li>
-              Install 2nd app by following
-              <a
-                href="https://docs.google.com/document/d/1YC-I4_zchFDyU4s6Z6ydgtXIZ5KV898cDT2pND5xFlk/edit?usp=sharing"
-                target="_blank">DeployGate app installation instructions</a>.
-            </li>
-          </ul>
-        </li>
-        <br>
-        <br>
-        <li>
-          Complete these surveys immediately after installing the apps:
-          <ul>
-            <li>
-              <a href="https://goo.gl/forms/ghvR19Z5sGEj9rBH3" target="_blank">experiment start survey</a>
-            </li>
-            <li>
-              <a href="https://goo.gl/forms/M9haYl6XefUhNqMr1" target="_blank">personality survey</a>
-            </li>
-            <li>
-              <a href="https://goo.gl/forms/K2doPmuSVPuXJmiC2" target="_blank">impulse survey</a>
-            </li>
-          </ul>
-        </li>
-        <br>
-        <br>
-        <li>
-          Complete these surveys on the last day of the experiment:
-          <ul>
-            <li>
-              <a href="https://goo.gl/forms/bHAPy4vGC5OfhuYi1" target="_blank">morningness - eveningness survey</a>
-            </li>
-            <li>
-              <a href="https://goo.gl/forms/RNNPuPIp8Vt4Mgua2" target="_blank">experiment end survey</a>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-
-    <div class="page-header">
-      <h3>What our apps do?</h3>
-      <ul>
-        <li>
-          The mobile apps you downloaded will monitor all apps you use on your phone throughout the
+        <em>NB: We are not in any way affiliated to Facebook. This application is solely for research
           experiment.
-        </li>
-        <li>
-          Data collected will automatically be stored in our remote server for research analysis at the end of
-          the experiment. This means you don't have to do anything manually.
-        </li>
-        <li>
-          Your phone will vibrate anytime you use your mobile Facebook app for
-          <strong>more than 15 minutes</strong>
-          per day or you open the app
-          <strong>more than 5 times</strong>
-          per day.
-        </li>
-        <li>
-          <em>
-            <strong>Note</strong>: Phone vibration will happen ONLY on 2nd and 3rd day of experiment; there will
-            be no vibration on the 1st, 4th and 5th days.
-          </em>
-        </li>
-      </ul>
-
-    </div>
-
-    <div class="page-header">
-      <h3>
-        Consent
-      </h3>
-      <ul>
-        <li>
-          You may uninstall all apps from your device and exit from the study at any time. However, there will
-          only be payments for the days that you participated.
-        </li>
-        <li>
-          After the study, you should uninstall all the mobile apps you downloaded for this study as all apps
-          may automatically stop working.
-        </li>
-      </ul>
-
-      <br>
-      <em>NB: We are not in any way affiliated to Aware framework or DeployGate mobile apps. We only use
-        these apps primarily for conducting research experiments.
-      </em>
-    </div>
-
-    <div class="page-header">
-      <h3>
-        Uninstall apps
-      </h3>
-      <p>To uninstall apps, go to your list of phone apps and uninstall these three apps:
-      </p>
-      <ul>
-        <li>
-          <em>Aware</em>
-        </li>
-        <li>
-          <em>Beehive Monitor</em>
-        </li>
-        <li>
-          <em>Deploy Gate</em>
-        </li>
-      </ul>
-    </div>
-
-    <div class="page-header">
-      <h3>
-        Contact
-      </h3>
-      <p>If you choose to exit early from the study or have any questions, you may contact us by completing
-        <a href="https://goo.gl/forms/1Ekk35v7KFGBtdQU2" target="_blank">this form</a>.
+        </em>
       </p>
     </div>
 
