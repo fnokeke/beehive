@@ -12,3 +12,4 @@ celerybeat-schedule
 uploads/
 node_modules/
 .imdone/
+migrations/
