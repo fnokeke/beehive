@@ -176,19 +176,19 @@
   });
 
   $("#save-calendar-modal").click(function() {
-    var max_events = -1;
-    var max_minutes = -1;
+    var max_events = '';
+    var max_time = '';
     var settings = '';
 
     max_events = $('#calendar-max-events').val();
-    max_minutes = $('#calendar-max-hours').val();
+    max_time = $('#calendar-max-hours').val();
 
-    if (max_events > -1) {
+    if (max_events === '') {
       settings += 'Max events: ' + max_events + " / ";
     }
 
-    if (max_minutes > -1) {
-      settings += 'Max minutes: ' + max_minutes;
+    if (max_time === '') {
+      settings += 'Max hours: ' + max_time;
     }
 
     if (settings === '') {
@@ -202,7 +202,7 @@
     post_data('/mobile/add/calendar-config',
       {
         'code': $('#code_from_hidden_element').val(),
-        'event_time_limit': max_minutes,
+        'event_time_limit': max_time,
         'event_num_limit': max_events
       },
       '#summary_entry');
@@ -307,6 +307,7 @@ function post_data(url, data, response_field) {
   $.post(url, data).done(function(json_string) {
     var results = JSON.parse(json_string);
     show_success_msg(response_field, results.response);
+    window.location.href = window.location.origin + window.location.pathname;
   }).fail(function(error) {
     var msg = 'Error. Pls contact researcher (Error: {0} / {1}).'.format(error.status, error.statusText);
     show_error_msg(response_field, msg);

@@ -13,7 +13,7 @@ import json, httplib2, pytz, requests
 
 from rep import app, login_manager
 from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkFBStats
-from rep.models import MturkMobile, User, Uploaded_Intv
+from rep.models import MturkMobile, User, ImageTextUpload
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import RescuetimeConfig, ScreenUnlockConfig
 
@@ -315,13 +315,13 @@ def add_experiment():
         'title': request.form.get('title'),
         'start': request.form.get('start'),
         'end': request.form.get('end'),
-        'rescuetime': True if request.form.get('rescuetime') == 'true' else False,
-        'aware': True if request.form.get('aware') == 'true' else False,
-        'geofence': True if request.form.get('geofence') == 'true' else False,
-        'text': True if request.form.get('text') == 'true' else False,
-        'image': True if request.form.get('image') == 'true' else False,
-        'reminder': True if request.form.get('reminder') == 'true' else False,
-        'actuators': True if request.form.get('actuators') == 'true' else False
+        'rescuetime': request.form.get('rescuetime', False),
+        'calendar': request.form.get('calendar', False),
+        'geofence': request.form.get('geofence', False),
+        'text': request.form.get('text', False),
+        'image': request.form.get('image', False),
+        'reminder': request.form.get('reminder', False),
+        'actuators': request.form.get('actuators', False)
     }
 
     experiment['start'] = datetime.strptime(experiment['start'], '%Y-%m-%dT%H:%M:%S.000Z')
@@ -333,13 +333,29 @@ def add_experiment():
 
 @app.route('/edit-experiment/<code>')
 def edit_experiment(code):
+    experiment = Experiment.query.filter_by(code=code).first()
+    intv_type = get_intv_type(experiment)
     ctx = {
         'enrolled_users': MobileUser.query.filter_by(code=code).all(),
-        'experiment': Experiment.query.filter_by(code=code).first(),
-        'uploaded_intvs': Uploaded_Intv.query.all(),
-        'interventions': Intervention.query.filter_by(code=code).order_by('start').all()
+        'experiment': experiment,
+        'uploaded_intvs': ImageTextUpload.query.all(),
+        'interventions': Intervention.query.filter_by(
+            code=code, intv_type=intv_type).order_by('start').all()
     }
     return render_template('edit-experiment.html', **ctx)
+
+
+def get_intv_type(experiment):
+    intv_type = ''
+    if experiment.calendar:
+        intv_type = 'calendar'
+    elif experiment.rescuetime:
+        intv_type = 'rescuetime'
+    elif experiment.actuators:
+        intv_type = 'actuators'
+    elif experiment.image and experiment.text:
+        intv_type = 'text_image'
+    return intv_type
 
 
 @app.route('/delete/experiment/<code>')
@@ -354,13 +370,13 @@ def update_experiment():
     update = {
         'title': request.form.get('title'),
         'code': request.form.get('code'),
-        'rescuetime': True if request.form.get('rescuetime') == 'true' else False,
-        'aware': True if request.form.get('aware') == 'true' else False,
-        'geofence': True if request.form.get('geofence') == 'true' else False,
-        'text': True if request.form.get('text') == 'true' else False,
-        'image': True if request.form.get('image') == 'true' else False,
-        'reminder': True if request.form.get('reminder') == 'true' else False,
-        'actuators': True if request.form.get('actuators') == 'true' else False
+        'rescuetime': request.form.get('rescuetime', False),
+        'calendar': request.form.get('calendar', False),
+        'geofence': request.form.get('geofence', False),
+        'text': request.form.get('text', False),
+        'image': request.form.get('image', False),
+        'reminder': request.form.get('reminder', False),
+        'actuators': request.form.get('actuators', False)
     }
     updated_exp = Experiment.update_experiment(update)
     return str(updated_exp)
@@ -406,7 +422,8 @@ def add_intervention():
         'end': request.form.get('end'),
         'every': request.form.get('every'),
         'when': request.form.get('when'),
-        'repeat': request.form.get('repeat')
+        'repeat': request.form.get('repeat'),
+        'intv_type': request.form.get('intv_type')
     }
 
     intv['start'] = datetime.strptime(intv['start'], '%Y-%m-%dT%H:%M:%S.000Z')
@@ -427,7 +444,7 @@ def delete_intervention():
 def upload_intv():
     text = request.form.get('text')
     image_name = request.form.get('image_name')
-    experiment_code = request.form.get('experiment_code')
+    code = request.form.get('code')
     image = request.files.get('image')
 
     image_url = None
@@ -435,8 +452,8 @@ def upload_intv():
         Upload.save(image_name, image)
         image_url = Upload.get_url(image_name)
 
-    new_intv = {'text': text, 'image_name': image_name, 'image_url': image_url, 'experiment_code': experiment_code}
-    Uploaded_Intv.add_intv(new_intv)
+    new_intv = {'text': text, 'image_name': image_name, 'image_url': image_url, 'code': code}
+    ImageTextUpload.add(new_intv)
 
     msg = ''
     if image and image_name and text:
@@ -449,10 +466,24 @@ def upload_intv():
     return msg
 
 
-@app.route('/fetch/uploaded/intervention', methods=['GET'])
-def fetch_uploaded_intv():
-    all_intv = Uploaded_Intv.query.all()
-    return '{}'.format(all_intv)
+@app.route('/fetch/uploaded/features/<code>', methods=['GET'])
+def fetch_uploaded_intv(code):
+    data = {
+        'image_text_uploads': to_json(ImageTextUpload.query.filter_by(code=code).order_by('created_at').all()),
+        'last_calendar_config': to_json(CalendarConfig.query.filter_by(code=code).order_by('created_at desc').first()),
+        'last_daily_reminder_config':
+        to_json(DailyReminderConfig.query.filter_by(code=code).order_by('created_at desc').first()),
+        'last_rescuetime_config':
+        to_json(RescuetimeConfig.query.filter_by(code=code).order_by('created_at desc').first()),
+        'last_general_notification_config':
+        to_json(GeneralNotificationConfig.query.filter_by(code=code).order_by('created_at desc').first()),
+        'last_screen_unlock_config':
+        to_json(ScreenUnlockConfig.query.filter_by(code=code).order_by('created_at desc').first()),
+        'last_vibration_config':
+        to_json(VibrationConfig.query.filter_by(code=code).order_by('created_at desc').first()),
+        #
+    }
+    return json.dumps(data)
 
 # /////////////////////////////////////
 # Connect Service Providers

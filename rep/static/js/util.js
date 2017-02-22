@@ -38,3 +38,7 @@ function delete_intv(intv) {
     show_error_msg(response_field, error.statusText);
   });
 }
+
+function len(obj) {
+  return Object.keys(obj).length;
+}

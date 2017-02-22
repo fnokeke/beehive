@@ -182,7 +182,10 @@ $('#create-experiment-btn').click(function(event) {
   var start = $('#exp-start-date').val();
   var end = $('#exp-end-date').val();
   var rescuetime = $('#rescuetime-checkbox-btn').is(':checked');
-  var aware = $('#aware-checkbox-btn').is(':checked');
+  // var image = $('#text-checkbox-btn').is(':checked');
+  // var text = $('#image-checkbox-btn').is(':checked');
+  var dashboard = $('#dashboard-checkbox-btn').is(':checked');
+  var calendar = $('#calendar-checkbox-btn').is(':checked');
   var geofence = $('#geofence-checkbox-btn').is(':checked');
   var reminder = $('#reminder-checkbox-btn').is(':checked');
   var actuators = $('#actuators-checkbox-btn').is(':checked');
@@ -215,10 +218,10 @@ $('#create-experiment-btn').click(function(event) {
     'start': exp_start_datetime.toJSON(),
     'end': exp_end_datetime.toJSON(),
     'rescuetime': rescuetime,
-    'aware': aware,
+    'calendar': calendar,
     'geofence': geofence,
-    'text': true,
-    'image': true,
+    'text': dashboard === true,
+    'image': dashboard === true,
     'reminder': reminder,
     'actuators': actuators
   };
@@ -266,7 +269,7 @@ function create_experiment_view(experiments) {
 
   // show css background class for cell to provide visual effect for enable/disable buttons
   var rescuetime_c,
-    aware_c,
+    calendar_c,
     geofence_c,
     text_c,
     image_c,
@@ -277,7 +280,7 @@ function create_experiment_view(experiments) {
     exp = experiments[i];
 
     rescuetime_c = exp.rescuetime ? 'success' : 'danger';
-    aware_c = exp.aware ? 'success' : 'danger';
+    calendar_c = exp.calendar ? 'success' : 'danger';
     geofence_c = exp.geofence ? 'success' : 'danger';
     text_c = exp.text ? 'success' : 'danger';
     image_c = exp.image ? 'success' : 'danger';
@@ -285,7 +288,7 @@ function create_experiment_view(experiments) {
     actuators_c = exp.actuators ? 'success' : 'danger';
 
     row = '<tr>' +
-      '<td><button id={1} class="btn btn-link">{0}</button></td>'.format(exp.title, exp.code) + '<td>' + exp.code + '</td>' + '<td class={0}> {1} </td>'.format(rescuetime_c, exp.rescuetime) + '<td class={0}> {1} </td>'.format(aware_c, exp.aware) + '<td class={0}> {1} </td>'.format(geofence_c, exp.geofence) + '<td class={0}> {1} </td>'.format(text_c, exp.text) + '<td class={0}> {1} </td>'.format(image_c, exp.image) + '<td class={0}> {1} </td>'.format(reminder_c, exp.reminder) + '<td class={0}> {1} </td>'.format(actuators_c, exp.actuators) + '</tr>';
+      '<td><button id={1} class="btn btn-link">{0}</button></td>'.format(exp.title, exp.code) + '<td>' + exp.code + '</td>' + '<td class={0}> {1} </td>'.format(rescuetime_c, exp.rescuetime) + '<td class={0}> {1} </td>'.format(calendar_c, exp.calendar) + '<td class={0}> {1} </td>'.format(geofence_c, exp.geofence) + '<td class={0}> {1} </td>'.format(text_c, exp.text) + '<td class={0}> {1} </td>'.format(image_c, exp.image) + '<td class={0}> {1} </td>'.format(reminder_c, exp.reminder) + '<td class={0}> {1} </td>'.format(actuators_c, exp.actuators) + '</tr>';
 
     view += row;
   }
@@ -311,10 +314,11 @@ $('#update-experiment-btn').click(function() {
   var code = $('#code_from_hidden_element').val();
   var title = $('#edit-exp-title').val();
   var rescuetime = $('#edit-rescuetime-checkbox-btn').is(':checked');
-  var aware = $('#edit-aware-checkbox-btn').is(':checked');
+  var calendar = $('#edit-calendar-checkbox-btn').is(':checked');
   var geofence = $('#edit-geofence-checkbox-btn').is(':checked');
-  var text = $('#edit-text-checkbox-btn').is(':checked');
-  var image = $('#edit-image-checkbox-btn').is(':checked');
+  // var text = $('#edit-text-checkbox-btn').is(':checked');
+  // var image = $('#edit-image-checkbox-btn').is(':checked');
+  var dashboard = $('#edit-dashboard-checkbox-btn').is(':checked');
   var reminder = $('#edit-reminder-checkbox-btn').is(':checked');
   var actuators = $('#edit-actuators-checkbox-btn').is(':checked');
   var response_field = '#edit-experiment-status';
@@ -329,10 +333,10 @@ $('#update-experiment-btn').click(function() {
     'title': title,
     'code': code,
     'rescuetime': rescuetime,
-    'aware': aware,
+    'calendar': calendar,
     'geofence': geofence,
-    'text': text,
-    'image': image,
+    'text': dashboard === true,
+    'image': dashboard === true,
     'reminder': reminder,
     'actuators': actuators
   };
@@ -384,7 +388,7 @@ $('#upload-btn').click(function(event) {
   }
 
   var code = $('#code_from_hidden_element').val();
-  form_data.append('experiment_code', code);
+  form_data.append('code', code);
 
   console.log('text going:', text);
 
@@ -461,15 +465,20 @@ function add_intv_row() {
     group_rows,
     new_row,
     intv_options,
+    code,
+    url,
     treat_id;
 
   no_of_condition = parseInt($('#no-of-condition').val());
   group_rows = '';
 
-  $.get('/fetch/uploaded/intervention').done(function(uploaded_intv) {
+  code = $('#code_from_hidden_element').val();
+  url = '/fetch/uploaded/features/' + code;
+
+  $.get(url).done(function(all_features_str) {
     for (var j = 1; j <= no_of_condition; j++) {
       treat_id = 'treat-{0}'.format(j);
-      intv_options = create_intv_options(uploaded_intv, treat_id);
+      intv_options = create_intv_options(all_features_str, treat_id);
       group_rows += '<td>{0}</td>'.format(intv_options);
     }
 
@@ -487,7 +496,8 @@ function add_intv_row() {
   });
 }
 
-function create_intv_options(uploaded_intv, treat_id) {
+function create_intv_options(all_features_str, treat_id) {
+
   var i,
     delim,
     uploads,
@@ -495,31 +505,40 @@ function create_intv_options(uploaded_intv, treat_id) {
     rt_options,
     rt_specific,
     blank_options,
+    calendar_options,
+    show_dashboard,
+    all_features,
     show_rt;
 
-  uploads = JSON.parse(uploaded_intv);
+  all_features = JSON.parse(all_features_str);
+  console.log('all_features: ', all_features);
+  uploads = all_features.image_text_uploads;
 
   show_rt = $('#edit-rescuetime-checkbox-btn').is(':checked');
   delim = '**&&&&**';
 
   uploaded_options = '';
-  for (i = 0; i < uploads.length; i++) {
-    var upl = uploads[i];
+  show_dashboard = $('#edit-dashboard-checkbox-btn').is(':checked');
+  if (show_dashboard) {
 
-    if (upl.image_name && upl.text) {
-      uploaded_options += '<option value="{1}{0}{3}">{1} / {3}</option>'.format(delim, upl.image_url, upl.image_name, upl.text);
-    } else if (upl.image_name) {
-      uploaded_options += '<option value="{0}">{1}</option>'.format(upl.image_url, upl.image_name);
-    } else if (upl.text) {
-      uploaded_options += '<option value="{0}">{0}</option>'.format(upl.text);
+    for (i = 0; i < uploads.length; i++) {
+      var upl = uploads[i];
+
+      if (upl.image_name && upl.text) {
+        uploaded_options += '<option class="image_text" value="{1}{0}{3}">{1} / {3}</option>'.format(delim, upl.image_url, upl.image_name, upl.text);
+      } else if (upl.image_name) {
+        uploaded_options += '<option class="image_text" value="{0}">{1}</option>'.format(upl.image_url, upl.image_name);
+      } else if (upl.text) {
+        uploaded_options += '<option class="image_text" value="{0}">{0}</option>'.format(upl.text);
+      }
     }
+    uploaded_options = '<optgroup label="Text / Image Uploads">' + uploaded_options + '</optgroup>';
 
   }
-  uploaded_options = '<optgroup label="Uploads">' + uploaded_options + '</optgroup>';
 
   rt_options = '';
   if (show_rt) {
-    rt_options = '<option> focus & distracting time </option>' +
+    rt_options = '<option class="rescuetime"> focus & distracting time </option>' +
       '<option> only focus time </option>' +
       '<option> only distracting time </option';
     rt_options = '<optgroup label="RescueTime General">' + rt_options + '</optgroup>';
@@ -528,17 +547,47 @@ function create_intv_options(uploaded_intv, treat_id) {
 
   rt_specific = '';
   if (show_rt) {
-    rt_specific = '<option> software development </option>' +
+    rt_specific = '<option class="rescuetime"> software development </option>' +
       '<option> social networking </option>' +
       '<option> productivity pulse </option>';
     rt_specific = '<optgroup label="RescueTime Specific">' + rt_specific + '</optgroup>';
   }
 
+  show_calendar = $('#edit-calendar-checkbox-btn').is(':checked');
+  calendar_options = '';
+  if (show_calendar) {
+    if (len(all_features.last_calendar_config) > 0) {
+      var cc = all_features.last_calendar_config;
+      var option = 'Count Limit: {0} event(s) / Time Limit: {1} hour(s)'.format(cc.event_num_limit, cc.event_time_limit);
+      calendar_options = '<option class="calendar">{0}</option>'.format(option);
+      calendar_options = '<optgroup label="Calendar Busy Limit">{0}</optgroup>'.format(calendar_options);
+    }
+  }
+
+  var vibration_options = '';
+  var show_vibration = $('#edit-actuators-checkbox-btn').is(':checked');
+  if (show_vibration) {
+    if (len(all_features.last_vibration_config) > 0) {
+      var vv = all_features.last_vibration_config;
+      var vv_option = 'Monitor: {0} / Limit: {1} secs ({2}x) / vibration: ({3}) / show stats: ({4})'.format(vv.app_id, vv.time_limit, vv.open_limit, vv.vibration_strength, vv.show_stats);
+      vibration_options = '<option class="vibration">{0}</option>'.format(vv_option);
+      vibration_options = '<optgroup label="Phone Vibration">{0}</optgroup>'.format(vibration_options);
+    }
+
+  }
+
   blank_options = '<optgroup label="No Intervention">' +
-    '<option> ------ </option' +
+    '<option class="baseline"> ------ </option' +
     '</optgroup>';
 
-  var options = '<select id="{0}" class="form-control">'.format(treat_id) + uploaded_options + rt_options + rt_specific + blank_options + ' </select>';
+  var options = '<select id="{0}" class="form-control">'.format(treat_id) +
+    uploaded_options +
+    rt_options +
+    rt_specific +
+    calendar_options +
+    vibration_options +
+    blank_options +
+    ' </select>';
 
   return options;
 }
@@ -582,21 +631,21 @@ $('#save-group-btn').click(function() {
 });
 
 $('#save-table-btn').click(function() {
-  console.log('save table clicked.');
 
   var response_field = '#intv-table-status';
   var no_of_condition = parseInt($('#no-of-condition').val());
   var treatments = [];
   var treat_delim = '**&&&&**';
+  var intv_type = 'text_image';
 
   for (var k = 1; k <= no_of_condition; k++) {
     var btn_id = '#treat-{0}'.format(k);
+    console.log('class: ', $(btn_id).attr('class'));
     var treat = $(btn_id).val();
     console.log('treat: ', treat);
     if (treat)
       treatments.push(treat);
   }
-
   console.log('all_treaments: ', treatments);
   if (treatments.length === 0) {
     show_error_msg(response_field, 'Error: You need to upload images and/or texts before you apply any intervention.<br/>');
@@ -605,6 +654,14 @@ $('#save-table-btn').click(function() {
 
   var delim = '%%&&';
   var all_treat_str = treatments.join(delim);
+
+  if (all_treat_str.indexOf('event') > -1) {
+    intv_type = 'calendar';
+  } else if (all_treat_str.indexOf('Monitor') > -1) {
+    intv_type = 'actuators';
+  } else if (all_treat_str.indexOf('focus') > -1 || all_treat_str.indexOf('distracting') > -1) {
+    intv_type = 'rescuetime';
+  }
 
   var intv_time = $('#intv-time').val();
   intv_time = intv_time.indexOf('.') > -1 ? intv_time : '{0}:00'.format(intv_time);
@@ -645,6 +702,7 @@ $('#save-table-btn').click(function() {
     'end': intv_end_datetime.toJSON(), // UTC
     'every': intv_every,
     'when': intv_time,
+    'intv_type': intv_type,
     'repeat': intv_repeat
   };
 

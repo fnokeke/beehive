@@ -72,4 +72,5 @@ def requires_basic_auth(f):
 
 
 def to_json(param):
+    if not param: return {}
     return json.loads(str(param))

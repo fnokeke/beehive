@@ -33,7 +33,7 @@
     </th>
   </tr>
 
-  {% for intv in interventions%}
+  {% for intv in interventions %}
     {% with all_intv_arr = intv.treatment.split('%%&&') %}
     <tr>
       <td>
