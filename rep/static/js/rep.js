@@ -667,6 +667,16 @@ $('#save-table-btn').click(function() {
   intv_time = intv_time.indexOf('.') > -1 ? intv_time : '{0}:00'.format(intv_time);
   console.log('intv_time: ', intv_time);
 
+
+  // use this to also save reminder time
+  post_data('/mobile/add/daily-reminder-config',
+    {
+      'code': $('#code_from_hidden_element').val(),
+      'reminder_time': intv_time
+    },
+    '#summary_entry');
+
+
   ////////////////////////////////////////////////
   // all experiments start and end at midnight
   // use NYC timezone
