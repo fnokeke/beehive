@@ -9,6 +9,8 @@ from apiclient import discovery
 
 import httplib2
 import json
+from datetime import datetime, timedelta
+import pytz
 
 
 class CalendarService(object):
@@ -51,24 +53,38 @@ class Calendar(object):
         self.cal_id = cal_id or CalendarService.fetch_id(calname, self.service)
         self.calname = calname
 
-    def get_all_events(self, date):
-        tmin = '{}T00:00:00-00:00'.format(date)
-        tmax = '{}T23:59:59-00:00'.format(date)
-        filtered_events = self.service.events().list(calendarId=self.cal_id, timeMin=tmin, timeMax=tmax).execute()
+    # to cover different timezones fetch all events from some days before to some days after
+    # then match only events with the start & end dates same as the given datestr
+    def get_all_events(self, datestr):
+        mdate = datetime.now(pytz.timezone('America/New_York'))
+        yr, mm, dd = datestr.split('-')
+        yr, mm, dd = int(yr), int(mm), int(dd)
+        mdate = mdate.replace(year=yr, month=mm, day=dd, hour=00, minute=00, second=00)
+        dtstart = mdate - timedelta(days=2)
+        dtend = mdate + timedelta(days=2)
+
+        tmin = dtstart.strftime('%Y-%m-%dT%H:%M:%Sz')
+        tmax = dtend.strftime('%Y-%m-%dT%H:%M:%Sz')
+
+        filtered_events = self.service.events().list(
+            calendarId=self.cal_id, timeMin=tmin, timeMax=tmax, orderBy='startTime', singleEvents=True).execute()
         stored_events = []
         for ev in filtered_events['items']:
-            if self.is_same_date(ev['start'], ev['end'], tmin):
+            if self.is_same_as_date(ev['start'], ev['end'], datestr):
                 stored_events.append(ev)
+        return stored_events
 
-        return filtered_events['items']
+    def is_same_as_date(self, start, end, date):
+        startDate, endDate = '', ''
 
-    def is_same_date(self, start, end, tmin):
-        if start.get('dateTime'):
-            startTime = start['dateTime']
-            endTime = end['dateTime']
-            return True
+        if not start.get('dateTime'):
+            startDate = start.get('date')
+            endDate = end.get('date')
         else:
-            return True
+            startDate = start.get('dateTime').split('T')[0]
+            endDate = end.get('dateTime').split('T')[0]
+
+        return startDate == date and endDate == date
 
     def insert_event(self, events):
         """
