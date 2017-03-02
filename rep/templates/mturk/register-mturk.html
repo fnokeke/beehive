@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Mturk Register
+{% endblock %}
+
+{% block nav_brand %}
+  <a class="navbar-brand" href="#">Mturk Register Workers</a>
+{% endblock %}
+
+{% block contents %}
+  {% block nav_signin %}{% endblock %}
+
+  <div class="container">
+
+    <div class="page-header">
+      <h3>
+        Register Workers
+      </h3>
+    </div>
+
+    <div class="row">
+
+      <div class="col-lg-6">
+        <form enctype="multipart/form-data">
+          <div class="input-group">
+            <input type="file" class="form-control" id="mturk-csv-file" accept=".csv">
+            <span class="input-group-btn">
+              <button class="btn btn-primary" id="mturk-upload-csv-btn" type="button">Upload CSV</button>
+            </span>
+          </div>
+        </form>
+        <br>
+        <span id="mturk-register-status"></span>
+      </div>
+
+    </div>
+
+  </div>
+
+{% endblock %}
