@@ -727,6 +727,11 @@ def welcome_and_check():
     return render_template('mturk/checkmturk.html')
 
 
+@app.route('/mturkdownload')
+def mturk_download():
+    return render_template('mturk/mturk-download.html')
+
+
 @app.route('/mturk/<worker_id>')
 def amturk(worker_id):
     enrolled_worker = MturkExclusive.query.filter_by(worker_id=worker_id).first()

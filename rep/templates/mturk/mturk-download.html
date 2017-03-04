@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Mturk Download
+{% endblock %}
+
+{% block cover %}
+  <link href="{{ url_for('static', filename='cover.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+
+  <div class="container">
+
+    <div class="page-header">
+      <h2>Download Android App</h2>
+    </div>
+
+    <div>
+      <div class="page-header">
+        <h3>Beevibe</h3>
+        <p>
+          <a href="{{ url_for('static', filename='downloads/beevibe-1.5.apk') }}">Beevibe 1.5</a>
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+{% endblock %}
