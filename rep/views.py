@@ -9,7 +9,7 @@ from oauth2client.client import OAuth2WebServerFlow
 
 from apiclient import discovery
 
-import json, httplib2, pytz, requests
+import json, httplib2, pytz, requests, csv
 
 from rep import app, login_manager
 from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkFBStats
@@ -735,10 +735,13 @@ def amturk(worker_id):
 
 
 def get_mturk_link(enrolled_worker):
-    if enrolled_worker.experiment_group == "1":
+    group = enrolled_worker.experiment_group.strip(" ")
+    if group == "1":
         return 'mturk/amturk.html'
-    elif enrolled_worker.experiment_group == "2":
+    elif group == "2":
         return 'mturk/bmturk.html'
+    else:
+        return 'mturk/mturk-404.html'
 
 
 @app.route('/mturk/verify/worker_id', methods=['POST'])
@@ -826,7 +829,24 @@ def mobile_worker_fb_stats():
 @app.route('/mturk/register/csv', methods=['POST'])
 def register_mturk_workers():
     csv_file = request.files.get('mturk.csv')
-    return 'Successfully received csv file!' if csv_file else -1
+    count = 0
+    for row in csv.reader(csv_file):
+        worker_info = get_worker_info(row)
+        status, _, __ = MturkExclusive.add(worker_info)
+        if status == 200:
+            count += 1
+
+    return 'Successfully registered {} user(s)!'.format(count) if csv_file else -1
+
+
+def get_worker_info(row):
+    w_id, exp_group, exp_code, exp_label = row
+    return {
+        'worker_id': w_id,
+        'experiment_group': exp_group,
+        'experiment_code': exp_code,
+        'experiment_label': exp_label
+    }
 
 
 @app.template_filter('nyc')

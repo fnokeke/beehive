@@ -489,13 +489,13 @@ class MturkExclusive(db.Model):
             'experiment_group': self.experiment_group,
             'experiment_code': self.experiment_code,
             'experiment_label': self.experiment_label,
-            'created_at': self.created_at
+            'created_at': str(self.created_at)
         }
         return json.dumps(result)
 
     @staticmethod
-    def add_user(info):
-        enrolled_worker = Mturk.query.filter_by(
+    def add(info):
+        enrolled_worker = MturkExclusive.query.filter_by(
             worker_id=info['worker_id'], experiment_code=info['experiment_code']).first()
         if enrolled_worker:
             return (-1, 'Worker already enrolled in experiment.', enrolled_worker)
