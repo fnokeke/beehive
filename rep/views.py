@@ -737,17 +737,7 @@ def amturk(worker_id):
     enrolled_worker = MturkExclusive.query.filter_by(worker_id=worker_id).first()
     if not enrolled_worker:
         return render_template('mturk/mturk-404.html')
-    return render_template(get_mturk_link(enrolled_worker))
-
-
-def get_mturk_link(enrolled_worker):
-    group = enrolled_worker.experiment_group.strip(" ")
-    if group == "1":
-        return 'mturk/amturk.html'
-    elif group == "2":
-        return 'mturk/bmturk.html'
-    else:
-        return 'mturk/mturk-404.html'
+    return render_template('mturk/enroll.html', worker=enrolled_worker)
 
 
 @app.route('/mturk/verify/worker_id', methods=['POST'])
