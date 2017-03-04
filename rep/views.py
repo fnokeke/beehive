@@ -734,22 +734,32 @@ def amturk(worker_id):
     return render_template(get_mturk_link(enrolled_worker))
 
 
-@app.route('/mturk/verify/worker_id', methods=['POST'])
-def worker_id():
-    worker_id = request.form['worker_id']
-    enrolled_worker = MturkExclusive.query.filter_by(worker_id=worker_id).first()
-    if not enrolled_worker:
-        return 'Worker ({}) cannot partake in experiment. You have to be registered by researcher.'.format(worker_id)
-
-    link = "<a href='/mturk/{}'>continue here</a>.".format(worker_id)
-    return 'Welcome {}, {}'.format(worker_id, link)
-
-
 def get_mturk_link(enrolled_worker):
     if enrolled_worker.experiment_group == "1":
         return 'mturk/amturk.html'
     elif enrolled_worker.experiment_group == "2":
         return 'mturk/bmturk.html'
+
+
+@app.route('/mturk/verify/worker_id', methods=['POST'])
+def worker_id():
+    worker_id = request.form['worker_id']
+    enrolled_worker = MturkExclusive.query.filter_by(worker_id=worker_id).first()
+    current_datetime = datetime.now().strftime("%I:%M:%S %p on %B %d %Y")
+    if not enrolled_worker:
+        log_submission(current_datetime, worker_id, 'rejected')
+        return 'Worker ({}) cannot partake in experiment. You have to be registered by researcher.'.format(worker_id)
+
+    log_submission(current_datetime, worker_id, 'accepted')
+    link = "<a href='/mturk/{}'>continue here</a>.".format(worker_id)
+    return 'Welcome {}, {}'.format(worker_id, link)
+
+
+def log_submission(time_of_click, worker_id, category):
+    log_file = 'accepted.csv' if category == 'accepted' else 'rejected.csv'
+    with open(log_file, 'a') as myfile:
+        row = '{},{}\n'.format(time_of_click, worker_id)
+        myfile.write(row)
 
 
 @app.route("/mturk-auth-moves")
