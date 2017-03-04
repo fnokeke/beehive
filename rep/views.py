@@ -13,7 +13,7 @@ import json, httplib2, pytz, requests
 
 from rep import app, login_manager
 from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkFBStats
-from rep.models import MturkMobile, User, ImageTextUpload
+from rep.models import MturkExclusive, MturkMobile, User, ImageTextUpload
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import RescuetimeConfig, ScreenUnlockConfig
 
@@ -716,9 +716,40 @@ def execute_calendar_command(calname, cmd):
 #################################
 
 
+@app.route('/mturkregister')
+def registermturk():
+    return render_template('mturk/register-mturk.html')
+
+
 @app.route('/mturk')
-def mturk():
-    return render_template('mturk.html')
+def welcome_and_check():
+    return render_template('mturk/checkmturk.html')
+
+
+@app.route('/mturk/<worker_id>')
+def amturk(worker_id):
+    enrolled_worker = MturkExclusive.query.filter_by(worker_id=worker_id).first()
+    if not enrolled_worker:
+        return render_template('mturk/mturk-404.html')
+    return render_template(get_mturk_link(enrolled_worker))
+
+
+@app.route('/mturk/verify/worker_id', methods=['POST'])
+def worker_id():
+    worker_id = request.form['worker_id']
+    enrolled_worker = MturkExclusive.query.filter_by(worker_id=worker_id).first()
+    if not enrolled_worker:
+        return 'Worker ({}) cannot partake in experiment. You have to be registered by researcher.'.format(worker_id)
+
+    link = "<a href='/mturk/{}'>continue here</a>.".format(worker_id)
+    return 'Welcome {}, {}'.format(worker_id, link)
+
+
+def get_mturk_link(enrolled_worker):
+    if enrolled_worker.experiment_group == "1":
+        return 'mturk/amturk.html'
+    elif enrolled_worker.experiment_group == "2":
+        return 'mturk/bmturk.html'
 
 
 @app.route("/mturk-auth-moves")
@@ -782,11 +813,10 @@ def mobile_worker_fb_stats():
     return json.dumps(result)
 
 
-@app.route('/mturk/worker_id', methods=['POST'])
-def worker_id():
-    worker_id = request.form['worker_id']
-    session['worker_id'] = worker_id
-    return 'Rcvd id: {}'.format(worker_id)
+@app.route('/mturk/register/csv', methods=['POST'])
+def register_mturk_workers():
+    csv_file = request.files.get('mturk.csv')
+    return 'Successfully received csv file!' if csv_file else -1
 
 
 @app.template_filter('nyc')

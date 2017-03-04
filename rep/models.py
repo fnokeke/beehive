@@ -460,6 +460,53 @@ class Mturk(db.Model):
         db.session.commit()
 
 
+class MturkExclusive(db.Model):
+    worker_id = db.Column(db.String(50), primary_key=True)
+    worker_code = db.Column(db.String(10), unique=True)
+    experiment_group = db.Column(db.String(10))
+    experiment_code = db.Column(db.String(50))
+    experiment_label = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, info):
+        self.worker_id = info['worker_id']
+        self.worker_code = MturkExclusive.generate_unique_id()
+        self.experiment_group = info['experiment_group']
+        self.experiment_code = info['experiment_code']
+        self.experiment_label = info['experiment_label']
+
+    @staticmethod
+    def generate_unique_id():
+        code = str(uuid.uuid4())[:6]
+        while MturkExclusive.query.filter_by(worker_code=code).first():
+            code = str(uuid.uuid4())[:6]
+        return code
+
+    def __repr__(self):
+        result = {
+            'worker_id': self.worker_id,
+            'worker_code': self.worker_code,
+            'experiment_group': self.experiment_group,
+            'experiment_code': self.experiment_code,
+            'experiment_label': self.experiment_label,
+            'created_at': self.created_at
+        }
+        return json.dumps(result)
+
+    @staticmethod
+    def add_user(info):
+        enrolled_worker = Mturk.query.filter_by(
+            worker_id=info['worker_id'], experiment_code=info['experiment_code']).first()
+        if enrolled_worker:
+            return (-1, 'Worker already enrolled in experiment.', enrolled_worker)
+
+        new_worker = MturkExclusive(info)
+        db.session.add(new_worker)
+        db.session.commit()
+
+        return (200, 'Successfully enrolled worker_id in experiment', new_worker)
+
+
 class MturkFBStats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     worker_id = db.Column(db.String(120))

@@ -28,9 +28,15 @@
 
     $.post(url, data).done(function(resp) {
       localStorage.worker_id = worker_id;
-      show_success_msg(response_field, resp);
+
+      if (resp.indexOf("cannot") > -1) {
+        show_error_msg(response_field, resp);
+      } else {
+        show_success_msg(response_field, resp);
+      }
+
     }).fail(function(error) {
-      var msg = 'Submission error. Pls contact MTurk Requester (Error: {0} / {1}).'.format(error.status, error.statusText);
+      var msg = 'Submission error. Please contact MTurk Requester (Error: {0} / {1}).'.format(error.status, error.statusText);
       show_error_msg(response_field, msg);
     });
 

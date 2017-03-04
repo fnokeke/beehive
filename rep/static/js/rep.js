@@ -2,20 +2,14 @@
 // rep.js
 ////////////////////////////////////////////////
 
+function hip() {
+  alert('hip');
+}
+
 // add date range values for experiment start and end dates
 $('.input-daterange input').each(function() {
   $(this).datepicker('clearDates');
 });
-
-// fetch param from url: xyz.com?enable=yes ---> urlParam(enable) returns yes
-$.url_param = function(name) {
-  var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-  if (results === null) {
-    return null;
-  } else {
-    return results[1] || 0;
-  }
-};
 
 var errors = {
   'internal_server_error': 'oops, cannot complete request at this time. contact admin.',
@@ -138,40 +132,40 @@ $('#execute-config-btn').click(function() {
 // other buttons
 ////////////////////////////////////////////////
 
-var gen_code = $.url_param('gen_code');
-if (gen_code) {
-  localStorage.gen_code = gen_code;
-}
-var gen_txt = localStorage.gen_code ? '<strong>' + localStorage.gen_code + '</strong>' : '(<em>no code yet<em/>).';
-$('#gen-code-id').html(gen_txt);
-$('#mturk-worker-id').val(localStorage.worker_id);
-
-$('#mturk-submit-btn').click(function(event) {
-  event.preventDefault();
-
-  var worker_id = $('#mturk-worker-id').val();
-  worker_id = worker_id.replace(/[^a-z0-9\s]/gi, '');
-  var response_field = '#mturk-submit-status';
-
-  if (worker_id === '') {
-    show_error_msg(response_field, 'Please submit a valid worker id.');
-    return;
-  }
-
-  var url = '/mturk/worker_id';
-  var data = {
-    'worker_id': worker_id
-  };
-
-  $.post(url, data).done(function(resp) {
-    localStorage.worker_id = worker_id;
-    show_success_msg(response_field, 'Successfully submitted worker id.');
-  }).fail(function(error) {
-    var msg = 'Submission error. Pls contact MTurk Requester (Error: {0} / {1}).'.format(error.status, error.statusText);
-    show_error_msg(response_field, msg);
-  });
-
-});
+// var gen_code = $.url_param('gen_code');
+// if (gen_code) {
+//   localStorage.gen_code = gen_code;
+// }
+// var gen_txt = localStorage.gen_code ? '<strong>' + localStorage.gen_code + '</strong>' : '(<em>no code yet<em/>).';
+// $('#gen-code-id').html(gen_txt);
+// $('#mturk-worker-id').val(localStorage.worker_id);
+//
+// $('#mturk-submit-btn').click(function(event) {
+//   event.preventDefault();
+//
+//   var worker_id = $('#mturk-worker-id').val();
+//   worker_id = worker_id.replace(/[^a-z0-9\s]/gi, '');
+//   var response_field = '#mturk-submit-status';
+//
+//   if (worker_id === '') {
+//     show_error_msg(response_field, 'Please submit a valid worker id.');
+//     return;
+//   }
+//
+//   var url = '/mturk/worker_id';
+//   var data = {
+//     'worker_id': worker_id
+//   };
+//
+//   $.post(url, data).done(function(resp) {
+//     localStorage.worker_id = worker_id;
+//     show_success_msg(response_field, 'Successfully submitted worker id.');
+//   }).fail(function(error) {
+//     var msg = 'Submission error. Pls contact MTurk Requester (Error: {0} / {1}).'.format(error.status, error.statusText);
+//     show_error_msg(response_field, msg);
+//   });
+//
+// });
 
 ////////////////////////////////////////////////
 // experiment and intervention functions
@@ -484,7 +478,7 @@ function add_intv_row() {
 
     var today = to_date_fmt(new Date());
     var date_input = '<input class="form-control" id="intv-start-date" data-provide="datepicker"' +
-    'data-date-start-date="-2d"' +
+    'data-date-start-date="0d"' +
     'data-date-format="yyyy-mm-dd"' +
     'data-date-today-highlight=true' +
     'placeholder="select start date" value="{0}">'.format(today);

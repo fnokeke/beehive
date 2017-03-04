@@ -10,7 +10,6 @@
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
     <meta name="description" content="Beehive Research Platform">
     <meta name="author" content="Small Data Lab">
@@ -32,6 +31,10 @@
     <link
       rel="stylesheet"
       href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css">
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css">
 
     <!-- extra css -->
     {% block extras %}{% endblock %}
@@ -62,15 +65,38 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-confirmation/1.0.5/bootstrap-confirmation.min.js"></script>
+
+    <script type="text/javascript">
+      $(function () {
+
+        function hi() {
+          alert('hi');
+        }
+
+        $('[data-toggle="confirmation"]').confirmation({
+          singleton: true
+          // onConfirm: function () {   hi(); }
+        });
+
+      });
+    </script>
 
     <!--
     load online libraries first (esp jQuery).
     fallback.js will load offline libraries if online download fails
     -->
     <script src="{{ url_for('static', filename='js/fallback.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/util.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
     <script src="{{ url_for('static', filename='js/experiment_features.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/mturk.js') }}"></script>
     <script src="{{ url_for('static', filename='js/rep.js') }}"></script>
     <script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
   </body>
