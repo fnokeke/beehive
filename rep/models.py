@@ -509,27 +509,33 @@ class MturkExclusive(db.Model):
 
 class MturkFBStats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    worker_id = db.Column(db.String(120))
-    device_id = db.Column(db.String(120))
+    worker_id = db.Column(db.String(50))
+    device_id = db.Column(db.String(30))
     total_seconds = db.Column(db.Integer)
+    total_opens = db.Column(db.Integer)
     time_spent = db.Column(db.Integer)
     time_open = db.Column(db.Integer)
+    ringer_mode = db.Column(db.String(10))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, info):
         self.worker_id = info['worker_id']
         self.device_id = info['device_id']
         self.total_seconds = info['total_seconds']
+        self.total_opens = info['total_opens']
         self.time_spent = info['time_spent']
         self.time_open = info['time_open']
+        self.ringer_mode = info['ringer_mode']
 
     def __repr__(self):
         result = {
             'worker_id': self.worker_id,
             'device_id': self.device_id,
             'total_seconds': self.total_seconds,
+            'total_opens': self.total_opens,
             'time_spent': self.time_spent,
             'time_open': self.time_open,
+            'ringer_mode': self.ringer_mode,
             'created_at': self.created_at
         }
         return json.dumps(result)
@@ -554,16 +560,39 @@ class MturkFBStats(db.Model):
 
 
 class MturkMobile(db.Model):
-    worker_id = db.Column(db.String(120), primary_key=True, unique=True)
-    device_id = db.Column(db.String(120), primary_key=True, unique=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    worker_id = db.Column(db.String(50), primary_key=True, unique=True)
+    last_installed_ms = db.Column(db.String(30))
+    pretty_last_installed = db.Column(db.String(30))
+    app_version_name = db.Column(db.String(10))
+    app_version_code = db.Column(db.String(10))
+    phone_model = db.Column(db.String(30))
+    android_version = db.Column(db.String(10))
+    device_country = db.Column(db.String(10))
+    device_id = db.Column(db.String(30))
 
     def __init__(self, info):
         self.worker_id = info['worker_id']
+        self.last_installed_ms = info['last_installed_ms']
+        self.pretty_last_installed = info['pretty_last_installed']
+        self.app_version_name = info['app_version_name']
+        self.app_version_code = info['app_version_code']
+        self.phone_model = info['phone_model']
+        self.android_version = info['android_version']
+        self.device_country = info['device_country']
         self.device_id = info['device_id']
 
     def __repr__(self):
-        result = {'worker_id': self.worker_id, 'device_id': self.device_id, 'created_at': self.created_at}
+        result = {'worker_id': self.worker_id,
+                  'device_id': self.device_id,
+                  'created_at': self.created_at,
+                  'last_installed_ms': self.last_installed_ms,
+                  'pretty_last_installed': self.pretty_last_installed,
+                  'app_version_name': self.app_version_name,
+                  'app_version_code': self.app_version_code,
+                  'phone_model': self.phone_model,
+                  'device_country': self.device_country,
+                  'android_version': self.android_version}
         return json.dumps(result)
 
     @staticmethod

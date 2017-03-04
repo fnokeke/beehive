@@ -808,23 +808,26 @@ def mturk_auth_moves():
 @app.route('/mobile/mturk', methods=['POST'])
 def mobile_worker_id():
     data = json.loads(request.data) if request.data else request.form.to_dict()
-    worker = {'worker_id': data['workerID'], 'device_id': data['deviceID']}
-    _, response, worker_id = MturkMobile.add_user(worker)
-    result = {'response': response, 'worker': str(worker_id)}
-    return json.dumps(result)
+
+    enrolled_worker = MturkExclusive.query.filter_by(worker_id=data['worker_id']).first()
+    if not enrolled_worker:
+        return json.dumps({'status': -1,
+                           'experiment_group': -1,
+                           'response': 'Not enrolled, pls contact researcher.',
+                           'worker': data['worker_id']})
+
+    _, response, worker_id = MturkMobile.add_user(data)
+    return json.dumps({'status': 200,
+                       'experiment_group': int(enrolled_worker.experiment_group),
+                       'response': response,
+                       'worker': worker_id})
 
 
 @app.route('/mobile/mturk/stats/fb', methods=['POST'])
 def mobile_worker_fb_stats():
     data = json.loads(request.data) if request.data else request.form.to_dict()
-    stats = {'worker_id': data['workerID'],
-             'device_id': data['deviceID'],
-             'total_seconds': data['totalSeconds'],
-             'time_spent': data['timeSpent'],
-             'time_open': data['timeOpen']}
-    _, response, summarized_stats = MturkFBStats.add_stats(stats)
-    result = {'response': response, 'summary': summarized_stats}
-    return json.dumps(result)
+    _, response, summarized_stats = MturkFBStats.add_stats(data)
+    return json.dumps({'response': response, 'summary': summarized_stats})
 
 
 @app.route('/mturk/register/csv', methods=['POST'])
@@ -843,10 +846,10 @@ def register_mturk_workers():
 def get_worker_info(row):
     w_id, exp_group, exp_code, exp_label = row
     return {
-        'worker_id': w_id,
-        'experiment_group': exp_group,
-        'experiment_code': exp_code,
-        'experiment_label': exp_label
+        'worker_id': w_id.strip(" "),
+        'experiment_group': exp_group.strip(" "),
+        'experiment_code': exp_code.strip(" "),
+        'experiment_label': exp_label.strip(" ")
     }
 
 
