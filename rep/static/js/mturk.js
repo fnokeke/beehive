@@ -87,4 +87,20 @@
   });
 
 
+  $('#mturk-read-consent-btn').click(function() {
+    $('#consent-agree-modal').modal('show');
+  });
+
+  $('#consent-agreed-btn').click(function() {
+    $('#consent-agree-modal').modal('hide');
+    $('#join-div').show();
+    localStorage.agreed_to_consent = "true";
+  });
+
+  (function agreed_to_consent() {
+    if (localStorage.agreed_to_consent === "true") {
+      $('#join-div').show();
+    }
+  })();
+
 })(window, document, jQuery);
