@@ -717,6 +717,7 @@ def execute_calendar_command(calname, cmd):
 
 
 @app.route('/mturkregister')
+@requires_basic_auth
 def registermturk():
     return render_template('mturk/register-mturk.html')
 
