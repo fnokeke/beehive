@@ -602,15 +602,9 @@ class MturkMobile(db.Model):
         existing_device = MturkMobile.query.filter_by(device_id=info['device_id']).first()
 
         if existing_worker:
-            return (
-                -1,
-                'Worker already registered. If you think this is an error and you haven\'t registered before then contact researcher.',
-                existing_worker.worker_id)
+            return (-1, 'Your WorkerId is already registered.', existing_worker.worker_id)
         if existing_device:
-            return (
-                -1,
-                'Device already connected. If you think this is an error and you haven\'t connected before then contact researcher.',
-                existing_device.worker_id)
+            return (-1, 'This device is already registered with another WorkerId.', existing_device.worker_id)
 
         worker = MturkMobile(info)
         db.session.add(worker)

@@ -813,7 +813,7 @@ def mobile_worker_id():
     if not enrolled_worker:
         return json.dumps({'status': -1,
                            'experiment_group': -1,
-                           'response': 'Not enrolled, pls contact researcher.',
+                           'response': 'You are not enrolled in this experiment. Please contact researcher.',
                            'worker': data['worker_id']})
 
     _, response, worker_id = MturkMobile.add_user(data)
