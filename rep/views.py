@@ -814,7 +814,7 @@ def mobile_worker_id():
     _, response, worker_id = MturkMobile.add_user(data)
     return json.dumps({'status': 200,
                        'experiment_group': int(enrolled_worker.experiment_group),
-                       'response': response,
+                       'response': response + '\nBeevibe code: {}'.format(enrolled_worker.worker_code),
                        'worker': worker_id})
 
 
@@ -829,13 +829,21 @@ def mobile_worker_fb_stats():
 def register_mturk_workers():
     csv_file = request.files.get('mturk.csv')
     count = 0
+    duplicates = ""
     for row in csv.reader(csv_file):
         worker_info = get_worker_info(row)
-        status, _, __ = MturkExclusive.add(worker_info)
+        status, _, worker = MturkExclusive.add(worker_info)
         if status == 200:
             count += 1
+        else:
+            duplicates += worker.worker_id + "; "
 
-    return 'Successfully registered {} user(s)!'.format(count) if csv_file else -1
+    duplicates = "None" if duplicates == "" else duplicates
+    response = -1
+    if csv_file:
+        response = 'Successfully registered {} new user(s).<br><br>Duplicates:<br>{}'.format(count, duplicates)
+
+    return response
 
 
 def get_worker_info(row):
