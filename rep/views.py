@@ -12,7 +12,7 @@ from apiclient import discovery
 import json, httplib2, pytz, requests, csv
 
 from rep import app, login_manager
-from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkFBStats
+from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkFBStats, MturkPrelimRecruit
 from rep.models import MturkExclusive, MturkMobile, User, ImageTextUpload
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import RescuetimeConfig, ScreenUnlockConfig
@@ -823,6 +823,13 @@ def mobile_worker_fb_stats():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     _, response, summarized_stats = MturkFBStats.add_stats(data)
     return json.dumps({'response': response, 'summary': summarized_stats})
+
+
+@app.route('/mobile/mturk/prelim-recruit', methods=['POST'])
+def prelim_recruit():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    status, response, worker = MturkPrelimRecruit.add_worker(data)
+    return json.dumps({'status': status, 'response': response + '\nCode: {}'.format(worker.worker_code)})
 
 
 @app.route('/mturk/register/csv', methods=['POST'])
