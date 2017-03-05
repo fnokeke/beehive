@@ -490,7 +490,7 @@ class MturkPrelimRecruit(db.Model):
         enrolled_worker = MturkPrelimRecruit.query.filter_by(worker_id=info['worker_id']).first()
         enrolled_device = MturkPrelimRecruit.query.filter_by(device_id=info['device_id']).first()
         if enrolled_worker:
-            return (-1, 'Worker already added.', enrolled_worker)
+            return (200, 'Worker already added.', enrolled_worker)
         elif enrolled_device:
             return (-1, 'Device already registered to another worker Id.', enrolled_worker)
 
@@ -498,7 +498,7 @@ class MturkPrelimRecruit(db.Model):
         db.session.add(new_worker)
         db.session.commit()
 
-        return (200, 'Successfully submitted worker_id.', new_worker)
+        return (200, 'Successfully submitted worker id.', new_worker)
 
 
 class MturkExclusive(db.Model):

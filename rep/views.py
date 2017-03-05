@@ -829,7 +829,11 @@ def mobile_worker_fb_stats():
 def prelim_recruit():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     status, response, worker = MturkPrelimRecruit.add_worker(data)
-    return json.dumps({'status': status, 'response': response + '\nCode: {}'.format(worker.worker_code)})
+
+    if status == 200:
+        response = response + '\nYour Mturk Code: {}'.format(worker.worker_code)
+
+    return json.dumps({'status': status, 'response': response})
 
 
 @app.route('/mturk/register/csv', methods=['POST'])
