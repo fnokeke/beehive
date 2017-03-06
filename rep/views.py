@@ -336,13 +336,30 @@ def edit_experiment(code):
     experiment = Experiment.query.filter_by(code=code).first()
     intv_type = get_intv_type(experiment)
     ctx = {
+        'todays_date': datetime.now().strftime("%Y-%m-%d"),
         'enrolled_users': MobileUser.query.filter_by(code=code).all(),
         'experiment': experiment,
-        'uploaded_intvs': ImageTextUpload.query.all(),
+        'image_texts': ImageTextUpload.query.filter_by(code=code).all(),
+        'uploaded_intvs': ImageTextUpload.query.filter_by(code=code).all(),
+        'general_notifs': GeneralNotificationConfig.query.filter_by(code=code).all(),
+        'gg': GeneralNotificationConfig,
         'interventions': Intervention.query.filter_by(
             code=code, intv_type=intv_type).order_by('start').all()
     }
     return render_template('edit-experiment.html', **ctx)
+
+
+@app.route('/experiment-dashboard/<code>')
+def show_experiment_dashboard(code):
+    experiment = Experiment.query.filter_by(code=code).first()
+    intv_type = get_intv_type(experiment)
+    ctx = {
+        'enrolled_users': MobileUser.query.filter_by(code=code).all(),
+        'experiment': experiment,
+        'interventions': Intervention.query.filter_by(
+            code=code, intv_type=intv_type).order_by('start').all()
+    }
+    return render_template('experiment-dashboard.html', **ctx)
 
 
 def get_intv_type(experiment):
@@ -367,18 +384,22 @@ def delete_experiment(code):
 
 @app.route('/update/experiment', methods=['POST'])
 def update_experiment():
-    update = {
-        'title': request.form.get('title'),
-        'code': request.form.get('code'),
-        'rescuetime': request.form.get('rescuetime', False),
-        'calendar': request.form.get('calendar', False),
-        'geofence': request.form.get('geofence', False),
-        'text': request.form.get('text', False),
-        'image': request.form.get('image', False),
-        'reminder': request.form.get('reminder', False),
-        'actuators': request.form.get('actuators', False)
-    }
-    updated_exp = Experiment.update_experiment(update)
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    # update = {
+    #     'title': request.form.get('title'),
+    #     'code': request.form.get('code'),
+    #     'rescuetime': request.form.get('rescuetime', False),
+    #     'calendar': request.form.get('calendar', False),
+    #     'geofence': request.form.get('geofence', False),
+    #     'text': request.form.get('text', False),
+    #     'image': request.form.get('image', False),
+    #     'reminder': request.form.get('reminder', False),
+    #     'actuators': request.form.get('actuators', False)
+    # }
+    print '**************'
+    print 'data got: {}'.format(data)
+    print '**************'
+    updated_exp = Experiment.update_experiment(data)
     return str(updated_exp)
 
 
@@ -416,6 +437,7 @@ def fetch_experiment_by_code(code):
 @app.route('/add/intervention', methods=['POST'])
 def add_intervention():
     intv = {
+        'notif_id': request.form.get('intv_notif'),
         'code': request.form.get('code'),
         'treatment': request.form.get('treatment'),
         'start': request.form.get('start'),
@@ -884,17 +906,22 @@ def _jinja2_strformat_only_date(date):
 
 @app.template_filter('onlyfancytime')
 def _jinja2_strformatonly_time(time_str):
+    if not ':' in time_str: return time_str
     date = datetime.now()
-    hr, mins, secs = time_str.split(':')
-    if '.' in secs:
-        secs, _ = secs.split('.')
-    date = date.replace(hour=int(hr), minute=int(mins), second=int(secs))
+    hr, mins = time_str.split(':')[:2]
+    date = date.replace(hour=int(hr), minute=int(mins))
     return date.strftime('%-I:%M %p')
 
 
 @app.template_filter('todatetime')
 def _jinja2_strformat_ftime(datestr):
     return datetime.strptime(datestr, '%Y-%m-%d %H:%M:%S')
+
+
+@app.template_filter('ms_to_datetime')
+def _jinja2_ms_to_datetime_ftime(time_milli):
+    time_milli = int(time_milli)
+    return datetime.utcfromtimestamp(time_milli // 1000).replace(microsecond=time_milli % 1000 * 1000)
 
 # TODO: handle moves expired access token
 # TODO: only enable activate tracking for an app that has been connected

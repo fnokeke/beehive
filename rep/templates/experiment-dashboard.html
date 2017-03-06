@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Edit Experiment
+{% endblock %}
+
+{% block contents %}
+
+  <button
+    type="button"
+    class="btn btn-link btn-lg"
+    onclick="window.location.href='/edit-experiment/{{experiment.code}}'">
+    <span class="glyphicon glyphicon-triangle-left text-muted"></span>
+    <span class="text-muted">
+      Back to Experiment
+    </span>
+  </button>
+
+  <div class="container">
+
+    <div class="page-header">
+      <h3>Enrolled Participants</h3>
+    </div>
+
+    {% if enrolled_users | length > 0 %}
+      <p>
+        Total participants enrolled:
+        {{ enrolled_users | length }}
+      </p>
+    {% else %}
+      <p>
+        <em>
+          No participant enrolled in this experiment.
+        </em>
+      </p>
+    {% endif %}
+
+    {% include "partials/dashboard-view.html" %}
+
+  </div>
+{% endblock %}

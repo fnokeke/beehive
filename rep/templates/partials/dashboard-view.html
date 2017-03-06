@@ -1,0 +1,72 @@
+<div class="page-header">
+  <h3>Participants Stats
+    <small>(Last 10)</small>
+  </h3>
+</div>
+
+<span id='delete-intv-status'></span>
+<table class="table table-striped">
+  <tr>
+    <th>
+      No
+    </th>
+
+    <th>
+      Email
+    </th>
+    <th>
+      Gender
+    </th>
+
+    <th>
+      Experiment Group
+    </th>
+
+    <th>
+      Phone Model
+    </th>
+
+    <th>
+      Device Country
+    </th>
+
+    <th>
+      Installed App
+    </th>
+  </tr>
+
+  {% for user in enrolled_users %}
+    <tr>
+      <td>
+        {{ loop.index }}
+      </td>
+
+      <td>
+        {{ user.email }}
+      </td>
+
+      <td>
+        {{ user.gender }}
+      </td>
+
+      <td>
+        {{ user.condition }}
+      </td>
+
+      <td>
+        {{ user.phone_model }}
+      </td>
+
+      <td>
+        {{ user.device_country }}
+      </td>
+
+      <td>
+        {{ user.last_installed_ms | ms_to_datetime | fancydatetime }}
+      </td>
+
+    </tr>
+
+  {% endfor %}
+
+</table>

@@ -13,6 +13,16 @@
     </span>
   </button>
 
+  <button
+    type="button"
+    class="btn btn-link btn-lg"
+    onclick="window.location.href='/experiment-dashboard/{{experiment.code}}'">
+    <span class="glyphicon glyphicon-dashboard text-primary"></span>
+    <span class="text-primary">
+      View Dashboard
+    </span>
+  </button>
+
   <button type="button" class="btn btn-link btn-lg" onclick="window.location.href='#intervention'">
     <span class="glyphicon glyphicon-arrow-down text-primary"></span>
     <span class="text-primary">
@@ -43,9 +53,11 @@
 
     {% include "partials/upload_text_and_images.html" %}
 
+    {% include "partials/experiment_features.html" %}
+
     {% include "partials/apply_interventions.html" %}
 
-    {% include "partials/experiment_features.html" %}
+    {% include "partials/apply-intv-table.html" %}
 
     {% include "partials/archived_interventions.html" %}
 

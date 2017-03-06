@@ -28,8 +28,13 @@
     <th>
       Created At
     </th>
+    {% if not experiment.calendar %}
+      <th>
+        intervention
+      </th>
+    {% endif %}
     <th>
-      Intervention
+      Notification Message
     </th>
   </tr>
 
@@ -65,35 +70,47 @@
         {{ intv.created_at | nyc | fancydatetime }}
       </td>
 
+      {% if not experiment.calendar %}
+        <td>
+
+          <ul>
+            {% for treat in all_intv_arr %}
+
+              <li>
+
+                {% if all_intv_arr | length > 1 %}
+                  <em>
+                    Group
+                    {{ loop.index }}:
+                  </em>
+                {% endif %}
+
+                {% if '**&&&&**' in treat %}
+                  <!-- show photo / image -->
+                  <img src="{{ treat.split('**&&&&**')[0] }}" alt="intervention" width="50" height="50">
+                  /
+                  {{ treat.split('**&&&&**')[1] }}
+                {% elif 'photos' in treat %}
+                  <img src="{{ treat }}" alt="intervention" width="50" height="50">
+                {% else %}
+                  {{ treat }}
+                {% endif %}
+              </li>
+
+            {% endfor %}
+          </ul>
+
+        </td>
+      {% endif %}
+
       <td>
-
-        <ul>
-          {% for treat in all_intv_arr %}
-
-            <li>
-
-              {% if all_intv_arr | length > 1 %}
-                <em>
-                  Group
-                  {{ loop.index }}:
-                </em>
-              {% endif %}
-
-              {% if '**&&&&**' in treat %}
-                <!-- show photo / image -->
-                <img src="{{ treat.split('**&&&&**')[0] }}" alt="intervention" width="50" height="50">
-                /
-                {{ treat.split('**&&&&**')[1] }}
-              {% elif 'photos' in treat %}
-                <img src="{{ treat }}" alt="intervention" width="50" height="50">
-              {% else %}
-                {{ treat }}
-              {% endif %}
-            </li>
-
-          {% endfor %}
-        </ul>
-
+        {% with notif = gg.query.filter_by(id = intv.notif_id).first() %}
+        {{ notif.title }}
+        /
+        {{ notif.content }}
+        /
+        {{ notif.app_id }}
+        {% endwith %}
       </td>
     </tr>
 

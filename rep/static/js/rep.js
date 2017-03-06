@@ -308,6 +308,8 @@ $('#update-experiment-btn').click(function() {
   var code = $('#code_from_hidden_element').val();
   var title = $('#edit-exp-title').val();
   var rescuetime = $('#edit-rescuetime-checkbox-btn').is(':checked');
+  var notif_window = $('#edit-notif-window-checkbox-btn').is(':checked');
+  var is_mturk_study = $('#edit-is-mturk-study-checkbox-btn').is(':checked');
   var calendar = $('#edit-calendar-checkbox-btn').is(':checked');
   var geofence = $('#edit-geofence-checkbox-btn').is(':checked');
   // var text = $('#edit-text-checkbox-btn').is(':checked');
@@ -327,6 +329,8 @@ $('#update-experiment-btn').click(function() {
     'title': title,
     'code': code,
     'rescuetime': rescuetime,
+    'notif_window': notif_window,
+    'is_mturk_study': is_mturk_study,
     'calendar': calendar,
     'geofence': geofence,
     'text': dashboard === true,
@@ -337,7 +341,7 @@ $('#update-experiment-btn').click(function() {
 
   $.post(url, data).done(function(resp) {
     show_success_msg(response_field, '<br/>Experiment successfully updated. Reloading experiment...');
-    window.location.href = window.location.href;
+    window.location.href = window.location.origin + window.location.pathname;
   }).fail(function(error) {
     show_error_msg(response_field, error);
   });
@@ -439,7 +443,14 @@ function create_new_intv_table() {
     group_rows += '<th class="col-md-1"> Group{0} </th>'.format(i + 1);
   }
 
-  view = '<table id="intvn-table-id" class="table table-striped table-bordered table-hover"><tr>' + group_rows + '<th class=col-md-1> Start </th>' + '<th class="col-md-1"> Every </th>' + '<th class="col-md-1"> Alarm Time </th>' + '<th class="col-md-1"> Repeat </th>' + '</tr><tbody></tbody></table>';
+  view = '<table id="intvn-table-id"' +
+    ' class="table table-striped table-bordered table-hover"><tr>' +
+    group_rows +
+    '<th class=col-md-1> Start </th>' +
+    '<th class="col-md-1"> Every </th>' +
+    '<th class="col-md-1"> Alarm Time </th>' +
+    '<th class="col-md-1"> Repeat </th>' +
+    '</tr><tbody></tbody></table>';
 
   $('#intv-table-view').html(view);
 }
@@ -624,7 +635,70 @@ $('#save-group-btn').click(function() {
 
 });
 
+////////////////////
+////////////////////
+////////////////////
+////////////////////
+////////////////////
+////////////////////
+
 $('#save-table-btn').click(function() {
+  var intv_notif = $('#intv-notif').find(":selected").val();
+  var intv_every = $('#intv-every').val();
+  var intv_repeat = $('#intv-repeat').val();
+  var intv_time = $('#intv-time').val();
+  var experiment_code = $('#code_from_hidden_element').val();
+
+  var factor = intv_every === 'Daily' ? 1 : 7;
+  var no_of_days = intv_repeat * factor;
+
+  var intv_start_date = $('#intv-start-date').val();
+  var intv_start_datetime = '{0}T00:00:00-05:00'.format(intv_start_date);
+  intv_start_datetime = new Date(intv_start_datetime);
+
+  var intv_end_datetime = '{0}T00:00:00-05:00'.format(intv_start_date);
+  intv_end_datetime = new Date(intv_end_datetime);
+  intv_end_datetime.setDate(intv_end_datetime.getDate() + no_of_days);
+  intv_end_datetime = intv_end_datetime;
+
+  var url = '/add/intervention';
+  var data = {
+    'condition': "0",
+    'treatment': "",
+    'intv_type': "calendar",
+    'intv_notif': intv_notif,
+    'code': experiment_code,
+    'start': intv_start_datetime.toJSON(), // UTC
+    'end': intv_end_datetime.toJSON(), // UTC
+    'every': intv_every,
+    'when': intv_time,
+    'repeat': intv_repeat
+  };
+
+  var response_field = '#intv-table-status';
+  $.post(url, data).done(function(resp) {
+    show_success_msg(response_field, 'Intervention successfully saved.<br/>');
+    console.log('success intv resp: ', resp);
+    window.location.href = window.location.origin + window.location.pathname;
+  }).fail(function(error) {
+    show_error_msg(response_field, 'Error saving intervention: ' + error.statusText);
+    console.log('intv save error:', error);
+  });
+});
+
+
+////////////////////
+////////////////////
+////////////////////
+////////////////////
+////////////////////
+////////////////////
+////////////////////
+////////////////////
+////////////////////
+
+
+$('#save-table-btnx').click(function() {
 
   var response_field = '#intv-table-status';
   var no_of_condition = parseInt($('#no-of-condition').val());

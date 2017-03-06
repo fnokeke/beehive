@@ -1,0 +1,148 @@
+<div id="show-intv-table">
+  <div class="page-header">
+    <h3>Select & Apply Intervention</h3>
+    <em>All interventions start/end at midnight.</em>
+  </div>
+
+  <div class="text-center">
+
+    <button type="button" class="btn btn-link btn-md" id="save-table-btn" value="">
+      <span class="glyphicon glyphicon-floppy-saved text-primary"></span>
+      <span class="text-primary">
+        Save Entry
+      </span>
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-link btn-md"
+      id="reset-table-btn"
+      value="deleteRow"
+      data-toggle="confirmation"
+      data-popout="true">
+      <span class="glyphicon glyphicon-trash text-danger"></span>
+      <span class="text-danger">
+        Reset Entry
+      </span>
+    </button>
+
+  </div>
+
+  <div class="latest-intv-table">
+    <table class="table table-striped table-bordered table-hover">
+      <tr>
+        {% if not experiment.calendar %}
+          {% for i in range(experiment.no_of_condition) %}
+            <th>Group{{ i + 1 }}</th>
+          {% endfor %}
+        {% endif %}
+
+        <th class="">Notification</th>
+        <th>Start</th>
+        <th>Every</th>
+        {% if experiment.notif_window %}{% endif %}
+        <th>Alarm Time</th>
+        <th>Repeat</th>
+      </tr>
+      <tbody>
+        <tr>
+
+          {% if not experiment.calendar %}
+            {% for i in range(experiment.no_of_condition) %}
+              <td>
+                <select class="form-control" name="">
+
+                  {% if experiment.image or experiment.text %}
+                    <optgroup label="Text/Image">
+                      {% for x in image_texts %}
+                        <option id="treat-{{i}}">
+                          {{ x.image_name }}
+                          /
+                          {{ x.text }}
+                        </option>
+                      {% endfor %}
+                    </optgroup>
+                  {% endif %}
+
+                  {% if experiment.rescuetime %}
+                    <optgroup label="Rescuetime Category">
+                      <option value="focus-distracting">both focus & distracting</option>
+                      <option value="focus">only focus</option>
+                      <option value="distracting">only distracting</option>
+                    </optgroup>
+                  {% endif %}
+
+                  {% if experiment.image or experiment.text %}
+                    <optgroup label="Phone Vibration">
+                      {% for x in image_texts %}
+                        <option>
+                          {{ x.image_name }}
+                          /
+                          {{ x.text }}
+                        </option>
+                      {% endfor %}
+                    </optgroup>
+                  {% endif %}
+
+                  <optgroup label="No Intervention">
+                    <option value="baseline">------</option>
+                  </optgroup>
+
+                </select>
+              </td>
+            {% endfor %}
+          {% endif %}
+
+          <td>
+            <select class="form-control" id="intv-notif">
+              {% for x in general_notifs %}
+                <option value="{{x.id}}">
+                  {{x.title}}
+                  /
+                  {{ x.content}}
+                  /
+                  {{ x.app_id }}
+                </option>
+              {% endfor %}
+            </select>
+          </td>
+
+          <td>
+            <input
+              class="form-control"
+              id="intv-start-date"
+              data-provide="datepicker"
+              data-date-start-date="0d"
+              data-date-format="yyyy-mm-dd"
+              data-date-today-highlight="true"
+              value="{{ todays_date }}"/>
+          </td>
+
+          <td>
+            <select class="form-control" id="intv-every">
+              <option>Daily</option>
+              <option>Weekly</option>
+            </select>
+          </td>
+
+          <td>
+            <input
+              type="{{'text' if experiment.notif_window else 'time'}}"
+              {{ 'disabled' if experiment.notif_window else '' }}
+              class="form-control"
+              id="intv-time"
+              value="{{'user reminder window' if experiment.notif_window else '00:00'}}">
+          </td>
+
+          <td>
+            <input type="number" class="form-control" id="intv-repeat" value="1">
+          </td>
+        </tr>
+      </tbody>
+
+    </table>
+    <span id="intv-table-status"></span>
+
+  </div>
+
+</div>

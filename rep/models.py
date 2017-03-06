@@ -92,6 +92,8 @@ class Experiment(db.Model):
     end = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     no_of_condition = db.Column(db.Integer, default=1)
     ps_per_condition = db.Column(db.Integer, default=1)
+    notif_window = db.Column(db.Boolean, default=False)
+    is_mturk_study = db.Column(db.Boolean, default=False)
     rescuetime = db.Column(db.Boolean, default=False)
     calendar = db.Column(db.Boolean, default=False)
     geofence = db.Column(db.Boolean, default=False)
@@ -118,6 +120,8 @@ class Experiment(db.Model):
         self.code = info.get('code') if info.get('code') else Experiment.generate_unique_id()
         self.no_of_condition = info.get('no_of_condition')
         self.ps_per_condition = info.get('ps_per_condition')
+        self.notif_window = info.get('notif_window')
+        self.is_mturk_study = info.get('is_mturk_study')
         self.rescuetime = info.get('rescuetime')
         self.calendar = info.get('calendar')
         self.geofence = info.get('geofence')
@@ -132,6 +136,8 @@ class Experiment(db.Model):
             'start': str(self.start),
             'end': str(self.end),
             'code': self.code,
+            'notif_window': self.notif_window,
+            'is_mturk_study': self.is_mturk_study,
             'rescuetime': self.rescuetime,
             'calendar': self.calendar,
             'geofence': self.geofence,
@@ -177,6 +183,9 @@ class Experiment(db.Model):
     @staticmethod
     def update_experiment(update):
         experiment = Experiment.query.filter_by(code=update['code']).first()
+        for key, value in update.iteritems():
+            setattr(experiment, key, value)
+
         experiment.title = update.get('title')
         experiment.code = update.get('code')
         experiment.rescuetime = update.get('rescuetime')
@@ -203,6 +212,8 @@ class Experiment(db.Model):
 class GeneralNotificationConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    intv_id = db.relationship('Intervention', backref='general_notification_config', lazy='select')
+
     title = db.Column(db.String(50))
     content = db.Column(db.String(50))
     app_id = db.Column(db.String(50))
@@ -272,6 +283,7 @@ class ImageTextUpload(db.Model):
 
 class Intervention(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    notif_id = db.Column(db.Integer, db.ForeignKey('general_notification_config.id'))
     code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     treatment = db.Column(db.String(2000))
@@ -291,6 +303,7 @@ class Intervention(db.Model):
         self.when = info['when']
         self.repeat = info['repeat']
         self.intv_type = info['intv_type']
+        self.notif_id = info['notif_id']
 
     def __repr__(self):
         treatment_image, treatment_text = '', ''
@@ -312,6 +325,7 @@ class Intervention(db.Model):
             'every': self.every,
             'when': self.when,
             'repeat': self.repeat,
+            'notif_id': self.notif_id,
             'intv_type': self.intv_type
         }
         return json.dumps(result)
