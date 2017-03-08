@@ -321,7 +321,7 @@ class Intervention(db.Model):
         if not notif:
             notif = '{}'
         else:
-            notif = json.dumps({'title: ': notif.title, 'content': notif.content, 'app_id': notif.app_id})
+            notif = json.dumps({'title': notif.title, 'content': notif.content, 'app_id': notif.app_id})
         result = {
             'created_at': str(self.created_at),
             'code': self.code,
