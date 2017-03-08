@@ -318,7 +318,10 @@ class Intervention(db.Model):
             treatment_text = self.treatment
 
         notif = GeneralNotificationConfig.query.filter_by(id=self.notif_id).first()
-        notif = json.dumps({'title: ': notif.title, 'content': notif.content, 'app_id': notif.app_id})
+        if not notif:
+            notif = '{}'
+        else:
+            notif = json.dumps({'title: ': notif.title, 'content': notif.content, 'app_id': notif.app_id})
         result = {
             'created_at': str(self.created_at),
             'code': self.code,

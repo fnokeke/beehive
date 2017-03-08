@@ -342,9 +342,13 @@ def edit_experiment(code):
     experiment = Experiment.query.filter_by(code=code).first()
     intv_type = get_intv_type(experiment)
     interventions = Intervention.query.filter_by(code=code, intv_type=intv_type).order_by('start').all()
+    next_start_date = datetime.now().strftime("%Y-%m-%d")
+    if interventions:
+        next_start_date = to_datetime(interventions[-1].end).strftime("%Y-%m-%d")
+
     ctx = {
         'todays_date': datetime.now().strftime("%Y-%m-%d"),
-        'next_start_date': to_datetime(interventions[-1].end).strftime("%Y-%m-%d"),
+        'next_start_date': next_start_date,
         'enrolled_users': MobileUser.query.filter_by(code=code).all(),
         'experiment': experiment,
         'image_texts': ImageTextUpload.query.filter_by(code=code).all(),
