@@ -86,7 +86,6 @@
 
   });
 
-
   $('#mturk-read-consent-btn').click(function() {
     $('#consent-agree-modal').modal('show');
   });

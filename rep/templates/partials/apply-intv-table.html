@@ -40,8 +40,11 @@
         <th class="">Notification</th>
         <th>Start</th>
         <th>Every</th>
-        {% if experiment.notif_window %}{% endif %}
-        <th>Alarm Time</th>
+        {% if experiment.notif_window %}
+          <th>Alarm Window (mins)</th>
+        {% else %}
+          <th>Alarm Time</th>
+        {% endif %}
         <th>Repeat</th>
       </tr>
       <tbody>
@@ -112,10 +115,10 @@
               class="form-control"
               id="intv-start-date"
               data-provide="datepicker"
-              data-date-start-date="0d"
+              data-date-start-date="{{ next_start_date }}"
               data-date-format="yyyy-mm-dd"
               data-date-today-highlight="true"
-              value="{{ todays_date }}"/>
+              value="{{ next_start_date }}"/>
           </td>
 
           <td>
@@ -125,14 +128,20 @@
             </select>
           </td>
 
-          <td>
+          {% if experiment.notif_window %}
             <input
-              type="{{'text' if experiment.notif_window else 'time'}}"
-              {{ 'disabled' if experiment.notif_window else '' }}
-              class="form-control"
-              id="intv-time"
-              value="{{'user reminder window' if experiment.notif_window else '00:00'}}">
-          </td>
+              type="text"
+              style="display: none"
+              id="user-window-enabled"
+              value="{{experiment.notif_window}}">
+            <td>
+              <input type="number" class="form-control" id="user-window-mins" min=0 value="120">
+            </td>
+          {% else %}
+            <td>
+              <input type="time" class="form-control" id="intv-when" value="13:00">
+            </td>
+          {% endif %}
 
           <td>
             <input type="number" class="form-control" id="intv-repeat" value="1">

@@ -331,20 +331,27 @@ def add_experiment():
     return response
 
 
+def to_datetime(date_str, fmt=None):
+    if not fmt:
+        fmt = '%Y-%m-%d %H:%M:%S'
+    return datetime.strptime(date_str, fmt)
+
+
 @app.route('/edit-experiment/<code>')
 def edit_experiment(code):
     experiment = Experiment.query.filter_by(code=code).first()
     intv_type = get_intv_type(experiment)
+    interventions = Intervention.query.filter_by(code=code, intv_type=intv_type).order_by('start').all()
     ctx = {
         'todays_date': datetime.now().strftime("%Y-%m-%d"),
+        'next_start_date': to_datetime(interventions[-1].end).strftime("%Y-%m-%d"),
         'enrolled_users': MobileUser.query.filter_by(code=code).all(),
         'experiment': experiment,
         'image_texts': ImageTextUpload.query.filter_by(code=code).all(),
         'uploaded_intvs': ImageTextUpload.query.filter_by(code=code).all(),
         'general_notifs': GeneralNotificationConfig.query.filter_by(code=code).all(),
         'gg': GeneralNotificationConfig,
-        'interventions': Intervention.query.filter_by(
-            code=code, intv_type=intv_type).order_by('start').all()
+        'interventions': interventions
     }
     return render_template('edit-experiment.html', **ctx)
 
@@ -436,22 +443,10 @@ def fetch_experiment_by_code(code):
 #////////////////////////////////////
 @app.route('/add/intervention', methods=['POST'])
 def add_intervention():
-    intv = {
-        'notif_id': request.form.get('intv_notif'),
-        'code': request.form.get('code'),
-        'treatment': request.form.get('treatment'),
-        'start': request.form.get('start'),
-        'end': request.form.get('end'),
-        'every': request.form.get('every'),
-        'when': request.form.get('when'),
-        'repeat': request.form.get('repeat'),
-        'intv_type': request.form.get('intv_type')
-    }
-
-    intv['start'] = datetime.strptime(intv['start'], '%Y-%m-%dT%H:%M:%S.000Z')
-    intv['end'] = datetime.strptime(intv['end'], '%Y-%m-%dT%H:%M:%S.000Z')
-
-    _, response, added_intv = Intervention.add_intervention(intv)
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    data['start'] = datetime.strptime(data['start'], '%Y-%m-%dT%H:%M:%S.000Z')
+    data['end'] = datetime.strptime(data['end'], '%Y-%m-%dT%H:%M:%S.000Z')
+    _, response, added_intv = Intervention.add_intervention(data)
     return str(added_intv)
 
 

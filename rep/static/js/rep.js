@@ -646,8 +646,17 @@ $('#save-table-btn').click(function() {
   var intv_notif = $('#intv-notif').find(":selected").val();
   var intv_every = $('#intv-every').val();
   var intv_repeat = $('#intv-repeat').val();
-  var intv_time = $('#intv-time').val();
+  var intv_when = $('#intv-when').val();
+  var user_window_enabled = $('#user-window-enabled').val() === "True";
   var experiment_code = $('#code_from_hidden_element').val();
+  var user_window_mins = $('#user-window-mins').val();
+
+  // disable alarm time if user_window_enabled
+  if (user_window_enabled) {
+    intv_when = '';
+  } else {
+    user_window_mins = '';
+  }
 
   var factor = intv_every === 'Daily' ? 1 : 7;
   var no_of_days = intv_repeat * factor;
@@ -666,12 +675,13 @@ $('#save-table-btn').click(function() {
     'condition': "0",
     'treatment': "",
     'intv_type': "calendar",
-    'intv_notif': intv_notif,
+    'user_window_mins': user_window_mins,
+    'notif_id': intv_notif,
     'code': experiment_code,
     'start': intv_start_datetime.toJSON(), // UTC
     'end': intv_end_datetime.toJSON(), // UTC
     'every': intv_every,
-    'when': intv_time,
+    'when': intv_when,
     'repeat': intv_repeat
   };
 
@@ -731,16 +741,16 @@ $('#save-table-btnx').click(function() {
     intv_type = 'rescuetime';
   }
 
-  var intv_time = $('#intv-time').val();
-  intv_time = intv_time.indexOf('.') > -1 ? intv_time : '{0}:00'.format(intv_time);
-  console.log('intv_time: ', intv_time);
+  var intv_when = $('#intv-time').val();
+  intv_when = intv_when.indexOf('.') > -1 ? intv_when : '{0}:00'.format(intv_when);
+  console.log('intv_when: ', intv_when);
 
 
   // use this to also save reminder time
   post_data('/mobile/add/daily-reminder-config',
     {
       'code': $('#code_from_hidden_element').val(),
-      'reminder_time': intv_time
+      'reminder_time': intv_when
     },
     '#summary_entry');
 
@@ -779,7 +789,7 @@ $('#save-table-btnx').click(function() {
     'start': intv_start_datetime.toJSON(), // UTC
     'end': intv_end_datetime.toJSON(), // UTC
     'every': intv_every,
-    'when': intv_time,
+    'when': intv_when,
     'intv_type': intv_type,
     'repeat': intv_repeat
   };
@@ -802,13 +812,35 @@ $('#remove-row-btn').click(function() {
 /////////////////////////////
 /// delete archived intv ////
 /////////////////////////////
-$('#delete-intv-btn').click(function() {
-  if (confirm("Are you sure you want to delete permanently?") === true) {
-    var resp = $('#delete-intv-btn').val();
-    console.log('confirm resp: ', resp);
-  // window.location.href = '/delete/experiment/{0}'.format(code);
+// $('#delete-intv-btn').click(function() {
+//   if (confirm("Are you sure you want to delete permanently?") === true) {
+//     var resp = $('#delete-intv-btn').val();
+//     console.log('confirm resp: ', resp);
+//     window.location.href = window.location.origin + window.location.pathname;
+//   }
+// });
+//
+function delete_intv(intv) {
+  var prompt = "Are you sure you want to delete permanently?\nIntervention created at: {0}".format(intv.created_at);
+  if (confirm(prompt) === false) {
+    return;
   }
-});
+
+  var response_field = '#delete-intv-status';
+  var url = '/delete/intervention';
+  var data = {
+    'created_at': intv.created_at
+  };
+
+  $.post(url, data).done(function(resp) {
+    show_success_msg(response_field, resp);
+    window.location.href = window.location.origin + window.location.pathname;
+  }).fail(function(error) {
+    show_error_msg(response_field, error.statusText);
+  });
+}
+
+
 
 ////////////////////////////////
 ///// calendar functions ///////

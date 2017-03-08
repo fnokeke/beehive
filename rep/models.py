@@ -293,6 +293,7 @@ class Intervention(db.Model):
     when = db.Column(db.String(30))
     repeat = db.Column(db.String(30))
     intv_type = db.Column(db.String(20))
+    user_window_mins = db.Column(db.String(5))
 
     def __init__(self, info):
         self.code = info['code']
@@ -304,6 +305,7 @@ class Intervention(db.Model):
         self.repeat = info['repeat']
         self.intv_type = info['intv_type']
         self.notif_id = info['notif_id']
+        self.user_window_mins = info['user_window_mins']
 
     def __repr__(self):
         treatment_image, treatment_text = '', ''
@@ -315,6 +317,8 @@ class Intervention(db.Model):
         else:
             treatment_text = self.treatment
 
+        notif = GeneralNotificationConfig.query.filter_by(id=self.notif_id).first()
+        notif = json.dumps({'title: ': notif.title, 'content': notif.content, 'app_id': notif.app_id})
         result = {
             'created_at': str(self.created_at),
             'code': self.code,
@@ -325,7 +329,9 @@ class Intervention(db.Model):
             'every': self.every,
             'when': self.when,
             'repeat': self.repeat,
+            'user_window_mins': self.user_window_mins,
             'notif_id': self.notif_id,
+            'notif': notif,
             'intv_type': self.intv_type
         }
         return json.dumps(result)

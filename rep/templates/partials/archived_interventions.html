@@ -5,7 +5,7 @@
 </div>
 
 <span id='delete-intv-status'></span>
-<table class="table table-striped">
+<table class="table table-striped" id="#archived-interventions">
   <tr>
     <th>
       No
@@ -63,7 +63,12 @@
       </td>
 
       <td>
-        {{ intv.when | onlyfancytime }}
+        {% if intv.user_window_mins != ''%}
+          {{ intv.user_window_mins }}
+          minutes window
+        {% else %}
+          {{ intv.when | onlyfancytime }}
+        {% endif %}
       </td>
 
       <td>
