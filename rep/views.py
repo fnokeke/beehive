@@ -15,7 +15,7 @@ from rep import app, login_manager
 from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkFBStats, MturkPrelimRecruit
 from rep.models import MturkExclusive, MturkMobile, User, ImageTextUpload
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
-from rep.models import RescuetimeConfig, ScreenUnlockConfig
+from rep.models import NotifClickedStats, RescuetimeConfig, ScreenUnlockConfig
 
 from rep.rescuetime import RescueOauth2, RescueTime
 from rep.pam import PamOauth
@@ -230,6 +230,13 @@ def add_vibration_config():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     _, response, vibr_config = VibrationConfig.add(data)
     return json.dumps({'response': response, 'vibration_config': to_json(vibr_config)})
+
+
+@app.route('/mobile/add/notif-clicked-stats', methods=['POST'])
+def add_notif_clicked_stats():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    _, response, notif_stats = NotifClickedStats.add_stats(data)
+    return json.dumps({'response': response, 'notif_stats': to_json(notif_stats)})
 
 
 #////////////////////////////////////////////

@@ -676,6 +676,48 @@ class MturkMobile(db.Model):
         return (200, 'Successfully connected worker!', worker.worker_id)
 
 
+class NotifClickedStats(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(30))
+    content = db.Column(db.String(30))
+    app_id = db.Column(db.String(30))
+    ringer_mode = db.Column(db.String(10))
+    time_appeared = db.Column(db.DateTime)
+    time_clicked = db.Column(db.DateTime)
+    was_dismissed = db.Column(db.Boolean)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, info):
+        self.title = info['title']
+        self.content = info['content']
+        self.app_id = info['app_id']
+        self.ringer_mode = info['ringer_mode']
+        self.time_appeared = info['time_appeared']
+        self.time_clicked = info['time_clicked']
+        self.was_dismissed = info['was_dismissed']
+
+    def __repr__(self):
+        result = {
+            'id': self.id,
+            'title': self.title,
+            'content': self.content,
+            'app_id': self.app_id,
+            'ringer_mode': self.ringer_mode,
+            'time_appeared': self.time_appeared,
+            'time_clicked': self.time_clicked,
+            'was_dismissed': self.was_dismissed,
+            'created_at': self.created_at
+        }
+        return json.dumps(result)
+
+    @staticmethod
+    def add_stats(info):
+        new_stats = NotifClickedStats(info)
+        db.session.add(new_stats)
+        db.session.commit()
+        return (200, 'Successfully added notif stats!', new_stats)
+
+
 class RescuetimeConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
