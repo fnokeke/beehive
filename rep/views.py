@@ -231,10 +231,17 @@ def add_vibration_config():
     _, response, vibr_config = VibrationConfig.add(data)
     return json.dumps({'response': response, 'vibration_config': to_json(vibr_config)})
 
+def millis_to_dt(time_milli):
+    time_milli = int(time_milli)
+    return datetime.utcfromtimestamp(time_milli // 1000).replace(microsecond=time_milli % 1000 * 1000)
+
 
 @app.route('/mobile/add/notif-clicked-stats', methods=['POST'])
 def add_notif_clicked_stats():
     data = json.loads(request.data) if request.data else request.form.to_dict()
+    data['time_appeared'] = millis_to_dt(data['time_appeared'])
+    data['time_clicked'] = millis_to_dt(data['time_clicked'])
+
     _, response, notif_stats = NotifClickedStats.add_stats(data)
     return json.dumps({'response': response, 'notif_stats': to_json(notif_stats)})
 

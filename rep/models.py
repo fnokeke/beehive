@@ -678,8 +678,8 @@ class MturkMobile(db.Model):
 
 class NotifClickedStats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(30))
-    content = db.Column(db.String(30))
+    title = db.Column(db.String(50))
+    content = db.Column(db.String(50))
     app_id = db.Column(db.String(30))
     ringer_mode = db.Column(db.String(10))
     time_appeared = db.Column(db.DateTime)
@@ -703,10 +703,10 @@ class NotifClickedStats(db.Model):
             'content': self.content,
             'app_id': self.app_id,
             'ringer_mode': self.ringer_mode,
-            'time_appeared': self.time_appeared,
-            'time_clicked': self.time_clicked,
+            'time_appeared': str(self.time_appeared),
+            'time_clicked': str(self.time_clicked),
             'was_dismissed': self.was_dismissed,
-            'created_at': self.created_at
+            'created_at': str(self.created_at)
         }
         return json.dumps(result)
 
