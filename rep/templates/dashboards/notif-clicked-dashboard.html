@@ -1,154 +1,194 @@
-<div class="page-header">
-  <h3>Notification Clicked Stats
-    <small>(Last 10)</small>
-  </h3>
-  <em>To sort by multiple columns, hold down shift key and select columns.</em>
-</div>
+{% extends "layout.html" %}
 
-{% if experiment.calendar %}
-  <table class="table table-striped" id="notif-clicked-table">
-    <thead>
-      <tr>
-        <th>
-          No
-        </th>
+{% block title %}
+  Notif Stats
+{% endblock %}
 
-        <th>
-          Email
-        </th>
+{% block contents %}
 
-        <th>
-          Gender
-        </th>
+  <button
+    type="button"
+    class="btn btn-link btn-lg"
+    onclick="window.location.href='/edit-experiment/{{experiment.code}}'">
+    <span class="glyphicon glyphicon-triangle-left text-muted"></span>
+    <span class="text-muted">
+      Back to Experiment
+    </span>
+  </button>
 
-        <th>
-          Code
-        </th>
+  <div class="container">
 
-        <th>
-          Condition
-        </th>
+    {% if experiment.calendar %}
 
-        <th>
-          Notification
-        </th>
+      {% if notif_stats %}
+        <div class="page-header">
+          <h3>Notification Clicked Stats
+            <small>(Last 10)</small>
+          </h3>
+          <em>To sort by multiple columns, hold down shift key and select columns.</em>
+        </div>
 
-        <th>
-          Phone Ringer Mode
-        </th>
+        <table class="table table-striped" id="notif-clicked-table">
+          <thead>
+            <tr>
+              <th>
+                No
+              </th>
 
-        <th>
-          Notification Time
-        </th>
+              <th>
+                Email
+              </th>
 
-        <th>
-          When Clicked
-        </th>
+              <th>
+                Gender
+              </th>
 
-        <th>
-          Was Dismissed
-        </th>
+              <th>
+                Code
+              </th>
 
-      </tr>
-    </thead>
+              <th>
+                Condition
+              </th>
 
-    <tfoot>
-      <tr>
-        <th>
-          No
-        </th>
+              <th>
+                Notification
+              </th>
 
-        <th>
-          Email
-        </th>
+              <th>
+                Phone Ringer Mode
+              </th>
 
-        <th>
-          Gender
-        </th>
+              <th>
+                Notification Time
+              </th>
 
-        <th>
-          Code
-        </th>
+              <th>
+                When Clicked
+              </th>
 
-        <th>
-          Condition
-        </th>
+              <th>
+                Was Dismissed
+              </th>
 
-        <th>
-          Notification
-        </th>
+            </tr>
+          </thead>
 
-        <th>
-          Phone Ringer Mode
-        </th>
+          <tfoot>
+            <tr>
+              <th>
+                No
+              </th>
 
-        <th>
-          Notification Time
-        </th>
+              <th>
+                Email
+              </th>
 
-        <th>
-          When Clicked
-        </th>
+              <th>
+                Gender
+              </th>
 
-        <th>
-          Was Dismissed
-        </th>
+              <th>
+                Code
+              </th>
 
-      </tr>
-    </tfoot>
+              <th>
+                Condition
+              </th>
 
-    <tbody>
-      {% for stat in notif_stats %}
-        <tr>
-          <th>
-            {{ loop.index }}
-          </th>
+              <th>
+                Notification
+              </th>
 
-          <th>
-            {{ stat.email }}
-          </th>
+              <th>
+                Phone Ringer Mode
+              </th>
 
-          <th>
-            {{ stat.gender }}
-          </th>
+              <th>
+                Notification Time
+              </th>
 
-          <th>
-            {{ stat.code }}
-          </th>
+              <th>
+                When Clicked
+              </th>
 
-          <th>
-            {{ stat.condition }}
-          </th>
+              <th>
+                Was Dismissed
+              </th>
 
-          <th>
-            {{ stat.title}}
-            /
-            {{ stat.content }}
-            /
-            {{ stat.app_id }}
-          </th>
+            </tr>
+          </tfoot>
 
-          <th>
-            {{ stat.ringer_mode }}
-          </th>
+          <tbody>
+            {% for stat in notif_stats %}
+              <tr>
+                <th>
+                  {{ loop.index }}
+                </th>
 
-          <th>
-            {{ stat.time_appeared }}
-          </th>
+                <th>
+                  {{ stat.email }}
+                </th>
 
-          <th>
-            {{ stat.time_clicked }}
-          </th>
+                <th>
+                  {{ stat.gender }}
+                </th>
 
-          <th>
-            {{ stat.was_dismissed }}
-          </th>
+                <th>
+                  {{ stat.code }}
+                </th>
 
-        </tr>
-      {% endfor %}
-    </tbody>
+                <th>
+                  {{ stat.condition }}
+                </th>
 
-  </table>
-{% else %}
-  <strong>Calendar is not activated for this experiment</strong>
-{% endif %}
+                <th>
+                  {{ stat.title}}
+                  /
+                  {{ stat.content }}
+                  /
+                  {{ stat.app_id }}
+                </th>
+
+                <th>
+                  {{ stat.ringer_mode }}
+                </th>
+
+                <th>
+                  {{ stat.time_appeared }}
+                </th>
+
+                <th>
+                  {{ stat.time_clicked }}
+                </th>
+
+                <th>
+                  {{ stat.was_dismissed }}
+                </th>
+
+              </tr>
+            {% endfor %}
+          </tbody>
+
+        </table>
+      {% else %}
+        <div class="page-header">
+          <h3>
+            There are no stored notification stats.
+          </h3>
+
+        </div>
+      {% endif %}
+
+    {% else %}
+
+      <div class="page-header">
+        <h3>
+          Calendar is not activated for this experiment.
+        </h3>
+
+      </div>
+    {% endif %}
+
+  </div>
+{% endblock %}
