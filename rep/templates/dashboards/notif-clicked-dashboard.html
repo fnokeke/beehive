@@ -56,115 +56,70 @@
               </th>
 
               <th>
-                Phone Ringer Mode
+                Phone Mode
               </th>
 
               <th>
-                Notification Time
+                Notified
               </th>
 
               <th>
-                When Clicked
+                Clicked
               </th>
 
               <th>
-                Was Dismissed
+                Dismissed
               </th>
 
             </tr>
           </thead>
 
-          <tfoot>
-            <tr>
-              <th>
-                No
-              </th>
-
-              <th>
-                Email
-              </th>
-
-              <th>
-                Gender
-              </th>
-
-              <th>
-                Code
-              </th>
-
-              <th>
-                Condition
-              </th>
-
-              <th>
-                Notification
-              </th>
-
-              <th>
-                Phone Ringer Mode
-              </th>
-
-              <th>
-                Notification Time
-              </th>
-
-              <th>
-                When Clicked
-              </th>
-
-              <th>
-                Was Dismissed
-              </th>
-
-            </tr>
-          </tfoot>
-
           <tbody>
             {% for stat in notif_stats %}
               <tr>
-                <th>
+                <td>
                   {{ loop.index }}
-                </th>
+                </td>
 
-                <th>
+                <td>
                   {{ stat.email }}
-                </th>
+                </td>
 
-                <th>
+                <td>
                   {{ stat.gender }}
-                </th>
+                </td>
 
-                <th>
+                <td>
                   {{ stat.code }}
-                </th>
+                </td>
 
-                <th>
+                <td>
                   {{ stat.condition }}
-                </th>
+                </td>
 
-                <th>
+                <td>
                   {{ stat.title}}
                   /
                   {{ stat.content }}
                   /
                   {{ stat.app_id }}
-                </th>
+                </td>
 
-                <th>
+                <td>
                   {{ stat.ringer_mode }}
-                </th>
+                </td>
 
-                <th>
+                <td>
                   {{ stat.time_appeared }}
-                </th>
+                </td>
 
-                <th>
+                <td>
                   {{ stat.time_clicked }}
-                </th>
+                </td>
 
-                <th>
+                <td>
                   {{ stat.was_dismissed }}
-                </th>
+                </td>
 
               </tr>
             {% endfor %}
