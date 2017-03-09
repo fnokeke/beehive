@@ -678,6 +678,10 @@ class MturkMobile(db.Model):
 
 class NotifClickedStats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    email = db.Column(db.String(120))
+    gender = db.Column(db.String(10))
+    condition = db.Column(db.Integer)
     title = db.Column(db.String(50))
     content = db.Column(db.String(50))
     app_id = db.Column(db.String(30))
@@ -688,6 +692,10 @@ class NotifClickedStats(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, info):
+        self.email = info['email']
+        self.gender = info['gender']
+        self.code = info['code']
+        self.condition = info['condition']
         self.title = info['title']
         self.content = info['content']
         self.app_id = info['app_id']
@@ -699,6 +707,10 @@ class NotifClickedStats(db.Model):
     def __repr__(self):
         result = {
             'id': self.id,
+            'email': self.email,
+            'gender': self.gender,
+            'code': self.code,
+            'condition': self.condition,
             'title': self.title,
             'content': self.content,
             'app_id': self.app_id,

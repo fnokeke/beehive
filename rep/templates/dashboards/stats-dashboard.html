@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Stats Dashboard
+{% endblock %}
+
+{% block contents %}
+
+  <button
+    type="button"
+    class="btn btn-link btn-lg"
+    onclick="window.location.href='/edit-experiment/{{experiment.code}}'">
+    <span class="glyphicon glyphicon-triangle-left text-muted"></span>
+    <span class="text-muted">
+      Back to Experiment
+    </span>
+  </button>
+
+  <div class="container">
+
+    <div class="page-header">
+      <h3>Stats Dashboard</h3>
+    </div>
+
+    {% if enrolled_users | length > 0 %}
+      <p>
+        Total participants enrolled:
+        {{ enrolled_users | length }}
+      </p>
+    {% else %}
+      <p>
+        <em>
+          No participant enrolled in this experiment.
+        </em>
+      </p>
+    {% endif %}
+
+    <div class="page-header">
+      <h3>Participants Stats
+        <small>(Last 10)</small>
+      </h3>
+      <em>To sort by multiple columns, hold down shift key and select columns.</em>
+    </div>
+
+    <span id='delete-intv-status'></span>
+  </div>
+{% endblock %}

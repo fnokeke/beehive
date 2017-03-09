@@ -43,6 +43,11 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/v/dt/dt-1.10.13/datatables.min.css"/>
+
   </head>
 
   <body>
@@ -74,20 +79,7 @@
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-confirmation/1.0.5/bootstrap-confirmation.min.js"></script>
 
-    <script type="text/javascript">
-      $(function () {
-
-        function hi() {
-          alert('hi');
-        }
-
-        $('[data-toggle="confirmation"]').confirmation({
-          singleton: true
-          // onConfirm: function () {   hi(); }
-        });
-
-      });
-    </script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.13/datatables.min.js"></script>
 
     <!--
     load online libraries first (esp jQuery).
@@ -99,5 +91,6 @@
     <script src="{{ url_for('static', filename='js/mturk.js') }}"></script>
     <script src="{{ url_for('static', filename='js/rep.js') }}"></script>
     <script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
   </body>
 </html>

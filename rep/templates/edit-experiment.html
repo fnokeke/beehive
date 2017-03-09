@@ -16,15 +16,37 @@
   <button
     type="button"
     class="btn btn-link btn-lg"
-    onclick="window.location.href='/experiment-dashboard/{{experiment.code}}'">
-    <span class="glyphicon glyphicon-dashboard text-primary"></span>
+    onclick="window.location.href='/participants-dashboard/{{experiment.code}}'">
+    <span class="glyphicon glyphicon-user text-primary"></span>
     <span class="text-primary">
-      View Dashboard
+      Enrolled Participants
     </span>
   </button>
 
+  <button
+    type="button"
+    class="btn btn-link btn-lg"
+    onclick="window.location.href='/stats-dashboard/{{experiment.code}}'">
+    <span class="glyphicon glyphicon-stats text-primary"></span>
+    <span class="text-primary">
+      Dashboard Stats
+    </span>
+  </button>
+
+  {% if experiment.calendar %}
+    <button
+      type="button"
+      class="btn btn-link btn-lg"
+      onclick="window.location.href='/notif-clicked-dashboard/{{experiment.code}}'">
+      <span class="glyphicon glyphicon-bell text-primary"></span>
+      <span class="text-primary">
+        Notif Clicked Stats
+      </span>
+    </button>
+  {% endif %}
+
   <button type="button" class="btn btn-link btn-lg" onclick="window.location.href='#intervention'">
-    <span class="glyphicon glyphicon-arrow-down text-primary"></span>
+    <span class="glyphicon glyphicon-menu-down text-primary"></span>
     <span class="text-primary">
       Jump to Intervention
     </span>

@@ -231,6 +231,7 @@ def add_vibration_config():
     _, response, vibr_config = VibrationConfig.add(data)
     return json.dumps({'response': response, 'vibration_config': to_json(vibr_config)})
 
+
 def millis_to_dt(time_milli):
     time_milli = int(time_milli)
     return datetime.utcfromtimestamp(time_milli // 1000).replace(microsecond=time_milli % 1000 * 1000)
@@ -374,8 +375,8 @@ def edit_experiment(code):
     return render_template('edit-experiment.html', **ctx)
 
 
-@app.route('/experiment-dashboard/<code>')
-def show_experiment_dashboard(code):
+@app.route('/participants-dashboard/<code>')
+def participant_dashboard(code):
     experiment = Experiment.query.filter_by(code=code).first()
     intv_type = get_intv_type(experiment)
     ctx = {
@@ -384,7 +385,27 @@ def show_experiment_dashboard(code):
         'interventions': Intervention.query.filter_by(
             code=code, intv_type=intv_type).order_by('start').all()
     }
-    return render_template('experiment-dashboard.html', **ctx)
+    return render_template('/dashboards/participants-dashboard.html', **ctx)
+
+
+@app.route('/notif-clicked-dashboard/<code>')
+def notif_clicked_dashboard(code):
+    experiment = Experiment.query.filter_by(code=code).first()
+    ctx = {'notif_stats': NotifClickedStats.query.filter_by(code=code).all(), 'experiment': experiment}
+    return render_template('/dashboards/notif-clicked-dashboard.html', **ctx)
+
+
+@app.route('/stats-dashboard/<code>')
+def stats_dashboard(code):
+    experiment = Experiment.query.filter_by(code=code).first()
+    intv_type = get_intv_type(experiment)
+    ctx = {
+        'enrolled_users': MobileUser.query.filter_by(code=code).all(),
+        'experiment': experiment,
+        'interventions': Intervention.query.filter_by(
+            code=code, intv_type=intv_type).order_by('start').all()
+    }
+    return render_template('/dashboards/stats-dashboard.html', **ctx)
 
 
 def get_intv_type(experiment):

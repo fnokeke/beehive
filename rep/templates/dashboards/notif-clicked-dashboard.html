@@ -1,0 +1,154 @@
+<div class="page-header">
+  <h3>Notification Clicked Stats
+    <small>(Last 10)</small>
+  </h3>
+  <em>To sort by multiple columns, hold down shift key and select columns.</em>
+</div>
+
+{% if experiment.calendar %}
+  <table class="table table-striped" id="enrolled-participants">
+    <thead>
+      <tr>
+        <th>
+          No
+        </th>
+
+        <th>
+          Email
+        </th>
+
+        <th>
+          Gender
+        </th>
+
+        <th>
+          Code
+        </th>
+
+        <th>
+          Condition
+        </th>
+
+        <th>
+          Notification
+        </th>
+
+        <th>
+          Phone Ringer Mode
+        </th>
+
+        <th>
+          Notification Time
+        </th>
+
+        <th>
+          When Clicked
+        </th>
+
+        <th>
+          Was Dismissed
+        </th>
+
+      </tr>
+    </thead>
+
+    <tfoot>
+      <tr>
+        <th>
+          No
+        </th>
+
+        <th>
+          Email
+        </th>
+
+        <th>
+          Gender
+        </th>
+
+        <th>
+          Code
+        </th>
+
+        <th>
+          Condition
+        </th>
+
+        <th>
+          Notification
+        </th>
+
+        <th>
+          Phone Ringer Mode
+        </th>
+
+        <th>
+          Notification Time
+        </th>
+
+        <th>
+          When Clicked
+        </th>
+
+        <th>
+          Was Dismissed
+        </th>
+
+      </tr>
+    </tfoot>
+
+    <tbody>
+      {% for stat in notif_stats %}
+        <tr>
+          <th>
+            {{ loop.index }}
+          </th>
+
+          <th>
+            {{ stat.email }}
+          </th>
+
+          <th>
+            {{ stat.gender }}
+          </th>
+
+          <th>
+            {{ stat.code }}
+          </th>
+
+          <th>
+            {{ stat.condition }}
+          </th>
+
+          <th>
+            {{ stat.title}}
+            /
+            {{ stat.content }}
+            /
+            {{ stat.app_id }}
+          </th>
+
+          <th>
+            {{ stat.ringer_mode }}
+          </th>
+
+          <th>
+            {{ stat.time_appeared }}
+          </th>
+
+          <th>
+            {{ stat.time_clicked }}
+          </th>
+
+          <th>
+            {{ stat.was_dismissed }}
+          </th>
+
+        </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
+{% else %}
+  <strong>Calendar is not activated for this experiment</strong>
+{% endif %}
