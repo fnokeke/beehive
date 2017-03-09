@@ -1,3 +1,4 @@
 $(document).ready(function() {
-  $('#enrolled-participants').DataTable();
+  $('#enrolled-participants-table').DataTable();
+  $('#notif-clicked-table').DataTable();
 });
