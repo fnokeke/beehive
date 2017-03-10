@@ -582,6 +582,13 @@ class MturkFBStats(db.Model):
     ringer_mode = db.Column(db.String(10))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
+    # additional params (added: March 10)
+    current_fb_max_time = db.Column(db.Integer, default=-1)
+    current_fb_max_opens = db.Column(db.Integer, default=-1)
+    current_treatment_start_date = db.Column(db.DateTime)
+    current_followup_start_date = db.Column(db.DateTime)
+    current_logging_stop_date = db.Column(db.DateTime)
+
     def __init__(self, info):
         self.worker_id = info['worker_id']
         self.device_id = info['device_id']
@@ -590,6 +597,12 @@ class MturkFBStats(db.Model):
         self.time_spent = info['time_spent']
         self.time_open = info['time_open']
         self.ringer_mode = info['ringer_mode']
+
+        self.current_fb_max_time = info.get('current_fb_max_time')
+        self.current_fb_max_opens = info.get('current_fb_max_opens')
+        self.current_treatment_start_date = info.get('current_treatment_start_date')
+        self.current_followup_start_date = info.get('current_followup_start_date')
+        self.current_logging_stop_date = info.get('current_logging_stop_date')
 
     def __repr__(self):
         result = {
@@ -600,7 +613,12 @@ class MturkFBStats(db.Model):
             'time_spent': self.time_spent,
             'time_open': self.time_open,
             'ringer_mode': self.ringer_mode,
-            'created_at': self.created_at
+            'created_at': str(self.created_at),
+            'current_fb_max_time': self.current_fb_max_time,
+            'current_fb_max_opens': self.current_fb_max_opens,
+            'current_treatment_start_date': self.current_treatment_start_date,
+            'current_followup_start_date': self.current_followup_start_date,
+            'current_logging_stop_date': self.current_logging_stop_date
         }
         return json.dumps(result)
 

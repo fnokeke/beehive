@@ -878,17 +878,30 @@ def mobile_worker_id():
                            'worker': data['worker_id']})
 
     _, response, worker_id = MturkMobile.add_user(data)
-    return json.dumps({'status': 200,
+    server_response = {'status': 200,
                        'experiment_group': int(enrolled_worker.experiment_group),
                        'response': response + '\nBeevibe code: {}'.format(enrolled_worker.worker_code),
-                       'worker': worker_id})
+                       'worker': worker_id}
+    server_response = append_fb_response(server_response)
+    return json.dumps(server_response)
+
+
+def append_fb_response(data):
+    data['server_treatment_start_date'] = '2017-03-20'
+    data['server_followup_start_date'] = '2017-03-27'
+    data['server_logging_stop_date'] = '2017-04-17'
+    data['server_fb_max_time'] = 10
+    data['server_fb_max_opens'] = 5
+    return data
 
 
 @app.route('/mobile/mturk/stats/fb', methods=['POST'])
 def mobile_worker_fb_stats():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     _, response, summarized_stats = MturkFBStats.add_stats(data)
-    return json.dumps({'response': response, 'summary': summarized_stats})
+    server_response = {'response': response, 'summary': summarized_stats}
+    server_response = append_fb_response(server_response)
+    return json.dumps(server_response)
 
 
 @app.route('/mobile/mturk/prelim-recruit', methods=['POST'])
