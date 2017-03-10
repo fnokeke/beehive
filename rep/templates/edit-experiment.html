@@ -13,36 +13,61 @@
     </span>
   </button>
 
-  <button
-    type="button"
-    class="btn btn-link btn-lg"
-    onclick="window.location.href='/participants-dashboard/{{experiment.code}}'">
-    <span class="glyphicon glyphicon-user text-primary"></span>
-    <span class="text-primary">
-      Enrolled Participants
-    </span>
-  </button>
-
-  <button
-    type="button"
-    class="btn btn-link btn-lg"
-    onclick="window.location.href='/stats-dashboard/{{experiment.code}}'">
-    <span class="glyphicon glyphicon-stats text-primary"></span>
-    <span class="text-primary">
-      Dashboard Stats
-    </span>
-  </button>
-
-  {% if experiment.calendar %}
+  {% if experiment.is_mturk_study %}
     <button
       type="button"
       class="btn btn-link btn-lg"
-      onclick="window.location.href='/notif-clicked-dashboard/{{experiment.code}}'">
-      <span class="glyphicon glyphicon-bell text-primary"></span>
+      onclick="window.location.href='/mturk-participants-dashboard/{{experiment.code}}'">
+      <span class="glyphicon glyphicon-user text-primary"></span>
       <span class="text-primary">
-        Notif Clicked Stats
+        Mturk Participants
       </span>
     </button>
+
+    <button
+      type="button"
+      class="btn btn-link btn-lg"
+      onclick="window.location.href='/mturk-stats-dashboard/{{experiment.code}}'">
+      <span class="glyphicon glyphicon-stats text-primary"></span>
+      <span class="text-primary">
+        Mturk Stats
+      </span>
+    </button>
+  {% endif %}
+
+  {% if not experiment.is_mturk_study %}
+    <button
+      type="button"
+      class="btn btn-link btn-lg"
+      onclick="window.location.href='/participants-dashboard/{{experiment.code}}'">
+      <span class="glyphicon glyphicon-user text-primary"></span>
+      <span class="text-primary">
+        Enrolled Participants
+      </span>
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-link btn-lg"
+      onclick="window.location.href='/stats-dashboard/{{experiment.code}}'">
+      <span class="glyphicon glyphicon-stats text-primary"></span>
+      <span class="text-primary">
+        Dashboard Stats
+      </span>
+    </button>
+
+    {% if experiment.calendar %}
+      <button
+        type="button"
+        class="btn btn-link btn-lg"
+        onclick="window.location.href='/notif-clicked-dashboard/{{experiment.code}}'">
+        <span class="glyphicon glyphicon-bell text-primary"></span>
+        <span class="text-primary">
+          Daily Reminder Stats
+        </span>
+      </button>
+    {% endif %}
+
   {% endif %}
 
   <button type="button" class="btn btn-link btn-lg" onclick="window.location.href='#intervention'">

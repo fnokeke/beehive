@@ -375,6 +375,13 @@ def edit_experiment(code):
     return render_template('edit-experiment.html', **ctx)
 
 
+@app.route('/notif-clicked-dashboard/<code>')
+def notif_clicked_dashboard(code):
+    experiment = Experiment.query.filter_by(code=code).first()
+    ctx = {'notif_stats': NotifClickedStats.query.filter_by(code=code).all(), 'experiment': experiment}
+    return render_template('/dashboards/notif-clicked-dashboard.html', **ctx)
+
+
 @app.route('/participants-dashboard/<code>')
 def participant_dashboard(code):
     experiment = Experiment.query.filter_by(code=code).first()
@@ -388,24 +395,25 @@ def participant_dashboard(code):
     return render_template('/dashboards/participants-dashboard.html', **ctx)
 
 
-@app.route('/notif-clicked-dashboard/<code>')
-def notif_clicked_dashboard(code):
-    experiment = Experiment.query.filter_by(code=code).first()
-    ctx = {'notif_stats': NotifClickedStats.query.filter_by(code=code).all(), 'experiment': experiment}
-    return render_template('/dashboards/notif-clicked-dashboard.html', **ctx)
-
-
 @app.route('/stats-dashboard/<code>')
 def stats_dashboard(code):
     experiment = Experiment.query.filter_by(code=code).first()
-    intv_type = get_intv_type(experiment)
-    ctx = {
-        'enrolled_users': MobileUser.query.filter_by(code=code).all(),
-        'experiment': experiment,
-        'interventions': Intervention.query.filter_by(
-            code=code, intv_type=intv_type).order_by('start').all()
-    }
+    ctx = {'experiment': experiment}
     return render_template('/dashboards/stats-dashboard.html', **ctx)
+
+
+@app.route('/mturk-participants-dashboard/<code>')
+def mturk_participant_dashboard(code):
+    experiment = Experiment.query.filter_by(code=code).first()
+    ctx = {'mturk_users': MturkMobile.query.all(), 'experiment': experiment}
+    return render_template('/dashboards/mturk-participants-dashboard.html', **ctx)
+
+
+@app.route('/mturk-stats-dashboard/<code>')
+def mturk_stats_dashboard(code):
+    experiment = Experiment.query.filter_by(code=code).first()
+    ctx = {'mturk_stats': MturkFBStats.query.all(), 'experiment': experiment}
+    return render_template('/dashboards/mturk-stats-dashboard.html', **ctx)
 
 
 def get_intv_type(experiment):

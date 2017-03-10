@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Dashboard Stats
+  Mturk Facebook Stats
 {% endblock %}
 
 {% block contents %}
@@ -19,17 +19,17 @@
   <div class="container">
 
     <div class="page-header">
-      <h3>Dashboard Stats
+      <h3>Mturk Facebook Stats
         <br>
         <small>Total:
-          {{ stats | length }}
+          {{ mturk_stats | length }}
           log(s)</small>
       </h3>
       <br>
       <em>To sort by multiple columns, hold down shift key and select columns.</em>
     </div>
 
-    <table id="stats-table">
+    <table id="mturk-stats-table">
 
       <thead>
         <tr>
@@ -38,7 +38,7 @@
           </th>
 
           <th>
-            UserID
+            WorkerID
           </th>
 
           <th>

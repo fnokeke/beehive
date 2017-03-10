@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Dashboard Stats
+  Mturk Participants
 {% endblock %}
 
 {% block contents %}
@@ -19,18 +19,17 @@
   <div class="container">
 
     <div class="page-header">
-      <h3>Dashboard Stats
+      <h3>Mturk Participants
         <br>
         <small>Total:
-          {{ stats | length }}
-          log(s)</small>
+          {{ mturk_users | length }}
+          participant(s)</small>
       </h3>
       <br>
       <em>To sort by multiple columns, hold down shift key and select columns.</em>
     </div>
 
-    <table id="stats-table">
-
+    <table class="table table-striped" id="mturk-participants-table">
       <thead>
         <tr>
           <th>
@@ -38,7 +37,27 @@
           </th>
 
           <th>
-            UserID
+            WorkerID
+          </th>
+
+          <th>
+            InstalledAt
+          </th>
+
+          <th>
+            AppVersion
+          </th>
+
+          <th>
+            PhoneModel
+          </th>
+
+          <th>
+            AndroidVersion
+          </th>
+
+          <th>
+            DeviceCountry
           </th>
 
           <th>
@@ -46,74 +65,58 @@
           </th>
 
           <th>
-            TotalTime
-          </th>
-
-          <th>
-            TotalOpens
-          </th>
-
-          <th>
-            FacebookTime
-          </th>
-
-          <th>
-            FacebookOpens
-          </th>
-
-          <th>
-            RingerMode
-          </th>
-
-          <th>
             CreatedAt
           </th>
+
         </tr>
       </thead>
 
       <tbody>
-        {% for stat in mturk_stats %}
+        {% for user in mturk_users %}
           <tr>
+
             <td>
               {{ loop.index }}
             </td>
 
             <td>
-              {{ stat.worker_id }}
+              {{ user.worker_id }}
             </td>
 
             <td>
-              {{ stat.device_id }}
+              {{ user.last_installed_ms | ms_to_datetime | nyc | fancydatetime }}
             </td>
 
             <td>
-              {{ stat.total_seconds }}
+              {{ user.app_version_code }}
             </td>
 
             <td>
-              {{ stat.total_opens }}
+              {{ user.phone_model }}
             </td>
 
             <td>
-              {{ stat.time_spent }}
+              {{ user.android_version }}
             </td>
 
             <td>
-              {{ stat.time_open }}
+              {{ user.device_country }}
             </td>
 
             <td>
-              {{ stat.ringer_mode }}
+              {{ user.device_id }}
             </td>
 
             <td>
-              {{ stat.created_at }}
+              {{ user.created_at | nyc | fancydatetime }}
             </td>
 
           </tr>
 
         {% endfor %}
       </tbody>
+
     </table>
+
   </div>
 {% endblock %}
