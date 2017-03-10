@@ -405,17 +405,16 @@ def stats_dashboard(code):
 @app.route('/mturk-participants-dashboard/<code>')
 def mturk_participant_dashboard(code):
     experiment = Experiment.query.filter_by(code=code).first()
-    start = datetime.date(year=2016, month=03, day=03)
-    ctx = {'mturk_users': MturkMobile.query.filter_by(MturkMobile.created_at >= start).all(), 'experiment': experiment}
+    start = datetime(year=2016, month=03, day=03)
+    ctx = {'mturk_users': MturkMobile.query.filter(MturkMobile.created_at >= start).all(), 'experiment': experiment}
     return render_template('/dashboards/mturk-participants-dashboard.html', **ctx)
 
 
 @app.route('/mturk-stats-dashboard/<code>')
 def mturk_stats_dashboard(code):
     experiment = Experiment.query.filter_by(code=code).first()
-    start = datetime.date(year=2016, month=03, day=03)
-    ctx = {'mturk_stats': MturkFBStats.query.filter_by(MturkFBStats.created_at >= start).all(),
-           'experiment': experiment}
+    start = datetime(year=2016, month=03, day=03)
+    ctx = {'mturk_stats': MturkFBStats.query.filter(MturkFBStats.created_at >= start).all(), 'experiment': experiment}
     return render_template('/dashboards/mturk-stats-dashboard.html', **ctx)
 
 
