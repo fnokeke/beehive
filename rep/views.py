@@ -405,7 +405,7 @@ def stats_dashboard(code):
 @app.route('/mturk-participants-dashboard/<code>')
 def mturk_participant_dashboard(code):
     experiment = Experiment.query.filter_by(code=code).first()
-    start = datetime(year=2016, month=03, day=03)
+    start = datetime(year=2017, month=03, day=03)
     ctx = {'mturk_users': MturkMobile.query.filter(MturkMobile.created_at >= start).all(), 'experiment': experiment}
     return render_template('/dashboards/mturk-participants-dashboard.html', **ctx)
 
@@ -413,7 +413,7 @@ def mturk_participant_dashboard(code):
 @app.route('/mturk-stats-dashboard/<code>')
 def mturk_stats_dashboard(code):
     experiment = Experiment.query.filter_by(code=code).first()
-    start = datetime(year=2016, month=03, day=03)
+    start = datetime(year=2017, month=03, day=03)
     ctx = {'mturk_stats': MturkFBStats.query.filter(MturkFBStats.created_at >= start).all(), 'experiment': experiment}
     return render_template('/dashboards/mturk-stats-dashboard.html', **ctx)
 
@@ -940,7 +940,8 @@ def _jinja2_filter_nyctime(date, fmt=None):
 
 @app.template_filter('fancydatetime')
 def _jinja2_strformat_datetime(date, fmt=None):
-    return date.strftime('%b %d, %Y / %-I:%M %p')
+    # return date.strftime('%b %d %Y, %-I:%M %p')
+    return date.strftime('%b %d, %-I:%M %p')
 
 
 @app.template_filter('onlyfancydate')

@@ -3,6 +3,6 @@ $(document).ready(function() {
   $('#notif-clicked-table').DataTable();
   $('#stats-table').DataTable();
 
-  $('#mturk-participant-table').DataTable();
+  $('#mturk-participants-table').DataTable();
   $('#mturk-stats-table').DataTable();
 });

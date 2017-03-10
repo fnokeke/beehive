@@ -29,7 +29,7 @@
       <em>To sort by multiple columns, hold down shift key and select columns.</em>
     </div>
 
-    <table id="mturk-stats-table">
+    <table id="mturk-stats-table" class="table table-striped">
 
       <thead>
         <tr>
@@ -54,11 +54,11 @@
           </th>
 
           <th>
-            FacebookTime
+            FB Time
           </th>
 
           <th>
-            FacebookOpens
+            FB Opens
           </th>
 
           <th>
@@ -107,7 +107,7 @@
             </td>
 
             <td>
-              {{ stat.created_at }}
+              {{ stat.created_at | nyc | fancydatetime }}
             </td>
 
           </tr>
