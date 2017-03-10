@@ -684,7 +684,14 @@ class MturkMobile(db.Model):
         existing_device = MturkMobile.query.filter_by(device_id=info['device_id']).first()
 
         if existing_worker:
-            return (-1, 'Your WorkerId is already registered.', existing_worker.worker_id)
+            if existing_worker.app_version_name == info['app_version_name']:
+                return (-1, 'Your WorkerId is already registered.', existing_worker.worker_id)
+            else:
+                worker = MturkMobile(info)
+                db.session.add(worker)
+                db.session.commit()
+                return (200, 'Successfully connected new app version!', worker.worker_id)
+
         if existing_device:
             return (-1, 'This device is already registered with another WorkerId.', existing_device.worker_id)
 
