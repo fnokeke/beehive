@@ -685,7 +685,8 @@ class MturkMobile(db.Model):
 
         if existing_worker:
             if existing_worker.app_version_code == info['app_version_code']:
-                return (-1, 'WorkerId already registered (v{})'.format(existing_worker.app_version_code), existing_worker.worker_id)
+                return (-1, 'WorkerId already registered (v{})'.format(existing_worker.app_version_code),
+                        existing_worker.worker_id)
             else:
                 MturkMobile.query.filter_by(worker_id=info['worker_id']).delete()
                 db.session.commit()

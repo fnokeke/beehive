@@ -414,7 +414,13 @@ def mturk_participant_dashboard(code):
 def mturk_stats_dashboard(code):
     experiment = Experiment.query.filter_by(code=code).first()
     start = datetime(year=2017, month=03, day=03)
-    ctx = {'mturk_stats': MturkFBStats.query.filter(MturkFBStats.created_at >= start).all(), 'experiment': experiment}
+    pairs = {}
+    for w in MturkExclusive.query.all():
+        pairs[w.worker_id] = w.experiment_group
+
+    ctx = {'mturk_stats': MturkFBStats.query.filter(MturkFBStats.created_at >= start).all(),
+           'experiment': experiment,
+           'pairs': pairs}
     return render_template('/dashboards/mturk-stats-dashboard.html', **ctx)
 
 
