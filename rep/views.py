@@ -66,12 +66,6 @@ def index():
     return redirect(url_for('home'))
 
 
-@app.route('/experiments')
-@login_required
-def experiments():
-    return render_template('experiments.html')
-
-
 @app.route('/home')
 @login_required
 def home():
@@ -113,6 +107,17 @@ def perform_research_analysis(key, study_begin, int_begin, int_end, study_end):
 @app.route('/researcher_login')
 @requires_basic_auth
 def researcher_login():
+    ctx = {'users': User.query.all(),
+           'mobile_users': MobileUser.query.all(),
+           'mturk_users': Mturk.query.all(),
+           'experiments': Experiment.query.all(),
+           'interventions': Intervention.query.all()}
+    return render_template('researcher.html', **ctx)
+
+
+@app.route('/experiments')
+@requires_basic_auth
+def experiments():
     ctx = {'users': User.query.all(),
            'mobile_users': MobileUser.query.all(),
            'mturk_users': Mturk.query.all(),
@@ -339,9 +344,6 @@ def add_experiment():
         'actuators': request.form.get('actuators', False)
     }
 
-    experiment['start'] = datetime.strptime(experiment['start'], '%Y-%m-%dT%H:%M:%S.000Z')
-    experiment['end'] = datetime.strptime(experiment['end'], '%Y-%m-%dT%H:%M:%S.000Z')
-
     _, response, __ = Experiment.add_experiment(experiment)
     return response
 
@@ -362,7 +364,8 @@ def edit_experiment(code):
         next_start_date = to_datetime(interventions[-1].end).strftime("%Y-%m-%d")
 
     ctx = {
-        'todays_date': datetime.now().strftime("%Y-%m-%d"),
+        'experiment_start': experiment.start.strftime("%Y-%m-%d"),
+        'experiment_end': experiment.end.strftime("%Y-%m-%d"),
         'next_start_date': next_start_date,
         'enrolled_users': MobileUser.query.filter_by(code=code).all(),
         'experiment': experiment,
@@ -452,20 +455,8 @@ def delete_experiment(code):
 @app.route('/update/experiment', methods=['POST'])
 def update_experiment():
     data = json.loads(request.data) if request.data else request.form.to_dict()
-    # update = {
-    #     'title': request.form.get('title'),
-    #     'code': request.form.get('code'),
-    #     'rescuetime': request.form.get('rescuetime', False),
-    #     'calendar': request.form.get('calendar', False),
-    #     'geofence': request.form.get('geofence', False),
-    #     'text': request.form.get('text', False),
-    #     'image': request.form.get('image', False),
-    #     'reminder': request.form.get('reminder', False),
-    #     'actuators': request.form.get('actuators', False)
-    # }
-    print '**************'
-    print 'data got: {}'.format(data)
-    print '**************'
+    data['start'] = datetime.strptime(data['start'], '%Y-%m-%d')
+    data['end'] = datetime.strptime(data['end'], '%Y-%m-%d')
     updated_exp = Experiment.update_experiment(data)
     return str(updated_exp)
 
@@ -901,7 +892,7 @@ def append_fb_response(data):
     data['server_treatment_start_date'] = '2017-03-20'
     data['server_followup_start_date'] = '2017-03-27'
     data['server_logging_stop_date'] = '2017-04-17'
-    data['server_fb_max_time'] = 10
+    data['server_fb_max_time'] = 5
     data['server_fb_max_opens'] = 5
     return data
 

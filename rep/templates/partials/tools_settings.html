@@ -29,12 +29,41 @@
   </div>
 
   <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Start Date</label>
+    <div class="col-xs-10">
+      <input
+        class="form-control"
+        id="edit-start-date"
+        data-provide="datepicker"
+        data-date-start-date="{{ experiment_start }}"
+        data-date-format="yyyy-mm-dd"
+        data-date-today-highlight="true"
+        value="{{experiment_start }}"/>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">End Date</label>
+    <div class="col-xs-10">
+      <input
+        class="form-control"
+        id="edit-end-date"
+        data-provide="datepicker"
+        data-date-start-date="{{ experiment_end }}"
+        data-date-format="yyyy-mm-dd"
+        data-date-today-highlight="true"
+        value="{{ experiment_end }}"/>
+    </div>
+  </div>
+
+  <div class="form-group row">
     <label class="col-xs-2 col-form-label">Is Mturk Study</label>
     <div class="col-xs-10">
       <input
         type="checkbox"
         id="edit-is-mturk-study-checkbox-btn"
-        {{ 'checked' if experiment.is_mturk_study else 'unchecked' }}
+        {{ 'checked' if experiment.is_mturk_study
+          else 'unchecked' }}
         data-toggle="toggle"
         data-on="Yes"
         data-off="No"
@@ -50,7 +79,8 @@
         <input
           type="checkbox"
           id="edit-notif-window-checkbox-btn"
-          {{ 'checked' if experiment.notif_window else 'unchecked' }}
+          {{ 'checked' if experiment.notif_window else
+          'unchecked' }}
           data-toggle="toggle"
           data-on="Yes"
           data-off="No"
@@ -65,7 +95,8 @@
         <input
           type="checkbox"
           id="edit-calendar-checkbox-btn"
-          {{ 'checked' if experiment.calendar else 'unchecked' }}
+          {{ 'checked' if experiment.calendar else
+          'unchecked' }}
           data-toggle="toggle"
           data-on="Yes"
           data-off="No"
@@ -80,7 +111,8 @@
         <input
           type="checkbox"
           id="edit-dashboard-checkbox-btn"
-          {{ 'checked' if experiment.image and experiment.text else 'unchecked' }}
+          {{ 'checked' if experiment.image and experiment.text
+          else 'unchecked' }}
           data-toggle="toggle"
           data-on="Yes"
           data-off="No"
@@ -95,7 +127,8 @@
         <input
           type="checkbox"
           id="edit-image-checkbox-btn"
-          {{ 'checked' if experiment.image else 'unchecked' }}
+          {{ 'checked' if experiment.image else 'unchecked'
+          }}
           data-toggle="toggle"
           data-on="Yes"
           data-off="No"
@@ -125,7 +158,8 @@
         <input
           type="checkbox"
           id="edit-rescuetime-checkbox-btn"
-          {{ 'checked' if experiment.rescuetime else 'unchecked' }}
+          {{ 'checked' if experiment.rescuetime else
+          'unchecked' }}
           data-toggle="toggle"
           data-on="Yes"
           data-off="No"
@@ -140,7 +174,8 @@
         <input
           type="checkbox"
           id="edit-geofence-checkbox-btn"
-          {{ 'checked' if experiment.geofence else 'unchecked' }}
+          {{ 'checked' if experiment.geofence else
+          'unchecked' }}
           data-toggle="toggle"
           data-on="Yes"
           data-off="No"
@@ -155,7 +190,8 @@
         <input
           type="checkbox"
           id="edit-actuators-checkbox-btn"
-          {{ 'checked' if experiment.actuators else 'unchecked' }}
+          {{ 'checked' if experiment.actuators else
+          'unchecked' }}
           data-toggle="toggle"
           data-on="Yes"
           data-off="No"
