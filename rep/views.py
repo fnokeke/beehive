@@ -455,8 +455,10 @@ def delete_experiment(code):
 @app.route('/update/experiment', methods=['POST'])
 def update_experiment():
     data = json.loads(request.data) if request.data else request.form.to_dict()
-    data['start'] = datetime.strptime(data['start'], '%Y-%m-%d')
-    data['end'] = datetime.strptime(data['end'], '%Y-%m-%d')
+    data['start'] = '{} 05:00:00 -0500'.format(data['start'])
+    data['end'] = '{} 05:00:00 -0500'.format(data['end'])
+    data['start'] = datetime.strptime(data['start'], '%Y-%m-%d %H:%M:%S -0500')
+    data['end'] = datetime.strptime(data['end'], '%Y-%m-%d %H:%M:%S -0500')
     updated_exp = Experiment.update_experiment(data)
     return str(updated_exp)
 
