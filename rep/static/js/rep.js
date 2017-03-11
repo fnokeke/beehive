@@ -669,10 +669,20 @@ $('#save-table-btn').click(function() {
   var intv_start_datetime = '{0}T00:00:00-05:00'.format(intv_start_date);
   intv_start_datetime = new Date(intv_start_datetime);
 
+  var end = $('#edit-end-date').val();
+  var experiment_end_datetime = '{0}T00:00:00-05:00'.format(end);
+  experiment_end_datetime = new Date(experiment_end_datetime);
+
   var intv_end_datetime = '{0}T00:00:00-05:00'.format(intv_start_date);
   intv_end_datetime = new Date(intv_end_datetime);
   intv_end_datetime.setDate(intv_end_datetime.getDate() + no_of_days);
   intv_end_datetime = intv_end_datetime;
+
+  var response_field = '#intv-table-status';
+  if (intv_end_datetime.getTime() > experiment_end_datetime.getTime()) {
+    show_error_msg(response_field, 'Intervention is beyond experiment end date.');
+    return;
+  }
 
   var url = '/add/intervention';
   var data = {
@@ -689,7 +699,6 @@ $('#save-table-btn').click(function() {
     'repeat': intv_repeat
   };
 
-  var response_field = '#intv-table-status';
   $.post(url, data).done(function(resp) {
     show_success_msg(response_field, 'Intervention successfully saved.<br/>');
     console.log('success intv resp: ', resp);

@@ -5,13 +5,6 @@
   var x_glyph = ' class="glyphicon glyphicon-remove text-danger"></span>';
   var entry;
 
-  $('#reminder_config').click(function() {
-    $('#reminder_config').hide();
-    entry = '<div id="reminder_entry"> <a onclick="edit_reminder()">Edit Daily Reminder</a>' +
-      '<span onclick="x_reminder() "' + x_glyph + '</div>';
-    $(entry).appendTo('#selected_configs');
-  });
-
   $('#calendar_config').click(function() {
     $('#calendar_config').hide();
     entry = '<div id="calendar_entry"> <a onclick="edit_calendar()">Edit Calendar Settings</a>' +
@@ -50,29 +43,6 @@
   ///////////////////////
   // modal save buttons
   ///////////////////////
-  $("#save-reminder-modal").click(function() {
-    var user_pref;
-    var result;
-
-    result = $('#custom-time').val();
-    user_pref = $('#user-pref-response input:radio:checked').val();
-    if (user_pref === 'on') {
-      result = 'user-pref';
-    }
-
-    console.log('result: ', result);
-
-    $('#summary_entry').empty();
-    var entry = '<p>Alarm Reminder: ' + result + '</p>';
-    $(entry).appendTo('#summary_entry');
-
-    post_data('/mobile/add/daily-reminder-config',
-      {
-        'code': $('#code_from_hidden_element').val(),
-        'reminder_time': result
-      },
-      '#summary_entry');
-  });
 
   $("#save-vibration-modal").click(function() {
     var app_id;
@@ -241,10 +211,6 @@
 /////////////////////////////////
 // edit entries
 /////////////////////////////////
-function edit_reminder() {
-  $('#reminder-modal').modal('show');
-}
-
 function edit_calendar() {
   $('#calendar-modal').modal('show');
 }
@@ -268,10 +234,6 @@ function edit_screen_unlock() {
 /////////////////////////////////
 // remove config
 /////////////////////////////////
-function x_reminder() {
-  $('#reminder_entry').remove();
-  $('#reminder_config').show();
-}
 
 function x_calendar() {
   $('#calendar_entry').remove();
