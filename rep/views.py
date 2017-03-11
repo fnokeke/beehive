@@ -364,6 +364,7 @@ def edit_experiment(code):
         next_start_date = to_datetime(interventions[-1].end).strftime("%Y-%m-%d")
 
     ctx = {
+        'today_date': datetime.now().strftime('%Y-%m-%d'),
         'experiment_start': experiment.start.strftime("%Y-%m-%d"),
         'experiment_end': experiment.end.strftime("%Y-%m-%d"),
         'next_start_date': next_start_date,
