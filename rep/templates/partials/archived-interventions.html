@@ -82,7 +82,7 @@
               {% set resp = treat_id | id_to_text_image %}
               <li>
                 {% if resp[0] == 200 %}
-                  <img src="http:{{ resp[1].image_url }}" alt="{{ resp[0].image_name }}" width="25" height="25">
+                  <img src="{{ resp[1].image_url }}" alt="{{ resp[0].image_name }}" width="25" height="25">
                   <br>
                   {{ resp[1].text }}
                 {% else %}
