@@ -83,15 +83,17 @@
                     </optgroup>
                   {% endif %}
 
-                  {% if experiment.image or experiment.text %}
+                  {% if experiment.actuators %}
                     <optgroup label="Phone Vibration">
-                      {% for x in image_texts %}
-                        <option>
-                          {{ x.image_name }}
-                          /
-                          {{ x.text }}
-                        </option>
-                      {% endfor %}
+                      <option>
+                        Vibes One
+                      </option>
+                      <option>
+                        Vibes Two
+                      </option>
+                      <option>
+                        Vibes Three
+                      </option>
                     </optgroup>
                   {% endif %}
 
