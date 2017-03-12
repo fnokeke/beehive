@@ -308,14 +308,14 @@ class Intervention(db.Model):
         self.user_window_mins = info['user_window_mins']
 
     def __repr__(self):
-        treatment_image, treatment_text = '', ''
-
-        if '**&&&&**' in self.treatment:
-            treatment_image, treatment_text = self.treatment.split('**&&&&**')
-        elif 'photos' in self.treatment:
-            treatment_image = self.treatment
-        else:
-            treatment_text = self.treatment
+        treatment_image = []
+        treatment_text = []
+        if self.treatment:
+            json_treatment = json.loads(self.treatment)
+            for treat_id in json_treatment.values():
+                txt_img = ImageTextUpload.query.get(treat_id)
+                treatment_image.append(txt_img.image_url)
+                treatment_text.append(txt_img.text)
 
         notif = GeneralNotificationConfig.query.filter_by(id=self.notif_id).first()
         if not notif:
