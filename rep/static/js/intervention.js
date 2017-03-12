@@ -4,6 +4,11 @@ var intervention = (function() {
   /////////////////////////////
   // upload images and texts
   /////////////////////////////
+  $('#btn-open-upload-modal').click(function() {
+    console.log('upload modal clicked.');
+    $('#upload-image-modal').modal('show');
+  });
+
   $('#upload-btn').click(function(event) {
     var image,
       text,
@@ -131,11 +136,15 @@ var intervention = (function() {
       return;
     }
 
+    var intv_type = $('#intv-type').val();
+    var no_of_condition = parseInt($('#no-of-condition').val());
+    var treatment = intv_type == "text_image" ? extract_treatment(no_of_condition) : "";
+
     var url = '/add/intervention';
     var data = {
-      'condition': "0",
-      'treatment': "",
-      'intv_type': "calendar",
+      'condition': no_of_condition,
+      'treatment': treatment,
+      'intv_type': intv_type,
       'user_window_mins': user_window_mins,
       'notif_id': intv_notif,
       'code': experiment_code,
@@ -146,6 +155,7 @@ var intervention = (function() {
       'repeat': intv_repeat
     };
 
+
     $.post(url, data).done(function(resp) {
       show_success_msg(response_field, 'Intervention successfully saved.<br/>');
       console.log('success intv resp: ', resp);
@@ -155,6 +165,20 @@ var intervention = (function() {
       console.log('intv save error:', error);
     });
   });
+
+  function extract_treatment(no_of_condition) {
+    var all_treat = {};
+    var treat;
+    var treat_id;
+
+    for (var i = 0; i < no_of_condition; i++) {
+      treat_id = '#intv-text-image-' + i;
+      treat = $(treat_id).find(":selected").val();
+      all_treat['group' + (i + 1)] = treat;
+    }
+
+    return JSON.stringify(all_treat);
+  }
 
   /////////////////////////////
   /// delete archived intv ////

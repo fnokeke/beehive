@@ -4,6 +4,14 @@
     <em>All interventions start/end at midnight.</em>
   </div>
 
+  {% set intv_type = '' %}
+  {% if experiment.calendar %}
+    {% set intv_type = 'calendar' %}
+  {% elif experiment.text or experiment.image %}
+    {% set intv_type = 'text_image' %}
+  {% endif %}
+  <input type="text" style="display: none" id="intv-type" value="{{ intv_type }}">
+
   <div class="text-center">
 
     <button type="button" class="btn btn-link btn-md" id="save-table-btn" value="">
@@ -49,16 +57,16 @@
       </tr>
       <tbody>
         <tr>
-
           {% if not experiment.calendar %}
+
             {% for i in range(experiment.no_of_condition) %}
               <td>
-                <select class="form-control" name="">
+                <select class="form-control" id="intv-text-image-{{i}}">
 
                   {% if experiment.image or experiment.text %}
                     <optgroup label="Text/Image">
                       {% for x in image_texts %}
-                        <option id="treat-{{i}}">
+                        <option value="{{ x.id }}"=>
                           {{ x.image_name }}
                           /
                           {{ x.text }}

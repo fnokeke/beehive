@@ -4,7 +4,7 @@
     <em>Contents added will be available as options to select from when applying interventions.</em>
   </div>
 
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#upload-image-modal">
+  <button type="button" class="btn btn-primary" data-toggle="modal" id="btn-open-upload-modal">
     <span class="glyphicon glyphicon-upload"></span>
     Upload Image/Text
   </button>
@@ -15,7 +15,7 @@
   id="upload-image-modal"
   tabindex="-1"
   role="dialog"
-  aria-labelledby="myModalLabel">
+  aria-labelledby="uploadImageModal">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -24,6 +24,7 @@
         </button>
         <h4 class="modal-title">Upload New Image / Text</h4>
       </div>
+
       <div class="modal-body">
         <div>
           <h4>Image</h4>

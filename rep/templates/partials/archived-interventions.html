@@ -30,7 +30,7 @@
     </th>
     {% if not experiment.calendar %}
       <th>
-        intervention
+        Intervention
       </th>
     {% endif %}
     <th>
@@ -39,7 +39,6 @@
   </tr>
 
   {% for intv in interventions %}
-    {% with all_intv_arr = intv.treatment.split('%%&&') %}
     <tr>
       <td>
         {{ loop.index }}
@@ -77,49 +76,44 @@
 
       {% if not experiment.calendar %}
         <td>
-
-          <ul>
-            {% for treat in all_intv_arr %}
-
+          <ol>
+            {% set treatments = intv.treatment | str_to_json %}
+            {% for treat_id in treatments.values() %}
+              {% set resp = treat_id | id_to_text_image %}
               <li>
-
-                {% if all_intv_arr | length > 1 %}
+                {% if resp[0] == 200 %}
+                  <img src="http:{{ resp[1].image_url }}" alt="{{ resp[0].image_name }}" width="25" height="25">
+                  <br>
+                  {{ resp[1].text }}
+                {% else %}
+                  {{ resp[1] }}
                   <em>
-                    Group
-                    {{ loop.index }}:
+                    (no intervention)
                   </em>
                 {% endif %}
-
-                {% if '**&&&&**' in treat %}
-                  <!-- show photo / image -->
-                  <img src="{{ treat.split('**&&&&**')[0] }}" alt="intervention" width="50" height="50">
-                  /
-                  {{ treat.split('**&&&&**')[1] }}
-                {% elif 'photos' in treat %}
-                  <img src="{{ treat }}" alt="intervention" width="50" height="50">
-                {% else %}
-                  {{ treat }}
-                {% endif %}
               </li>
-
+              <br>
             {% endfor %}
-          </ul>
-
+          </ol>
         </td>
       {% endif %}
 
       <td>
         {% with notif = gg.query.filter_by(id = intv.notif_id).first() %}
+        <strong>Title</strong>:
         {{ notif.title }}
-        /
+        <br>
+        <strong>Content</strong>:
         {{ notif.content }}
-        /
+        <br>
+        <strong>App</strong>:
         {{ notif.app_id }}
         {% endwith %}
       </td>
     </tr>
 
-    {% endwith %}
   {% endfor %}
+
+</table>
 
 </table>

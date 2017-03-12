@@ -986,6 +986,18 @@ def _jinja2_ms_to_datetime_ftime(time_milli):
     time_milli = int(time_milli)
     return datetime.utcfromtimestamp(time_milli // 1000).replace(microsecond=time_milli % 1000 * 1000)
 
+
+@app.template_filter('str_to_json')
+def _str_to_json(json_str):
+    return json.loads(json_str)
+
+
+@app.template_filter('id_to_text_image')
+def split_into_text_image(text_image_id):
+    if text_image_id != 'baseline':
+        return 200, ImageTextUpload.query.get(int(text_image_id))
+    return -1, text_image_id
+
 # TODO: handle moves expired access token
 # TODO: only enable activate tracking for an app that has been connected
 # TODO: create table to delete any image
