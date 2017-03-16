@@ -1,0 +1,96 @@
+<div class="page-header">
+  <h3>
+    How to join
+  </h3>
+
+  {% include "partials/modals/naf_consent.html" %}
+
+  To join the study, you have to read the consent form.
+  <a id="naf-read-consent-btn">Click Here</a>
+  to go through the consent form and select "I agree" if you decide to continue with experiment. Next
+  set of instructions will appear below after you join the study.
+
+  <div id="naf-join-div" style="display: none">
+    <br>
+    #################################################################################
+    <br>
+    You have agreed to Consent Form. Follow steps to continue:
+    <br>
+    <strong>USE EARPHONES WHEN YOU WATCH THE VIDEOS AND WATCH IT IN FULLSCREEN MODE</strong>
+    <br>
+    #################################################################################
+
+    <ul>
+      <li>
+        Before watching:
+        <a href="https://goo.gl/forms/GJBUlyhDM9wezhFf2" target="_blank">complete experiment begin survey</a>.
+      </li>
+      <li>
+        After watching:
+        <a href="https://goo.gl/forms/GJBUlyhDM9wezhFf2" target="_blank">complete experiment end survey</a>.
+      </li>
+    </ul>
+
+    <div class="page-header">
+      <h3>
+        Disqualification (with no payment)
+      </h3>
+      <p>
+        You will be automatically removed from the experiment with no payment if:
+      </p>
+
+      <ul>
+        <li>
+          you don't follow experiment in the specified correct order
+        </li>
+        <li>
+          you provide fake responses to surveys that you complete.
+        </li>
+      </ul>
+    </div>
+
+    <div class="page-header">
+
+      <h3>Videos</h3>
+      {% if worker.group == "1" %}
+        {% include "mturk/naf-video1.html" %}
+        <br>
+        {% include "mturk/naf-video2.html" %}
+        <br>
+        {% include "mturk/naf-video3.html" %}
+
+      {% elif worker.group == "2" %}
+        {% include "mturk/naf-video2.html" %}
+        <br>
+        {% include "mturk/naf-video1.html" %}
+        <br>
+        {% include "mturk/naf-video3.html" %}
+
+      {% elif worker.group == "3" %}
+        {% include "mturk/naf-video3.html" %}
+        <br>
+        {% include "mturk/naf-video2.html" %}
+        <br>
+        {% include "mturk/naf-video1.html" %}
+
+      {% else %}
+        <strong>
+          Error: No videos. Please contact mturk requester.
+        </strong>
+
+      {% endif %}
+    </div>
+
+    <div class="page-header">
+      <h3>
+        Contact
+      </h3>
+      <p>
+        You may contact mechanical turk requester if you have any questions or concerns. Please make sure to
+        carefully follow all instructions so you can be properly helped whenever you have a question.
+      </p>
+    </div>
+
+  </div>
+
+</div>

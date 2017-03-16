@@ -18,6 +18,9 @@ var intervention = (function() {
 
     image = $('#uploaded-image').get(0).files[0];
     text = $('#uploaded-text').val();
+    if (!text) {
+      text = "";
+    }
     response_field = '#upload-status';
 
     if (!image && !text) {

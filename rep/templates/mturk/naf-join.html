@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Research on Video Feedback
+{% endblock %}
+
+{% block nav_brand %}
+  <a class="navbar-brand" href="#">Mturk Experiment</a>
+{% endblock %}
+
+{% block contents %}
+  {% block nav_signin %}{% endblock %}
+
+  <div class="container">
+
+    <div class="page-header">
+      <h3>
+        Submit Worker ID
+      </h3>
+    </div>
+
+    <div class="row">
+
+      <div class="col-lg-6">
+        <div class="input-group">
+          <input type="text" class="form-control" id="naf-worker-id" placeholder="Enter Worker ID">
+          <span class="input-group-btn">
+            <button class="btn btn-primary" id="naf-submit-btn" type="button">Submit</button>
+          </span>
+        </div>
+        <br>
+        <span id="naf-submit-status"></span>
+      </div>
+
+    </div>
+
+  </div>
+
+{% endblock %}

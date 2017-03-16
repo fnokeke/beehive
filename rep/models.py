@@ -700,6 +700,46 @@ class MturkMobile(db.Model):
         return (200, 'Successfully connected v{}!'.format(worker.app_version_code), worker.worker_id)
 
 
+class NafEnroll(db.Model):
+    worker_id = db.Column(db.String(50), primary_key=True)
+    worker_code = db.Column(db.String(10), unique=True)
+    group = db.Column(db.String(10))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, info):
+        self.worker_id = info['worker_id']
+        self.group = info['group']
+        self.worker_code = MturkExclusive.generate_unique_id()
+
+    @staticmethod
+    def generate_unique_id():
+        code = str(uuid.uuid4())[:6]
+        while NafEnroll.query.filter_by(worker_code=code).first():
+            code = str(uuid.uuid4())[:6]
+        return code
+
+    def __repr__(self):
+        result = {
+            'worker_id': self.worker_id,
+            'worker_code': self.worker_code,
+            'group': self.group,
+            'created_at': str(self.created_at)
+        }
+        return json.dumps(result)
+
+    @staticmethod
+    def add_worker(info):
+        enrolled_worker = NafEnroll.query.filter_by(worker_id=info['worker_id']).first()
+        if enrolled_worker:
+            return (-1, 'Worker already enrolled in experiment.', enrolled_worker)
+
+        new_worker = NafEnroll(info)
+        db.session.add(new_worker)
+        db.session.commit()
+
+        return (200, 'Successfully enrolled worker_id in experiment', new_worker)
+
+
 class NotifClickedStats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(10), db.ForeignKey('experiment.code'))

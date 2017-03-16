@@ -13,7 +13,7 @@ import json, httplib2, pytz, requests, csv
 
 from rep import app, login_manager
 from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkFBStats, MturkPrelimRecruit
-from rep.models import MturkExclusive, MturkMobile, User, ImageTextUpload
+from rep.models import MturkExclusive, MturkMobile, NafEnroll, User, ImageTextUpload
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import NotifClickedStats, RescuetimeConfig, ScreenUnlockConfig
 
@@ -796,6 +796,81 @@ def registermturk():
 @app.route('/mturk')
 def welcome_and_check():
     return render_template('mturk/checkmturk.html')
+
+#///////////////// Nicki - Aditya - Fabian ///////////////////
+#/////////////////////////////////////////////////////////////
+#/////////////////////////////////////////////////////////////
+#/////////////////////////////////////////////////////////////
+
+
+@app.route('/naf')
+def naf_join():
+    return render_template('mturk/naf-join.html')
+
+
+@app.route('/naf/<worker_id>')
+def naf_watch_videos(worker_id):
+    enrolled_worker = NafEnroll.query.filter_by(worker_id=worker_id).first()
+    if not enrolled_worker:
+        return render_template('mturk/mturk-404.html')
+    return render_template('mturk/naf-watch-videos.html', worker=enrolled_worker)
+
+
+def naf_get_next_condition(total_enrolled):
+    no_of_groups = 3
+    return 1 + (total_enrolled % no_of_groups)
+
+
+@app.route('/naf/enroll/worker_id', methods=['POST'])
+def naf_verify_worker_id():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+
+    total_enrolled = len(NafEnroll.query.all())
+    data['group'] = naf_get_next_condition(total_enrolled)
+
+    worker_id = data['worker_id']
+    enrolled_worker = NafEnroll.query.filter_by(worker_id=worker_id).first()
+    if not enrolled_worker:
+        status, response, worker = NafEnroll.add_worker(data)
+        enrolled_worker = NafEnroll.query.filter_by(worker_id=worker_id).first()
+
+    link = "<a href='/naf/{}'>continue here</a>.".format(worker_id)
+    return 'Welcome {}, {}'.format(worker_id, link)
+
+    # link = "<a href='/naf/{}'>continue here</a>.".format(worker_id)
+    # enrolled_worker = MturkExclusive.query.filter_by(worker_id=worker_id).first()
+    # current_datetime = datetime.now().strftime("%I:%M:%S %p on %B %d %Y")
+    # if not enrolled_worker:
+    # log_submission(current_datetime, worker_id, 'rejected')
+    # return 'Worker ({}) cannot partake in experiment. You have to be registered by researcher.'.format(worker_id)
+
+    # log_submission(current_datetime, worker_id, 'accepted')
+    # link = "<a href='/naf/{}'>continue here</a>.".format(worker_id)
+    # return 'Welcome {}, {}'.format(worker_id, link)
+
+
+@app.route('/naf/register/csv', methods=['POST'])
+def naf_register_mturk_workers():
+    csv_file = request.files.get('mturk.csv')
+    count = 0
+    duplicates = ""
+    for row in csv.reader(csv_file):
+        worker_info = get_worker_info(row)
+        status, _, worker = MturkExclusive.add(worker_info)
+        if status == 200:
+            count += 1
+        else:
+            duplicates += worker.worker_id + "; "
+
+    duplicates = "None" if duplicates == "" else duplicates
+    response = -1
+    if csv_file:
+        response = 'Successfully registered {} new user(s).<br><br>Duplicates:<br>{}'.format(count, duplicates)
+
+    return response
+#/////////////////////////////////////////////////////////////
+#/////////////////////////////////////////////////////////////
+#/////////////////////////////////////////////////////////////
 
 
 @app.route('/mturkdownload')
