@@ -497,9 +497,11 @@ def fetch_experiment_by_code(code):
 #////////////////////////////////////
 @app.route('/add/intervention', methods=['POST'])
 def add_intervention():
+    # data['start'] = datetime.strptime(data['start'], '%Y-%m-%dT%H:%M:%S.000Z')
+    # data['end'] = datetime.strptime(data['end'], '%Y-%m-%dT%H:%M:%S.000Z')
     data = json.loads(request.data) if request.data else request.form.to_dict()
-    data['start'] = datetime.strptime(data['start'], '%Y-%m-%dT%H:%M:%S.000Z')
-    data['end'] = datetime.strptime(data['end'], '%Y-%m-%dT%H:%M:%S.000Z')
+    data['start'] = millis_to_dt(data['start'])
+    data['end'] = millis_to_dt(data['end'])
     _, response, added_intv = Intervention.add_intervention(data)
     return str(added_intv)
 
@@ -1058,8 +1060,7 @@ def _jinja2_strformat_ftime(datestr):
 
 @app.template_filter('ms_to_datetime')
 def _jinja2_ms_to_datetime_ftime(time_milli):
-    time_milli = int(time_milli)
-    return datetime.utcfromtimestamp(time_milli // 1000).replace(microsecond=time_milli % 1000 * 1000)
+    return millis_to_dt(time_milli)
 
 
 @app.template_filter('str_to_json')

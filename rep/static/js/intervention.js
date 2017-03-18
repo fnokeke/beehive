@@ -121,17 +121,13 @@ var intervention = (function() {
     var no_of_days = intv_repeat * factor;
 
     var intv_start_date = $('#intv-start-date').val();
-    var intv_start_datetime = '{0}T00:00:00-05:00'.format(intv_start_date);
-    intv_start_datetime = new Date(intv_start_datetime);
+    var intv_start_datetime = to_daylight_dt(intv_start_date);
 
-    var end = $('#edit-end-date').val();
-    var experiment_end_datetime = '{0}T00:00:00-05:00'.format(end);
-    experiment_end_datetime = new Date(experiment_end_datetime);
-
-    var intv_end_datetime = '{0}T00:00:00-05:00'.format(intv_start_date);
-    intv_end_datetime = new Date(intv_end_datetime);
+    var intv_end_datetime = to_daylight_dt(intv_start_date);
     intv_end_datetime.setDate(intv_end_datetime.getDate() + no_of_days);
-    intv_end_datetime = intv_end_datetime;
+
+    var end_exp = $('#edit-end-date').val();
+    var experiment_end_datetime = to_daylight_dt(end_exp);
 
     var response_field = '#intv-table-status';
     if (intv_end_datetime.getTime() > experiment_end_datetime.getTime()) {
@@ -151,8 +147,8 @@ var intervention = (function() {
       'user_window_mins': user_window_mins,
       'notif_id': intv_notif,
       'code': experiment_code,
-      'start': intv_start_datetime.toJSON(), // UTC
-      'end': intv_end_datetime.toJSON(), // UTC
+      'start': intv_start_datetime.getTime(), // UTC
+      'end': intv_end_datetime.getTime(), // UTC
       'every': intv_every,
       'when': intv_when,
       'repeat': intv_repeat
@@ -168,6 +164,21 @@ var intervention = (function() {
       console.log('intv save error:', error);
     });
   });
+
+  function to_daylight_dt(datestr) {
+    var tmp = new Date();
+    var arr = datestr.split("-");
+
+    tmp.setYear(parseInt(arr[0]));
+    tmp.setMonth(parseInt(arr[1]) - 1);
+    tmp.setDate(parseInt(arr[2]));
+    tmp.setHours(0);
+    tmp.setMinutes(0);
+    tmp.setSeconds(0);
+    tmp.setMilliseconds(0);
+
+    return tmp;
+  }
 
   function extract_treatment(no_of_condition) {
     var all_treat = {};
