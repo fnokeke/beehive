@@ -207,7 +207,8 @@ var naf = (function() {
     console.log('order: ', order);
     console.log('mp4: ', mp4);
 
-    var raw_html = '<video width="320" height="240" controls>' +
+    var raw_html = '<strong>Watch in fullscreen mode and use headphones.</strong>' +
+      '<video width="320" height="240" controls>' +
       '<source src="/static/videos/{0}" type="video/mp4">'.format(mp4) +
       'Your browser does not support the video.' +
       '</video>';
