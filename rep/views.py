@@ -815,12 +815,17 @@ def naf_watch_videos(worker_id):
     enrolled_worker = NafEnroll.query.filter_by(worker_id=worker_id).first()
     if not enrolled_worker:
         return render_template('mturk/mturk-404.html')
-    return render_template('mturk/naf-watch-videos.html', worker=enrolled_worker)
+    if not 'step' in session:
+        session['step'] = 1
+    return render_template('mturk/naf-main.html', worker=enrolled_worker)
 
 
-def naf_get_next_condition(total_enrolled):
-    no_of_groups = 3
-    return 1 + (total_enrolled % no_of_groups)
+@app.route('/naf/update/step', methods=['POST'])
+def naf_update_step():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    next_step = 1 + int(data['current_step']) % 8
+    session['step'] = next_step
+    return json.dumps({'next_step': next_step})
 
 
 @app.route('/naf/enroll/worker_id', methods=['POST'])
@@ -849,6 +854,11 @@ def naf_verify_worker_id():
     # log_submission(current_datetime, worker_id, 'accepted')
     # link = "<a href='/naf/{}'>continue here</a>.".format(worker_id)
     # return 'Welcome {}, {}'.format(worker_id, link)
+
+
+def naf_get_next_condition(total_enrolled):
+    no_of_groups = 6
+    return 1 + (total_enrolled % no_of_groups)
 
 
 @app.route('/naf/register/csv', methods=['POST'])

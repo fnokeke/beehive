@@ -1,0 +1,11 @@
+<div class="">
+
+  <span id="step-value" style="display: none">{{ session['step'] }}</span>
+  <span id="worker-group" style="display: none">{{ worker.group }}</span>
+  <span id="worker-code" style="display: none">{{ worker.worker_code }}</span>
+  <button type="button" class="btn btn-md btn-primary" id="steps-btn" name="button">
+    <span id="btn-step-value"></span>
+  </button>
+</div>
+
+{% include "partials/modals/steps-modal.html" %}

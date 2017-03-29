@@ -1,14 +1,52 @@
 <div class="page-header">
   <h3>
+    Your task (7 steps)
+  </h3>
+  <ul>
+    <li>
+      Watch 3 short video clips (3 steps)
+    </li>
+    <li>
+      Answer questions after each video clip (3 steps)
+    </li>
+    <li>
+      Complete short demography survey (1 step)
+    </li>
+    <li>
+      After going through all 7 steps, a code will be generated.
+      <strong>SUBMIT YOUR GENERATED CODE ON MTURK HIT.</strong>
+    </li>
+  </ul>
+</div>
+
+<div class="page-header">
+  <h3>
+    Disqualification (with no payment)
+  </h3>
+  <p>
+    You will be automatically removed from the experiment with no payment if:
+  </p>
+  <ul>
+    <li>
+      you don't follow instructions
+    </li>
+    <li>
+      you provide fake responses when answering questions
+    </li>
+  </ul>
+</div>
+
+{% include "partials/modals/naf_consent.html" %}
+
+<div class="page-header">
+  <h3>
     How to join
   </h3>
-
-  {% include "partials/modals/naf_consent.html" %}
 
   To join the study, you have to read the consent form.
   <a id="naf-read-consent-btn">Click Here</a>
   to go through the consent form and select "I agree" if you decide to continue with experiment. Next
-  set of instructions will appear below after you join the study.
+  set of instructions will appear below after you agree to join the experiment.
 
   <div id="naf-join-div" style="display: none">
     <br>
@@ -20,66 +58,7 @@
     <br>
     #################################################################################
 
-    <ul>
-      <li>
-        Before watching:
-        <a href="https://goo.gl/forms/GJBUlyhDM9wezhFf2" target="_blank">complete experiment begin survey</a>.
-      </li>
-      <li>
-        After watching:
-        <a href="https://goo.gl/forms/GJBUlyhDM9wezhFf2" target="_blank">complete experiment end survey</a>.
-      </li>
-    </ul>
-
-    <div class="page-header">
-      <h3>
-        Disqualification (with no payment)
-      </h3>
-      <p>
-        You will be automatically removed from the experiment with no payment if:
-      </p>
-
-      <ul>
-        <li>
-          you don't follow experiment in the specified correct order
-        </li>
-        <li>
-          you provide fake responses to surveys that you complete.
-        </li>
-      </ul>
-    </div>
-
-    <div class="page-header">
-
-      <h3>Videos</h3>
-      {% if worker.group == "1" %}
-        {% include "mturk/naf-video1.html" %}
-        <br>
-        {% include "mturk/naf-video2.html" %}
-        <br>
-        {% include "mturk/naf-video3.html" %}
-
-      {% elif worker.group == "2" %}
-        {% include "mturk/naf-video2.html" %}
-        <br>
-        {% include "mturk/naf-video1.html" %}
-        <br>
-        {% include "mturk/naf-video3.html" %}
-
-      {% elif worker.group == "3" %}
-        {% include "mturk/naf-video3.html" %}
-        <br>
-        {% include "mturk/naf-video2.html" %}
-        <br>
-        {% include "mturk/naf-video1.html" %}
-
-      {% else %}
-        <strong>
-          Error: No videos. Please contact mturk requester.
-        </strong>
-
-      {% endif %}
-    </div>
+    {% include "mturk/naf-steps.html" %}
 
     <div class="page-header">
       <h3>

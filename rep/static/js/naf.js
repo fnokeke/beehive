@@ -1,4 +1,4 @@
-(function(window, document, $) {
+var naf = (function() {
 
   var gen_code = $.url_param('gen_code');
   if (gen_code) {
@@ -86,6 +86,10 @@
 
   });
 
+  $('#steps-btn').click(function() {
+    $('#steps-modal').modal('show');
+  });
+
   $('#naf-read-consent-btn').click(function() {
     $('#naf-consent-agree-modal').modal('show');
   });
@@ -102,4 +106,133 @@
     }
   })();
 
-})(window, document, jQuery);
+  $('#next-step-btn').click(function() {
+    update_steps();
+  });
+
+  function update_steps() {
+    var current_step = $('#step-value').text();
+    var worker_group = parseInt($('#worker-group').text());
+    var worker_code = $('#worker-code').text();
+
+    var url = '/naf/update/step';
+    var data = {
+      'current_step': current_step
+    };
+
+    $.post(url, data).done(function(resp) {
+      var json_resp = JSON.parse(resp);
+      $('#step-value').text(json_resp.next_step);
+      $('#btn-step-value').text(get_btn_step_content(json_resp.next_step));
+      $('#modal-title-value').text(get_modal_title(json_resp.next_step));
+      $('#modal-body-content').html(get_modal_body(json_resp.next_step, worker_group, worker_code));
+      check_hide_next_btn(json_resp.next_step);
+    }).fail(function(error) {
+      console.log('step error: ', error);
+    });
+  }
+
+  function get_btn_step_content(step) {
+    var contents = "Begin Step " + step;
+    if (step === 8) {
+      contents = "Show mturk code";
+    }
+    return contents;
+  }
+
+  function get_modal_body(step, worker_group, worker_code) {
+    var contents = '';
+    if (step === 1 || step === 3 || step === 5) {
+      contents = get_video(step, worker_group);
+    } else if (step === 2 || step === 4 || step === 6) {
+      contents = get_survey(step - 1, worker_group);
+    } else if (step === 7) {
+      contents = get_demography_survey();
+    } else if (step === 8) {
+      contents = 'Your mturk code: ' + worker_code;
+    }
+    return contents;
+  }
+
+  function get_modal_title(step) {
+    var contents = "Step " + step + " of 7";
+    if (step === 8) {
+      contents = "Submit mturk code";
+    }
+    return contents;
+  }
+
+  function check_hide_next_btn(step) {
+    if (step === 8) {
+      $('#next-step-btn').hide();
+    }
+  }
+
+  function get_video(step, worker_group) {
+    var order = get_content_order(step, worker_group);
+    return get_raw_video(order);
+  }
+
+  function get_content_order(step, worker_group) {
+    step = parseInt(step);
+    worker_group = parseInt(worker_group);
+    var video_order = "";
+    if (worker_group === 1) {
+      video_order = "1,2,3";
+    } else if (worker_group === 2) {
+      video_order = "1,3,2";
+    } else if (worker_group === 3) {
+      video_order = "2,1,3";
+    } else if (worker_group === 4) {
+      video_order = "2,3,1";
+    } else if (worker_group === 5) {
+      video_order = "3,1,2";
+    } else if (worker_group === 6) {
+      video_order = "3,2,1";
+    }
+
+    var order;
+    if (step === 1) {
+      order = video_order.split(',')[0];
+    } else if (step === 3) {
+      order = video_order.split(',')[1];
+    } else if (step === 5) {
+      order = video_order.split(',')[2];
+    }
+    return parseInt(order);
+  }
+
+  function get_raw_video(order) {
+    var mp4 = 'v' + order + '.mp4';
+    console.log('order: ', order);
+    console.log('mp4: ', mp4);
+
+    var raw_html = '<video width="320" height="240" controls>' +
+      '<source src="/static/videos/{0}" type="video/mp4">'.format(mp4) +
+      'Your browser does not support the video.' +
+      '</video>';
+
+    return raw_html;
+  }
+
+  function get_survey(step, worker_group) {
+    var order = get_content_order(step, worker_group);
+    return 'show survey' + order + ' for step' + step + ' / group' + worker_group;
+  }
+
+  function get_demography_survey() {
+    return 'show demography survey';
+  }
+
+  function init_step_values() {
+    var current_step = parseInt($('#step-value').text());
+    var worker_group = parseInt($('#worker-group').text());
+    var worker_code = $('#worker-code').text();
+    $('#btn-step-value').text(get_btn_step_content(current_step));
+    $('#modal-title-value').text(get_modal_title(current_step));
+    $('#modal-body-content').html(get_modal_body(current_step, worker_group, worker_code));
+    check_hide_next_btn(current_step);
+  }
+  init_step_values();
+
+})();
