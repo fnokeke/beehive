@@ -12,6 +12,9 @@
 
       <div class="modal-body">
         <span id="modal-body-content"></span>
+        {% if session['step'] == 2 %}
+          {% include "partials/modals/naf_consent.html" %}
+        {% endif %}
       </div>
 
       <div class="modal-footer">
