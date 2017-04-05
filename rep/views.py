@@ -369,6 +369,7 @@ def edit_experiment(code):
         'experiment_end': experiment.end.strftime("%Y-%m-%d"),
         'next_start_date': next_start_date,
         'enrolled_users': MobileUser.query.filter_by(code=code).all(),
+        'users_unfiltered': User.query.all(),
         'experiment': experiment,
         'image_texts': ImageTextUpload.query.filter_by(code=code).all(),
         'uploaded_intvs': ImageTextUpload.query.filter_by(code=code).all(),
@@ -397,6 +398,13 @@ def participant_dashboard(code):
             code=code, intv_type=intv_type).order_by('start').all()
     }
     return render_template('/dashboards/participants-dashboard.html', **ctx)
+
+
+@app.route('/rescuetime-dashboard/<code>')
+def rescuetime_dashboard(code):
+    experiment = Experiment.query.filter_by(code=code).first()
+    ctx = {'experiment': experiment, 'users_unfiltered': User.query.all()}
+    return render_template('/dashboards/rescuetime-dashboard.html', **ctx)
 
 
 @app.route('/stats-dashboard/<code>')
