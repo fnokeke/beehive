@@ -17,6 +17,8 @@ from rep.models import MturkExclusive, MturkMobile, NafEnroll, User, ImageTextUp
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import NotifClickedStats, RescuetimeConfig, ScreenUnlockConfig
 
+from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats
+
 from rep.rescuetime import RescueOauth2, RescueTime
 from rep.pam import PamOauth
 from rep.moves import Moves
@@ -27,7 +29,7 @@ from rep import export
 
 from gcal import Calendar, EventFactory
 from rep.utils import requires_basic_auth
-from rep.utils import to_json
+from rep.utils import to_json, to_datetime
 from datetime import datetime
 
 
@@ -346,12 +348,6 @@ def add_experiment():
 
     _, response, __ = Experiment.add_experiment(experiment)
     return response
-
-
-def to_datetime(date_str, fmt=None):
-    if not fmt:
-        fmt = '%Y-%m-%d %H:%M:%S'
-    return datetime.strptime(date_str, fmt)
 
 
 @app.route('/edit-experiment/<code>')
@@ -966,42 +962,41 @@ def mturk_auth_moves():
     return redirect(url_for('mturk', gen_code=gen_code))
 
 
-@app.route('/mobile/mturk', methods=['POST'])
+@app.route('/mobile/turkprime/enroll', methods=['POST'])
 def mobile_worker_id():
     data = json.loads(request.data) if request.data else request.form.to_dict()
+    status, response, worker = TP_Enrolled.add_user(data)
 
-    enrolled_worker = MturkExclusive.query.filter_by(worker_id=data['worker_id']).first()
-    if not enrolled_worker:
-        return json.dumps({'status': -1,
-                           'experiment_group': -1,
-                           'response': 'You are not enrolled in this experiment. Please contact researcher.',
-                           'worker': data['worker_id']})
+    if status == 200:
+        TP_Admin.add_user(data)
 
-    _, response, worker_id = MturkMobile.add_user(data)
-    server_response = {'status': 200,
-                       'experiment_group': int(enrolled_worker.experiment_group),
-                       'response': response + '\nBeevibe code: {}'.format(enrolled_worker.worker_code),
-                       'worker': worker_id}
-    server_response = append_fb_response(server_response)
+    user_response = response + '\nCode: {}\nRemember to submit survey.'.format(worker.worker_code)
+    server_response = {'status': 200, 'response': user_response, 'worker_id': worker_id}
     return json.dumps(server_response)
 
 
-def append_fb_response(data):
-    data['server_treatment_start_date'] = '2017-03-20'
-    data['server_followup_start_date'] = '2017-03-27'
-    data['server_logging_stop_date'] = '2017-04-17'
-    data['server_fb_max_time'] = 5
-    data['server_fb_max_opens'] = 5
-    return data
-
-
-@app.route('/mobile/mturk/stats/fb', methods=['POST'])
+@app.route('/mobile/turkprime/fb-stats', methods=['POST'])
 def mobile_worker_fb_stats():
     data = json.loads(request.data) if request.data else request.form.to_dict()
-    _, response, summarized_stats = MturkFBStats.add_stats(data)
-    server_response = {'response': response, 'summary': summarized_stats}
-    server_response = append_fb_response(server_response)
+    TP_DailyResetHour.add_stats(data)
+
+    _, response, stats = TP_FBStats.add_stats(data)
+    server_response = {'response': response, 'summary': to_json(stats)}
+    server_response = append_admin_fb_response(server_response)
     return json.dumps(server_response)
+
+
+def append_admin_fb_response(data):
+    worker = TP_Admin.query.filter_by(worker_id=data['worker_id']).first()
+    if worker:
+        data['admin_experiment_group'] = worker.admin_experiment_group,
+        data['admin_fb_max_mins'] = worker.admin_fb_max_mins
+        data['admin_fb_max_opens'] = worker.admin_fb_max_opens
+        data['admin_treatment_start'] = worker.admin_treatment_start
+        data['admin_followup_start'] = worker.admin_followup_start
+        data['admin_logging_stop'] = worker.admin_logging_stop
+        data['admin_daily_reset_hour'] = TP_DailyResetHour.get_last_updated_hour()
+    return data
 
 
 @app.route('/mobile/mturk/prelim-recruit', methods=['POST'])

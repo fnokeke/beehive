@@ -6,6 +6,7 @@ from functools import wraps
 from flask import request, Response
 import secret_keys
 import json
+from datetime import datetime
 
 
 class ReverseProxied(object):
@@ -74,3 +75,9 @@ def requires_basic_auth(f):
 def to_json(param):
     if not param: return {}
     return json.loads(str(param))
+
+
+def to_datetime(date_str, fmt=None):
+    if not fmt:
+        fmt = '%Y-%m-%d %H:%M:%S'
+    return datetime.strptime(date_str, fmt)
