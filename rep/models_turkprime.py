@@ -31,13 +31,14 @@ class TP_Admin(db.Model):
     def __repr__(self):
         result = {
             'id': self.id,
+            'created_at': str(self.created_at),
             'worker_id': self.worker_id,
             'admin_experiment_group': self.admin_experiment_group,
             'admin_fb_max_mins': self.admin_fb_max_mins,
             'admin_fb_max_opens': self.admin_fb_max_opens,
-            'admin_treatment_start': self.admin_treatment_start,
-            'admin_followup_start': self.admin_followup_start,
-            'admin_logging_stop': self.admin_logging_stop
+            'admin_treatment_start': str(self.admin_treatment_start),
+            'admin_followup_start': str(self.admin_followup_start),
+            'admin_logging_stop': str(self.admin_logging_stop)
         }
         return json.dumps(result)
 
@@ -123,7 +124,7 @@ class TP_Enrolled(db.Model):
         result = {'worker_id': self.worker_id,
                   'worker_code': self.worker_code,
                   'device_id': self.device_id,
-                  'created_at': self.created_at,
+                  'created_at': str(self.created_at),
                   'last_installed_ms': self.last_installed_ms,
                   'pretty_last_installed': self.pretty_last_installed,
                   'app_version_name': self.app_version_name,
@@ -146,10 +147,10 @@ class TP_Enrolled(db.Model):
         existing_device = TP_Enrolled.query.filter_by(device_id=info['device_id']).first()
 
         if existing_worker:
-            return (-1, 'WorkerId already registered.', existing_worker)
+            return (200, 'WorkerId already registered.', existing_worker)
 
         if existing_device:
-            return (-1, 'This device is already registered with another WorkerId.', existing_worker)
+            return (-1, 'This device is already registered using another WorkerId.', existing_device)
 
         new_worker = TP_Enrolled(info)
         db.session.add(new_worker)
@@ -200,11 +201,11 @@ class TP_FBStats(db.Model):
             'time_open': self.time_open,
             'ringer_mode': self.ringer_mode,
             'current_experiment_group': self.current_experiment_group,
-            'current_fb_max_time': self.current_fb_max_time,
+            'current_fb_max_mins': self.current_fb_max_mins,
             'current_fb_max_opens': self.current_fb_max_opens,
-            'current_treatment_start': self.current_treatment_start,
-            'current_followup_start': self.current_followup_start,
-            'current_logging_stop': self.current_logging_stop
+            'current_treatment_start': str(self.current_treatment_start),
+            'current_followup_start': str(self.current_followup_start),
+            'current_logging_stop': str(self.current_logging_stop)
         }
         return json.dumps(result)
 

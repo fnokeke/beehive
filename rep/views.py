@@ -966,30 +966,33 @@ def mturk_auth_moves():
 def mobile_worker_id():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     status, response, worker = TP_Enrolled.add_user(data)
+    if status == -1:
+        return json.dumps({'status': -1, 'response': response, 'worker_id': -1, 'survey_link': ''})
 
-    if status == 200:
-        TP_Admin.add_user(data)
-
-    user_response = response + '\nCode: {}\nRemember to submit survey.'.format(worker.worker_code)
-    server_response = {'status': 200, 'response': user_response, 'worker_id': worker_id}
+    TP_Admin.add_user(data)
+    user_response = response + '\nYour Code: {}\nRemember to complete survey:'.format(worker.worker_code)
+    server_response = {'status': 200,
+                       'response': user_response,
+                       'worker_id': worker.worker_id,
+                       'survey_link': 'http://bit.ly/beginExp'}
     return json.dumps(server_response)
 
 
 @app.route('/mobile/turkprime/fb-stats', methods=['POST'])
 def mobile_worker_fb_stats():
     data = json.loads(request.data) if request.data else request.form.to_dict()
-    TP_DailyResetHour.add_stats(data)
+    TP_DailyResetHour.add(data)
 
     _, response, stats = TP_FBStats.add_stats(data)
-    server_response = {'response': response, 'summary': to_json(stats)}
+    server_response = {'response': response, 'worker_id': data['worker_id'], 'summary': to_json(stats)}
     server_response = append_admin_fb_response(server_response)
-    return json.dumps(server_response)
+    return json.dumps(server_response, default=str)
 
 
 def append_admin_fb_response(data):
     worker = TP_Admin.query.filter_by(worker_id=data['worker_id']).first()
     if worker:
-        data['admin_experiment_group'] = worker.admin_experiment_group,
+        data['admin_experiment_group'] = worker.admin_experiment_group
         data['admin_fb_max_mins'] = worker.admin_fb_max_mins
         data['admin_fb_max_opens'] = worker.admin_fb_max_opens
         data['admin_treatment_start'] = worker.admin_treatment_start
