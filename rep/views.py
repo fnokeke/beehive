@@ -981,8 +981,6 @@ def mobile_worker_id():
 @app.route('/mobile/turkprime/fb-stats', methods=['POST'])
 def mobile_worker_fb_stats():
     data = json.loads(request.data) if request.data else request.form.to_dict()
-    TP_DailyResetHour.add(data)
-
     _, response, stats = TP_FBStats.add_stats(data)
     server_response = {'response': response, 'worker_id': data['worker_id'], 'summary': to_json(stats)}
     server_response = append_admin_fb_response(server_response)

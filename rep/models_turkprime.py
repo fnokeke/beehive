@@ -73,13 +73,13 @@ class TP_Admin(db.Model):
 class TP_DailyResetHour(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    daily_reset_hour = db.Column(db.Integer, default=0)  # 0(midnight) to 23(11PM)
+    admin_reset_hour = db.Column(db.Integer, default=0)  # 0(midnight) to 23(11PM)
 
     def __init__(self, info):
-        self.daily_reset_hour = info['daily_reset_hour']
+        self.admin_reset_hour = info['admin_reset_hour']
 
     def __repr__(self):
-        result = {'created_at': str(self.created_at), 'daily_reset_hour': self.daily_reset_hour}
+        result = {'created_at': str(self.created_at), 'admin_reset_hour': self.admin_reset_hour}
         return json.dumps(result)
 
     @staticmethod
@@ -87,12 +87,12 @@ class TP_DailyResetHour(db.Model):
         entry = TP_DailyResetHour(info)
         db.session.add(entry)
         db.session.commit()
-        return (200, 'Successfully added reset time: {}.'.format(entry.daily_reset_hour), entry.daily_reset_hour)
+        return (200, 'Successfully added reset time: {}.'.format(entry.admin_reset_hour), entry.admin_reset_hour)
 
     @staticmethod
     def get_last_updated_hour():
         most_recent = TP_DailyResetHour.query.order_by('created_at desc').first()
-        return most_recent.daily_reset_hour if most_recent else 0
+        return most_recent.admin_reset_hour if most_recent else 0
 
 
 class TP_Enrolled(db.Model):
@@ -167,6 +167,8 @@ class TP_FBStats(db.Model):
     time_spent = db.Column(db.Integer)
     time_open = db.Column(db.Integer)
     ringer_mode = db.Column(db.String(10))
+    screen_logs = db.Column(db.String(2500))
+    daily_reset_hour = db.Column(db.Integer)  # 0(midnight) to 23(11PM)
 
     # current params updated through from android app
     current_experiment_group = db.Column(db.Integer)
@@ -183,6 +185,12 @@ class TP_FBStats(db.Model):
         self.time_spent = info['time_spent']
         self.time_open = info['time_open']
         self.ringer_mode = info['ringer_mode']
+        self.daily_reset_hour = info['daily_reset_hour']
+
+        if len(info['screen_logs']) > 2500:
+            self.screen_logs = "-1"
+        else:
+            self.screen_logs = info['screen_logs']
 
         self.current_experiment_group = info.get('current_experiment_group')
         self.current_fb_max_mins = info.get('current_fb_max_mins')
@@ -200,6 +208,8 @@ class TP_FBStats(db.Model):
             'time_spent': self.time_spent,
             'time_open': self.time_open,
             'ringer_mode': self.ringer_mode,
+            'daily_reset_hour': self.daily_reset_hour,
+            'screen_logs': self.screen_logs,
             'current_experiment_group': self.current_experiment_group,
             'current_fb_max_mins': self.current_fb_max_mins,
             'current_fb_max_opens': self.current_fb_max_opens,
