@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Mturk Experiment
+  Mturk Facebook Experiment
 {% endblock %}
 
 {% block nav_brand %}
@@ -11,74 +11,45 @@
 {% block contents %}
   {% block nav_signin %}{% endblock %}
 
-  <div class="container">
+  <div class="container lg-font">
     <div class="page-header">
       <h3>
         Welcome to experiment
       </h3>
       <p>
-        You have been selected from a pool of Mturk workers to participate in this experiment because you
-        successfully followed instructions in a previous HIT. You also indicated that you use Facebook
-        mobile app for at least 5 minutes per day. If you consider this incorrect information, please do not
-        continue with experiment as you will not be paid.
-      </p>
-    </div>
-
-    <div class="page-header">
-      <h3>
-        Who we are
-      </h3>
-      <p>
-        <br>We are researchers in the
+        We are researchers in the
         <a href="http://smalldata.io/" target="_blank">Small Data Lab</a>
         at
         <a href="https://tech.cornell.edu" target="_blank">Cornell Tech</a>, which is part of
-        <a href="https://cornell.edu" target="_blank">Cornell University</a>.
+        <a href="https://cornell.edu" target="_blank">Cornell University</a>. This experiment investigates
+        how facebook users use Facebook Mobile App on their smartphone. By participating in this experiment,
+        you will be contributing to the growing body of scientific research on mobile computing and digital
+        distractions.
       </p>
     </div>
 
     <div class="page-header">
       <h3>
-        Purpose of this experiment
+        Your tasks
       </h3>
       <p>
-        This experiment investigates how active facebook users use Facebook Mobile App on their smartphone.
-        By participating in this experiment, you will be contributing to the growing body of scientific
-        research on mobile computing and digital distractions.
+        This experiment has two parts and it is very simple and straightforward:
+        <ul>
+          <li>
+            PART A<strong>
+              (5 minutes) / $0.50</strong>
+          </li>
+          <li>
+            PART B (optional)<strong>
+              (25 days) / $15.00 bonus payment (lottery for extra $5)</strong>.
+            <br>
+            <em class="small">
+              *If you are approved in PART A then you'll automatically be enrolled in PART B. If you don't want to
+              partake in PART B, simply uninstall app.*
+            </em>
+          </li>
+        </ul>
       </p>
-    </div>
-
-    <div class="page-header">
-      <h3>
-        Duration of experiment
-      </h3>
-      <p>
-        This experiment will run for 3 weeks.
-      </p>
-    </div>
-
-    <div class="page-header">
-      <h3>
-        Compensation
-      </h3>
-      <p>
-        You will be paid $15 at the end of the experiment and entered into a lottery draw to receive an
-        additional bonus of $5. Only participants who complete the experiment will be paid.
-      </p>
-    </div>
-
-    <div class="page-header">
-      <h3>
-        Your tasks (please read instructions very carefully)
-      </h3>
-
-      <ul>
-        <li>Complete three surveys at the beginning of experiment.</li>
-        <li>Download apps that will automatically record which apps you use on your phone. You don't need to
-          do anything manually.</li>
-        <li>Complete two surveys at the end of experiment.</li>
-        <li>That's it. All done!</li>
-      </ul>
     </div>
 
     <div class="page-header">
@@ -86,212 +57,203 @@
         How to join
       </h3>
 
-      <!-- Modal -->
       {% include "partials/modals/mturk_consent.html" %}
 
       To join the study, you have to read the consent form.
       <a id="mturk-read-consent-btn">Click Here</a>
-      to go through the consent form and select "I agree" if you decide to continue with experiment. Next
-      set of instructions will appear below after you join the study.
+      to go through the consent form and select "I agree" if you want to continue. The next set of
+      instructions will appear below after you agree to consent form.
+    </div>
 
-      <div id="join-div" style="display: none">
-        <br>
-        #################################################################################
-        <br>
-        You have agreed to Consent Form. Follow steps to continue:
-        <br>
-        <strong>DO NOT COMPLETE ANY SURVEYS IF THE APPS DON'T WORK BECAUSE YOU WILL NOT BE PAID.</strong>
-        <br>
-        If first app doesn't update your Facebook stats after following instructions please discontinue
-        experiment.
-        <br>
-        #################################################################################
-        <ul>
+    <div id="join-div" style="display: none">
+
+      <div class="page-header">
+        <h3>PART A (follow carefully)</h3>
+        <ol>
           <li>
-            Download 2 android applications to your android smartphone:
+            Download
+            <a href="https://slm.smalldata.io/static/downloads/beevibe-1.7.apk">Beevibe</a>
+            and open it. (If you cannot open the app,
+            <a href="https://play.google.com/store/apps/details?id=com.asus.filemanager" target="_blank">download file manager</a>, open it and click on “Apps” then tap “beevibe-1.7.apk”)
+          </li>
+          <br>
+
+          <li>
+            Beevibe Installation page will show up so select “Next” then “Install” on the bottom right then
+            finally “Open” to launch installed app.
+          </li>
+          <br>
+
+          <li class="text-danger">
+            If you get error "phone is not compatible" then you cannot participate in experiment because of
+            phone issues. Please uninstall app.
+          </li>
+          <br>
+
+          <li>
+            If no error, Tap on “Request Permission” button and toggle “Beevibe” from “off” to “On”
+          </li>
+          <br>
+
+          <li>
+            Then press “back button” on your phone until you return back to “Beevibe” app.
+          </li>
+          <br>
+
+          <li>
+            Next, tap “Start Service” and look at your phone status bar (notification bar) and you should see
+            “Recent usage stats: Facebook 0”
+          </li>
+          <br>
+
+          <li>
+            Do this
+            <strong>three times (3x)</strong>
+            to activate your code:
             <ul>
               <li>
-                Install 1st app by following
-                <a
-                  href="https://docs.google.com/a/cornell.edu/document/d/1BskFVrIliXNRLaugz3IW9xTe6xpJ755tnD5O6xcHQzI/edit?usp=sharing"
-                  target="_blank">Beevibe app installation instructions</a>.
+                (a) Open “facebook mobile app” and wait for 10 seconds then
               </li>
               <li>
-                Install 2nd app by following
-                <a
-                  href="https://docs.google.com/a/cornell.edu/document/d/1SrCx5Yx6FR9yW2-tFhauSveRGGTqE5SQHSYZ0lkG8jQ/edit?usp=sharing"
-                  target="_blank">Aware app installation instructions</a>.
+                (b) Go back to “Beevibe” app and wait for 10 seconds
               </li>
-
+              <li>
+                (c) Then back to (a) then (b) then (a) and finally (b)
+              </li>
             </ul>
           </li>
           <br>
-          <br>
+
           <li>
-            Complete these surveys after installing the apps:
-            <ul>
-              <li>
-                <a href="https://goo.gl/forms/GJBUlyhDM9wezhFf2" target="_blank">experiment start survey</a>
-              </li>
-              <li>
-                <a href="https://goo.gl/forms/WFwt0tzutDNCX2mM2" target="_blank">personality survey</a>
-              </li>
-              <li>
-                <a href="https://goo.gl/forms/isCn7tLm9DTbQY9w1" target="_blank">impulse survey</a>
-              </li>
-            </ul>
+            If successful, your status bar message will change to “Successful!”.
           </li>
           <br>
-          <br>
+
           <li>
-            Complete these surveys on the last day of the experiment:
-            <ul>
-              <li>
-                <a href="https://goo.gl/forms/l4SYgTBCGP4OqVsp1" target="_blank">morningness - eveningness survey</a>
-              </li>
-              <li>
-                <a href="https://goo.gl/forms/SNMLDRXSNs68Nsyr1" target="_blank">experiment end survey</a>
-              </li>
-            </ul>
+            Return back to Beevibe app and submit your Worker ID.
           </li>
-        </ul>
-
-        <div class="page-header">
-          <h3>
-            Disqualification (with no payment)
-          </h3>
-          <p>
-            You will be automatically removed from the experiment with no payment if:
-          </p>
-
-          <ul>
-            <li>
-              you don't complete all surveys at the correct time (3 at the beginning / 2 at the end)
-            </li>
-            <li>
-              you provide fake responses to surveys that you complete.
-            </li>
-            <li>
-              if you don't have experiment apps running throughout the duration of the entire study.
-            </li>
-          </ul>
-        </div>
-
-        <div class="page-header">
-          <h3>Internet connection required</h3>
-          <ul>
-            <li>
-              You need to have internet connection on your mobile device throughout the experiment.
-            </li>
-            <li>
-              You need to have Facebook Mobile app already installed on your device.
-            </li>
-            <li>
-              This experiment is only for individuals who
-              <strong>actively use facebook mobile app</strong>. If you only use Facebook in a mobile browser then you should not continue with experiment.
-            </li>
-            <li>
-              If you meet one of the conditions listed please do not continue with the experiment as you will
-              <strong>NOT</strong>
-              be paid.
-            </li>
-          </ul>
-        </div>
-
-        <div class="page-header">
-          <h3>Phone compatibility</h3>
-          If you successfully completed the experiment then your phone will most likely be compatible with our
-          research. However, due to multiple differences in phone vendor softwares, your phone may not work or
-          begin to act weird. If anything odd happens, please discontinue the experiment and contact the
-          requester.
-
-          <br>
           <br>
 
-          The mobile apps you install have been tested and do not cause any battery drain. However, if you
-          experience serious battery drain then your phone is also not compatible with our experiment. In this
-          case, please contact the requester to exit the experiment.
-
+          <li>
+            <strong>Your code</strong>
+            will automatically appear together with
+            <strong>survey link</strong>.
+          </li>
           <br>
+
+          <li>
+            <h4>
+              COMPLETE SURVEY AND SUBMIT YOUR CODE IN MTURK HIT.
+            </h4>
+          </li>
           <br>
-          Throughout the experiment, we will monitor if your phone works and may reach out to you if it
-          doesn't. Please note that if your phone doesn't work, you cannot be paid as it means it is
-          incompatible with the experiment.
-        </div>
 
-        <div class="page-header">
-          <h3>How to know if app is working</h3>
-          Facebook stats will always show in your notification bar throughout the experiment. If it does not
-          show up, open "Beevibe" app and click "Start Service". If it still doesn't show up then your phone
-          is incompatible.
-        </div>
+          <li>
+            PART A DONE!
+          </li>
 
-        <div class="page-header">
-          <h3>What our apps do?</h3>
-          <ul>
-            <li>
-              The mobile apps you downloaded will monitor all apps you use on your phone throughout the
-              experiment.
-            </li>
-            <li>
-              Data collected will automatically be stored in our remote server for research analysis at the end of
-              the experiment. This means you don't have to do anything manually.
-            </li>
-          </ul>
-        </div>
+        </ol>
+      </div>
 
-        {% if worker.experiment_group == "2" %}
+      <div class="page-header">
+        <h3>
+          PART B (optional)
+        </h3>
 
-          <div class="page-header">
-            <h3>Vibration</h3>
+        <ol>
+          <li>
+            This is just running same app from part A. You can only partake if you are approved in PART A. If
+            you are approved and decide to remain in experiment, you will receive an email within 3 days to
+            confirm that you are now in PART B. If you don't want to remain in PART B simply uninstall app.
+          </li>
+          <br>
 
-            <p>
-              In the second week of the experiment, your phone will vibrate if you use Facebook app for more than
-              <strong>10 minutes per day</strong>
-              or if you open the app
-              <strong>more than 5x</strong>
-              per day. This vibration will NOT happen in the 1st week and the 3rd week but only during 2nd week.
-            </p>
+          <li>
+            You have
+            <strong>ONLY ONE TASK</strong>
+            throughout PART B. The task is to make sure that
+            <strong>facebook stats in status bar should always be on</strong>
+            throughout the entire experiment because it means you are still actively enrolled.
+          </li>
+          <br>
 
-          </div>
+          <li>
+            If for any reason, the status notification stops showing, launch “Beevibe” app and tap “Start
+            Service”. If no status then it means no payment.
+          </li>
+          <br>
 
-        {% endif %}
+          <li>
+            On the 25th day, you will receive an email with surveys to complete. After completing the survey,
+            you will be paid a bonus of $15.00 then you’ll be entered into a lottery to win an additional $5.00.
+          </li>
 
-        <div class="page-header">
-          <h3>
-            Uninstall apps
-          </h3>
-          <p>
-            After the study, you should uninstall all the mobile apps you downloaded for this study as all apps
-            may automatically stop working. To uninstall apps, go to your list of phone apps and uninstall these
-            three apps:
-          </p>
-          <ul>
-            <li>
-              <em>Aware</em>
-            </li>
-            <li>
-              <em>Beevibe</em>
-            </li>
-          </ul>
-        </div>
-
-        <div class="page-header">
-          <h3>
-            Contact
-          </h3>
-          <p>
-            You may contact mechanical turk requester if you have any questions or concerns. Please make sure to
-            carefully follow all instructions so you can be properly helped whenever you have a question.
-          </p>
-        </div>
-
-        <br>
-        <em>NB: We are not in any way affiliated to Facebook, Aware framework or FileManager mobile apps. We
-          only use these apps primarily for conducting research experiments.
-        </em>
+        </ol>
 
       </div>
+
+      <div class="page-header">
+        <h3>
+          Disqualification (with no payment)
+        </h3>
+        <p>
+          You will be automatically removed from the experiment with no payment if:
+        </p>
+
+        <ul>
+          <li>
+            you don't complete surveys or your provide fake response to surveys.
+          </li>
+          <li>
+            if you don't have experiment apps running throughout the duration of the entire study.
+          </li>
+          <li>
+            your phone has issues and is not compatible with experiment.
+          </li>
+        </ul>
+      </div>
+
+      <div class="page-header">
+        <h3>How to know if app is working</h3>
+        Facebook stats will always show in your notification bar throughout the experiment. If it does not
+        show up, open "Beevibe" app and click "Start Service". If it still doesn't show up then your phone
+        is incompatible.
+      </div>
+
+      <div class="page-header">
+        <h3>What our apps do?</h3>
+        <ul>
+          <li>
+            The mobile apps you downloaded will monitor how long you use facebook app, how many times you open
+            the app and when you lock or unlock your screen. The app does not and will never collect your
+            personal info. No other information is collected on your phone except the ones stated here.
+          </li>
+          <li>
+            Data collected will automatically be stored in our remote server for research analysis at the end of
+            the experiment. This means you don't have to do anything manually.
+          </li>
+          <p>
+            In the second week of the experiment, your phone may vibrate if you use Facebook app for more than
+            10 minutes per day or if you open the app more than 5x per day. This vibration will not happen in
+            the 1st week and the 3rd week but only during 2nd week.
+          </p>
+        </ul>
+      </div>
+
+      <div class="page-header">
+        <h3>
+          Contact
+        </h3>
+        <p>
+          You may contact mechanical turk requester if you have any questions or concerns. Please make sure to
+          carefully follow all instructions so you can be properly helped whenever you have a question.
+        </p>
+      </div>
+
+      <br>
+      <em>NB: We are not in any way affiliated to Facebook or FileManager mobile apps. We only use these
+        apps primarily for conducting research experiments.
+      </em>
 
     </div>
 

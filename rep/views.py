@@ -894,6 +894,11 @@ def mturk_download():
     return render_template('mturk/mturk-download.html')
 
 
+@app.route('/tp')
+def plain_mturk():
+    return render_template('mturk/enroll.html')
+
+
 @app.route('/mturk/<worker_id>')
 def amturk(worker_id):
     enrolled_worker = MturkExclusive.query.filter_by(worker_id=worker_id).first()
