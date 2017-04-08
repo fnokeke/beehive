@@ -221,9 +221,9 @@ class TP_FBStats(db.Model):
 
     @staticmethod
     def add_stats(info):
-        existing_worker = TP_Admin.query.filter_by(worker_id=info['worker_id']).first()
-        if not existing_worker:
-            return (-1, 'Error: Should register user before posting FB stats. Pls contact researcher.', -1)
+        #existing_worker = TP_Admin.query.filter_by(worker_id=info['worker_id']).first()
+        #if not existing_worker:
+        #    return (-1, 'Error: Should register user before posting FB stats. Pls contact researcher.', -1)
 
         new_stats = TP_FBStats(info)
         db.session.add(new_stats)
