@@ -821,7 +821,7 @@ def naf_watch_videos(worker_id):
         return render_template('mturk/mturk-404.html')
     if not 'step' in session:
         session['step'] = 1
-    return render_template('mturk/naf-main.html', worker=enrolled_worker)
+    return render_template('naf/naf-main.html', worker=enrolled_worker)
 
 
 @app.route('/naf/update/step', methods=['POST'])

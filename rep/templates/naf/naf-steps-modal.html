@@ -12,14 +12,11 @@
 
       <div class="modal-body">
         <span id="modal-body-content"></span>
-        {% if session['step'] == 2 %}
-          {% include "partials/modals/naf_consent.html" %}
-        {% endif %}
       </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="next-step-btn">Next Step</button>
+        <button type="button" class="btn btn-primary" id="next-step-btn" disabled="true">Next Step</button>
       </div>
 
     </div>

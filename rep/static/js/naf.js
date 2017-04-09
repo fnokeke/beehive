@@ -87,8 +87,12 @@ var naf = (function() {
 
   });
 
-  $('#steps-btn').click(function() {
+  $('#btn-step-begin').click(function() {
     $('#steps-modal').modal('show');
+    $('#next-step-btn').prop('disabled', true);
+
+    var current_step = parseInt($('#step-value').text());
+    countdown_next_step_btn(current_step);
   });
 
   $('#naf-read-consent-btn').click(function() {
@@ -108,6 +112,8 @@ var naf = (function() {
   })();
 
   $('#next-step-btn').click(function() {
+    console.log('next step button clicked.');
+    $('#next-step-btn').prop('disabled', true);
     update_steps();
   });
 
@@ -124,13 +130,30 @@ var naf = (function() {
     $.post(url, data).done(function(resp) {
       var json_resp = JSON.parse(resp);
       $('#step-value').text(json_resp.next_step);
-      $('#btn-step-value').text(get_btn_step_content(json_resp.next_step));
+      $('#span-begin-label').text(get_btn_step_content(json_resp.next_step));
       $('#modal-title-value').html(get_modal_title(json_resp.next_step));
       $('#modal-body-content').html(get_modal_body(json_resp.next_step, worker_group, worker_code));
-      check_hide_next_btn(json_resp.next_step);
+      countdown_next_step_btn(json_resp.next_step);
     }).fail(function(error) {
       console.log('step error: ', error);
     });
+  }
+
+  function countdown_next_step_btn(step) {
+    if (step === 1 || step === 3 || step === 5) {
+      do_countdown(3);
+    } else if (step === 8) {
+      $('#next-step-btn').prop('disabled', false);
+    } else {
+      do_countdown(3);
+    }
+  }
+
+  function do_countdown(seconds) {
+    setTimeout(function() {
+      console.log("Next button enabled");
+      $('#next-step-btn').prop('disabled', false);
+    }, seconds * 1000);
   }
 
   function get_btn_step_content(step) {
@@ -163,11 +186,6 @@ var naf = (function() {
     return contents;
   }
 
-  function check_hide_next_btn(step) {
-    if (step === 8) {
-      $('#next-step-btn').hide();
-    }
-  }
 
   function get_video(step, worker_group) {
     var order = get_content_order(step, worker_group);
@@ -210,12 +228,11 @@ var naf = (function() {
     console.log('mp4: ', mp4);
 
     var raw_html = '<strong>Watch in fullscreen mode and use headphones.</strong>' +
-      '<video width="320" height="240" class="vd" id="{0}" controls>'.format(mp4) +
+      '<video width="320" height="240" id="{0}" onplay="play_started()" controls>'.format(mp4) +
       '<source src="/static/videos/{0}" type="video/mp4">'.format(mp4) +
       'Your browser does not support the video.' +
       '</video>';
 
-    // disable_seeking(mp4);
     return raw_html;
   }
 
@@ -232,12 +249,9 @@ var naf = (function() {
       '</div>' +
       '</form>';
 
-
-
     var multiStr = "This is the first line \
     	This is the second line \
     	This is more...";
-
 
     return form;
   }
@@ -260,48 +274,20 @@ var naf = (function() {
     var current_step = parseInt($('#step-value').text());
     var worker_group = parseInt($('#worker-group').text());
     var worker_code = $('#worker-code').text();
-    $('#btn-step-value').text(get_btn_step_content(current_step));
+    $('#span-begin-label').text(get_btn_step_content(current_step));
     $('#modal-title-value').html(get_modal_title(current_step));
     $('#modal-body-content').html(get_modal_body(current_step, worker_group, worker_code));
-    check_hide_next_btn(current_step);
+    countdown_next_step_btn(current_step);
   }
   init_step_values();
 
-
-  function disable_seeking(video_id) {
-    var video = document.getElementById(video_id);
-    var supposedCurrentTime = 0;
-    video.addEventListener('timeupdate', function() {
-      if (!video.seeking) {
-        supposedCurrentTime = video.currentTime;
-      }
-    });
-    // prevent user from seeking
-    video.addEventListener('seeking', function() {
-      // guard agains infinite recursion:
-      // user seeks, seeking is fired, currentTime is modified, seeking is fired, current time is modified, ....
-      var delta = video.currentTime - supposedCurrentTime;
-      if (Math.abs(delta) > 0.01) {
-        console.log("Seeking is disabled");
-        video.currentTime = supposedCurrentTime;
-      }
-    });
-    // delete the following event handler if rewind is not required
-    video.addEventListener('ended', function() {
-      // reset state in order to allow for rewind
-      supposedCurrentTime = 0;
-    });
-  }
-
-  $("#v1.mp4").bind("ended", function() {
-    alert("video1 has ended");
-  });
-
-  $("#v2.mp4").bind("ended", function() {
-    alert("video2 has ended");
-  });
-
-  $("#v3.mp4").bind("ended", function() {
-    alert("video3 has ended");
-  });
 })();
+
+function play_started() {
+  var vid = $('video').attr('id');
+  console.log('play clicked / vid: ', vid);
+}
+
+function play_seeking() {
+  console.log('play was seeking.');
+}
