@@ -95,6 +95,11 @@ var naf = (function() {
     countdown_next_step_btn(current_step);
   });
 
+  $("#steps-modal").on("hidden.bs.modal", function() {
+    $('video').get(0).pause();
+    console.log('steps modal has been closed.');
+  });
+
   $('#naf-read-consent-btn').click(function() {
     $('#naf-consent-agree-modal').modal('show');
   });
@@ -144,7 +149,7 @@ var naf = (function() {
   function play_started() {
     g_video_played = true;
     var vid = $('video').attr('id');
-    console.log('play clicked for video ', vid);
+    console.log('play clicked for video', vid);
     var current_step = parseInt($('#step-value').text());
     countdown_next_step_btn(current_step);
   }
@@ -166,7 +171,7 @@ var naf = (function() {
 
   function do_countdown(seconds) {
     setTimeout(function() {
-      console.log("Next button enabled");
+      console.log("next button enabled");
       $('#next-step-btn').prop('disabled', false);
     }, seconds * 1000);
   }
