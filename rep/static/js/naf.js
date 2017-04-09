@@ -96,8 +96,10 @@ var naf = (function() {
   });
 
   $("#steps-modal").on("hidden.bs.modal", function() {
-    $('video').get(0).pause();
-    console.log('steps modal has been closed.');
+    var vid = $('video').get(0);
+    if (vid) {
+      vid.pause();
+    }
   });
 
   $('#naf-read-consent-btn').click(function() {
@@ -117,7 +119,6 @@ var naf = (function() {
   })();
 
   $('#next-step-btn').click(function() {
-    console.log('next step button clicked.');
     $('#next-step-btn').prop('disabled', true);
     update_steps();
   });
@@ -149,23 +150,25 @@ var naf = (function() {
   function play_started() {
     g_video_played = true;
     var vid = $('video').attr('id');
-    console.log('play clicked for video', vid);
     var current_step = parseInt($('#step-value').text());
     countdown_next_step_btn(current_step);
   }
 
   function countdown_next_step_btn(step) {
-    if (step === 1 || step === 3 || step === 5) {
+    if (step === 2 || step === 4 || step === 6 || step === 8) {
+      g_video_played = false;
+    }
+
+    if (step === 1 || step === 3 || step === 5) { // videos
       if (g_video_played) {
         do_countdown(3);
       }
-
-    } else if (step === 8) {
-      g_video_played = false;
+    } else if (step === 2 || step === 4 || step === 6) { // video responses
+      do_countdown(4);
+    } else if (step === 7) { // demography survey
+      do_countdown(7);
+    } else if (step === 8) { // final code
       $('#next-step-btn').prop('disabled', false);
-    } else {
-      g_video_played = false;
-      do_countdown(3);
     }
   }
 
@@ -244,9 +247,6 @@ var naf = (function() {
 
   function get_raw_video(order) {
     var mp4 = 'v' + order + '.mp4';
-    console.log('order: ', order);
-    console.log('mp4: ', mp4);
-
     var raw_html = '<strong>Watch in fullscreen mode and use headphones.</strong>' +
       '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>'.format(mp4) +
       '<source src="/static/videos/{0}" type="video/mp4">'.format(mp4) +
@@ -260,12 +260,44 @@ var naf = (function() {
     var order = get_content_order(step, worker_group);
     var form = '<form>' +
       '<div class="form-group">' +
-      '<label for="formGroupExampleInput">What was the video about?</label>' +
-      '<input type="text" class="form-control" id="formGroupExampleInput" placeholder="type response here">' +
+      '<label for="">What was the topic of the video?</label>' +
+      '<select class="form-control">' +
+      '<option selected>Select response</option>' +
+      ' <option value="1">Nutrition of newborn</option>' +
+      ' <option value="2">Dangerous effects of smoking and tobacco</option>' +
+      ' <option value="3">Importance of washing hands</option>' +
+      ' <option value="4">Safe drinking water</option>' +
+      ' <option value="5">Treatment of Diarrhea</option>' +
+      ' <option value="6">None of these</option>' +
+      ' </select>' +
       '</div>' +
+      '<br/>' +
+      '<br/>' +
       '<div class="form-group">' +
-      '<label for="formGroupExampleInput2">Rate the video on scale 1(absolutely dislike) - 10(absolutely like).</label>' +
-      '<input type="text" class="form-control" id="formGroupExampleInput2" placeholder="Ratings">' +
+      '<label for="">Using the image below, indicate how happy or sad you feel after watching the video. Please tick the figure that best represents your feelings. </label>' +
+      '<img src="/static/images/naf/arousal.png" width="550px" height="150px" alt="arousal image" />' +
+      '<select class="form-control">' +
+      '<option selected>Select response</option>' +
+      ' <option value="1">1</option>' +
+      ' <option value="2">2</option>' +
+      ' <option value="3">3</option>' +
+      ' <option value="4">4</option>' +
+      ' <option value="5">5</option>' +
+      ' </select>' +
+      '</div>' +
+      '<br/>' +
+      '<br/>' +
+      '<div class="form-group">' +
+      '<label for="">Using the image below, please indicate how the video affects you. Select the figure that best represents your feelings.</label>' +
+      '<img src="/static/images/naf/valence.png" width="550px" height="100px" alt="arousal image" />' +
+      '<select class="form-control">' +
+      '<option selected>Select response</option>' +
+      ' <option value="1">1</option>' +
+      ' <option value="2">2</option>' +
+      ' <option value="3">3</option>' +
+      ' <option value="4">4</option>' +
+      ' <option value="5">5</option>' +
+      ' </select>' +
       '</div>' +
       '</form>';
 
@@ -279,12 +311,40 @@ var naf = (function() {
   function get_demography_survey() {
     var form = '<form>' +
       '<div class="form-group">' +
-      '<label for="formGroupExampleInput">Your Age</label>' +
-      '<input type="text" class="form-control" id="formGroupExampleInput" placeholder="type response here">' +
+      '<label for="formGroupExampleInput">What is your age?</label>' +
+      '<input type="text" class="form-control" id="" placeholder="type response here">' +
       '</div>' +
       '<div class="form-group">' +
-      '<label for="formGroupExampleInput2">What part of India are you from?</label>' +
-      '<input type="text" class="form-control" id="formGroupExampleInput2" placeholder="type response here.">' +
+      '<label for="formGroupExampleInput">What is your education?</label>' +
+      '<input type="text" class="form-control" id="" placeholder="type response here">' +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label for="formGroupExampleInput">What is your occupation?</label>' +
+      '<input type="text" class="form-control" id="" placeholder="type response here">' +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label for="formGroupExampleInput">What is your family size?</label>' +
+      '<input type="text" class="form-control" id="" placeholder="type response here">' +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label for="formGroupExampleInput">What is the occupation of your family members?</label>' +
+      '<input type="text" class="form-control" id="" placeholder="type response here">' +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label for="formGroupExampleInput">What is your monthly family income?</label>' +
+      '<input type="text" class="form-control" id="" placeholder="type response here">' +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label for="formGroupExampleInput">Do you have mobile phones</label>' +
+      '<input type="text" class="form-control" id="" placeholder="type response here">' +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label for="formGroupExampleInput">Do you watch videos on your mobile phones</label>' +
+      '<input type="text" class="form-control" id="" placeholder="type response here">' +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label for="formGroupExampleInput">Do you use Internet on phone?</label>' +
+      '<input type="text" class="form-control" id="" placeholder="type response here">' +
       '</div>' +
       '</form>';
     return form;
