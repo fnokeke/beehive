@@ -139,12 +139,27 @@ var naf = (function() {
     });
   }
 
+  var g_video_played = false;
+
+  function play_started() {
+    g_video_played = true;
+    var vid = $('video').attr('id');
+    console.log('play clicked for video ', vid);
+    var current_step = parseInt($('#step-value').text());
+    countdown_next_step_btn(current_step);
+  }
+
   function countdown_next_step_btn(step) {
     if (step === 1 || step === 3 || step === 5) {
-      do_countdown(3);
+      if (g_video_played) {
+        do_countdown(3);
+      }
+
     } else if (step === 8) {
+      g_video_played = false;
       $('#next-step-btn').prop('disabled', false);
     } else {
+      g_video_played = false;
       do_countdown(3);
     }
   }
@@ -228,7 +243,7 @@ var naf = (function() {
     console.log('mp4: ', mp4);
 
     var raw_html = '<strong>Watch in fullscreen mode and use headphones.</strong>' +
-      '<video width="320" height="240" id="{0}" onplay="play_started()" controls>'.format(mp4) +
+      '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>'.format(mp4) +
       '<source src="/static/videos/{0}" type="video/mp4">'.format(mp4) +
       'Your browser does not support the video.' +
       '</video>';
@@ -281,13 +296,10 @@ var naf = (function() {
   }
   init_step_values();
 
+  var exposed_functions = {
+    'play_started': play_started
+  };
+
+  return exposed_functions;
+
 })();
-
-function play_started() {
-  var vid = $('video').attr('id');
-  console.log('play clicked / vid: ', vid);
-}
-
-function play_seeking() {
-  console.log('play was seeking.');
-}
