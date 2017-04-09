@@ -811,7 +811,7 @@ def welcome_and_check():
 
 @app.route('/naf')
 def naf_join():
-    return render_template('mturk/naf-join.html')
+    return render_template('naf/naf-join.html')
 
 
 @app.route('/naf/<worker_id>')
