@@ -12,8 +12,8 @@ from apiclient import discovery
 import json, httplib2, pytz, requests, csv
 
 from rep import app, login_manager
-from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkFBStats, MturkPrelimRecruit
-from rep.models import MturkExclusive, MturkMobile, NafEnroll, User, ImageTextUpload
+from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkPrelimRecruit
+from rep.models import MturkExclusive, NafEnroll, User, ImageTextUpload
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import NotifClickedStats, RescuetimeConfig, ScreenUnlockConfig
 
@@ -413,27 +413,14 @@ def stats_dashboard(code):
 @app.route('/mturk-participants-dashboard/<code>')
 def mturk_participant_dashboard(code):
     experiment = Experiment.query.filter_by(code=code).first()
-    start = datetime(year=2017, month=03, day=03)
-    pairs = {}
-    for w in MturkExclusive.query.all():
-        pairs[w.worker_id] = w.experiment_group
-    ctx = {'mturk_users': MturkMobile.query.filter(MturkMobile.created_at >= start).all(),
-           'experiment': experiment,
-           'pairs': pairs}
+    ctx = {'mturk_users': TP_Enrolled.query.all(), 'experiment': experiment}
     return render_template('/dashboards/mturk-participants-dashboard.html', **ctx)
 
 
 @app.route('/mturk-stats-dashboard/<code>')
 def mturk_stats_dashboard(code):
     experiment = Experiment.query.filter_by(code=code).first()
-    start = datetime(year=2017, month=03, day=03)
-    pairs = {}
-    for w in MturkExclusive.query.all():
-        pairs[w.worker_id] = w.experiment_group
-
-    ctx = {'mturk_stats': MturkFBStats.query.filter(MturkFBStats.created_at >= start).all(),
-           'experiment': experiment,
-           'pairs': pairs}
+    ctx = {'mturk_stats': TP_FBStats.query.all(), 'experiment': experiment}
     return render_template('/dashboards/mturk-stats-dashboard.html', **ctx)
 
 
@@ -811,7 +798,7 @@ def welcome_and_check():
 
 @app.route('/naf')
 def naf_join():
-    return render_template('naf/naf-join.html')
+    return render_template('mturk/naf-join.html')
 
 
 @app.route('/naf/<worker_id>')
@@ -821,7 +808,7 @@ def naf_watch_videos(worker_id):
         return render_template('mturk/mturk-404.html')
     if not 'step' in session:
         session['step'] = 1
-    return render_template('naf/naf-main.html', worker=enrolled_worker)
+    return render_template('mturk/naf-main.html', worker=enrolled_worker)
 
 
 @app.route('/naf/update/step', methods=['POST'])

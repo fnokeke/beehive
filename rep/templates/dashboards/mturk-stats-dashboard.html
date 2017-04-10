@@ -38,39 +38,59 @@
           </th>
 
           <th>
+            CreatedAt
+          </th>
+
+          <th>
             WorkerID
           </th>
 
           <th>
-            Group
+            Group(now)
           </th>
 
           <th>
-            DeviceID
+            T.Time
           </th>
 
           <th>
-            TotalTime
+            T.Opens
           </th>
 
           <th>
-            TotalOpens
+            FBTime
           </th>
 
           <th>
-            FB Time
+            FBOpens
           </th>
 
           <th>
-            FB Opens
+            Ringer
           </th>
 
           <th>
-            RingerMode
+            Max-Mins(now)
           </th>
 
           <th>
-            CreatedAt
+            Max-Opens(now)
+          </th>
+
+          <th>
+            Treat(now)
+          </th>
+
+          <th>
+            Followup(now)
+          </th>
+
+          <th>
+            Logging(now)
+          </th>
+
+          <th>
+            Reset.T(now)
           </th>
         </tr>
       </thead>
@@ -83,15 +103,15 @@
             </td>
 
             <td>
+              {{ stat.created_at | nyc | fancydatetime }}
+            </td>
+
+            <td>
               {{ stat.worker_id }}
             </td>
 
             <td>
-              {{ pairs[stat.worker_id] }}
-            </td>
-
-            <td>
-              {{ stat.device_id }}
+              {{ stat.current_experiment_group }}
             </td>
 
             <td>
@@ -115,7 +135,27 @@
             </td>
 
             <td>
-              {{ stat.created_at | nyc | fancydatetime }}
+              {{ stat.current_fb_max_mins }}
+            </td>
+
+            <td>
+              {{ stat.current_fb_max_opens }}
+            </td>
+
+            <td>
+              {{ stat.current_treatment_start }}
+            </td>
+
+            <td>
+              {{ stat.current_followup_start }}
+            </td>
+
+            <td>
+              {{ stat.current_logging_stop }}
+            </td>
+
+            <td>
+              {{ stat.daily_reset_hour }}
             </td>
 
           </tr>
