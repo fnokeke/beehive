@@ -268,102 +268,179 @@ var naf = (function() {
 
   function get_survey(step, worker_group) {
     var order = get_content_order(step, worker_group);
+    var vid;
+    if (step === 1) {
+      vid = 'v1';
+    } else if (step === 3) {
+      vid = 'v2';
+    } else if (step === 5) {
+      vid = 'v3';
+    }
+
     var form = '<form>' +
-      // goes to bottom
-      '<div class="form-group">' +
-      '<label for="">What was the topic of the video?</label>' +
-      '<select class="form-control">' +
-      '<option selected>Select response</option>' +
-      ' <option value="1">Nutrition of newborn</option>' +
-      ' <option value="2">Dangerous effects of smoking and tobacco</option>' +
-      ' <option value="3">Importance of washing hands</option>' +
-      ' <option value="4">Safe drinking water</option>' +
-      ' <option value="5">Treatment of Diarrhea</option>' +
-      ' <option value="6">None of these</option>' +
-      ' </select>' +
-      '</div>' +
-      '<br/>' +
-      '<br/>' +
       '<div class="form-group">' +
       '<label for="">Using the image below, indicate how happy or sad you feel after watching the video. Please tick the figure that best represents your feelings. </label>' +
       '<img src="/static/images/naf/valence.png" width="550px" height="150px" alt="valence image" />' +
-      '<select class="form-control">' +
-      '<option selected>Select response</option>' +
-      ' <option value="1">1</option>' +
-      ' <option value="2">2</option>' +
-      ' <option value="3">3</option>' +
-      ' <option value="4">4</option>' +
-      ' <option value="5">5</option>' +
-      ' </select>' +
+      '<label class="naf-radio">' +
+      '<input type="radio" name="{0}q1" value="1"/>' +
+      '</label>' +
+      '<label class="naf-radio">' +
+      '<input type="radio" name="{0}q1" value="2"/>' +
+      '</label>' +
+      '<label class="naf-radio">' +
+      '<input type="radio" name="{0}q1" value="3"/>' +
+      '</label>' +
+      '<label class="naf-radio">' +
+      '<input type="radio" name="{0}q1" value="4"/>' +
+      '</label>' +
+      '<label class="naf-radio">' +
+      '<input type="radio" name="{0}q1" value="5"/>' +
+      '</label>' +
       '</div>' +
       '<br/>' +
       '<br/>' +
       '<div class="form-group">' +
       '<label for="">Using the image below, please indicate how the video affects you. Select the figure that best represents your feelings.</label>' +
       '<img src="/static/images/naf/arousal.png" width="550px" height="100px" alt="arousal image" />' +
-      '<select class="form-control">' +
-      '<option selected>Select response</option>' +
-      ' <option value="1">1</option>' +
-      ' <option value="2">2</option>' +
-      ' <option value="3">3</option>' +
-      ' <option value="4">4</option>' +
-      ' <option value="5">5</option>' +
-      ' </select>' +
+      '<label class="naf-radio">' +
+      '<input type="radio" name="{0}q2" value="1"/>' +
+      '</label>' +
+      '<label class="naf-radio">' +
+      '<input type="radio" name="{0}q2" value="2"/>' +
+      '</label>' +
+      '<label class="naf-radio">' +
+      '<input type="radio" name="{0}q2" value="3"/>' +
+      '</label>' +
+      '<label class="naf-radio">' +
+      '<input type="radio" name="{0}q2" value="4"/>' +
+      '</label>' +
+      '<label class="naf-radio">' +
+      '<input type="radio" name="{0}q2" value="5"/>' +
+      '</label>' +
+      '</div>' +
+      '<br/>' +
+      '<br/>' +
+      '<div class="form-group">' +
+      '<label for="">What was the topic of the video?</label>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q3" value="1"/> Nutrition of newborn' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q3" value="2"/> Dangerous effects of smoking and tobacco' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q3" value="3"/> Importance of washing hands' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q3" value="4"/> Safe drinking water' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q3" value="5"/> Treatment of Diarrhea' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q3" value="5"/> None of these' +
+      '</span>' +
       '</div>' +
       '</form>';
 
-    var multiStr = "This is the first line \
-    	This is the second line \
-    	This is more...";
-
+    form = form.format(vid);
     return form;
   }
 
   function get_demography_survey() {
     var form = '<form>' +
       '<div class="form-group">' +
-      '<label for="formGroupExampleInput">What is your age?</label>' +
-      '<input type="text" class="form-control" id="" placeholder="type response here">' +
+      '<label>What is your age?</label>' +
+      '<input type="number" class="form-control" id="demogr-age" placeholder="enter number">' +
       '</div>' +
-      // add gender to this: male/female/other
-      // what is the highest level of education (make structured)  -- primary / secondary /
       '<div class="form-group">' +
-      '<label for="formGroupExampleInput">What is your education?</label>' +
-      '<input type="text" class="form-control" id="" placeholder="type response here">' +
+      '<label for="">What is your gender</label>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="demogr-gender" value="male"/> Male' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="demogr-gender" value="female"/> Female' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="demogr-gender" value="other"/> Other' +
+      '</span>' +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label for="">What is the your highest level of education?</label>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="demogr-education" value="primary"/> Primary' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="demogr-education" value="secondary"/> Secondary' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="demogr-education" value="university"/> University' +
+      '</span>' +
       '</div>' +
       '<div class="form-group">' +
       '<label for="formGroupExampleInput">What is your occupation?</label>' +
       '<input type="text" class="form-control" id="" placeholder="type response here">' +
       '</div>' +
-      // can type a number
       '<div class="form-group">' +
       '<label for="formGroupExampleInput">What is your family size?</label>' +
-      '<input type="text" class="form-control" id="" placeholder="type response here">' +
+      '<input type="number" class="form-control" id="" placeholder="enter number">' +
       '</div>' +
-      // optional
       '<div class="form-group">' +
       '<label for="formGroupExampleInput">What is the occupation of your family members?</label>' +
-      '<input type="text" class="form-control" id="" placeholder="type response here">' +
+      '<input type="text" class="form-control" id="" placeholder="optional response here">' +
       '</div>' +
       '<div class="form-group">' +
-      // in rupees
       '<label for="formGroupExampleInput">What is your monthly family income?</label>' +
-      '<input type="text" class="form-control" id="" placeholder="type response here">' +
+      '<input type="text" class="form-control" id="" placeholder="number in rupees">' +
       '</div>' +
       '<div class="form-group">' +
-      // yes - i own one / i share one / i don't have one
-      '<label for="formGroupExampleInput">Do you have mobile phones</label>' +
-      '<input type="text" class="form-control" id="" placeholder="type response here">' +
+      '<label for="">Do you have a mobile phone?</label>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="demogr-mobile" value="no_share"/> Yes, I own one but do NOT share it.' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="demogr-mobile" value="yes_share"/> Yes, I own one and I share it.' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="demogr-mobile" value="no_phone"/> I do not have a mobile phone.' +
+      '</span>' +
       '</div>' +
       '<div class="form-group">' +
-      // yes / no
-      '<label for="formGroupExampleInput">Do you watch videos on your mobile phones</label>' +
-      '<input type="text" class="form-control" id="" placeholder="type response here">' +
+      '<label for="">Do you watch videos on your mobile phone</label>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="demogr-watch" value="yes"/> Yes' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="demogr-watch" value="no"/> No' +
+      '</span>' +
       '</div>' +
       '<div class="form-group">' +
-      // yes / no
-      '<label for="formGroupExampleInput">Do you use Internet on phone?</label>' +
-      '<input type="text" class="form-control" id="" placeholder="type response here">' +
+      '<label for="">Do you use Internet on phone?</label>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="demogr-internet" value="yes"/> Yes' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="demogr-internet" value="no"/> No' +
+      '</span>' +
       '</div>' +
       '</form>';
     return form;
