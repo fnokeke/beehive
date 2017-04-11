@@ -161,12 +161,12 @@ var naf = (function() {
 
     if (step === 1 || step === 3 || step === 5) { // videos
       if (g_video_played) {
-        do_countdown(3);
+        do_countdown(10);
       }
     } else if (step === 2 || step === 4 || step === 6) { // video responses
-      do_countdown(4);
+      do_countdown(10);
     } else if (step === 7) { // demography survey
-      do_countdown(7);
+      do_countdown(10);
     } else if (step === 8) { // final code
       $('#next-step-btn').prop('disabled', false);
     }
@@ -247,9 +247,18 @@ var naf = (function() {
 
   function get_raw_video(order) {
     var mp4 = 'v' + order + '.mp4';
+    var link;
+    if (order === 1) {
+      link = "https://www.w3schools.com/html/mov_bbb.mp4";
+    } else if (order === 2) {
+      link = "https://www.w3schools.com/html/mov_bbb.mp4";
+    } else if (order === 3) {
+      link = "https://www.w3schools.com/html/mov_bbb.mp4";
+    }
+
     var raw_html = '<strong>Watch in fullscreen mode and use headphones.</strong>' +
-      '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>'.format(mp4) +
-      '<source src="/static/videos/{0}" type="video/mp4">'.format(mp4) +
+      '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
+      '<source src="{1}" type="video/mp4">'.format(mp4, link) +
       'Your browser does not support the video.' +
       '</video>';
 
