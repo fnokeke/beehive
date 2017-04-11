@@ -814,7 +814,11 @@ def naf_watch_videos(worker_id):
 @app.route('/naf/update/step', methods=['POST'])
 def naf_update_step():
     data = json.loads(request.data) if request.data else request.form.to_dict()
-    next_step = 1 + int(data['current_step']) % 8
+    cur_step = int(data['current_step'])
+    if cur_step == 8:
+        return json.dumps({'next_step': cur_step})
+
+    next_step = 1 + cur_step % 8
     session['step'] = next_step
     return json.dumps({'next_step': next_step})
 
