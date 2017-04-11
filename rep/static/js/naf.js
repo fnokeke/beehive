@@ -155,20 +155,21 @@ var naf = (function() {
   }
 
   function countdown_next_step_btn(step) {
+    console.log('current step: ', step);
     if (step === 2 || step === 4 || step === 6 || step === 8) {
       g_video_played = false;
     }
 
     if (step === 1 || step === 3 || step === 5) { // videos
       if (g_video_played) {
-        do_countdown(10);
+        do_countdown(2);
       }
     } else if (step === 2 || step === 4 || step === 6) { // video responses
-      do_countdown(10);
+      do_countdown(2);
     } else if (step === 7) { // demography survey
-      do_countdown(10);
+      do_countdown(2);
     } else if (step === 8) { // final code
-      $('#next-step-btn').prop('disabled', false);
+      $('#next-step-btn').hide();
     }
   }
 
@@ -268,6 +269,7 @@ var naf = (function() {
   function get_survey(step, worker_group) {
     var order = get_content_order(step, worker_group);
     var form = '<form>' +
+      // goes to bottom
       '<div class="form-group">' +
       '<label for="">What was the topic of the video?</label>' +
       '<select class="form-control">' +
@@ -284,7 +286,7 @@ var naf = (function() {
       '<br/>' +
       '<div class="form-group">' +
       '<label for="">Using the image below, indicate how happy or sad you feel after watching the video. Please tick the figure that best represents your feelings. </label>' +
-      '<img src="/static/images/naf/arousal.png" width="550px" height="150px" alt="arousal image" />' +
+      '<img src="/static/images/naf/valence.png" width="550px" height="150px" alt="valence image" />' +
       '<select class="form-control">' +
       '<option selected>Select response</option>' +
       ' <option value="1">1</option>' +
@@ -298,7 +300,7 @@ var naf = (function() {
       '<br/>' +
       '<div class="form-group">' +
       '<label for="">Using the image below, please indicate how the video affects you. Select the figure that best represents your feelings.</label>' +
-      '<img src="/static/images/naf/valence.png" width="550px" height="100px" alt="arousal image" />' +
+      '<img src="/static/images/naf/arousal.png" width="550px" height="100px" alt="arousal image" />' +
       '<select class="form-control">' +
       '<option selected>Select response</option>' +
       ' <option value="1">1</option>' +
@@ -323,6 +325,8 @@ var naf = (function() {
       '<label for="formGroupExampleInput">What is your age?</label>' +
       '<input type="text" class="form-control" id="" placeholder="type response here">' +
       '</div>' +
+      // add gender to this: male/female/other
+      // what is the highest level of education (make structured)  -- primary / secondary /
       '<div class="form-group">' +
       '<label for="formGroupExampleInput">What is your education?</label>' +
       '<input type="text" class="form-control" id="" placeholder="type response here">' +
@@ -331,27 +335,33 @@ var naf = (function() {
       '<label for="formGroupExampleInput">What is your occupation?</label>' +
       '<input type="text" class="form-control" id="" placeholder="type response here">' +
       '</div>' +
+      // can type a number
       '<div class="form-group">' +
       '<label for="formGroupExampleInput">What is your family size?</label>' +
       '<input type="text" class="form-control" id="" placeholder="type response here">' +
       '</div>' +
+      // optional
       '<div class="form-group">' +
       '<label for="formGroupExampleInput">What is the occupation of your family members?</label>' +
       '<input type="text" class="form-control" id="" placeholder="type response here">' +
       '</div>' +
       '<div class="form-group">' +
+      // in rupees
       '<label for="formGroupExampleInput">What is your monthly family income?</label>' +
       '<input type="text" class="form-control" id="" placeholder="type response here">' +
       '</div>' +
       '<div class="form-group">' +
+      // yes - i own one / i share one / i don't have one
       '<label for="formGroupExampleInput">Do you have mobile phones</label>' +
       '<input type="text" class="form-control" id="" placeholder="type response here">' +
       '</div>' +
       '<div class="form-group">' +
+      // yes / no
       '<label for="formGroupExampleInput">Do you watch videos on your mobile phones</label>' +
       '<input type="text" class="form-control" id="" placeholder="type response here">' +
       '</div>' +
       '<div class="form-group">' +
+      // yes / no
       '<label for="formGroupExampleInput">Do you use Internet on phone?</label>' +
       '<input type="text" class="form-control" id="" placeholder="type response here">' +
       '</div>' +
