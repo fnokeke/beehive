@@ -160,15 +160,41 @@ var naf = (function() {
       g_video_played = false;
     }
 
-    if (step === 1 || step === 3 || step === 5) { // videos
-      if (g_video_played) {
-        do_countdown(2);
-      }
-    } else if (step === 2 || step === 4 || step === 6) { // video responses
+    if (g_video_played && (step === 1 || step === 3 || step === 5)) { // videos
       do_countdown(2);
-    } else if (step === 7) { // demography survey
-      do_countdown(2);
-    } else if (step === 8) { // final code
+    }
+
+    // survey1 completed
+    if (step === 2 && localStorage.v1q1 !== "undefined" && localStorage.v1q2 !== "undefined" && localStorage.v1q3 !== "undefined") {
+      $('#next-step-btn').prop('disabled', false);
+    }
+
+    // survey2 completed
+    if (step === 4 && localStorage.v2q1 !== "undefined" && localStorage.v2q2 !== "undefined" && localStorage.v2q3 !== "undefined") {
+      $('#next-step-btn').prop('disabled', false);
+    }
+
+    // survey3 completed
+    if (step === 6 && localStorage.v3q1 !== "undefined" && localStorage.v3q2 !== "undefined" && localStorage.v3q3 !== "undefined") {
+      $('#next-step-btn').prop('disabled', false);
+    }
+
+    // demography survey completed
+    if (step === 7 &&
+      localStorage.age !== "undefined" &&
+      localStorage.gender !== "undefined" &&
+      localStorage.education !== "undefined" &&
+      localStorage.occupation !== "undefined" &&
+      localStorage.family_size !== "undefined" &&
+      // family occupation is optional
+      localStorage.family_income !== "undefined" &&
+      localStorage.has_mobile !== "undefined" &&
+      localStorage.watch_video !== "undefined" &&
+      localStorage.internet_phone !== "undefined") {
+      $('#next-step-btn').prop('disabled', false);
+    }
+
+    if (step === 8) { // final code
       $('#next-step-btn').hide();
     }
   }
@@ -301,7 +327,7 @@ var naf = (function() {
       '<br/>' +
       '<div class="form-group">' +
       '<label for="">Using the image below, please indicate how the video affects you. Select the figure that best represents your feelings.</label>' +
-      '<img src="/static/images/naf/arousal.png" width="550px" height="100px" alt="arousal image" />' +
+      '<img src="/static/images/naf/arousal.png" width="550px" height="150px" alt="arousal image" />' +
       '<label class="naf-radio">' +
       '<input type="radio" name="{0}q2" value="1"/>' +
       '</label>' +
@@ -354,7 +380,7 @@ var naf = (function() {
   }
 
   function get_demography_survey() {
-    var form = '<form>' +
+    var form = '<form class="demography">' +
       '<div class="form-group">' +
       '<label>What is your age?</label>' +
       '<input type="number" class="form-control" id="demogr-age" placeholder="enter number">' +
@@ -390,56 +416,56 @@ var naf = (function() {
       '</span>' +
       '</div>' +
       '<div class="form-group">' +
-      '<label for="formGroupExampleInput">What is your occupation?</label>' +
-      '<input type="text" class="form-control" id="" placeholder="type response here">' +
+      '<label>What is your occupation?</label>' +
+      '<input type="text" class="form-control" id="demogr-occupation" placeholder="type response here">' +
       '</div>' +
       '<div class="form-group">' +
       '<label for="formGroupExampleInput">What is your family size?</label>' +
-      '<input type="number" class="form-control" id="" placeholder="enter number">' +
+      '<input type="number" class="form-control" id="demogr-family-size" placeholder="enter number">' +
       '</div>' +
       '<div class="form-group">' +
       '<label for="formGroupExampleInput">What is the occupation of your family members?</label>' +
-      '<input type="text" class="form-control" id="" placeholder="optional response here">' +
+      '<input type="text" class="form-control" id="demogr-family-occupation" placeholder="optional response here">' +
       '</div>' +
       '<div class="form-group">' +
       '<label for="formGroupExampleInput">What is your monthly family income?</label>' +
-      '<input type="text" class="form-control" id="" placeholder="number in rupees">' +
+      '<input type="number" class="form-control" id="demogr-family-income" placeholder="number in rupees">' +
       '</div>' +
       '<div class="form-group">' +
       '<label for="">Do you have a mobile phone?</label>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-mobile" value="no_share"/> Yes, I own one but do NOT share it.' +
+      '<input type="radio" name="demogr-has-mobile" value="no_share"/> Yes, I own one but do NOT share it.' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-mobile" value="yes_share"/> Yes, I own one and I share it.' +
+      '<input type="radio" name="demogr-has-mobile" value="yes_share"/> Yes, I own one and I share it.' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-mobile" value="no_phone"/> I do not have a mobile phone.' +
+      '<input type="radio" name="demogr-has-mobile" value="no_phone"/> I do not have a mobile phone.' +
       '</span>' +
       '</div>' +
       '<div class="form-group">' +
       '<label for="">Do you watch videos on your mobile phone</label>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-watch" value="yes"/> Yes' +
+      '<input type="radio" name="demogr-watch-video" value="yes"/> Yes' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-watch" value="no"/> No' +
+      '<input type="radio" name="demogr-watch-video" value="no"/> No' +
       '</span>' +
       '</div>' +
       '<div class="form-group">' +
       '<label for="">Do you use Internet on phone?</label>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-internet" value="yes"/> Yes' +
+      '<input type="radio" name="demogr-internet-phone" value="yes"/> Yes' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-internet" value="no"/> No' +
+      '<input type="radio" name="demogr-internet-phone" value="no"/> No' +
       '</span>' +
       '</div>' +
       '</form>';
@@ -464,3 +490,117 @@ var naf = (function() {
   return exposed_functions;
 
 })();
+
+// survey1
+localStorage.v1q1 = "undefined";
+localStorage.v1q2 = "undefined";
+localStorage.v1q3 = "undefined";
+
+// survey2
+localStorage.v2q1 = "undefined";
+localStorage.v2q2 = "undefined";
+localStorage.v2q3 = "undefined";
+
+// survey3
+localStorage.v3q1 = "undefined";
+localStorage.v3q2 = "undefined";
+localStorage.v3q3 = "undefined";
+
+// demography survey
+localStorage.age = "undefined";
+localStorage.gender = "undefined";
+localStorage.education = "undefined";
+localStorage.occupation = "undefined";
+localStorage.family_size = "undefined";
+localStorage.family_occupation = "undefined";
+localStorage.family_income = "undefined";
+localStorage.has_mobile = "undefined";
+localStorage.watch_video = "undefined";
+localStorage.internet_phone = "undefined";
+
+$('input[type=radio]').click(function() {
+  var name = this.name;
+  if (name.indexOf('v1') > -1) {
+    checkSurvey('v1');
+  } else if (name.indexOf('v2') > -1) {
+    checkSurvey('v2');
+  } else if (name.indexOf('v3') > -1) {
+    console.log('v3 called.');
+    checkSurvey('v3');
+  }
+});
+
+$('.demography').click(function() {
+  console.log('completing demography survey');
+  checkSurvey('demography');
+});
+
+function checkSurvey(name) {
+  // survey1
+  if (name === 'v1') {
+    localStorage.v1q1 = $('input[name=v1q1]:checked').val();
+    localStorage.v1q2 = $('input[name=v1q2]:checked').val();
+    localStorage.v1q3 = $('input[name=v1q3]:checked').val();
+    console.log(localStorage.v1q1, localStorage.v1q2, localStorage.v1q3);
+
+    if (localStorage.v1q1 !== "undefined" && localStorage.v1q2 !== "undefined" && localStorage.v1q3 !== "undefined") {
+      $('#next-step-btn').prop('disabled', false);
+      console.log('Will enable next button for step 3.');
+    }
+  }
+
+  // survey2
+  else if (name === 'v2') {
+    localStorage.v2q1 = $('input[name=v2q1]:checked').val();
+    localStorage.v2q2 = $('input[name=v2q2]:checked').val();
+    localStorage.v2q3 = $('input[name=v2q3]:checked').val();
+    console.log(localStorage.v2q1, localStorage.v2q2, localStorage.v2q3);
+
+    if (localStorage.v2q1 !== "undefined" && localStorage.v2q2 !== "undefined" && localStorage.v2q3 !== "undefined") {
+      $('#next-step-btn').prop('disabled', false);
+      console.log('Will enable next button for step 5.');
+    }
+  }
+
+  // survey3
+  else if (name === 'v3') {
+    localStorage.v3q1 = $('input[name=v3q1]:checked').val();
+    localStorage.v3q2 = $('input[name=v3q2]:checked').val();
+    localStorage.v3q3 = $('input[name=v3q3]:checked').val();
+    console.log(localStorage.v3q1, localStorage.v3q2, localStorage.v3q3);
+
+    if (localStorage.v3q1 !== "undefined" && localStorage.v3q2 !== "undefined" && localStorage.v3q3 !== "undefined") {
+      $('#next-step-btn').prop('disabled', false);
+      console.log('Will enable next button for step 7.');
+    }
+  }
+
+  // demography
+  else if (name === 'demography') {
+    localStorage.age = $('#demogr-age').val();
+    localStorage.gender = $('input[name=demogr-gender]:checked').val();
+    localStorage.education = $('input[name=demogr-education]:checked').val();
+    localStorage.occupation = $('#demogr-occupation').val();
+    localStorage.family_size = $('#demogr-family-size').val();
+    localStorage.family_occupation = $('#demogr-family-occupation').val();
+    localStorage.family_income = $('#demogr-family-income').val();
+    localStorage.has_mobile = $('input[name=demogr-has-mobile]:checked').val();
+    localStorage.watch_video = $('input[name=demogr-watch-video]:checked').val();
+    localStorage.internet_phone = $('input[name=demogr-internet-phone]:checked').val();
+    console.log(localStorage);
+
+    if (localStorage.age !== "undefined" &&
+      localStorage.gender !== "undefined" &&
+      localStorage.education !== "undefined" &&
+      localStorage.occupation !== "undefined" &&
+      localStorage.family_size !== "undefined" &&
+      // family occupation is optional
+      localStorage.family_income !== "undefined" &&
+      localStorage.has_mobile !== "undefined" &&
+      localStorage.watch_video !== "undefined" &&
+      localStorage.internet_phone !== "undefined") {
+      $('#next-step-btn').prop('disabled', false);
+    }
+
+  }
+}
