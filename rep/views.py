@@ -806,8 +806,8 @@ def naf_watch_videos(worker_id):
     enrolled_worker = NafEnroll.query.filter_by(worker_id=worker_id).first()
     if not enrolled_worker:
         return render_template('mturk/mturk-404.html')
-    if not 'step' in session:
-        session['step'] = 1
+    # if not 'step' in session:
+    session['step'] = 1
     return render_template('naf/naf-main.html', worker=enrolled_worker)
 
 
