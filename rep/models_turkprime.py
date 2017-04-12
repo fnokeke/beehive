@@ -24,9 +24,15 @@ class TP_Admin(db.Model):
         self.admin_experiment_group = info.get('admin_experiment_group')
         self.admin_fb_max_mins = info.get('admin_fb_max_mins')
         self.admin_fb_max_opens = info.get('admin_fb_max_opens')
-        self.admin_treatment_start = info.get('admin_treatment_start')
-        self.admin_followup_start = info.get('admin_followup_start')
-        self.admin_logging_stop = info.get('admin_logging_stop')
+        # self.admin_treatment_start = info.get('admin_treatment_start')
+        # self.admin_followup_start = info.get('admin_followup_start')
+        # self.admin_logging_stop = info.get('admin_logging_stop')
+        try:
+            self.admin_treatment_start = to_datetime(info.get('admin_treatment_start'), "%Y%m-%d")
+            self.admin_followup_start = to_datetime(info.get('admin_followup_start'), "%Y-%m-%d")
+            self.admin_logging_stop = to_datetime(info.get('admin_logging_stop'), "%Y-%m-%d")
+        except Exception as e:
+            print e
 
     def __repr__(self):
         result = {
