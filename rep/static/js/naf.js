@@ -155,9 +155,6 @@ var naf = (function() {
   }
 
   function countdown_next_step_btn(step) {
-    // $('input[type=radio]').trigger('click');
-    // $('.demography').trigger('click');
-    // console.log('triggered forms.');
 
     console.log('current step: ', step);
     if (step === 2 || step === 4 || step === 6 || step === 8) {
@@ -165,7 +162,7 @@ var naf = (function() {
     }
 
     if (g_video_played && (step === 1 || step === 3 || step === 5)) { // videos
-      do_countdown(2);
+      do_countdown(65);
     }
 
     // survey1 completed
@@ -513,17 +510,6 @@ localStorage.has_mobile = "undefined";
 localStorage.watch_video = "undefined";
 localStorage.internet_phone = "undefined";
 
-$('input[type=radio]').click(function() {
-  var name = this.name;
-  console.log('radio name: ', name);
-  if (name.indexOf('v1') > -1) {
-    checkSurvey('v1');
-  } else if (name.indexOf('v2') > -1) {
-    checkSurvey('v2');
-  } else if (name.indexOf('v3') > -1) {
-    checkSurvey('v3');
-  }
-});
 
 function check_demogr() {
   console.log('oncick demogr called');
@@ -532,24 +518,15 @@ function check_demogr() {
 
 function check_video_survey() {
   var current_step = parseInt($('#step-value').text());
-  console.log('current_step check_video_survey: ', current_step);
   if (current_step === 2) {
     checkSurvey('v1');
-  }
-  if (current_step === 4) {
+  } else if (current_step === 4) {
     checkSurvey('v2');
-  }
-  if (current_step === 6) {
+  } else if (current_step === 6) {
     checkSurvey('v3');
   }
-
-  console.log('oncick video called');
-  console.log('this: ', this.name);
 }
 
-$('.demography').click(function() {
-  checkSurvey('demography');
-});
 
 function checkSurvey(name) {
   // survey1
