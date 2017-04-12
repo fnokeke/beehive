@@ -155,6 +155,10 @@ var naf = (function() {
   }
 
   function countdown_next_step_btn(step) {
+    // $('input[type=radio]').trigger('click');
+    // $('.demography').trigger('click');
+    // console.log('triggered forms.');
+
     console.log('current step: ', step);
     if (step === 2 || step === 4 || step === 6 || step === 8) {
       g_video_played = false;
@@ -274,21 +278,12 @@ var naf = (function() {
 
   function get_raw_video(order) {
     var mp4 = 'v' + order + '.mp4';
-    var link;
-    if (order === 1) {
-      link = "https://www.w3schools.com/html/mov_bbb.mp4";
-    } else if (order === 2) {
-      link = "https://www.w3schools.com/html/mov_bbb.mp4";
-    } else if (order === 3) {
-      link = "https://www.w3schools.com/html/mov_bbb.mp4";
-    }
-
     var raw_html = '<strong>Watch in fullscreen mode and use headphones.</strong>' +
       '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
-      '<source src="{1}" type="video/mp4">'.format(mp4, link) +
+      '<source src="/static/videos/{0}" type="video/mp4">' +
       'Your browser does not support the video.' +
       '</video>';
-
+    raw_html = raw_html.format(mp4);
     return raw_html;
   }
 
@@ -303,7 +298,7 @@ var naf = (function() {
       vid = 'v3';
     }
 
-    var form = '<form>' +
+    var form = '<form onclick="check_video_survey()">' +
       '<div class="form-group">' +
       '<label for="">Using the image below, indicate how happy or sad you feel after watching the video. Please tick the figure that best represents your feelings. </label>' +
       '<img src="/static/images/naf/valence.png" width="550px" height="150px" alt="valence image" />' +
@@ -380,7 +375,7 @@ var naf = (function() {
   }
 
   function get_demography_survey() {
-    var form = '<form class="demography">' +
+    var form = '<form class="demography" onclick="check_demogr()">' +
       '<div class="form-group">' +
       '<label>What is your age?</label>' +
       '<input type="number" class="form-control" id="demogr-age" placeholder="enter number">' +
@@ -520,24 +515,46 @@ localStorage.internet_phone = "undefined";
 
 $('input[type=radio]').click(function() {
   var name = this.name;
+  console.log('radio name: ', name);
   if (name.indexOf('v1') > -1) {
     checkSurvey('v1');
   } else if (name.indexOf('v2') > -1) {
     checkSurvey('v2');
   } else if (name.indexOf('v3') > -1) {
-    console.log('v3 called.');
     checkSurvey('v3');
   }
 });
 
+function check_demogr() {
+  console.log('oncick demogr called');
+  checkSurvey('demography');
+}
+
+function check_video_survey() {
+  var current_step = parseInt($('#step-value').text());
+  console.log('current_step check_video_survey: ', current_step);
+  if (current_step === 2) {
+    checkSurvey('v1');
+  }
+  if (current_step === 4) {
+    checkSurvey('v2');
+  }
+  if (current_step === 6) {
+    checkSurvey('v3');
+  }
+
+  console.log('oncick video called');
+  console.log('this: ', this.name);
+}
+
 $('.demography').click(function() {
-  console.log('completing demography survey');
   checkSurvey('demography');
 });
 
 function checkSurvey(name) {
   // survey1
   if (name === 'v1') {
+    console.log('completing v1 survey');
     localStorage.v1q1 = $('input[name=v1q1]:checked').val();
     localStorage.v1q2 = $('input[name=v1q2]:checked').val();
     localStorage.v1q3 = $('input[name=v1q3]:checked').val();
@@ -551,6 +568,7 @@ function checkSurvey(name) {
 
   // survey2
   else if (name === 'v2') {
+    console.log('completing v2 survey');
     localStorage.v2q1 = $('input[name=v2q1]:checked').val();
     localStorage.v2q2 = $('input[name=v2q2]:checked').val();
     localStorage.v2q3 = $('input[name=v2q3]:checked').val();
@@ -564,6 +582,7 @@ function checkSurvey(name) {
 
   // survey3
   else if (name === 'v3') {
+    console.log('completing v3 survey');
     localStorage.v3q1 = $('input[name=v3q1]:checked').val();
     localStorage.v3q2 = $('input[name=v3q2]:checked').val();
     localStorage.v3q3 = $('input[name=v3q3]:checked').val();
@@ -587,7 +606,6 @@ function checkSurvey(name) {
     localStorage.has_mobile = $('input[name=demogr-has-mobile]:checked').val();
     localStorage.watch_video = $('input[name=demogr-watch-video]:checked').val();
     localStorage.internet_phone = $('input[name=demogr-internet-phone]:checked').val();
-    console.log(localStorage);
 
     if (localStorage.age !== "undefined" &&
       localStorage.gender !== "undefined" &&
