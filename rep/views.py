@@ -966,7 +966,7 @@ def mobile_worker_id():
         return json.dumps({'status': -1, 'response': response, 'worker_id': -1, 'survey_link': ''})
 
     TP_Admin.add_user(data)
-    user_response = response + '\nYour Code: {}\nRemember to complete survey:'.format(worker.worker_code)
+    user_response = response + '\nYour Code: {}\nComplete survey link below:'.format(worker.worker_code)
     server_response = {'status': 200,
                        'response': user_response,
                        'worker_id': worker.worker_id,
@@ -1049,6 +1049,11 @@ def get_worker_info(row):
 @app.template_filter('nyc')
 def _jinja2_filter_nyctime(date, fmt=None):
     return pytz.utc.localize(date).astimezone(pytz.timezone('America/New_York'))
+
+
+@app.template_filter('india')
+def _jinja2_filter_indiatime(date, fmt=None):
+    return pytz.utc.localize(date).astimezone(pytz.timezone('Asia/Calcutta'))
 
 
 @app.template_filter('fancydatetime')
