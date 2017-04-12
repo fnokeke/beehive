@@ -96,6 +96,12 @@ var naf = (function() {
   });
 
   $("#steps-modal").on("hidden.bs.modal", function() {
+    $('#step-value').text(1);
+    console.log('step reset to 1');
+    init_step_values();
+    localStorage.clear();
+    localStorage.agreed_to_consent = "true";
+
     var vid = $('video').get(0);
     if (vid) {
       vid.pause();
