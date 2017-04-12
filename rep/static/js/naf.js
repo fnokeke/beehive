@@ -141,6 +141,7 @@ var naf = (function() {
       $('#modal-body-content').html(get_modal_body(json_resp.next_step, worker_group, worker_code));
       countdown_next_step_btn(json_resp.next_step);
     }).fail(function(error) {
+      $('#next-step-btn').prop('disabled', true);
       console.log('step error: ', error);
     });
   }
@@ -155,6 +156,7 @@ var naf = (function() {
   }
 
   function countdown_next_step_btn(step) {
+    $('#next-step-btn').prop('disabled', true);
 
     console.log('current step: ', step);
     if (step === 2 || step === 4 || step === 6 || step === 8) {
@@ -396,15 +398,23 @@ var naf = (function() {
       '<label for="">What is the your highest level of education?</label>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-education" value="primary"/> Primary' +
+      '<input type="radio" name="demogr-education" value="primary"/> Primary School' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-education" value="secondary"/> Secondary' +
+      '<input type="radio" name="demogr-education" value="secondary"/> Secondary School (10th)' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-education" value="university"/> University' +
+      '<input type="radio" name="demogr-education" value="higher_secondary"/> Higher Secondary School (12th)' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="demogr-education" value="bachelors"/> Bachelors' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="demogr-education" value="masters"/> Masters' +
       '</span>' +
       '</div>' +
       '<div class="form-group">' +
@@ -526,7 +536,6 @@ function check_video_survey() {
     checkSurvey('v3');
   }
 }
-
 
 function checkSurvey(name) {
   // survey1
