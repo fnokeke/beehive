@@ -1,8 +1,26 @@
 $(document).ready(function() {
-  $('#enrolled-participants-table').DataTable();
-  $('#notif-clicked-table').DataTable();
-  $('#stats-table').DataTable();
+  var page_length = 50;
 
-  $('#mturk-participants-table').DataTable();
-  $('#mturk-stats-table').DataTable();
+  $('#enrolled-participants-table').DataTable({
+    "pageLength": page_length
+  });
+
+  $('#notif-clicked-table').DataTable({
+    "pageLength": page_length
+  });
+
+  $('#stats-table').DataTable({
+    "pageLength": page_length,
+    "bDeferRender": true,
+  });
+
+  $('#mturk-participants-table').DataTable({
+    "pageLength": page_length,
+    "bDeferRender": true,
+  });
+
+  $('#mturk-stats-table').DataTable({
+    "pageLength": page_length,
+    "bDeferRender": true,
+  });
 });
