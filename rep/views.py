@@ -983,6 +983,12 @@ def mobile_worker_fb_stats():
     return json.dumps(server_response, default=str)
 
 
+@app.route('/mobile/turkprime/all/fb-stats')
+def get_all_fb_stats():
+    stats = TP_FBStats.query.all()
+    return json.dumps({'stats': stats})
+
+
 def append_admin_fb_response(data):
     worker = TP_Admin.query.filter_by(worker_id=data['worker_id']).first()
     if worker:
