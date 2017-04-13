@@ -22,5 +22,6 @@ $(document).ready(function() {
   $('#mturk-stats-table').DataTable({
     "pageLength": page_length,
     "bDeferRender": true,
+    "bProcessing": true,
   });
 });
