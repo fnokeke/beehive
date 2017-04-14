@@ -294,7 +294,7 @@ var naf = (function() {
     //   'Your browser does not support the video.' +
     //   '</video>';
 
-    var raw_html = '<strong>नीचे दिए हुए वीडियो को ध्यान से fullscreen mode पर देखें।  अपने headphones का इस्तेमाल करें।  यह वीडियो सिर्फ 1 मिनट का है।</strong>' +
+    var raw_html = '<strong>नीचे दिए हुए वीडियो को ध्यान से fullscreen mode पर देखें।  अपने headphones का इस्तेमाल करें।  यह वीडियो सिर्फ 1 मिनट का है।</strong><br>' +
       '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
       '<source src="/static/videos/{0}" type="video/mp4">' +
       'Your browser does not support the video.' +
