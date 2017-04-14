@@ -1,71 +1,62 @@
 <div class="page-header">
   <h3>
-    Your task
+    आपको क्या करना है
   </h3>
-  There are seven(7) steps you need to follow to complete the experiment.
+  इस रिसर्च स्टडी को पूरा करने के लिए आपको 7 चीजें (7 स्टेप्स) करने है
   <br>
   <br>
   <ol>
     <li>
-      Carefully watch a 1-minute video in Hindi.
+      एक वीडियो को ध्यान से देखें. यह वीडियो हिंदी में है।
     </li>
     <li>
-      Answer three questions about the video.
+      इस वीडियो से जुड़े हुए 3 सवालों का जवाब दें।
     </li>
     <li>
-      Carefully watch another 1-minute video in Hindi.
+      दुसरे वीडियो को ध्यान से देखें. यह वीडियो भी हिंदी में है।
     </li>
     <li>
-      Answer three questions about the video.
+      इस वीडियो से जुड़े हुए 3 सवालों का जवाब दें।
     </li>
     <li>
-      Carefully watch another 1-minute video in Hindi.
+      तीसरे वीडियो को ध्यान से देखें. यह वीडियो भी हिंदी में है।
     </li>
     <li>
-      Answer three questions about the video.
+      इस वीडियो से जुड़े हुए 3 सवालों का जवाब दें।
     </li>
     <li>
-      Complete short demography survey
+      एक छोटा डेमोग्राफिक सर्वे कम्पलीट करे।
     </li>
   </ol>
-  After going through all steps, a code will be generated.
-  <strong>SUBMIT CODE ON MTURK HIT.</strong>
+  तीनो वीडियो लगभग 1 मिनट के हैं
+  <br>
+  जब आप सभी स्टेप्स को कम्पलीट कर लेंगे तब एक कोड आपको दिया जाएगा। इस कोड को MTurk हिट में सबमिट करें।
 </div>
 
 {% include "naf/naf-consent.html" %}
 
 <div class="page-header">
   <h3>
-    How to join
+    रिसर्च स्टडी में भाग कैसे लें?
   </h3>
+  इस स्टडी में भाग लेने के लिए आपको consent form को पढ़ कर अपनी सहमति देनी होगी। Consent form को पढ़ने
+  के लिए
+  <a id="naf-read-consent-btn">
+    <यहाँ क्लिक करे></a>। अगर आप इस स्टडी में भाग लेना चाहते हैं तो consent form में "I agree" बटन को
+    सलेक्ट करें। "I agree" बटन को सलेक्ट करने के बाद, आगे के निर्देश नीचे आ जाएंगे।
 
-  To join the study, you have to accept the consent form.
-  <a id="naf-read-consent-btn">Click Here</a>
-  to go through the consent form and select "I agree" if you decide to continue with experiment. Next
-  set of instructions will appear below after you agree to join the experiment.
+    <div id="naf-join-div" style="display: none">
+      <br>
+      #################################################################################
+      <br>
+      Consent देने के लिए धन्यवाद। नीचे दिए गए निर्देशों का पालन करें। वीडियो को देखते हुए Earphones का
+      इस्तेमाल करें। वीडियो को Fullscreen करके देखें।
+      <br>
+      <strong>वीडियो को देखते हुए Earphones का इस्तेमाल करें। वीडियो को Fullscreen करके देखें।</strong>
+      <br>
+      #################################################################################
 
-  <div id="naf-join-div" style="display: none">
-    <br>
-    #################################################################################
-    <br>
-    You have agreed to Consent Form. Follow steps to continue:
-    <br>
-    <strong>USE EARPHONES WHEN YOU WATCH THE VIDEOS AND WATCH IT IN FULLSCREEN MODE</strong>
-    <br>
-    #################################################################################
-
-    {% include "naf/naf-steps.html" %}
-
-    <div class="page-header">
-      <h3>
-        Contact
-      </h3>
-      <p>
-        You may contact mechanical turk requester if you have any questions or concerns. Please make sure to
-        carefully follow all instructions so you can be properly helped whenever you have a question.
-      </p>
+      {% include "naf/naf-steps.html" %}
     </div>
 
   </div>
-
-</div>

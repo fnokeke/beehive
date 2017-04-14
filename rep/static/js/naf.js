@@ -216,7 +216,9 @@ var naf = (function() {
   }
 
   function get_btn_step_content(step) {
-    var contents = "Begin Step " + step;
+    // var contents = "Begin Step " + step;
+    var contents = "स्टेप " + step + " को शुरू करें";
+
     if (step === 8) {
       contents = "Show mturk code";
     }
@@ -232,15 +234,18 @@ var naf = (function() {
     } else if (step === 7) {
       contents = get_demography_survey();
     } else if (step === 8) {
-      contents = 'Your mturk code: ' + worker_code;
+      // contents = 'Your mturk code: ' + worker_code;
+      contents = 'आपका MTurk Code  है: ' + worker_code;
     }
     return contents;
   }
 
   function get_modal_title(step) {
-    var contents = "Step " + step + " of 7";
+    // var contents = "Step " + step + " of 7";
+    var contents = "स्टेप " + step + " / 7";
     if (step === 8) {
-      contents = "Submit mturk code";
+      // contents = "Submit mturk code";
+      contents = "अपने MTurk Code को सबमिट करें।";
     }
     return contents;
   }
@@ -283,7 +288,13 @@ var naf = (function() {
 
   function get_raw_video(order) {
     var mp4 = 'v' + order + '.mp4';
-    var raw_html = '<strong>Watch in fullscreen mode and use headphones.</strong>' +
+    // var raw_html = '<strong>Watch in fullscreen mode and use headphones.</strong>' +
+    //   '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
+    //   '<source src="/static/videos/{0}" type="video/mp4">' +
+    //   'Your browser does not support the video.' +
+    //   '</video>';
+
+    var raw_html = '<strong>नीचे दिए हुए वीडियो को ध्यान से fullscreen mode पर देखें।  अपने headphones का इस्तेमाल करें।  यह वीडियो सिर्फ 1 मिनट का है।</strong>' +
       '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
       '<source src="/static/videos/{0}" type="video/mp4">' +
       'Your browser does not support the video.' +
@@ -305,7 +316,8 @@ var naf = (function() {
 
     var form = '<form onclick="check_video_survey()">' +
       '<div class="form-group">' +
-      '<label for="">Using the image below, indicate how happy or sad you feel after watching the video. Please tick the figure that best represents your feelings. </label>' +
+      // '<label for="">Using the image below, indicate how happy or sad you feel after watching the video. Please tick the figure that best represents your feelings. </label>' +
+      '<label for="">आपको यह वीडियो  देखने के बाद कितनी खुशी या दुख हुआ? कृप्या उस निशान को चुने जो आपके मन के भाव  को सबसे अच्छे से बताता हो।</label>' +
       '<img src="/static/images/naf/valence.png" width="550px" height="150px" alt="valence image" />' +
       '<label class="naf-radio">' +
       '<input type="radio" name="{0}q1" value="1"/>' +
@@ -326,7 +338,8 @@ var naf = (function() {
       '<br/>' +
       '<br/>' +
       '<div class="form-group">' +
-      '<label for="">Using the image below, please indicate how the video affects you. Select the figure that best represents your feelings.</label>' +
+      // '<label for="">Using the image below, please indicate how the video affects you. Select the figure that best represents your feelings.</label>' +
+      '<label for="">आपको यह वीडियो  देखने के बाद कितना फर्क पड़ा ? कृप्या उस निशान को चुने जो आपके मन के भाव  को सबसे अच्छे से बताता हो। </label>' +
       '<img src="/static/images/naf/arousal.png" width="550px" height="150px" alt="arousal image" />' +
       '<label class="naf-radio">' +
       '<input type="radio" name="{0}q2" value="1"/>' +
@@ -347,30 +360,37 @@ var naf = (function() {
       '<br/>' +
       '<br/>' +
       '<div class="form-group">' +
-      '<label for="">What was the topic of the video?</label>' +
+      // '<label for="">What was the topic of the video?</label>' +
+      '<label for="">यह वीडियो किस विषय पर था ?</label>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q3" value="1"/> Nutrition of newborn' +
+      // '<input type="radio" name="{0}q3" value="1"/> Nutrition of newborn' +
+      '<input type="radio" name="{0}q3" value="1"/> नवजात बच्चे के पोषण के बारे में' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q3" value="2"/> Dangerous effects of smoking and tobacco' +
+      // '<input type="radio" name="{0}q3" value="2"/> Dangerous effects of smoking and tobacco' +
+      '<input type="radio" name="{0}q3" value="2"/> धूम्रपान करने के और तम्बाकू खाने के नुकसान' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q3" value="3"/> Importance of washing hands' +
+      // '<input type="radio" name="{0}q3" value="3"/> Importance of washing hands' +
+      '<input type="radio" name="{0}q3" value="3"/> हाथों को अच्छे से साफ़ करने के बारे में' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q3" value="4"/> Safe drinking water' +
+      // '<input type="radio" name="{0}q3" value="4"/> Safe drinking water' +
+      '<input type="radio" name="{0}q3" value="4"/> स्वच्छ जल को पीने के बारे में' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q3" value="5"/> Treatment of Diarrhea' +
+      // '<input type="radio" name="{0}q3" value="5"/> Treatment of Diarrhea' +
+      '<input type="radio" name="{0}q3" value="5"/> दस्त के इलाज के बारे में' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q3" value="5"/> None of these' +
+      // '<input type="radio" name="{0}q3" value="5"/> None of these' +
+      '<input type="radio" name="{0}q3" value="5"/> इनमे से कोई नहीं' +
       '</span>' +
       '</div>' +
       '</form>';
@@ -382,98 +402,137 @@ var naf = (function() {
   function get_demography_survey() {
     var form = '<form class="demography" onclick="check_demogr()">' +
       '<div class="form-group">' +
-      '<label>What is your age?</label>' +
+      // '<label>In what city you live</label>' +
+      '<label>आप किस शहर में रहते हैं?</label>' +
+      '<input type="text" class="form-control" id="demogr-city">' +
+      '</div>' +
+      '<div class="form-group">' +
+      // '<label>What is your age?</label>' +
+      '<label>आपकी उम्र क्या है ?</label>' +
       '<input type="number" class="form-control" id="demogr-age" placeholder="enter number">' +
       '</div>' +
       '<div class="form-group">' +
-      '<label for="">What is your gender</label>' +
+      // '<label for="">What is your gender</label>' +
+      '<label for="">आपका gender  क्या है?</label>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-gender" value="male"/> Male' +
+      // '<input type="radio" name="demogr-gender" value="male"/> Male' +
+      '<input type="radio" name="demogr-gender" value="male"/> मेल' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-gender" value="female"/> Female' +
+      // '<input type="radio" name="demogr-gender" value="female"/> Female' +
+      '<input type="radio" name="demogr-gender" value="female"/> फीमेल' +
       '</span>' +
       '<br>' +
       '<span>' +
+      // '<input type="radio" name="demogr-gender" value="other"/> Other' +
       '<input type="radio" name="demogr-gender" value="other"/> Other' +
       '</span>' +
       '</div>' +
       '<div class="form-group">' +
-      '<label for="">What is the your highest level of education?</label>' +
+      // '<label for="">What is the your highest level of education?</label>' +
+      '<label for="">आपने कहाँ तक पढ़ाई की है?</label>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-education" value="primary"/> Primary School' +
+      // '<input type="radio" name="demogr-education" value="primary"/> Primary School' +
+      '<input type="radio" name="demogr-education" value="primary"/> प्राइमरी स्कूल (पांचवी तक)' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-education" value="secondary"/> Secondary School (10th)' +
+      // '<input type="radio" name="demogr-education" value="secondary"/> Secondary School (10th)' +
+      '<input type="radio" name="demogr-education" value="secondary"/> सेकेंडरी स्कूल (दसवीं तक)' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-education" value="higher_secondary"/> Higher Secondary School (12th)' +
+      // '<input type="radio" name="demogr-education" value="higher_secondary"/> Higher Secondary School (12th)' +
+      '<input type="radio" name="demogr-education" value="higher_secondary"/> हायर सेकेंडरी स्कूल (बारवीं तक)' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-education" value="bachelors"/> Bachelors' +
+      // '<input type="radio" name="demogr-education" value="bachelors"/> Bachelors' +
+      '<input type="radio" name="demogr-education" value="bachelors"/> ग्रेजुएशन' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-education" value="masters"/> Masters' +
+      // '<input type="radio" name="demogr-education" value="masters"/> Masters' +
+      '<input type="radio" name="demogr-education" value="masters"/> पोस्ट ग्रेजुएशन' +
+      '</span>' +
+      '<span>' +
+      // '<input type="radio" name="demogr-education" value="none"/> Masters' +
+      '<input type="radio" name="demogr-education" value="none"/> इनमें से कोई नहीं' +
       '</span>' +
       '</div>' +
       '<div class="form-group">' +
-      '<label>What is your occupation?</label>' +
+      // '<label>What is your occupation?</label>' +
+      '<label>आप क्या काम करते है?</label>' +
       '<input type="text" class="form-control" id="demogr-occupation" placeholder="type response here">' +
       '</div>' +
       '<div class="form-group">' +
-      '<label for="formGroupExampleInput">What is your family size?</label>' +
+      // '<label for="formGroupExampleInput">What is your family size?</label>' +
+      '<label for="formGroupExampleInput">आपके परिवार में कितने लोग है ?</label>' +
       '<input type="number" class="form-control" id="demogr-family-size" placeholder="enter number">' +
       '</div>' +
       '<div class="form-group">' +
-      '<label for="formGroupExampleInput">What is the occupation of your family members?</label>' +
+      // '<label for="formGroupExampleInput">What is the occupation of your family members?</label>' +
+      '<label for="formGroupExampleInput">आपके परिवार के सदस्य क्या काम करते है ?</label>' +
       '<input type="text" class="form-control" id="demogr-family-occupation" placeholder="optional response here">' +
       '</div>' +
       '<div class="form-group">' +
-      '<label for="formGroupExampleInput">What is your monthly family income?</label>' +
+      // '<label for="formGroupExampleInput">What is your monthly family income?</label>' +
+      '<label for="formGroupExampleInput">आपके परिवार की महीने की आमदनी क्या है ?</label>' +
       '<input type="number" class="form-control" id="demogr-family-income" placeholder="number in rupees">' +
       '</div>' +
       '<div class="form-group">' +
-      '<label for="">Do you have a mobile phone?</label>' +
+      // '<label for="">Do you have a mobile phone?</label>' +
+      '<label for="">क्या आपके पास मोबाइल फ़ोन है?</label>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-has-mobile" value="no_share"/> Yes, I own one but do NOT share it.' +
+      // '<input type="radio" name="demogr-has-mobile" value="no_share"/> Yes, I own one but do NOT share it.' +
+      '<input type="radio" name="demogr-has-mobile" value="no_share"/> हाँ, मेरा खुद का है लेकिन और कोई भी इस मोबाइल का इस्तेमाल करता है ' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-has-mobile" value="yes_share"/> Yes, I own one and I share it.' +
+      // '<input type="radio" name="demogr-has-mobile" value="yes_share"/> Yes, I own one and I share it.' +
+      '<input type="radio" name="demogr-has-mobile" value="yes_share"/> हाँ, मेरा खुद का है लेकिन और कोई इस मोबाइल का इस्तेमाल नहीं करता है' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-has-mobile" value="no_phone"/> I do not have a mobile phone.' +
-      '</span>' +
-      '</div>' +
-      '<div class="form-group">' +
-      '<label for="">Do you watch videos on your mobile phone</label>' +
-      '<br>' +
-      '<span>' +
-      '<input type="radio" name="demogr-watch-video" value="yes"/> Yes' +
+      // '<input type="radio" name="demogr-has-mobile" value="no_phone"/> I do not have a mobile phone.' +
+      '<input type="radio" name="demogr-has-mobile" value="no_phone_but_share"/> नहीं, मेरे पास मोबाइल नहीं है लेकिन मैं किसी और का मोबाइल इस्तेमाल करता हूँ ' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-watch-video" value="no"/> No' +
+      // '<input type="radio" name="demogr-has-mobile" value="no_phone"/> I do not have a mobile phone.' +
+      '<input type="radio" name="demogr-has-mobile" value="no_phone_at_all"/> नहीं, मेरे पास मोबाइल नहीं हैूँ ' +
       '</span>' +
       '</div>' +
       '<div class="form-group">' +
-      '<label for="">Do you use Internet on phone?</label>' +
+      // '<label for="">Do you watch videos on your mobile phone</label>' +
+      '<label for="">क्या आप अपने फ़ोन पर वीडियो  देखते  है?</label>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-internet-phone" value="yes"/> Yes' +
+      // '<input type="radio" name="demogr-watch-video" value="yes"/> Yes' +
+      '<input type="radio" name="demogr-watch-video" value="yes"/> हाँ' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="demogr-internet-phone" value="no"/> No' +
+      // '<input type="radio" name="demogr-watch-video" value="no"/> No' +
+      '<input type="radio" name="demogr-watch-video" value="no"/> नहीं' +
+      '</span>' +
+      '</div>' +
+      '<div class="form-group">' +
+      // '<label for="">Do you use Internet on phone?</label>' +
+      '<label for="">क्या आप अपने फ़ोन पर इंटरनेट का इस्तेमाल करते है?</label>' +
+      '<br>' +
+      '<span>' +
+      // '<input type="radio" name="demogr-internet-phone" value="yes"/> Yes' +
+      '<input type="radio" name="demogr-internet-phone" value="yes"/> हाँ' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      // '<input type="radio" name="demogr-internet-phone" value="no"/> No' +
+      '<input type="radio" name="demogr-internet-phone" value="no"/> नहीं' +
       '</span>' +
       '</div>' +
       '</form>';
