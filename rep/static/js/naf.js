@@ -95,6 +95,18 @@ var naf = (function() {
     countdown_next_step_btn(current_step);
   });
 
+  $('#begin-response-btn').click(function() {
+    var response = $('#begin-response-text').val();
+    console.log('response: ', response);
+    if (response === '20') {
+      $('#begin-div').hide();
+      $('#submit-div').show();
+    } else {
+      alert('No need to continue with study.');
+      location.reload();
+    }
+  });
+
   $("#steps-modal").on("hidden.bs.modal", function() {
     $('#step-value').text(1);
     console.log('step reset to 1');
@@ -190,7 +202,8 @@ var naf = (function() {
 
     // demography survey completed
     if (step === 7 &&
-      localStorage.age !== "undefined" &&
+      localStorage.city !== "undefined" && localStorage.city !== "" &&
+      localStorage.age !== "undefined" && localStorage.age !== "" &&
       localStorage.gender !== "undefined" &&
       localStorage.education !== "undefined" &&
       localStorage.occupation !== "undefined" &&
@@ -204,8 +217,59 @@ var naf = (function() {
     }
 
     if (step === 8) { // final code
+      submit_data();
       $('#next-step-btn').hide();
     }
+  }
+
+  function submit_data() {
+    var worker_id = window.location.href.split("/")[4];
+    if (localStorage.age === "") {
+      localStorage.age = 0;
+    }
+
+    var data = {
+      'worker_id': worker_id,
+      //  video1
+      'v1q1': parseInt(localStorage.v1q1),
+      'v1q2': parseInt(localStorage.v1q2),
+      'v1q3': parseInt(localStorage.v1q3),
+      // video2
+      'v2q1': parseInt(localStorage.v2q1),
+      'v2q2': parseInt(localStorage.v2q2),
+      'v2q3': parseInt(localStorage.v2q3),
+      // video3
+      'v3q1': parseInt(localStorage.v3q1),
+      'v3q2': parseInt(localStorage.v3q2),
+      'v3q3': parseInt(localStorage.v3q3),
+      // demography
+      'city': localStorage.city,
+      'age': parseInt(localStorage.age),
+      'gender': localStorage.gender,
+      'education': localStorage.education,
+      'occupation': localStorage.occupation,
+      'family_size': parseInt(localStorage.family_size),
+      'family_occupation': localStorage.family_occupation,
+      'family_income': parseInt(localStorage.family_income),
+      'has_mobile': localStorage.has_mobile,
+      'watch_video': localStorage.watch_video,
+      'internet_phone': localStorage.internet_phone
+    };
+    console.log('data to submit: ', data);
+
+    var url = '/naf/submit';
+    $.post(url, data).done(function(resp) {
+      var json_resp = JSON.parse(resp);
+      if (json_resp.status === 200) {
+        $('#next-step-btn').prop('disabled', false);
+      } else {
+        alert('Error, contact requester.\nError: ' + resp.statusText);
+      }
+    }).fail(function(error) {
+      console.log('error: ', error);
+      $('#next-step-btn').prop('disabled', true);
+      alert('Error. Please notify Mturk requester.\nError: ' + error.statusText);
+    });
   }
 
   function do_countdown(seconds) {
@@ -458,6 +522,7 @@ var naf = (function() {
       // '<input type="radio" name="demogr-education" value="masters"/> Masters' +
       '<input type="radio" name="demogr-education" value="masters"/> पोस्ट ग्रेजुएशन' +
       '</span>' +
+      '<br>' +
       '<span>' +
       // '<input type="radio" name="demogr-education" value="none"/> Masters' +
       '<input type="radio" name="demogr-education" value="none"/> इनमें से कोई नहीं' +
@@ -466,12 +531,12 @@ var naf = (function() {
       '<div class="form-group">' +
       // '<label>What is your occupation?</label>' +
       '<label>आप क्या काम करते है?</label>' +
-      '<input type="text" class="form-control" id="demogr-occupation" placeholder="type response here">' +
+      '<input type="text" class="form-control" id="demogr-occupation" max=50 placeholder="type response here">' +
       '</div>' +
       '<div class="form-group">' +
       // '<label for="formGroupExampleInput">What is your family size?</label>' +
       '<label for="formGroupExampleInput">आपके परिवार में कितने लोग है ?</label>' +
-      '<input type="number" class="form-control" id="demogr-family-size" placeholder="enter number">' +
+      '<input type="number" class="form-control" id="demogr-family-size" max=50 placeholder="enter number">' +
       '</div>' +
       '<div class="form-group">' +
       // '<label for="formGroupExampleInput">What is the occupation of your family members?</label>' +
@@ -574,12 +639,13 @@ localStorage.v3q2 = "undefined";
 localStorage.v3q3 = "undefined";
 
 // demography survey
+localStorage.city = "undefined";
 localStorage.age = "undefined";
 localStorage.gender = "undefined";
 localStorage.education = "undefined";
 localStorage.occupation = "undefined";
 localStorage.family_size = "undefined";
-localStorage.family_occupation = "undefined";
+localStorage.family_occupation = "no response"; // optional for participant
 localStorage.family_income = "undefined";
 localStorage.has_mobile = "undefined";
 localStorage.watch_video = "undefined";
@@ -647,6 +713,8 @@ function checkSurvey(name) {
 
   // demography
   else if (name === 'demography') {
+    console.log('demography called!', localStorage);
+    localStorage.city = $('#demogr-city').val();
     localStorage.age = $('#demogr-age').val();
     localStorage.gender = $('input[name=demogr-gender]:checked').val();
     localStorage.education = $('input[name=demogr-education]:checked').val();
@@ -658,7 +726,8 @@ function checkSurvey(name) {
     localStorage.watch_video = $('input[name=demogr-watch-video]:checked').val();
     localStorage.internet_phone = $('input[name=demogr-internet-phone]:checked').val();
 
-    if (localStorage.age !== "undefined" &&
+    if (localStorage.city !== "undefined" &&
+      localStorage.age !== "undefined" &&
       localStorage.gender !== "undefined" &&
       localStorage.education !== "undefined" &&
       localStorage.occupation !== "undefined" &&

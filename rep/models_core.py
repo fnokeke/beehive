@@ -704,7 +704,7 @@ class NafEnroll(db.Model):
     def __init__(self, info):
         self.worker_id = info['worker_id']
         self.group = info['group']
-        self.worker_code = MturkExclusive.generate_unique_id()
+        self.worker_code = NafEnroll.generate_unique_id()
 
     @staticmethod
     def generate_unique_id():
@@ -733,6 +733,108 @@ class NafEnroll(db.Model):
         db.session.commit()
 
         return (200, 'Successfully enrolled worker_id in experiment', new_worker)
+
+
+class NafStats(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    worker_id = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    # video surveys
+    v1q1 = db.Column(db.String(5))
+    v1q2 = db.Column(db.String(5))
+    v1q3 = db.Column(db.String(5))
+
+    v2q1 = db.Column(db.String(5))
+    v2q2 = db.Column(db.String(5))
+    v2q3 = db.Column(db.String(5))
+
+    v3q1 = db.Column(db.String(5))
+    v3q2 = db.Column(db.String(5))
+    v3q3 = db.Column(db.String(5))
+
+    # demography survey
+    city = db.Column(db.String(30))
+    age = db.Column(db.Integer)
+    gender = db.Column(db.String(10))
+    education = db.Column(db.String(30))
+    occupation = db.Column(db.String(50))
+    family_size = db.Column(db.Integer)
+    family_occupation = db.Column(db.String(50))
+    family_income = db.Column(db.Integer)
+    has_mobile = db.Column(db.String(20))
+    watch_video = db.Column(db.String(5))
+    internet_phone = db.Column(db.String(5))
+
+    def __init__(self, info):
+        self.worker_id = info['worker_id']
+
+        self.v1q1 = info['v1q1']
+        self.v1q2 = info['v1q2']
+        self.v1q3 = info['v1q3']
+
+        self.v2q1 = info['v2q1']
+        self.v2q2 = info['v2q2']
+        self.v2q3 = info['v2q3']
+
+        self.v3q1 = info['v3q1']
+        self.v3q2 = info['v3q2']
+        self.v3q3 = info['v3q3']
+
+        # demography survey
+        self.city = info['city']
+        self.age = info['age']
+        self.gender = info['gender']
+        self.education = info['education']
+        self.occupation = info['occupation']
+        self.family_size = info['family_size']
+        self.family_size = info['family_occupation']
+        self.family_income = info['family_income']
+        self.has_mobile = info['has_mobile']
+        self.watch_video = info['watch_video']
+        self.internet_phone = info['internet_phone']
+
+    def __repr__(self):
+        result = {
+            'worker_id': self.worker_id,
+            'created_at': str(self.created_at),
+            # video1
+            'v1q1': self.v1q1,
+            'v1q2': self.v1q2,
+            'v1q3': self.v1q3,
+            # video2
+            'v2q1': self.v2q1,
+            'v2q2': self.v2q2,
+            'v2q3': self.v2q3,
+            # video3
+            'v3q1': self.v3q1,
+            'v3q2': self.v3q2,
+            'v3q3': self.v3q3,
+            # demography
+            'city': self.city,
+            'age': self.age,
+            'gender': self.gender,
+            'education': self.education,
+            'occupation': self.occupation,
+            'family_size': self.family_size,
+            'family_occupation': self.family_occupation,
+            'family_income': self.family_income,
+            'has_mobile': self.has_mobile,
+            'watch_video': self.watch_video,
+            'internet_phone': self.internet_phone
+        }
+        return json.dumps(result)
+
+    @staticmethod
+    def submit_worker_info(info):
+        enrolled_worker = NafEnroll.query.filter_by(worker_id=info['worker_id']).first()
+        if not enrolled_worker:
+            return (-1, 'Worker not registered!', -1)
+
+        new_info = NafStats(info)
+        db.session.add(new_info)
+        db.session.commit()
+        return (200, 'Successfully submitted info.', new_info)
 
 
 class NotifClickedStats(db.Model):

@@ -13,7 +13,7 @@ import json, httplib2, pytz, requests, csv
 
 from rep import app, login_manager
 from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkPrelimRecruit
-from rep.models import MturkExclusive, NafEnroll, User, ImageTextUpload
+from rep.models import MturkExclusive, NafEnroll, NafStats, User, ImageTextUpload
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import NotifClickedStats, RescuetimeConfig, ScreenUnlockConfig
 
@@ -821,6 +821,17 @@ def naf_update_step():
     next_step = 1 + cur_step % 8
     session['step'] = next_step
     return json.dumps({'next_step': next_step})
+
+
+@app.route('/naf/submit', methods=['POST'])
+def naf_submit():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    print '**********************'
+    print data
+    print '**********************'
+    status, response, _ = NafStats.submit_worker_info(data)
+    print status, response
+    return json.dumps({'status': status, 'response': response})
 
 
 @app.route('/naf/enroll/worker_id', methods=['POST'])
