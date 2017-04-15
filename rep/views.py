@@ -1021,9 +1021,9 @@ def append_admin_fb_response(data):
         data['admin_experiment_group'] = 1
         data['admin_fb_max_mins'] = 13
         data['admin_fb_max_opens'] = 13
-        data['admin_treatment_start'] = '2017-04-18'
-        data['admin_followup_start'] = '2017-04-25'
-        data['admin_logging_stop'] = '2017-05-04'
+        data['admin_treatment_start'] = '2017-04-24'
+        data['admin_followup_start'] = '2017-05-01'
+        data['admin_logging_stop'] = '2017-05-10'
         data['admin_daily_reset_hour'] = '0'
     return data
 

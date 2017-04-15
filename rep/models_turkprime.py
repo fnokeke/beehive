@@ -15,9 +15,9 @@ class TP_Admin(db.Model):
     admin_experiment_group = db.Column(db.Integer, default=1)
     admin_fb_max_mins = db.Column(db.Integer, default=10)
     admin_fb_max_opens = db.Column(db.Integer, default=2)
-    admin_treatment_start = db.Column(db.DateTime, default=to_datetime("2017-04-16", "%Y-%m-%d"))
-    admin_followup_start = db.Column(db.DateTime, default=to_datetime("2017-04-24", "%Y-%m-%d"))
-    admin_logging_stop = db.Column(db.DateTime, default=to_datetime("2017-05-02", "%Y-%m-%d"))
+    admin_treatment_start = db.Column(db.DateTime, default=to_datetime("2017-04-24", "%Y-%m-%d"))
+    admin_followup_start = db.Column(db.DateTime, default=to_datetime("2017-05-01", "%Y-%m-%d"))
+    admin_logging_stop = db.Column(db.DateTime, default=to_datetime("2017-05-10", "%Y-%m-%d"))
 
     def __init__(self, info):
         self.worker_id = info['worker_id']
