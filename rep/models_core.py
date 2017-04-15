@@ -788,7 +788,7 @@ class NafStats(db.Model):
         self.education = info['education']
         self.occupation = info['occupation']
         self.family_size = info['family_size']
-        self.family_size = info['family_occupation']
+        self.family_occupation = info['family_occupation']
         self.family_income = info['family_income']
         self.has_mobile = info['has_mobile']
         self.watch_video = info['watch_video']
