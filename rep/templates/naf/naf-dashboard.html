@@ -1,0 +1,196 @@
+{% extends 'layout.html' %}
+{% block title %}
+  Mturk Dashboard |
+{% endblock %}
+
+{% block contents %}
+
+  <div class="container">
+
+    <div class="page-header">
+      <h3>Dashboard Stats</h3>
+    </div>
+
+    <div>
+      <p>
+        Number of users
+        {{ naf_users | length }}
+        <br>
+        Number of users
+        {{ naf_stats | length }}
+        <br>
+      </p>
+    </div>
+
+    <table id="mturk-stats-table" class="table table-striped">
+
+      <thead>
+        <tr>
+          <th>
+            No
+          </th>
+
+          <th>
+            WorkerId
+          </th>
+
+          <th>
+            CreatedAt
+          </th>
+
+          <th>
+            v1q1
+          </th>
+
+          <th>
+            v1q2
+          </th>
+
+          <th>
+            v1q3
+          </th>
+
+          <th>
+            v2q1
+          </th>
+
+          <th>
+            v2q2
+          </th>
+
+          <th>
+            v2q3
+          </th>
+
+          <th>
+            v3q1
+          </th>
+
+          <th>
+            v3q2
+          </th>
+
+          <th>
+            v3q3
+          </th>
+
+          <th>
+            City
+          </th>
+
+          <th>Age</th>
+
+          <th>Gender</th>
+
+          <th>Education</th>
+
+          <th>Occupation</th>
+
+          <th>FamilySize</th>
+
+          <th>FamilyOcc</th>
+
+          <th>FamilyIncome</th>
+
+          <th>HasMobile</th>
+
+          <th>Watch Video</th>
+
+          <th>Internet Phone</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for stat in naf_stats %}
+          <tr>
+            <td>
+              {{ loop.index }}
+            </td>
+
+            <td>
+              {{ stat.created_at | india | fancydatetime }}
+            </td>
+
+            <td>
+              {{ stat.worker_id }}
+            </td>
+            <th>
+              No
+            </th>
+
+            <th>
+              WorkerId
+            </th>
+
+            <th>
+              CreatedAt
+            </th>
+
+            <th>
+              v1q1
+            </th>
+
+            <th>
+              v1q2
+            </th>
+
+            <th>
+              v1q3
+            </th>
+
+            <th>
+              v2q1
+            </th>
+
+            <th>
+              v2q2
+            </th>
+
+            <th>
+              v2q3
+            </th>
+
+            <th>
+              v3q1
+            </th>
+
+            <th>
+              v3q2
+            </th>
+
+            <th>
+              v3q3
+            </th>
+
+            <th>
+              City
+            </th>
+
+            <th>Age</th>
+
+            <th>Gender</th>
+
+            <th>Education</th>
+
+            <th>Occupation</th>
+
+            <th>FamilySize</th>
+
+            <th>FamilyOcc</th>
+
+            <th>FamilyIncome</th>
+
+            <th>HasMobile</th>
+
+            <th>Watch Video</th>
+
+            <th>Internet Phone</th>
+          </tr>
+
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+
+{% endblock %}

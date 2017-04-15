@@ -834,6 +834,13 @@ def naf_submit():
     return json.dumps({'status': status, 'response': response})
 
 
+@app.route('/naf/dashboard')
+@requires_basic_auth
+def naf_dashboard():
+    ctx = {'naf_stats': NafStats.query.all(), 'naf_users': NafEnroll.query.all()}
+    return render_template('naf/naf_dashboard.html', **ctx)
+
+
 @app.route('/naf/enroll/worker_id', methods=['POST'])
 def naf_verify_worker_id():
     data = json.loads(request.data) if request.data else request.form.to_dict()
