@@ -420,7 +420,7 @@ def mturk_participant_dashboard(code):
 @app.route('/mturk-stats-dashboard/<code>')
 def mturk_stats_dashboard(code):
     experiment = Experiment.query.filter_by(code=code).first()
-    ctx = {'mturk_stats': TP_FBStats.query.all(), 'experiment': experiment}
+    ctx = {'mturk_stats': TP_FBStats.query.order_by('created_at desc').limit(2000).all(), 'experiment': experiment}
     return render_template('/dashboards/mturk-stats-dashboard.html', **ctx)
 
 
@@ -995,6 +995,7 @@ def mobile_worker_id():
 @app.route('/mobile/turkprime/fb-stats', methods=['POST'])
 def mobile_worker_fb_stats():
     data = json.loads(request.data) if request.data else request.form.to_dict()
+    data['worker_id'] = data['worker_id'].strip(' ')
     _, response, stats = TP_FBStats.add_stats(data)
     server_response = {'response': response, 'worker_id': data['worker_id'], 'summary': to_json(stats)}
     server_response = append_admin_fb_response(server_response)
