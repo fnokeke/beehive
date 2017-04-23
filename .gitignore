@@ -15,3 +15,4 @@ node_modules/
 migrations/
 bower_components/
 videos/
+.tags*
