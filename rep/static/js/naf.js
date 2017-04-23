@@ -175,8 +175,6 @@ var naf = (function() {
 
   function countdown_next_step_btn(step) {
     $('#next-step-btn').prop('disabled', true);
-
-    console.log('current step: ', step);
     if (step === 2 || step === 4 || step === 6 || step === 8) {
       g_video_played = false;
     }
