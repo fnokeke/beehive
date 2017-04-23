@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  var page_length = 50;
+  var page_length = 10;
 
   $('#enrolled-participants-table').DataTable({
     "pageLength": page_length
@@ -19,9 +19,21 @@ $(document).ready(function() {
     "bDeferRender": true,
   });
 
+
   $('#mturk-stats-table').DataTable({
     "pageLength": page_length,
-    "bDeferRender": true,
-    "bProcessing": true,
+    responsive: true,
+    "serverSide": true,
+    "processing": true,
+    ajax: {
+      url: '/server-fb-stats',
+      method: 'post',
+      data: function(params) {
+        console.log('params sent:', params);
+        return {
+          "params": JSON.stringify(params)
+        };
+      },
+    }
   });
 });

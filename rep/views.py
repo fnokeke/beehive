@@ -1002,6 +1002,64 @@ def mobile_worker_fb_stats():
     return json.dumps(server_response, default=str)
 
 
+@app.route('/server-fb-stats', methods=['POST'])
+def server_data():
+    args = json.loads(request.form.get('params'))
+    search = args['search']['value']
+    draw = args['draw']
+
+    mturk_stats = TP_FBStats.query.order_by('created_at desc').all()
+    total = len(mturk_stats)
+    filtered_length = total
+
+    if search:
+        search = '%{}%'.format(search)
+        mturk_stats = TP_FBStats.query.filter(TP_FBStats.worker_id.ilike(search)).order_by('created_at desc').all()
+        filtered_length = len(mturk_stats)
+
+    data = []
+    for x in mturk_stats:
+        entry = get_ordered_entry(x)
+        data.append(entry.values())
+
+    start = args['start']
+    length = args['length']
+    data = data[start:start + length]
+
+    return json.dumps({
+        "draw": draw,
+        "recordsTotal": total,
+        "recordsFiltered": filtered_length,
+        "data": data
+        #
+    })
+
+
+from collections import OrderedDict
+
+
+def get_ordered_entry(db_stats_entry):
+    entry = json.loads(str(db_stats_entry))
+    ordered = OrderedDict()
+
+    ordered['created_at'] = entry['created_at']
+    ordered['worker_id'] = entry['worker_id']
+    ordered['current_experiment_group'] = entry['current_experiment_group']
+    ordered['total_seconds'] = entry['total_seconds']
+    ordered['total_opens'] = entry['total_opens']
+    ordered['time_spent'] = entry['time_spent']
+    ordered['time_open'] = entry['time_open']
+    ordered['ringer_mode'] = entry['ringer_mode']
+    ordered['current_fb_max_mins'] = entry['current_fb_max_mins']
+    ordered['current_fb_max_opens'] = entry['current_fb_max_opens']
+    ordered['current_treatment_start'] = entry['current_treatment_start']
+    ordered['current_followup_start'] = entry['current_followup_start']
+    ordered['current_logging_stop'] = entry['current_logging_stop']
+    ordered['daily_reset_hour'] = entry['daily_reset_hour']
+
+    return ordered
+
+
 @app.route('/mobile/turkprime/all/fb-stats')
 def get_all_fb_stats():
     stats = TP_FBStats.query.all()

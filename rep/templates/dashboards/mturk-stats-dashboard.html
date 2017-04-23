@@ -19,149 +19,71 @@
   <div class="container">
 
     <div class="page-header">
-      <h3>Mturk Facebook Stats
-        <br>
-        <small>Last:
-          {{ mturk_stats | length }}
-          log(s)</small>
-      </h3>
-      <br>
-      <em>To sort by multiple columns, hold down shift key and select columns.</em>
-    </div>
+      <table id="mturk-stats-table" class="table table-striped">
 
-    <table id="mturk-stats-table" class="table table-striped">
-
-      <thead>
-        <tr>
-          <th>
-            No
-          </th>
-
-          <th>
-            CreatedAt
-          </th>
-
-          <th>
-            WorkerID
-          </th>
-
-          <th>
-            Group(now)
-          </th>
-
-          <th>
-            T.Time
-          </th>
-
-          <th>
-            T.Opens
-          </th>
-
-          <th>
-            FBTime
-          </th>
-
-          <th>
-            FBOpens
-          </th>
-
-          <th>
-            Ringer
-          </th>
-
-          <th>
-            Max-Mins(now)
-          </th>
-
-          <th>
-            Max-Opens(now)
-          </th>
-
-          <th>
-            Treat(now)
-          </th>
-
-          <th>
-            Followup(now)
-          </th>
-
-          <th>
-            Logging(now)
-          </th>
-
-          <th>
-            Reset.T(now)
-          </th>
-        </tr>
-      </thead>
-
-      <tbody>
-        {% for stat in mturk_stats %}
+        <thead>
           <tr>
-            <td>
-              {{ loop.index }}
-            </td>
+            <th>
+              CreatedAt
+            </th>
 
-            <td>
-              {{ stat.created_at | india | fancydatetime }}
-            </td>
+            <th>
+              WorkerID
+            </th>
 
-            <td>
-              {{ stat.worker_id }}
-            </td>
+            <th>
+              Group(now)
+            </th>
 
-            <td>
-              {{ stat.current_experiment_group }}
-            </td>
+            <th>
+              T.Time
+            </th>
 
-            <td>
-              {{ stat.total_seconds }}
-            </td>
+            <th>
+              T.Opens
+            </th>
 
-            <td>
-              {{ stat.total_opens }}
-            </td>
+            <th>
+              FBTime
+            </th>
 
-            <td>
-              {{ stat.time_spent }}
-            </td>
+            <th>
+              FBOpens
+            </th>
 
-            <td>
-              {{ stat.time_open }}
-            </td>
+            <th>
+              Ringer
+            </th>
 
-            <td>
-              {{ stat.ringer_mode }}
-            </td>
+            <th>
+              MaxMins(now)
+            </th>
 
-            <td>
-              {{ stat.current_fb_max_mins }}
-            </td>
+            <th>
+              Max-Opens(now)
+            </th>
 
-            <td>
-              {{ stat.current_fb_max_opens }}
-            </td>
+            <th>
+              Treat(now)
+            </th>
 
-            <td>
-              {{ stat.current_treatment_start }}
-            </td>
+            <th>
+              Followup(now)
+            </th>
 
-            <td>
-              {{ stat.current_followup_start }}
-            </td>
+            <th>
+              Logging(now)
+            </th>
 
-            <td>
-              {{ stat.current_logging_stop }}
-            </td>
-
-            <td>
-              {{ stat.daily_reset_hour }}
-            </td>
+            <th>
+              Reset.T(now)
+            </th>
 
           </tr>
+        </thead>
+      </table>
 
-        {% endfor %}
-      </tbody>
-    </table>
+    </div>
+
   </div>
 {% endblock %}
