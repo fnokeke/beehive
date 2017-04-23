@@ -1005,13 +1005,12 @@ def mobile_worker_fb_stats():
 @app.route('/server-fb-stats', methods=['POST'])
 def server_data():
     args = json.loads(request.form.get('params'))
-    search = args['search']['value']
-    draw = args['draw']
 
     mturk_stats = TP_FBStats.query.order_by('created_at desc').all()
     total = len(mturk_stats)
     filtered_length = total
 
+    search = args['search']['value']
     if search:
         search = '%{}%'.format(search)
         mturk_stats = TP_FBStats.query.filter(TP_FBStats.worker_id.ilike(search)).order_by('created_at desc').all()
@@ -1025,6 +1024,7 @@ def server_data():
     start = args['start']
     length = args['length']
     data = data[start:start + length]
+    draw = args['draw']
 
     return json.dumps({
         "draw": draw,
