@@ -741,17 +741,10 @@ class NafStats(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     # video surveys
-    v1q1 = db.Column(db.String(5))
-    v1q2 = db.Column(db.String(5))
-    v1q3 = db.Column(db.String(5))
-
-    v2q1 = db.Column(db.String(5))
-    v2q2 = db.Column(db.String(5))
-    v2q3 = db.Column(db.String(5))
-
-    v3q1 = db.Column(db.String(5))
-    v3q2 = db.Column(db.String(5))
-    v3q3 = db.Column(db.String(5))
+    mainq1 = db.Column(db.String(5))
+    mainq2 = db.Column(db.String(5))
+    mainq3 = db.Column(db.String(5))
+    mainq4 = db.Column(db.String(5))
 
     # demography survey
     city = db.Column(db.String(30))
@@ -769,17 +762,10 @@ class NafStats(db.Model):
     def __init__(self, info):
         self.worker_id = info['worker_id']
 
-        self.v1q1 = info['v1q1']
-        self.v1q2 = info['v1q2']
-        self.v1q3 = info['v1q3']
-
-        self.v2q1 = info['v2q1']
-        self.v2q2 = info['v2q2']
-        self.v2q3 = info['v2q3']
-
-        self.v3q1 = info['v3q1']
-        self.v3q2 = info['v3q2']
-        self.v3q3 = info['v3q3']
+        self.mainq1 = info['mainq1']
+        self.mainq2 = info['mainq2']
+        self.mainq3 = info['mainq3']
+        self.mainq4 = info['mainq4']
 
         # demography survey
         self.city = info['city']
@@ -798,18 +784,11 @@ class NafStats(db.Model):
         result = {
             'worker_id': self.worker_id,
             'created_at': str(self.created_at),
-            # video1
-            'v1q1': self.v1q1,
-            'v1q2': self.v1q2,
-            'v1q3': self.v1q3,
-            # video2
-            'v2q1': self.v2q1,
-            'v2q2': self.v2q2,
-            'v2q3': self.v2q3,
-            # video3
-            'v3q1': self.v3q1,
-            'v3q2': self.v3q2,
-            'v3q3': self.v3q3,
+            # main/artifact video responses
+            'mainq1': self.mainq1,
+            'mainq2': self.mainq2,
+            'mainq3': self.mainq3,
+            'mainq4': self.mainq4,
             # demography
             'city': self.city,
             'age': self.age,

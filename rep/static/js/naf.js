@@ -1,5 +1,7 @@
 /*jshint multistr: true */
 var naf = (function() {
+  var g_video_played = false;
+  // var g_worker_group = parseInt($('#worker-group').text());
 
   var gen_code = $.url_param('gen_code');
   if (gen_code) {
@@ -90,9 +92,11 @@ var naf = (function() {
   $('#btn-step-begin').click(function() {
     $('#steps-modal').modal('show');
     $('#next-step-btn').prop('disabled', true);
+    $('#next-step-btn').show();
 
+    var worker_group = parseInt($('#worker-group').text());
     var current_step = parseInt($('#step-value').text());
-    countdown_next_step_btn(current_step);
+    countdown_next_step_btn(current_step, worker_group);
   });
 
   $('#begin-response-btn').click(function() {
@@ -137,7 +141,6 @@ var naf = (function() {
   })();
 
   $('#next-step-btn').click(function() {
-    $('#next-step-btn').prop('disabled', true);
     update_steps();
   });
 
@@ -148,73 +151,169 @@ var naf = (function() {
 
     var url = '/naf/update/step';
     var data = {
-      'current_step': current_step
+      'current_step': current_step,
+      'is_final_step': is_final_step(current_step, worker_group)
     };
+
+    console.log('data sent: ', data);
 
     $.post(url, data).done(function(resp) {
       var json_resp = JSON.parse(resp);
       $('#step-value').text(json_resp.next_step);
-      $('#span-begin-label').text(get_btn_step_content(json_resp.next_step));
-      $('#modal-title-value').html(get_modal_title(json_resp.next_step));
+      $('#span-begin-label').text(get_btn_step_content(json_resp.next_step, worker_group));
+      $('#modal-title-value').html(get_modal_title(json_resp.next_step, worker_group));
       $('#modal-body-content').html(get_modal_body(json_resp.next_step, worker_group, worker_code));
-      countdown_next_step_btn(json_resp.next_step);
+
+      $('#next-step-btn').prop('disabled', true);
+      g_video_played = false;
+
+      countdown_next_step_btn(json_resp.next_step, worker_group);
     }).fail(function(error) {
       $('#next-step-btn').prop('disabled', true);
       console.log('step error: ', error);
     });
   }
 
-  var g_video_played = false;
 
   function play_started() {
+    console.log('user clicked play btn.');
     g_video_played = true;
     var vid = $('video').attr('id');
     var current_step = parseInt($('#step-value').text());
-    countdown_next_step_btn(current_step);
+    var worker_group = parseInt($('#worker-group').text());
+    countdown_next_step_btn(current_step, worker_group);
   }
 
-  function countdown_next_step_btn(step) {
+  // function countdown_old_next_step_btn(step) {
+  //   $('#next-step-btn').prop('disabled', true);
+  //   if (step === 2 || step === 4 || step === 6 || step === 8) {
+  //     g_video_played = false;
+  //   }
+  //
+  //   if (g_video_played && (step === 1 || step === 3 || step === 5)) { // videos
+  //     do_countdown(65);
+  //   }
+  //
+  //   // survey1 completed
+  //   if (step === 2 && localStorage.v1q1 !== "undefined" && localStorage.v1q2 !== "undefined" && localStorage.v1q3 !== "undefined") {
+  //     $('#next-step-btn').prop('disabled', false);
+  //   }
+  //
+  //   // survey2 completed
+  //   if (step === 4 && localStorage.v2q1 !== "undefined" && localStorage.v2q2 !== "undefined" && localStorage.v2q3 !== "undefined") {
+  //     $('#next-step-btn').prop('disabled', false);
+  //   }
+  //
+  //   // survey3 completed
+  //   if (step === 6 && localStorage.v3q1 !== "undefined" && localStorage.v3q2 !== "undefined" && localStorage.v3q3 !== "undefined") {
+  //     $('#next-step-btn').prop('disabled', false);
+  //   }
+  //
+  //   // demography survey completed
+  //   if (step === 7 &&
+  //     localStorage.city !== "undefined" && localStorage.city !== "" &&
+  //     localStorage.age !== "undefined" && localStorage.age !== "" &&
+  //     localStorage.gender !== "undefined" &&
+  //     localStorage.education !== "undefined" &&
+  //     localStorage.occupation !== "undefined" &&
+  //     localStorage.family_size !== "undefined" &&
+  //     // family occupation is optional
+  //     localStorage.family_income !== "undefined" &&
+  //     localStorage.has_mobile !== "undefined" &&
+  //     localStorage.watch_video !== "undefined" &&
+  //     localStorage.internet_phone !== "undefined") {
+  //     $('#next-step-btn').prop('disabled', false);
+  //   }
+  //
+  //   if (step === 8) { // final code
+  //     submit_data();
+  //     $('#next-step-btn').hide();
+  //   }
+  // }
+
+  // for group 3 worker, only step 1 has video (main video)
+  // for other groups, steps 1 and 2 have priming and then main video respectively
+  function step_has_video(step, worker_group) {
+    if (worker_in_group3(worker_group)) {
+      return step === 1;
+    }
+    return step < 3;
+  }
+
+  function is_valid(entry) {
+    return entry !== "" && entry !== "undefined";
+  }
+
+  function is_valid_stored_demogr_survey() {
+    return is_valid(localStorage.city) &&
+      is_valid(localStorage.age) &&
+      is_valid(localStorage.gender) &&
+      is_valid(localStorage.education) &&
+      is_valid(localStorage.occupation) &&
+      is_valid(localStorage.family_size) &&
+      // family occupation is optional
+      is_valid(localStorage.family_income) &&
+      is_valid(localStorage.has_mobile) &&
+      is_valid(localStorage.watch_video) &&
+      is_valid(localStorage.internet_phone);
+  }
+
+  function is_main_survey_step(step, worker_group) {
+    if (worker_in_group3(worker_group)) {
+      return step === 2;
+    }
+    return step === 3;
+  }
+
+  function is_demography_step(step, worker_group) {
+    if (worker_in_group3(worker_group)) {
+      return step === 3;
+    }
+    return step === 4;
+  }
+
+  function is_final_step(step, worker_group) {
+    if (worker_in_group3(worker_group)) {
+      return step === 4;
+    }
+    return step === 5;
+  }
+
+  function countdown_next_step_btn(step, worker_group) {
     $('#next-step-btn').prop('disabled', true);
-    if (step === 2 || step === 4 || step === 6 || step === 8) {
-      g_video_played = false;
+    // g_video_played = false;
+
+    if (step_has_video(step, worker_group) && g_video_played) {
+      console.log('countdown step has video');
+      do_video_countdown(step, worker_group);
     }
 
-    if (g_video_played && (step === 1 || step === 3 || step === 5)) { // videos
-      do_countdown(65);
-    }
-
-    // survey1 completed
-    if (step === 2 && localStorage.v1q1 !== "undefined" && localStorage.v1q2 !== "undefined" && localStorage.v1q3 !== "undefined") {
-      $('#next-step-btn').prop('disabled', false);
-    }
-
-    // survey2 completed
-    if (step === 4 && localStorage.v2q1 !== "undefined" && localStorage.v2q2 !== "undefined" && localStorage.v2q3 !== "undefined") {
-      $('#next-step-btn').prop('disabled', false);
-    }
-
-    // survey3 completed
-    if (step === 6 && localStorage.v3q1 !== "undefined" && localStorage.v3q2 !== "undefined" && localStorage.v3q3 !== "undefined") {
+    // main survey completed
+    if (is_main_survey_step(step, worker_group) &&
+      is_valid(localStorage.mainq1) &&
+      is_valid(localStorage.mainq2) &&
+      is_valid(localStorage.mainq3) &&
+      is_valid(localStorage.mainq4)) {
       $('#next-step-btn').prop('disabled', false);
     }
 
     // demography survey completed
-    if (step === 7 &&
-      localStorage.city !== "undefined" && localStorage.city !== "" &&
-      localStorage.age !== "undefined" && localStorage.age !== "" &&
-      localStorage.gender !== "undefined" &&
-      localStorage.education !== "undefined" &&
-      localStorage.occupation !== "undefined" &&
-      localStorage.family_size !== "undefined" &&
+    if (is_demography_step(step, worker_group) &&
+      is_valid(localStorage.city) &&
+      is_valid(localStorage.age) &&
+      is_valid(localStorage.gender) &&
+      is_valid(localStorage.education) &&
+      is_valid(localStorage.occupation) &&
+      is_valid(localStorage.family_size) &&
       // family occupation is optional
-      localStorage.family_income !== "undefined" &&
-      localStorage.has_mobile !== "undefined" &&
-      localStorage.watch_video !== "undefined" &&
-      localStorage.internet_phone !== "undefined") {
+      is_valid(localStorage.family_income) &&
+      is_valid(localStorage.has_mobile) &&
+      is_valid(localStorage.watch_video) &&
+      is_valid(localStorage.internet_phone)) {
       $('#next-step-btn').prop('disabled', false);
     }
 
-    if (step === 8) { // final code
+    if (is_final_step(step, worker_group)) { // final code
       submit_data();
       $('#next-step-btn').hide();
     }
@@ -228,18 +327,11 @@ var naf = (function() {
 
     var data = {
       'worker_id': worker_id,
-      //  video1
-      'v1q1': parseInt(localStorage.v1q1),
-      'v1q2': parseInt(localStorage.v1q2),
-      'v1q3': parseInt(localStorage.v1q3),
-      // video2
-      'v2q1': parseInt(localStorage.v2q1),
-      'v2q2': parseInt(localStorage.v2q2),
-      'v2q3': parseInt(localStorage.v2q3),
-      // video3
-      'v3q1': parseInt(localStorage.v3q1),
-      'v3q2': parseInt(localStorage.v3q2),
-      'v3q3': parseInt(localStorage.v3q3),
+      //  main / artifact video
+      'mainq1': parseInt(localStorage.mainq1),
+      'mainq2': parseInt(localStorage.mainq2),
+      'mainq3': parseInt(localStorage.mainq3),
+      'mainq4': parseInt(localStorage.mainq4),
       // demography
       'city': localStorage.city,
       'age': parseInt(localStorage.age),
@@ -277,34 +369,104 @@ var naf = (function() {
     }, seconds * 1000);
   }
 
-  function get_btn_step_content(step) {
+  function do_video_countdown(step, worker_group) {
+    if (worker_in_group3(worker_group) && step === 1) {
+      do_countdown(1);
+      console.log('doing countdown for group3 user in step1');
+    // do_countdown(167);
+    } else if (!worker_in_group3(worker_group) && step === 1) {
+      do_countdown(1);
+      console.log('doing countdown for NON-group3 user in step1');
+    // do_countdown(65);
+    } else if (!worker_in_group3(worker_group) && step === 2) {
+      console.log('doing countdown for NON-group3 user in step2');
+      do_countdown(1);
+    // do_countdown(167);
+    }
+  }
+
+  function get_btn_step_content(step, worker_group) {
     // var contents = "Begin Step " + step;
     var contents = "स्टेप " + step + " को शुरू करें";
 
-    if (step === 8) {
+    if (is_final_step(step, worker_group)) {
       contents = "Show mturk code";
     }
     return contents;
   }
 
+  // function get_old_modal_body(step, worker_group, worker_code) {
+  //   var contents = '';
+  //   if (step === 1 || step === 3 || step === 5) {
+  //     contents = get_video(step, worker_group);
+  //   } else if (step === 2 || step === 4 || step === 6) {
+  //     contents = get_survey(step - 1, worker_group);
+  //   } else if (step === 7) {
+  //     contents = get_demography_survey();
+  //   } else if (step === 8) {
+  //     // contents = 'Your mturk code: ' + worker_code;
+  //     contents = 'आपका MTurk Code  है: ' + worker_code;
+  //   }
+  //   return contents;
+  // }
+  //
+
+  function worker_in_group3(worker_group) {
+    return worker_group % 3 === 0;
+  }
+
   function get_modal_body(step, worker_group, worker_code) {
     var contents = '';
-    if (step === 1 || step === 3 || step === 5) {
-      contents = get_video(step, worker_group);
-    } else if (step === 2 || step === 4 || step === 6) {
-      contents = get_survey(step - 1, worker_group);
-    } else if (step === 7) {
+
+    if (worker_in_group3(worker_group)) {
+      return get_contents_group3(step, worker_group);
+    } else {
+      return get_contents_group1_group2(step, worker_group);
+    }
+  }
+
+  function get_contents_group3(step, worker_group) {
+    if (step === 1) {
+      contents = get_video('main.mp4');
+    } else if (step === 2) {
+      contents = get_main_survey();
+    } else if (step === 3) {
       contents = get_demography_survey();
-    } else if (step === 8) {
-      // contents = 'Your mturk code: ' + worker_code;
+    } else if (step === 4) {
       contents = 'आपका MTurk Code  है: ' + worker_code;
+    // contents = 'Your mturk code: ' + worker_code;
     }
     return contents;
   }
 
-  function get_modal_title(step) {
-    // var contents = "Step " + step + " of 7";
-    var contents = "स्टेप " + step + " / 7";
+  function get_contents_group1_group2(step, worker_group) {
+    var first_video;
+    var worker_code;
+
+    if (step === 1) {
+      first_video = worker_group % 2 === 0 ? "neg.mp4" : "pos.mp4";
+      contents = get_video(first_video);
+    } else if (step === 2) {
+      contents = get_video('main.mp4');
+    } else if (step === 3) {
+      contents = get_main_survey();
+    } else if (step === 4) {
+      contents = get_demography_survey();
+    } else if (step === 5) {
+      worker_code = $('#worker-code').text();
+      contents = 'आपका MTurk Code  है: ' + worker_code;
+    // contents = 'Your mturk code: ' + worker_code;
+    }
+
+    return contents;
+  }
+
+
+  function get_modal_title(step, worker_group) {
+    var total_steps = worker_in_group3(worker_group) ? 4 : 5;
+
+    // var contents = "Step " + step + " of 5";
+    var contents = "स्टेप " + step + " / " + total_steps;
     if (step === 8) {
       // contents = "Submit mturk code";
       contents = "अपने MTurk Code को सबमिट करें।";
@@ -312,74 +474,175 @@ var naf = (function() {
     return contents;
   }
 
-
-  function get_video(step, worker_group) {
-    var order = get_content_order(step, worker_group);
-    return get_raw_video(order);
-  }
-
-  function get_content_order(step, worker_group) {
-    step = parseInt(step);
-    worker_group = parseInt(worker_group);
-    var video_order = "";
-    if (worker_group === 1) {
-      video_order = "1,2,3";
-    } else if (worker_group === 2) {
-      video_order = "1,3,2";
-    } else if (worker_group === 3) {
-      video_order = "2,1,3";
-    } else if (worker_group === 4) {
-      video_order = "2,3,1";
-    } else if (worker_group === 5) {
-      video_order = "3,1,2";
-    } else if (worker_group === 6) {
-      video_order = "3,2,1";
-    }
-    video_order = video_order.split(',');
-
-    var order;
-    if (step === 1) {
-      order = video_order[0];
-    } else if (step === 3) {
-      order = video_order[1];
-    } else if (step === 5) {
-      order = video_order[2];
-    }
-    return parseInt(order);
-  }
-
-  function get_raw_video(order) {
-    var mp4 = 'v' + order + '.mp4';
-    // var raw_html = '<strong>Watch in fullscreen mode and use headphones.</strong>' +
-    //   '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
-    //   '<source src="/static/videos/{0}" type="video/mp4">' +
-    //   'Your browser does not support the video.' +
-    //   '</video>';
-
+  function get_video(video_name) {
     var raw_html = '<strong>नीचे दिए हुए वीडियो को ध्यान से fullscreen mode पर देखें।  अपने headphones का इस्तेमाल करें।  यह वीडियो सिर्फ 1 मिनट का है।</strong><br>' +
       '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
       '<source src="/static/videos/{0}" type="video/mp4">' +
       'Your browser does not support the video.' +
       '</video>';
-    raw_html = raw_html.format(mp4);
+    raw_html = raw_html.format(video_name);
     return raw_html;
   }
 
-  function get_survey(step, worker_group) {
-    var order = get_content_order(step, worker_group);
-    var vid;
-    if (step === 1) {
-      vid = 'v1';
-    } else if (step === 3) {
-      vid = 'v2';
-    } else if (step === 5) {
-      vid = 'v3';
-    }
+  // function get_video(step, worker_group) {
+  //   var order = get_content_order(step, worker_group);
+  //   return get_raw_video(order);
+  // }
 
-    var form = '<form onclick="check_video_survey()">' +
+  // function get_video(step, worker_group) {
+  //   var order = get_content_order(step, worker_group);
+  //   return get_raw_video(order);
+  // }
+
+  //   function get_content_order(step, worker_group) {
+  //     step = parseInt(step);
+  //     worker_group = parseInt(worker_group);
+  //     var video_order = "";
+  //     if (worker_group === 1) {
+  //       video_order = "1,2,3";
+  //     } else if (worker_group === 2) {
+  //       video_order = "1,3,2";
+  //     } else if (worker_group === 3) {
+  //       video_order = "2,1,3";
+  //     } else if (worker_group === 4) {
+  //       video_order = "2,3,1";
+  //     } else if (worker_group === 5) {
+  //       video_order = "3,1,2";
+  //     } else if (worker_group === 6) {
+  //       video_order = "3,2,1";
+  //     }
+  //     video_order = video_order.split(',');
+  //
+  //     var order;
+  //     if (step === 1) {
+  //       order = video_order[0];
+  //     } else if (step === 3) {
+  //       order = video_order[1];
+  //     } else if (step === 5) {
+  //       order = video_order[2];
+  //     }
+  //     return parseInt(order);
+  //   }
+
+  // function get_raw_video(order) {
+  //   var mp4 = 'v' + order + '.mp4';
+  //   // var raw_html = '<strong>Watch in fullscreen mode and use headphones.</strong>' +
+  //   //   '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
+  //   //   '<source src="/static/videos/{0}" type="video/mp4">' +
+  //   //   'Your browser does not support the video.' +
+  //   //   '</video>';
+  //
+  //   var raw_html = '<strong>नीचे दिए हुए वीडियो को ध्यान से fullscreen mode पर देखें।  अपने headphones का इस्तेमाल करें।  यह वीडियो सिर्फ 1 मिनट का है।</strong><br>' +
+  //     '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
+  //     '<source src="/static/videos/{0}" type="video/mp4">' +
+  //     'Your browser does not support the video.' +
+  //     '</video>';
+  //   raw_html = raw_html.format(mp4);
+  //   return raw_html;
+  // }
+
+  // function get_survey(step, worker_group) {
+  //   var order = get_content_order(step, worker_group);
+  //   var vid;
+  //   if (step === 1) {
+  //     vid = 'v1';
+  //   } else if (step === 3) {
+  //     vid = 'v2';
+  //   } else if (step === 5) {
+  //     vid = 'v3';
+  //   }
+  //
+  //   var form = '<form onclick="check_old_video_survey()">' +
+  //     '<div class="form-group">' +
+  //     // '<label for="">Using the image below, indicate how happy or sad you feel after watching the video. Please tick the figure that best represents your feelings. </label>' +
+  //     '<label for="">आपको यह वीडियो  देखने के बाद कितनी खुशी या दुख हुआ? कृप्या उस निशान को चुने जो आपके मन के भाव  को सबसे अच्छे से बताता हो।</label>' +
+  //     '<img src="/static/images/naf/valence.png" width="550px" height="150px" alt="valence image" />' +
+  //     '<label class="naf-radio">' +
+  //     '<input type="radio" name="{0}q1" value="1"/>' +
+  //     '</label>' +
+  //     '<label class="naf-radio">' +
+  //     '<input type="radio" name="{0}q1" value="2"/>' +
+  //     '</label>' +
+  //     '<label class="naf-radio">' +
+  //     '<input type="radio" name="{0}q1" value="3"/>' +
+  //     '</label>' +
+  //     '<label class="naf-radio">' +
+  //     '<input type="radio" name="{0}q1" value="4"/>' +
+  //     '</label>' +
+  //     '<label class="naf-radio">' +
+  //     '<input type="radio" name="{0}q1" value="5"/>' +
+  //     '</label>' +
+  //     '</div>' +
+  //     '<br/>' +
+  //     '<br/>' +
+  //     '<div class="form-group">' +
+  //     // '<label for="">Using the image below, please indicate how the video affects you. Select the figure that best represents your feelings.</label>' +
+  //     '<label for="">आपको यह वीडियो  देखने के बाद कितना फर्क पड़ा ? कृप्या उस निशान को चुने जो आपके मन के भाव  को सबसे अच्छे से बताता हो। </label>' +
+  //     '<img src="/static/images/naf/arousal.png" width="550px" height="150px" alt="arousal image" />' +
+  //     '<label class="naf-radio">' +
+  //     '<input type="radio" name="{0}q2" value="1"/>' +
+  //     '</label>' +
+  //     '<label class="naf-radio">' +
+  //     '<input type="radio" name="{0}q2" value="2"/>' +
+  //     '</label>' +
+  //     '<label class="naf-radio">' +
+  //     '<input type="radio" name="{0}q2" value="3"/>' +
+  //     '</label>' +
+  //     '<label class="naf-radio">' +
+  //     '<input type="radio" name="{0}q2" value="4"/>' +
+  //     '</label>' +
+  //     '<label class="naf-radio">' +
+  //     '<input type="radio" name="{0}q2" value="5"/>' +
+  //     '</label>' +
+  //     '</div>' +
+  //     '<br/>' +
+  //     '<br/>' +
+  //     '<div class="form-group">' +
+  //     // '<label for="">What was the topic of the video?</label>' +
+  //     '<label for="">यह वीडियो किस विषय पर था ?</label>' +
+  //     '<br>' +
+  //     '<span>' +
+  //     // '<input type="radio" name="{0}q3" value="1"/> Nutrition of newborn' +
+  //     '<input type="radio" name="{0}q3" value="1"/> नवजात बच्चे के पोषण के बारे में' +
+  //     '</span>' +
+  //     '<br>' +
+  //     '<span>' +
+  //     // '<input type="radio" name="{0}q3" value="2"/> Dangerous effects of smoking and tobacco' +
+  //     '<input type="radio" name="{0}q3" value="2"/> धूम्रपान करने के और तम्बाकू खाने के नुकसान' +
+  //     '</span>' +
+  //     '<br>' +
+  //     '<span>' +
+  //     // '<input type="radio" name="{0}q3" value="3"/> Importance of washing hands' +
+  //     '<input type="radio" name="{0}q3" value="3"/> हाथों को अच्छे से साफ़ करने के बारे में' +
+  //     '</span>' +
+  //     '<br>' +
+  //     '<span>' +
+  //     // '<input type="radio" name="{0}q3" value="4"/> Safe drinking water' +
+  //     '<input type="radio" name="{0}q3" value="4"/> स्वच्छ जल को पीने के बारे में' +
+  //     '</span>' +
+  //     '<br>' +
+  //     '<span>' +
+  //     // '<input type="radio" name="{0}q3" value="5"/> Treatment of Diarrhea' +
+  //     '<input type="radio" name="{0}q3" value="5"/> दस्त के इलाज के बारे में' +
+  //     '</span>' +
+  //     '<br>' +
+  //     '<span>' +
+  //     // '<input type="radio" name="{0}q3" value="5"/> None of these' +
+  //     '<input type="radio" name="{0}q3" value="5"/> इनमे से कोई नहीं' +
+  //     '</span>' +
+  //     '</div>' +
+  //     '</form>';
+  //
+  //   form = form.format(vid);
+  //   return form;
+  // }
+
+  function get_main_survey() {
+    var vid = "main";
+    var form = '<form onchange="naf.check_main_survey()">' +
       '<div class="form-group">' +
       // '<label for="">Using the image below, indicate how happy or sad you feel after watching the video. Please tick the figure that best represents your feelings. </label>' +
-      '<label for="">आपको यह वीडियो  देखने के बाद कितनी खुशी या दुख हुआ? कृप्या उस निशान को चुने जो आपके मन के भाव  को सबसे अच्छे से बताता हो।</label>' +
+      '<label for="">How much did you like the last video?</label>' +
       '<img src="/static/images/naf/valence.png" width="550px" height="150px" alt="valence image" />' +
       '<label class="naf-radio">' +
       '<input type="radio" name="{0}q1" value="1"/>' +
@@ -400,60 +663,58 @@ var naf = (function() {
       '<br/>' +
       '<br/>' +
       '<div class="form-group">' +
-      // '<label for="">Using the image below, please indicate how the video affects you. Select the figure that best represents your feelings.</label>' +
-      '<label for="">आपको यह वीडियो  देखने के बाद कितना फर्क पड़ा ? कृप्या उस निशान को चुने जो आपके मन के भाव  को सबसे अच्छे से बताता हो। </label>' +
-      '<img src="/static/images/naf/arousal.png" width="550px" height="150px" alt="arousal image" />' +
-      '<label class="naf-radio">' +
-      '<input type="radio" name="{0}q2" value="1"/>' +
-      '</label>' +
-      '<label class="naf-radio">' +
-      '<input type="radio" name="{0}q2" value="2"/>' +
-      '</label>' +
-      '<label class="naf-radio">' +
-      '<input type="radio" name="{0}q2" value="3"/>' +
-      '</label>' +
-      '<label class="naf-radio">' +
-      '<input type="radio" name="{0}q2" value="4"/>' +
-      '</label>' +
-      '<label class="naf-radio">' +
-      '<input type="radio" name="{0}q2" value="5"/>' +
-      '</label>' +
+      '<label for="">How useful was the last video to you?</label>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q2" value="1"/> Highly non-useful' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q2" value="2"/> Slightly non-useful ' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q2" value="3"/> Neutral' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q2" value="4"/> Slightly useful' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q2" value="5"/> Highly useful' +
+      '</span>' +
       '</div>' +
       '<br/>' +
       '<br/>' +
       '<div class="form-group">' +
-      // '<label for="">What was the topic of the video?</label>' +
-      '<label for="">यह वीडियो किस विषय पर था ?</label>' +
+      '<label for="">How entertaining was the last video to you?</label>' +
       '<br>' +
       '<span>' +
-      // '<input type="radio" name="{0}q3" value="1"/> Nutrition of newborn' +
-      '<input type="radio" name="{0}q3" value="1"/> नवजात बच्चे के पोषण के बारे में' +
+      '<input type="radio" name="{0}q3" value="1"/> Highly unentertaining' +
       '</span>' +
       '<br>' +
       '<span>' +
-      // '<input type="radio" name="{0}q3" value="2"/> Dangerous effects of smoking and tobacco' +
-      '<input type="radio" name="{0}q3" value="2"/> धूम्रपान करने के और तम्बाकू खाने के नुकसान' +
+      '<input type="radio" name="{0}q3" value="2"/> Slightly unentertaining ' +
       '</span>' +
       '<br>' +
       '<span>' +
-      // '<input type="radio" name="{0}q3" value="3"/> Importance of washing hands' +
-      '<input type="radio" name="{0}q3" value="3"/> हाथों को अच्छे से साफ़ करने के बारे में' +
+      '<input type="radio" name="{0}q3" value="3"/> Neutral' +
       '</span>' +
       '<br>' +
       '<span>' +
-      // '<input type="radio" name="{0}q3" value="4"/> Safe drinking water' +
-      '<input type="radio" name="{0}q3" value="4"/> स्वच्छ जल को पीने के बारे में' +
+      '<input type="radio" name="{0}q3" value="4"/> Slightly enteraining' +
       '</span>' +
       '<br>' +
       '<span>' +
-      // '<input type="radio" name="{0}q3" value="5"/> Treatment of Diarrhea' +
-      '<input type="radio" name="{0}q3" value="5"/> दस्त के इलाज के बारे में' +
+      '<input type="radio" name="{0}q3" value="5"/> Highly enteraining' +
       '</span>' +
-      '<br>' +
-      '<span>' +
-      // '<input type="radio" name="{0}q3" value="5"/> None of these' +
-      '<input type="radio" name="{0}q3" value="5"/> इनमे से कोई नहीं' +
-      '</span>' +
+      '</div>' +
+      '<br/>' +
+      '<br/>' +
+      '<div class="form-group">' +
+      '<label>How can the last video be improved?</label>' +
+      '<input type="textarea" class="form-control" id="{0}q4" max=50 placeholder="type response here">' +
       '</div>' +
       '</form>';
 
@@ -462,7 +723,7 @@ var naf = (function() {
   }
 
   function get_demography_survey() {
-    var form = '<form class="demography" onclick="check_demogr()">' +
+    var form = '<form class="demography" onclick="naf.check_demogr_survey()">' +
       '<div class="form-group">' +
       // '<label>In what city you live</label>' +
       '<label>आप किस शहर में रहते हैं?</label>' +
@@ -602,116 +863,28 @@ var naf = (function() {
     return form;
   }
 
-  function init_step_values() {
-    var current_step = parseInt($('#step-value').text());
-    var worker_group = parseInt($('#worker-group').text());
-    var worker_code = $('#worker-code').text();
-    $('#span-begin-label').text(get_btn_step_content(current_step));
-    $('#modal-title-value').html(get_modal_title(current_step));
-    $('#modal-body-content').html(get_modal_body(current_step, worker_group, worker_code));
-    countdown_next_step_btn(current_step);
-  }
-  init_step_values();
+  $('#mainq4').on('change', function() {
+    check_main_survey();
+  });
 
-  var exposed_functions = {
-    'play_started': play_started
-  };
+  function check_main_survey() {
+    localStorage.mainq1 = $('input[name=mainq1]:checked').val();
+    localStorage.mainq2 = $('input[name=mainq2]:checked').val();
+    localStorage.mainq3 = $('input[name=mainq3]:checked').val();
+    localStorage.mainq4 = $('#mainq4').val();
 
-  return exposed_functions;
-
-})();
-
-// survey1
-localStorage.v1q1 = "undefined";
-localStorage.v1q2 = "undefined";
-localStorage.v1q3 = "undefined";
-
-// survey2
-localStorage.v2q1 = "undefined";
-localStorage.v2q2 = "undefined";
-localStorage.v2q3 = "undefined";
-
-// survey3
-localStorage.v3q1 = "undefined";
-localStorage.v3q2 = "undefined";
-localStorage.v3q3 = "undefined";
-
-// demography survey
-localStorage.city = "undefined";
-localStorage.age = "undefined";
-localStorage.gender = "undefined";
-localStorage.education = "undefined";
-localStorage.occupation = "undefined";
-localStorage.family_size = "undefined";
-localStorage.family_occupation = "no response"; // optional for participant
-localStorage.family_income = "undefined";
-localStorage.has_mobile = "undefined";
-localStorage.watch_video = "undefined";
-localStorage.internet_phone = "undefined";
-
-
-function check_demogr() {
-  console.log('oncick demogr called');
-  checkSurvey('demography');
-}
-
-function check_video_survey() {
-  var current_step = parseInt($('#step-value').text());
-  if (current_step === 2) {
-    checkSurvey('v1');
-  } else if (current_step === 4) {
-    checkSurvey('v2');
-  } else if (current_step === 6) {
-    checkSurvey('v3');
-  }
-}
-
-function checkSurvey(name) {
-  // survey1
-  if (name === 'v1') {
-    console.log('completing v1 survey');
-    localStorage.v1q1 = $('input[name=v1q1]:checked').val();
-    localStorage.v1q2 = $('input[name=v1q2]:checked').val();
-    localStorage.v1q3 = $('input[name=v1q3]:checked').val();
-    console.log(localStorage.v1q1, localStorage.v1q2, localStorage.v1q3);
-
-    if (localStorage.v1q1 !== "undefined" && localStorage.v1q2 !== "undefined" && localStorage.v1q3 !== "undefined") {
+    if (is_valid(localStorage.mainq1) &&
+      is_valid(localStorage.mainq2) &&
+      is_valid(localStorage.mainq3) &&
+      is_valid(localStorage.mainq4)) {
+      console.log('Next step enabled for main survey.');
       $('#next-step-btn').prop('disabled', false);
-      console.log('Will enable next button for step 3.');
+    } else {
+      console.log('Waiting to enable next btn');
     }
   }
 
-  // survey2
-  else if (name === 'v2') {
-    console.log('completing v2 survey');
-    localStorage.v2q1 = $('input[name=v2q1]:checked').val();
-    localStorage.v2q2 = $('input[name=v2q2]:checked').val();
-    localStorage.v2q3 = $('input[name=v2q3]:checked').val();
-    console.log(localStorage.v2q1, localStorage.v2q2, localStorage.v2q3);
-
-    if (localStorage.v2q1 !== "undefined" && localStorage.v2q2 !== "undefined" && localStorage.v2q3 !== "undefined") {
-      $('#next-step-btn').prop('disabled', false);
-      console.log('Will enable next button for step 5.');
-    }
-  }
-
-  // survey3
-  else if (name === 'v3') {
-    console.log('completing v3 survey');
-    localStorage.v3q1 = $('input[name=v3q1]:checked').val();
-    localStorage.v3q2 = $('input[name=v3q2]:checked').val();
-    localStorage.v3q3 = $('input[name=v3q3]:checked').val();
-    console.log(localStorage.v3q1, localStorage.v3q2, localStorage.v3q3);
-
-    if (localStorage.v3q1 !== "undefined" && localStorage.v3q2 !== "undefined" && localStorage.v3q3 !== "undefined") {
-      $('#next-step-btn').prop('disabled', false);
-      console.log('Will enable next button for step 7.');
-    }
-  }
-
-  // demography
-  else if (name === 'demography') {
-    console.log('demography called!', localStorage);
+  function check_demogr_survey() {
     localStorage.city = $('#demogr-city').val();
     localStorage.age = $('#demogr-age').val();
     localStorage.gender = $('input[name=demogr-gender]:checked').val();
@@ -724,19 +897,134 @@ function checkSurvey(name) {
     localStorage.watch_video = $('input[name=demogr-watch-video]:checked').val();
     localStorage.internet_phone = $('input[name=demogr-internet-phone]:checked').val();
 
-    if (localStorage.city !== "undefined" &&
-      localStorage.age !== "undefined" &&
-      localStorage.gender !== "undefined" &&
-      localStorage.education !== "undefined" &&
-      localStorage.occupation !== "undefined" &&
-      localStorage.family_size !== "undefined" &&
-      // family occupation is optional
-      localStorage.family_income !== "undefined" &&
-      localStorage.has_mobile !== "undefined" &&
-      localStorage.watch_video !== "undefined" &&
-      localStorage.internet_phone !== "undefined") {
+    if (is_valid_stored_demogr_survey()) {
       $('#next-step-btn').prop('disabled', false);
     }
-
   }
-}
+
+
+  function init_step_values() {
+    var current_step = parseInt($('#step-value').text());
+    var worker_group = parseInt($('#worker-group').text());
+    var worker_code = $('#worker-code').text();
+    $('#span-begin-label').text(get_btn_step_content(current_step, worker_group));
+    $('#modal-title-value').html(get_modal_title(current_step, worker_group));
+    $('#modal-body-content').html(get_modal_body(current_step, worker_group, worker_code));
+    countdown_next_step_btn(current_step, worker_group);
+  }
+  init_step_values();
+
+  function current_worker_in_group3() {
+    var worker_group = parseInt($('#worker-group').text());
+    return worker_in_group3(worker_group);
+  }
+
+  var exposed_functions = {
+    'current_worker_in_group3': current_worker_in_group3,
+    'check_main_survey': check_main_survey,
+    'check_demogr_survey': check_demogr_survey,
+    'play_started': play_started,
+  };
+
+  return exposed_functions;
+
+})();
+
+// main/artifact survey
+localStorage.mainq1 = naf.current_worker_in_group3() ? "skip" : "undefined";
+localStorage.mainq2 = naf.current_worker_in_group3() ? "skip" : "undefined";
+localStorage.mainq3 = naf.current_worker_in_group3() ? "skip" : "undefined";
+localStorage.mainq4 = naf.current_worker_in_group3() ? "skip" : "undefined";
+
+// demography survey
+localStorage.city = "undefined";
+localStorage.age = "undefined";
+localStorage.gender = "undefined";
+localStorage.education = "undefined";
+localStorage.occupation = "undefined";
+localStorage.family_size = "undefined";
+localStorage.family_occupation = "skip"; // optional for participant
+localStorage.family_income = "undefined";
+localStorage.has_mobile = "undefined";
+localStorage.watch_video = "undefined";
+localStorage.internet_phone = "undefined";
+
+// function check_demogr() {
+//   console.log('oncick demogr called');
+//   checkSurvey('demography');
+// }
+
+// function checkSurvey(name) {
+//   // survey1
+//   if (name === 'v1') {
+//     console.log('completing v1 survey');
+//     localStorage.v1q1 = $('input[name=v1q1]:checked').val();
+//     localStorage.v1q2 = $('input[name=v1q2]:checked').val();
+//     localStorage.v1q3 = $('input[name=v1q3]:checked').val();
+//     console.log(localStorage.v1q1, localStorage.v1q2, localStorage.v1q3);
+//
+//     if (localStorage.v1q1 !== "undefined" && localStorage.v1q2 !== "undefined" && localStorage.v1q3 !== "undefined") {
+//       $('#next-step-btn').prop('disabled', false);
+//       console.log('Will enable next button for step 3.');
+//     }
+//   }
+//
+//   // survey2
+//   else if (name === 'v2') {
+//     console.log('completing v2 survey');
+//     localStorage.v2q1 = $('input[name=v2q1]:checked').val();
+//     localStorage.v2q2 = $('input[name=v2q2]:checked').val();
+//     localStorage.v2q3 = $('input[name=v2q3]:checked').val();
+//     console.log(localStorage.v2q1, localStorage.v2q2, localStorage.v2q3);
+//
+//     if (localStorage.v2q1 !== "undefined" && localStorage.v2q2 !== "undefined" && localStorage.v2q3 !== "undefined") {
+//       $('#next-step-btn').prop('disabled', false);
+//       console.log('Will enable next button for step 5.');
+//     }
+//   }
+//
+//   // survey3
+//   else if (name === 'v3') {
+//     console.log('completing v3 survey');
+//     localStorage.v3q1 = $('input[name=v3q1]:checked').val();
+//     localStorage.v3q2 = $('input[name=v3q2]:checked').val();
+//     localStorage.v3q3 = $('input[name=v3q3]:checked').val();
+//     console.log(localStorage.v3q1, localStorage.v3q2, localStorage.v3q3);
+//
+//     if (localStorage.v3q1 !== "undefined" && localStorage.v3q2 !== "undefined" && localStorage.v3q3 !== "undefined") {
+//       $('#next-step-btn').prop('disabled', false);
+//       console.log('Will enable next button for step 7.');
+//     }
+//   }
+//
+//   // demography
+//   else if (name === 'demography') {
+//     console.log('demography called!', localStorage);
+//     localStorage.city = $('#demogr-city').val();
+//     localStorage.age = $('#demogr-age').val();
+//     localStorage.gender = $('input[name=demogr-gender]:checked').val();
+//     localStorage.education = $('input[name=demogr-education]:checked').val();
+//     localStorage.occupation = $('#demogr-occupation').val();
+//     localStorage.family_size = $('#demogr-family-size').val();
+//     localStorage.family_occupation = $('#demogr-family-occupation').val();
+//     localStorage.family_income = $('#demogr-family-income').val();
+//     localStorage.has_mobile = $('input[name=demogr-has-mobile]:checked').val();
+//     localStorage.watch_video = $('input[name=demogr-watch-video]:checked').val();
+//     localStorage.internet_phone = $('input[name=demogr-internet-phone]:checked').val();
+//
+//     if (localStorage.city !== "undefined" &&
+//       localStorage.age !== "undefined" &&
+//       localStorage.gender !== "undefined" &&
+//       localStorage.education !== "undefined" &&
+//       localStorage.occupation !== "undefined" &&
+//       localStorage.family_size !== "undefined" &&
+//       // family occupation is optional
+//       localStorage.family_income !== "undefined" &&
+//       localStorage.has_mobile !== "undefined" &&
+//       localStorage.watch_video !== "undefined" &&
+//       localStorage.internet_phone !== "undefined") {
+//       $('#next-step-btn').prop('disabled', false);
+//     }
+//
+//   }
+// }

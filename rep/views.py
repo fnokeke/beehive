@@ -806,7 +806,6 @@ def naf_watch_videos(worker_id):
     enrolled_worker = NafEnroll.query.filter_by(worker_id=worker_id).first()
     if not enrolled_worker:
         return render_template('mturk/mturk-404.html')
-    # if not 'step' in session:
     session['step'] = 1
     return render_template('naf/naf-main.html', worker=enrolled_worker)
 
@@ -815,10 +814,10 @@ def naf_watch_videos(worker_id):
 def naf_update_step():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     cur_step = int(data['current_step'])
-    if cur_step == 8:
+    if cur_step == 5:
         return json.dumps({'next_step': cur_step})
 
-    next_step = 1 + cur_step % 8
+    next_step = 1 + cur_step % 5
     session['step'] = next_step
     return json.dumps({'next_step': next_step})
 
@@ -826,9 +825,6 @@ def naf_update_step():
 @app.route('/naf/submit', methods=['POST'])
 def naf_submit():
     data = json.loads(request.data) if request.data else request.form.to_dict()
-    print '**********************'
-    print data
-    print '**********************'
     status, response, _ = NafStats.submit_worker_info(data)
     print status, response
     return json.dumps({'status': status, 'response': response})
@@ -870,7 +866,7 @@ def naf_verify_worker_id():
 
 
 def naf_get_next_condition(total_enrolled):
-    no_of_groups = 6
+    no_of_groups = 3
     return 1 + (total_enrolled % no_of_groups)
 
 
