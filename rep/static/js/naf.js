@@ -112,11 +112,18 @@ var naf = (function() {
   });
 
   $("#steps-modal").on("hidden.bs.modal", function() {
-    $('#step-value').text(1);
-    console.log('step reset to 1');
-    init_step_values();
-    localStorage.clear();
-    localStorage.agreed_to_consent = "true";
+    var current_step = $('#step-value').text();
+    var worker_group = parseInt($('#worker-group').text());
+    var final_step = worker_in_group3(worker_group) ? 4 : 5;
+    var reset_step = is_final_step(current_step, worker_group) ? 1 : final_step;
+    $('#step-value').text(reset_step);
+
+    if (reset_step === 1) {
+      localStorage.clear();
+      init_step_values();
+      localStorage.agreed_to_consent = "true";
+      console.log('Reset back to beginning.');
+    }
 
     var vid = $('video').get(0);
     if (vid) {
@@ -314,8 +321,12 @@ var naf = (function() {
     }
 
     if (is_final_step(step, worker_group)) { // final code
-      submit_data();
       $('#next-step-btn').hide();
+      if (localStorage.has_successfully_submitted !== "true") {
+        submit_data();
+      } else {
+        console.log('Already successfully submitted data.');
+      }
     }
   }
 
@@ -352,6 +363,7 @@ var naf = (function() {
       var json_resp = JSON.parse(resp);
       if (json_resp.status === 200) {
         $('#next-step-btn').prop('disabled', false);
+        localStorage.has_successfully_submitted = "true";
       } else {
         alert('Error, contact requester.\nError: ' + resp.statusText);
       }
@@ -426,6 +438,9 @@ var naf = (function() {
   }
 
   function get_contents_group3(step, worker_group) {
+    var worker_code;
+    var contents;
+
     if (step === 1) {
       contents = get_video('main.mp4');
     } else if (step === 2) {
@@ -433,6 +448,7 @@ var naf = (function() {
     } else if (step === 3) {
       contents = get_demography_survey();
     } else if (step === 4) {
+      worker_code = $('#worker-code').text();
       contents = 'आपका MTurk Code  है: ' + worker_code;
     // contents = 'Your mturk code: ' + worker_code;
     }
@@ -442,6 +458,7 @@ var naf = (function() {
   function get_contents_group1_group2(step, worker_group) {
     var first_video;
     var worker_code;
+    var contents;
 
     if (step === 1) {
       first_video = worker_group % 2 === 0 ? "neg.mp4" : "pos.mp4";
@@ -931,10 +948,10 @@ var naf = (function() {
 })();
 
 // main/artifact survey
-localStorage.mainq1 = naf.current_worker_in_group3() ? "skip" : "undefined";
-localStorage.mainq2 = naf.current_worker_in_group3() ? "skip" : "undefined";
-localStorage.mainq3 = naf.current_worker_in_group3() ? "skip" : "undefined";
-localStorage.mainq4 = naf.current_worker_in_group3() ? "skip" : "undefined";
+localStorage.mainq1 = "undefined";
+localStorage.mainq2 = "undefined";
+localStorage.mainq3 = "undefined";
+localStorage.mainq4 = "undefined";
 
 // demography survey
 localStorage.city = "undefined";
