@@ -118,9 +118,7 @@ var naf = (function() {
     $('#step-value').text(return_to_step);
 
     if (return_to_step === 1) {
-      localStorage.clear();
-      init_step_values();
-      localStorage.agreed_to_consent = "true";
+      wipe_then_init_values();
       console.log('Reset back to beginning.');
     }
 
@@ -319,7 +317,12 @@ var naf = (function() {
 
     if (is_reveal_code_step(step, worker_group)) { // final code
       $('#next-step-btn').hide();
-      submit_data();
+      if (localStorage.submitted !== "true") {
+        submit_data();
+        console.log('Making first submission.');
+      } else {
+        console.log('Already submitted before.');
+      }
     }
   }
 
@@ -357,6 +360,7 @@ var naf = (function() {
       var json_resp = JSON.parse(resp);
       if (json_resp.status === 200) {
         $('#next-step-btn').prop('disabled', false);
+        localStorage.submitted = "true";
         console.log('Successfully submitted data.');
       } else {
         alert('Error, contact requester.\nError: ' + resp.statusText);
@@ -371,7 +375,6 @@ var naf = (function() {
 
   function do_countdown(seconds) {
     setTimeout(function() {
-      console.log("next button enabled");
       $('#next-step-btn').prop('disabled', false);
     }, seconds * 1000);
   }
@@ -379,15 +382,12 @@ var naf = (function() {
   function do_video_countdown(step, worker_group) {
     if (worker_in_group3(worker_group) && step === 1) {
       do_countdown(1);
-      console.log('doing countdown for group3 user in step1');
     // do_countdown(167);
     } else if (!worker_in_group3(worker_group) && step === 1) {
       do_countdown(1);
-      console.log('doing countdown for NON-group3 user in step1');
     // do_countdown(65);
     } else if (!worker_in_group3(worker_group) && step === 2) {
       console.log('doing countdown for NON-group3 user in step2');
-      do_countdown(1);
     // do_countdown(167);
     }
   }
@@ -915,7 +915,9 @@ var naf = (function() {
   }
 
 
-  function init_step_values() {
+  function wipe_then_init_values() {
+    localStorage.clear();
+    localStorage.agreed_to_consent = "true";
     var current_step = parseInt($('#step-value').text());
     var worker_group = parseInt($('#worker-group').text());
     var worker_code = $('#worker-code').text();
@@ -924,7 +926,7 @@ var naf = (function() {
     $('#modal-body-content').html(get_modal_body(current_step, worker_group, worker_code));
     countdown_next_step_btn(current_step, worker_group);
   }
-  init_step_values();
+  wipe_then_init_values();
 
   function current_worker_in_group3() {
     var worker_group = parseInt($('#worker-group').text());
