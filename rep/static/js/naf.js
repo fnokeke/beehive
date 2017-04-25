@@ -89,7 +89,7 @@ var naf = (function() {
 
   });
 
-  $('#btn-step-begin').click(function() {
+  $('#btn-begin-step').click(function() {
     $('#steps-modal').modal('show');
     $('#next-step-btn').prop('disabled', true);
     $('#next-step-btn').show();
@@ -115,7 +115,7 @@ var naf = (function() {
     var current_step = $('#step-value').text();
     var worker_group = parseInt($('#worker-group').text());
     var final_step = worker_in_group3(worker_group) ? 4 : 5;
-    var reset_step = is_final_step(current_step, worker_group) ? 1 : final_step;
+    var reset_step = is_reveal_code_step(current_step, worker_group) ? 1 : final_step;
     $('#step-value').text(reset_step);
 
     if (reset_step === 1) {
@@ -129,6 +129,7 @@ var naf = (function() {
     if (vid) {
       vid.pause();
     }
+
   });
 
   $('#naf-read-consent-btn').click(function() {
@@ -158,11 +159,8 @@ var naf = (function() {
 
     var url = '/naf/update/step';
     var data = {
-      'current_step': current_step,
-      'is_final_step': is_final_step(current_step, worker_group)
+      'current_step': current_step
     };
-
-    console.log('data sent: ', data);
 
     $.post(url, data).done(function(resp) {
       var json_resp = JSON.parse(resp);
@@ -183,7 +181,6 @@ var naf = (function() {
 
 
   function play_started() {
-    console.log('user clicked play btn.');
     g_video_played = true;
     var vid = $('video').attr('id');
     var current_step = parseInt($('#step-value').text());
@@ -279,7 +276,7 @@ var naf = (function() {
     return step === 4;
   }
 
-  function is_final_step(step, worker_group) {
+  function is_reveal_code_step(step, worker_group) {
     if (worker_in_group3(worker_group)) {
       return step === 4;
     }
@@ -288,7 +285,6 @@ var naf = (function() {
 
   function countdown_next_step_btn(step, worker_group) {
     $('#next-step-btn').prop('disabled', true);
-    // g_video_played = false;
 
     if (step_has_video(step, worker_group) && g_video_played) {
       console.log('countdown step has video');
@@ -320,13 +316,9 @@ var naf = (function() {
       $('#next-step-btn').prop('disabled', false);
     }
 
-    if (is_final_step(step, worker_group)) { // final code
+    if (is_reveal_code_step(step, worker_group)) { // final code
       $('#next-step-btn').hide();
-      if (localStorage.has_successfully_submitted !== "true") {
-        submit_data();
-      } else {
-        console.log('Already successfully submitted data.');
-      }
+      submit_data();
     }
   }
 
@@ -359,11 +351,12 @@ var naf = (function() {
     console.log('data to submit: ', data);
 
     var url = '/naf/submit';
+
     $.post(url, data).done(function(resp) {
       var json_resp = JSON.parse(resp);
       if (json_resp.status === 200) {
         $('#next-step-btn').prop('disabled', false);
-        localStorage.has_successfully_submitted = "true";
+        console.log('Successfully submitted data.');
       } else {
         alert('Error, contact requester.\nError: ' + resp.statusText);
       }
@@ -372,6 +365,7 @@ var naf = (function() {
       $('#next-step-btn').prop('disabled', true);
       alert('Error. Please notify Mturk requester.\nError: ' + error.statusText);
     });
+
   }
 
   function do_countdown(seconds) {
@@ -401,7 +395,7 @@ var naf = (function() {
     // var contents = "Begin Step " + step;
     var contents = "स्टेप " + step + " को शुरू करें";
 
-    if (is_final_step(step, worker_group)) {
+    if (is_reveal_code_step(step, worker_group)) {
       contents = "Show mturk code";
     }
     return contents;
