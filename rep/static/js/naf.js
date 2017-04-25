@@ -173,13 +173,13 @@ var naf = (function() {
         $('#next-step-btn').hide();
       }
 
-    // countdown_next_step_btn(json_resp.next_step, worker_group);
+      countdown_next_step_btn(json_resp.next_step, worker_group);
     }).fail(function(error) {
       $('#next-step-btn').prop('disabled', true);
       console.log('step error: ', error);
     });
 
-  // $('#next-step-btn').prop('disabled', true);
+    $('#next-step-btn').prop('disabled', true);
   }
 
 
