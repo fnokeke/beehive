@@ -76,6 +76,7 @@ simplejson==3.8.2
 singledispatch==3.4.0.3
 six==1.10.0
 SQLAlchemy==0.8.3
+sqlalchemy-datatables==1.2.0
 tornado==4.4.2
 traitlets==4.3.0
 ua-parser==0.3.6
