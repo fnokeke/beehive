@@ -92,11 +92,11 @@ var naf = (function() {
   $('#btn-begin-step').click(function() {
     $('#steps-modal').modal('show');
     $('#next-step-btn').prop('disabled', true);
-    $('#next-step-btn').show();
+    // $('#next-step-btn').show();
 
     var worker_group = parseInt($('#worker-group').text());
     var current_step = parseInt($('#step-value').text());
-  // countdown_next_step_btn(current_step, worker_group);
+    countdown_next_step_btn(current_step, worker_group);
   });
 
   $('#begin-response-btn').click(function() {
@@ -150,7 +150,7 @@ var naf = (function() {
   });
 
   function update_steps() {
-    var current_step = $('#step-value').text();
+    var current_step = parseInt($('#step-value').text());
     var worker_group = parseInt($('#worker-group').text());
     var worker_code = $('#worker-code').text();
 
@@ -168,6 +168,10 @@ var naf = (function() {
 
       $('#next-step-btn').prop('disabled', true);
       g_video_played = false;
+
+      if (is_demography_step(current_step, worker_group)) {
+        $('#next-step-btn').hide();
+      }
 
     // countdown_next_step_btn(json_resp.next_step, worker_group);
     }).fail(function(error) {
