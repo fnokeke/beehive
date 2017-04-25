@@ -96,7 +96,7 @@ var naf = (function() {
 
     var worker_group = parseInt($('#worker-group').text());
     var current_step = parseInt($('#step-value').text());
-    countdown_next_step_btn(current_step, worker_group);
+  // countdown_next_step_btn(current_step, worker_group);
   });
 
   $('#begin-response-btn').click(function() {
@@ -169,11 +169,13 @@ var naf = (function() {
       $('#next-step-btn').prop('disabled', true);
       g_video_played = false;
 
-      countdown_next_step_btn(json_resp.next_step, worker_group);
+    // countdown_next_step_btn(json_resp.next_step, worker_group);
     }).fail(function(error) {
       $('#next-step-btn').prop('disabled', true);
       console.log('step error: ', error);
     });
+
+  // $('#next-step-btn').prop('disabled', true);
   }
 
 
@@ -387,6 +389,7 @@ var naf = (function() {
       do_countdown(1);
     // do_countdown(65);
     } else if (!worker_in_group3(worker_group) && step === 2) {
+      do_countdown(1);
       console.log('doing countdown for NON-group3 user in step2');
     // do_countdown(167);
     }
@@ -726,7 +729,7 @@ var naf = (function() {
       '<br/>' +
       '<div class="form-group">' +
       '<label>How can the last video be improved?</label>' +
-      '<input type="textarea" class="form-control" id="{0}q4" max=50 placeholder="type response here">' +
+      '<input type="textarea" class="form-control" oninput="naf.check_main_survey()" id="{0}q4" max=50 placeholder="type response here">' +
       '</div>' +
       '</form>';
 
