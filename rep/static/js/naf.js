@@ -112,13 +112,12 @@ var naf = (function() {
   });
 
   $("#steps-modal").on("hidden.bs.modal", function() {
-    var current_step = $('#step-value').text();
+    var current_step = parseInt($('#step-value').text());
     var worker_group = parseInt($('#worker-group').text());
-    var final_step = worker_in_group3(worker_group) ? 4 : 5;
-    var reset_step = is_reveal_code_step(current_step, worker_group) ? 1 : final_step;
-    $('#step-value').text(reset_step);
+    var return_to_step = is_reveal_code_step(current_step, worker_group) ? current_step : 1;
+    $('#step-value').text(return_to_step);
 
-    if (reset_step === 1) {
+    if (return_to_step === 1) {
       localStorage.clear();
       init_step_values();
       localStorage.agreed_to_consent = "true";
@@ -277,6 +276,8 @@ var naf = (function() {
   }
 
   function is_reveal_code_step(step, worker_group) {
+    step = parseInt(step);
+    worker_group = parseInt(worker_group);
     if (worker_in_group3(worker_group)) {
       return step === 4;
     }
