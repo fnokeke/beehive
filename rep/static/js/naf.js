@@ -433,8 +433,9 @@ var naf = (function() {
       msg = 'नीचे दिए हुए वीडियो को बहुत ध्यान से देखें। यह वीडियो लगभग 3 मिनट का है।  इस वीडियो को देखने के बाद आपको हमें बताना होगा की यह वीडियो वो आपको कैसा लगा? ध्यान दें की इस वीडियो को पहले देखे हुए वीडियो (स्टेप 1 ) से compare नहीं करें।';
     }
 
-    var raw_html = '<strong>{0}</strong><br>' +
-      '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
+    var raw_html = '<strong>{0}</strong><br><br>' +
+      // '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
+      '<video width="550" height="300" id="{0}" onplay="naf.play_started()" controls>' +
       '<source src="/static/videos/compressed/{1}" type="video/mp4">' +
       'Your browser does not support the video.' +
       '</video>';
