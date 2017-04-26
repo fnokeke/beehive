@@ -452,7 +452,7 @@ var naf = (function() {
     var contents;
 
     if (step === 1) {
-      contents = get_video('main.mov');
+      contents = get_video('main.mp4');
     } else if (step === 2) {
       contents = get_main_survey();
     } else if (step === 3) {
@@ -471,10 +471,10 @@ var naf = (function() {
     var contents;
 
     if (step === 1) {
-      first_video = worker_group % 2 === 0 ? "neg.mov" : "pos.mov";
+      first_video = worker_group % 2 === 0 ? "neg.mp4" : "pos.mp4";
       contents = get_video(first_video);
     } else if (step === 2) {
-      contents = get_video('main.mov');
+      contents = get_video('main.mp4');
     } else if (step === 3) {
       contents = get_main_survey();
     } else if (step === 4) {
@@ -503,13 +503,13 @@ var naf = (function() {
 
   function get_video(video_name) {
     var msg = "नीचे दिए हुए वीडियो को ध्यान से fullscreen mode पर देखें।  अपने headphones का इस्तेमाल करें।  यह वीडियो सिर्फ 1 मिनट का है।";
-    if (video_name === 'main.mov') {
+    if (video_name === 'main.mp4') {
       msg = 'नीचे दिए हुए वीडियो को बहुत ध्यान से देखें। यह वीडियो लगभग 3 मिनट का है।  इस वीडियो को देखने के बाद आपको हमें बताना होगा की यह वीडियो वो आपको कैसा लगा? ध्यान दें की इस वीडियो को पहले देखे हुए वीडियो (स्टेप 1 ) से compare नहीं करें।';
     }
 
     var raw_html = '<strong>{0}</strong><br>' +
-      '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
-      '<source src="/static/videos/{1}" type="video/mp4">' +
+      '<video width="320" height="240" id="{0}" onclick="naf.play_started()" controls>' +
+      '<source src="/static/videos/compressed/{1}" type="video/mp4">' +
       'Your browser does not support the video.' +
       '</video>';
 
