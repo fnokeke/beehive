@@ -514,8 +514,6 @@ var naf = (function() {
       '</video>';
 
     raw_html = raw_html.format(msg, video_name);
-    // raw_html = '<iframe width="420" height="315" src="https://www.youtube.com/embed/XGSy3_Czz8k?&controls=0&modestbranding=1&disablekb=1&fs="> </iframe>';
-    // raw_html = '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/XGSy3_Czz8k?&controls=0&modestbranding=1&disablekb=1&fs=1?enablejsapi" frameborder="0" allowfullscreen></iframe>';
     return raw_html;
   }
 
@@ -682,7 +680,7 @@ var naf = (function() {
       '<div class="form-group">' +
       // '<label for="">How much did you like the last video?</label>' +
       '<label for="">आपको यह विवियो कै सा लगा?</label>' +
-      '<img src="/static/images/naf/valence.png" width="550px" height="150px" alt="valence image" />' +
+      '<img src="/static/images/naf/valence2.png" width="550px" height="150px" alt="valence image" />' +
       '<label class="naf-radio">' +
       '<input type="radio" name="{0}q1" value="1"/>' +
       '</label>' +
@@ -703,78 +701,78 @@ var naf = (function() {
       '<br/>' +
       '<div class="form-group">' +
       // '<label for="">How useful was the last video to you?</label>' +
-      '<label for="">आपको यह विवियो देख कर कु छ फायदा  आ?</label>' +
+      '<label for="">आपको यह विडियो देख कर कुछ फायदा हुआ?</label>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q2" value="1"/> कोई फायदा नहीं आ' +
+      '<input type="radio" name="{0}q2" value="1"/> कोई फायदा नहीं हुआ' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q2" value="2"/> थोड़ा फायदा  आ' +
+      '<input type="radio" name="{0}q2" value="2"/> थोड़ा फायदा हुआ' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q2" value="3"/> ठीक-ठाक फायदा  आ' +
+      '<input type="radio" name="{0}q2" value="3"/> ठीक-ठाक फायदा हुआ' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q2" value="4"/>  ादा फायदा  आ' +
+      '<input type="radio" name="{0}q2" value="4"/> ज्यादा फायदा हुआ' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q2" value="5"/> ब त  ादा फायदा  आ' +
+      '<input type="radio" name="{0}q2" value="5"/> बहुत ज्यादा फायदा हुआ' +
       '</span>' +
       '</div>' +
       '<br/>' +
       '<br/>' +
       '<div class="form-group">' +
       // '<label for="">How entertaining was the last video to you?</label>' +
-      '<label for="">आपको यह विवियो वकतना मनोरंजक लगा?</label>' +
+      '<label for="">आपको यह विडियो कितना मनोरंजक लगा?</label>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q3" value="1"/> ब त उबाऊ' +
+      '<input type="radio" name="{0}q3" value="1"/> बहुत उबाऊ' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q3" value="2"/> थोड़ा उबाऊ' +
+      '<input type="radio" name="{0}q3" value="2"/> थोड़ा उबाऊ' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q3" value="3"/> ना उबाऊ ना मनोरं जक' +
+      '<input type="radio" name="{0}q3" value="3"/> ना उबाऊ ना मनोरंजक' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q3" value="4"/> थोड़ा मनोरंजक' +
+      '<input type="radio" name="{0}q3" value="4"/> थोड़ा मनोरंजक' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q3" value="5"/> ब त मनोरंजक' +
+      '<input type="radio" name="{0}q3" value="5"/> बहुत मनोरंजक' +
       '</span>' +
       '</div>' +
       '<br/>' +
       '<br/>' +
       '<div class="form-group">' +
       // '<label for="">How can the last video be improved?</label>' +
-      '<label for=""> ा इस विवियो को और सुधारा जा सकता ह </label>' +
+      '<label for="">क्या इस विडियो को और सुधारा जा सकता है</label>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q4" value="1"/> कोई सुधार की ज रत नही ं है' +
+      '<input type="radio" name="{0}q4" value="1"/> कोई सुधार की जरूरत नहीं है' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q4" value="2"/> ब त कम सुधार की ज रत है' +
+      '<input type="radio" name="{0}q4" value="2"/> बहुत कम सुधार की जरूरत है' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q4" value="3"/> कम सुधार की ज रत है' +
+      '<input type="radio" name="{0}q4" value="3"/> कम सुधार की जरूरत है' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q4" value="4"/>  ादा सुधार की ज रत है' +
+      '<input type="radio" name="{0}q4" value="4"/> ज्यादा सुधार की जरूरत है' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q4" value="5"/> ब त  ादा सुधार की ज रत ह' +
+      '<input type="radio" name="{0}q4" value="5"/> बहुत ज्यादा सुधार की जरूरत है' +
       '</span>' +
       '</div>' +
       '</form>';
