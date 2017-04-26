@@ -188,8 +188,29 @@ var naf = (function() {
     var vid = $('video').attr('id');
     var current_step = parseInt($('#step-value').text());
     var worker_group = parseInt($('#worker-group').text());
+
+    // var status = vid.paused ? vid.play() : vid.pause();
+    var player = $('video')[0];
+    var status = player.paused ? player.play() : player.pause();
     countdown_next_step_btn(current_step, worker_group);
   }
+
+  function go_fullscreen(event) {
+    var elem = $('video')[0];
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+      console.log('other browser fullscreen done.');
+    } else if (elem.mozRequestFullScreen) {
+      elem.mozRequestFullScreen();
+      console.log('firefox fullscreen done.');
+    } else if (elem.webkitRequestFullscreen) {
+      elem.webkitRequestFullscreen();
+      console.log('chrome browser fullscreen done.');
+    } else {
+      console.log('could not do fullscreen.');
+    }
+  }
+
 
   // function countdown_old_next_step_btn(step) {
   //   $('#next-step-btn').prop('disabled', true);
@@ -387,14 +408,14 @@ var naf = (function() {
 
   function do_video_countdown(step, worker_group) {
     if (worker_in_group3(worker_group) && step === 1) {
-      // do_countdown(1);
-      do_countdown(167);
+      do_countdown(1);
+    // do_countdown(167);
     } else if (!worker_in_group3(worker_group) && step === 1) {
-      // do_countdown(1);
-      do_countdown(65);
+      do_countdown(1);
+    // do_countdown(65);
     } else if (!worker_in_group3(worker_group) && step === 2) {
-      // do_countdown(1);
-      do_countdown(167);
+      do_countdown(1);
+      // do_countdown(167);
       console.log('doing countdown for NON-group3 user in step2');
     }
   }
@@ -499,8 +520,11 @@ var naf = (function() {
       msg = 'नीचे दिए हुए वीडियो को बहुत ध्यान से देखें। यह वीडियो लगभग 3 मिनट का है।  इस वीडियो को देखने के बाद आपको हमें बताना होगा की यह वीडियो वो आपको कैसा लगा? ध्यान दें की इस वीडियो को पहले देखे हुए वीडियो (स्टेप 1 ) से compare नहीं करें।';
     }
 
+    var fullscreen_info = "फ़ुलस्क्रीन मोड में प्रवेश करने के लिए डबल क्लिक करें (दो बार क्लिक करें)। वीडियो देखने के बाद, फ़ुलस्क्रीन मोड से बाहर आने के लिए कीबोर्ड पर एएससी कुंजी दबाएं।";
+    msg = msg + "<br><br>" + fullscreen_info;
+
     var raw_html = '<strong>{0}</strong><br>' +
-      '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
+      '<video width="320" height="240" id="{0}" onclick="naf.play_started()" ondblclick="naf.go_fullscreen(this)">' +
       '<source src="/static/videos/{1}" type="video/mp4">' +
       'Your browser does not support the video.' +
       '</video>';
@@ -979,6 +1003,7 @@ var naf = (function() {
     'check_main_survey': check_main_survey,
     'check_demogr_survey': check_demogr_survey,
     'play_started': play_started,
+    'go_fullscreen': go_fullscreen
   };
 
   return exposed_functions;
