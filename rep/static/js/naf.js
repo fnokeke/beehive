@@ -195,23 +195,6 @@ var naf = (function() {
     countdown_next_step_btn(current_step, worker_group);
   }
 
-  function go_fullscreen(event) {
-    var elem = $('video')[0];
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-      console.log('other browser fullscreen done.');
-    } else if (elem.mozRequestFullScreen) {
-      elem.mozRequestFullScreen();
-      console.log('firefox fullscreen done.');
-    } else if (elem.webkitRequestFullscreen) {
-      elem.webkitRequestFullscreen();
-      console.log('chrome browser fullscreen done.');
-    } else {
-      console.log('could not do fullscreen.');
-    }
-  }
-
-
   // function countdown_old_next_step_btn(step) {
   //   $('#next-step-btn').prop('disabled', true);
   //   if (step === 2 || step === 4 || step === 6 || step === 8) {
@@ -520,11 +503,8 @@ var naf = (function() {
       msg = 'नीचे दिए हुए वीडियो को बहुत ध्यान से देखें। यह वीडियो लगभग 3 मिनट का है।  इस वीडियो को देखने के बाद आपको हमें बताना होगा की यह वीडियो वो आपको कैसा लगा? ध्यान दें की इस वीडियो को पहले देखे हुए वीडियो (स्टेप 1 ) से compare नहीं करें।';
     }
 
-    var fullscreen_info = "फ़ुलस्क्रीन मोड में प्रवेश करने के लिए डबल क्लिक करें (दो बार क्लिक करें)। वीडियो देखने के बाद, फ़ुलस्क्रीन मोड से बाहर आने के लिए कीबोर्ड पर एएससी कुंजी दबाएं।";
-    msg = msg + "<br><br>" + fullscreen_info;
-
     var raw_html = '<strong>{0}</strong><br>' +
-      '<video width="320" height="240" id="{0}" onclick="naf.play_started()" ondblclick="naf.go_fullscreen(this)">' +
+      '<video width="320" height="240" id="{0}" onclick="naf.play_started()" controls>' +
       '<source src="/static/videos/{1}" type="video/mp4">' +
       'Your browser does not support the video.' +
       '</video>';
@@ -1003,7 +983,6 @@ var naf = (function() {
     'check_main_survey': check_main_survey,
     'check_demogr_survey': check_demogr_survey,
     'play_started': play_started,
-    'go_fullscreen': go_fullscreen
   };
 
   return exposed_functions;
