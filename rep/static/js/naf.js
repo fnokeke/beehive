@@ -112,6 +112,7 @@ var naf = (function() {
   });
 
   $("#steps-modal").on("hidden.bs.modal", function() {
+    g_video_played = false;
     var current_step = parseInt($('#step-value').text());
     var worker_group = parseInt($('#worker-group').text());
     var return_to_step = is_reveal_code_step(current_step, worker_group) ? current_step : 1;
@@ -391,13 +392,16 @@ var naf = (function() {
 
   function do_video_countdown(step, worker_group) {
     if (worker_in_group3(worker_group) && step === 1) {
+      console.log('video enable next step');
       do_countdown(1);
     // do_countdown(167);
     } else if (!worker_in_group3(worker_group) && step === 1) {
       do_countdown(1);
+      console.log('video enable next step');
     // do_countdown(65);
     } else if (!worker_in_group3(worker_group) && step === 2) {
       do_countdown(1);
+      console.log('video enable next step');
       // do_countdown(167);
       console.log('doing countdown for NON-group3 user in step2');
     }
@@ -504,7 +508,7 @@ var naf = (function() {
     }
 
     var raw_html = '<strong>{0}</strong><br>' +
-      '<video width="320" height="240" id="{0}" onclick="naf.play_started()" controls>' +
+      '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
       '<source src="/static/videos/{1}" type="video/mp4">' +
       'Your browser does not support the video.' +
       '</video>';
