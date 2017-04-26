@@ -186,13 +186,8 @@ var naf = (function() {
 
   function play_started() {
     g_video_played = true;
-    var vid = $('video').attr('id');
     var current_step = parseInt($('#step-value').text());
     var worker_group = parseInt($('#worker-group').text());
-
-    // var status = vid.paused ? vid.play() : vid.pause();
-    var player = $('video')[0];
-    var status = player.paused ? player.play() : player.pause();
     countdown_next_step_btn(current_step, worker_group);
   }
 
@@ -504,7 +499,7 @@ var naf = (function() {
     }
 
     var raw_html = '<strong>{0}</strong><br>' +
-      '<video width="320" height="240" id="{0}" onclick="naf.play_started()" controls>' +
+      '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
       '<source src="/static/videos/compressed/{1}" type="video/mp4">' +
       'Your browser does not support the video.' +
       '</video>';
