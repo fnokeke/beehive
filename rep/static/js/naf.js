@@ -99,10 +99,10 @@ var naf = (function() {
     countdown_next_step_btn(current_step, worker_group);
   });
 
-  $('#begin-response-btn').click(function() {
-    var response = $('#begin-response-text').val();
+  $('#hindi-test-response-btn').click(function() {
+    var response = parseInt($('#hindi-test-response').val());
     console.log('response: ', response);
-    if (response === '20') {
+    if (response === 17) {
       $('#begin-div').hide();
       $('#submit-div').show();
     } else {
@@ -135,13 +135,13 @@ var naf = (function() {
 
   $('#naf-consent-agreed-btn').click(function() {
     $('#naf-consent-agree-modal').modal('hide');
-    $('#naf-join-div').show();
+    $('#naf-hindi-test-div').show();
     localStorage.agreed_to_consent = "true";
   });
 
   (function agreed_to_consent() {
     if (localStorage.agreed_to_consent === "true") {
-      $('#naf-join-div').show();
+      $('#naf-hindi-test-div').show();
     }
   })();
 
@@ -482,11 +482,11 @@ var naf = (function() {
 
 
   function get_modal_title(step, worker_group) {
-    var total_steps = worker_in_group3(worker_group) ? 4 : 5;
+    var total_steps = worker_in_group3(worker_group) ? 3 : 4;
 
     // var contents = "Step " + step + " of 5";
     var contents = "स्टेप " + step + " / " + total_steps;
-    if (step === 8) {
+    if (step > total_steps) {
       // contents = "Submit mturk code";
       contents = "अपने MTurk Code को सबमिट करें।";
     }
@@ -494,12 +494,20 @@ var naf = (function() {
   }
 
   function get_video(video_name) {
-    var raw_html = '<strong>नीचे दिए हुए वीडियो को ध्यान से fullscreen mode पर देखें।  अपने headphones का इस्तेमाल करें।  यह वीडियो सिर्फ 1 मिनट का है।</strong><br>' +
+    var msg = "नीचे दिए हुए वीडियो को ध्यान से fullscreen mode पर देखें।  अपने headphones का इस्तेमाल करें।  यह वीडियो सिर्फ 1 मिनट का है।";
+    if (video_name === 'main.mp4') {
+      msg = 'नीचे दिए हुए वीडियो को बहुत ध्यान से देखें। यह वीडियो लगभग 3 मिनट का है।  इस वीडियो को देखने के बाद आपको हमें बताना होगा की यह वीडियो वो आपको कैसा लगा? ध्यान दें की इस वीडियो को पहले देखे हुए वीडियो (स्टेप 1 ) से compare नहीं करें।';
+    }
+
+    var raw_html = '<strong>{0}</strong><br>' +
       '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
-      '<source src="/static/videos/{0}" type="video/mp4">' +
+      '<source src="/static/videos/{1}" type="video/mp4">' +
       'Your browser does not support the video.' +
       '</video>';
-    raw_html = raw_html.format(video_name);
+
+    raw_html = raw_html.format(msg, video_name);
+    // raw_html = '<iframe width="420" height="315" src="https://www.youtube.com/embed/XGSy3_Czz8k?&controls=0&modestbranding=1&disablekb=1&fs="> </iframe>';
+    // raw_html = '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/XGSy3_Czz8k?&controls=0&modestbranding=1&disablekb=1&fs=1?enablejsapi" frameborder="0" allowfullscreen></iframe>';
     return raw_html;
   }
 
@@ -658,10 +666,14 @@ var naf = (function() {
 
   function get_main_survey() {
     var vid = "main";
+    var msg = '“जो वीडियो आपने अभी अभी देखा (स्टेप 2 में ), सिर्फ उसके आधार पर कृपया इन 4 सवालों के जवाब दे।  हम चाहेंगे कि आप इन सवालों का जवाब ईमानदारी से दें।';
     var form = '<form onchange="naf.check_main_survey()">' +
+      '<strong>' + msg + '</strong>' +
+      '<br>' +
+      '<br>' +
       '<div class="form-group">' +
-      // '<label for="">Using the image below, indicate how happy or sad you feel after watching the video. Please tick the figure that best represents your feelings. </label>' +
-      '<label for="">How much did you like the last video?</label>' +
+      // '<label for="">How much did you like the last video?</label>' +
+      '<label for="">आपको यह विवियो कै सा लगा?</label>' +
       '<img src="/static/images/naf/valence.png" width="550px" height="150px" alt="valence image" />' +
       '<label class="naf-radio">' +
       '<input type="radio" name="{0}q1" value="1"/>' +
@@ -682,58 +694,80 @@ var naf = (function() {
       '<br/>' +
       '<br/>' +
       '<div class="form-group">' +
-      '<label for="">How useful was the last video to you?</label>' +
+      // '<label for="">How useful was the last video to you?</label>' +
+      '<label for="">आपको यह विवियो देख कर कु छ फायदा  आ?</label>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q2" value="1"/> Highly non-useful' +
+      '<input type="radio" name="{0}q2" value="1"/> कोई फायदा नहीं आ' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q2" value="2"/> Slightly non-useful ' +
+      '<input type="radio" name="{0}q2" value="2"/> थोड़ा फायदा  आ' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q2" value="3"/> Neutral' +
+      '<input type="radio" name="{0}q2" value="3"/> ठीक-ठाक फायदा  आ' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q2" value="4"/> Slightly useful' +
+      '<input type="radio" name="{0}q2" value="4"/>  ादा फायदा  आ' +
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q2" value="5"/> Highly useful' +
-      '</span>' +
-      '</div>' +
-      '<br/>' +
-      '<br/>' +
-      '<div class="form-group">' +
-      '<label for="">How entertaining was the last video to you?</label>' +
-      '<br>' +
-      '<span>' +
-      '<input type="radio" name="{0}q3" value="1"/> Highly unentertaining' +
-      '</span>' +
-      '<br>' +
-      '<span>' +
-      '<input type="radio" name="{0}q3" value="2"/> Slightly unentertaining ' +
-      '</span>' +
-      '<br>' +
-      '<span>' +
-      '<input type="radio" name="{0}q3" value="3"/> Neutral' +
-      '</span>' +
-      '<br>' +
-      '<span>' +
-      '<input type="radio" name="{0}q3" value="4"/> Slightly enteraining' +
-      '</span>' +
-      '<br>' +
-      '<span>' +
-      '<input type="radio" name="{0}q3" value="5"/> Highly enteraining' +
+      '<input type="radio" name="{0}q2" value="5"/> ब त  ादा फायदा  आ' +
       '</span>' +
       '</div>' +
       '<br/>' +
       '<br/>' +
       '<div class="form-group">' +
-      '<label>How can the last video be improved?</label>' +
-      '<input type="textarea" class="form-control" oninput="naf.check_main_survey()" id="{0}q4" max=50 placeholder="type response here">' +
+      // '<label for="">How entertaining was the last video to you?</label>' +
+      '<label for="">आपको यह विवियो वकतना मनोरंजक लगा?</label>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q3" value="1"/> ब त उबाऊ' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q3" value="2"/> थोड़ा उबाऊ' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q3" value="3"/> ना उबाऊ ना मनोरं जक' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q3" value="4"/> थोड़ा मनोरंजक' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q3" value="5"/> ब त मनोरंजक' +
+      '</span>' +
+      '</div>' +
+      '<br/>' +
+      '<br/>' +
+      '<div class="form-group">' +
+      // '<label for="">How can the last video be improved?</label>' +
+      '<label for=""> ा इस विवियो को और सुधारा जा सकता ह </label>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q4" value="1"/> कोई सुधार की ज रत नही ं है' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q4" value="2"/> ब त कम सुधार की ज रत है' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q4" value="3"/> कम सुधार की ज रत है' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q4" value="4"/>  ादा सुधार की ज रत है' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q4" value="5"/> ब त  ादा सुधार की ज रत ह' +
+      '</span>' +
       '</div>' +
       '</form>';
 
@@ -890,7 +924,7 @@ var naf = (function() {
     localStorage.mainq1 = $('input[name=mainq1]:checked').val();
     localStorage.mainq2 = $('input[name=mainq2]:checked').val();
     localStorage.mainq3 = $('input[name=mainq3]:checked').val();
-    localStorage.mainq4 = $('#mainq4').val();
+    localStorage.mainq4 = $('input[name=mainq4]:checked').val();
 
     if (is_valid(localStorage.mainq1) &&
       is_valid(localStorage.mainq2) &&

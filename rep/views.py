@@ -798,7 +798,7 @@ def welcome_and_check():
 
 @app.route('/naf')
 def naf_join():
-    return render_template('naf/naf-join.html')
+    return render_template('naf/naf-hindi-test.html')
 
 
 @app.route('/naf/<worker_id>')
