@@ -374,13 +374,17 @@ var naf = (function() {
   }
 
   function get_contents_group3(step, worker_group) {
+    var msg;
+    var video_name;
     var worker_code;
     var contents;
 
     if (step === 1) {
-      contents = get_video('main.mp4');
+      msg = 'नीचे दिए हुए वीडियो को बहुत ध्यान से देखें। यह वीडियो लगभग 3 मिनट का है। इस वीडियो को देखने के बाद आपको हमें बताना होगा की यह वीडियो आपको कैसा लगा?';
+      contents = get_video(msg, 'main.mp4');
     } else if (step === 2) {
-      contents = get_main_survey();
+      msg = 'जो वीडियो आपने अभी अभी देखा, सिर्फ उसके आधार पर कृपया इन 4 सवालों के जवाब दे। हम चाहेंगे कि आप इन सवालों का जवाब ईमानदारी से दें।';
+      contents = get_main_survey(msg);
     } else if (step === 3) {
       contents = get_demography_survey();
     } else if (step === 4) {
@@ -392,17 +396,21 @@ var naf = (function() {
   }
 
   function get_contents_group1_group2(step, worker_group) {
-    var first_video;
+    var msg;
+    var video_name;
     var worker_code;
     var contents;
 
     if (step === 1) {
-      first_video = worker_group % 2 === 0 ? "neg.mp4" : "pos.mp4";
-      contents = get_video(first_video);
+      msg = "नीचे दिए हुए वीडियो को ध्यान से fullscreen mode पर देखें।  अपने headphones का इस्तेमाल करें।  यह वीडियो सिर्फ 1 मिनट का है।";
+      video_name = worker_group % 2 === 0 ? "neg.mp4" : "pos.mp4";
+      contents = get_video(msg, video_name);
     } else if (step === 2) {
-      contents = get_video('main.mp4');
+      msg = 'नीचे दिए हुए वीडियो को बहुत ध्यान से देखें। यह वीडियो लगभग 3 मिनट का है। इस वीडियो को देखने के बाद आपको हमें बताना होगा की यह वीडियो आपको कैसा लगा? ध्यान दें की इस वीडियो को पहले देखे हुए वीडियो (स्टेप 1 ) से compare नहीं करें।';
+      contents = get_video(msg, 'main.mp4');
     } else if (step === 3) {
-      contents = get_main_survey();
+      msg = 'जो वीडियो आपने अभी अभी देखा (स्टेप 2 में ), सिर्फ उसके आधार पर कृपया इन 4 सवालों के जवाब दे।  हम चाहेंगे कि आप इन सवालों का जवाब ईमानदारी से दें।';
+      contents = get_main_survey(msg);
     } else if (step === 4) {
       contents = get_demography_survey();
     } else if (step === 5) {
@@ -427,12 +435,7 @@ var naf = (function() {
     return contents;
   }
 
-  function get_video(video_name) {
-    var msg = "नीचे दिए हुए वीडियो को ध्यान से fullscreen mode पर देखें।  अपने headphones का इस्तेमाल करें।  यह वीडियो सिर्फ 1 मिनट का है।";
-    if (video_name === 'main.mp4') {
-      msg = 'नीचे दिए हुए वीडियो को बहुत ध्यान से देखें। यह वीडियो लगभग 3 मिनट का है।  इस वीडियो को देखने के बाद आपको हमें बताना होगा की यह वीडियो वो आपको कैसा लगा? ध्यान दें की इस वीडियो को पहले देखे हुए वीडियो (स्टेप 1 ) से compare नहीं करें।';
-    }
-
+  function get_video(msg, video_name) {
     var raw_html = '<strong>{0}</strong><br><br>' +
       // '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
       '<video width="550" height="300" id="{0}" onplay="naf.play_started()" controls>' +
@@ -444,16 +447,15 @@ var naf = (function() {
     return raw_html;
   }
 
-  function get_main_survey() {
+  function get_main_survey(msg) {
     var vid = "main";
-    var msg = '“जो वीडियो आपने अभी अभी देखा (स्टेप 2 में ), सिर्फ उसके आधार पर कृपया इन 4 सवालों के जवाब दे।  हम चाहेंगे कि आप इन सवालों का जवाब ईमानदारी से दें।';
     var form = '<form onchange="naf.check_main_survey()">' +
       '<strong>' + msg + '</strong>' +
       '<br>' +
       '<br>' +
       '<div class="form-group">' +
       // '<label for="">How much did you like the last video?</label>' +
-      '<label for="">आपको यह विवियो कै सा लगा?</label>' +
+      '<label for="">आपको यह विडियो कैसा लगा?</label>' +
       '<img src="/static/images/naf/valence2.png" width="550px" height="150px" alt="valence image" />' +
       '<label class="naf-radio">' +
       '<input type="radio" name="{0}q1" value="1"/>' +
