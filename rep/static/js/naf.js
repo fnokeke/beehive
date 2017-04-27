@@ -738,7 +738,7 @@ var naf = (function() {
 
   function wipe_then_init_values() {
     localStorage.clear();
-    localStorage.agreed_to_consent = "true";
+    // localStorage.agreed_to_consent = "true";
     var current_step = parseInt($('#step-value').text());
     var worker_group = parseInt($('#worker-group').text());
     var worker_code = $('#worker-code').text();
