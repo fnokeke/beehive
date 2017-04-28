@@ -745,6 +745,7 @@ class NafStats(db.Model):
     mainq2 = db.Column(db.String(5))
     mainq3 = db.Column(db.String(5))
     mainq4 = db.Column(db.String(5))
+    mainq5 = db.Column(db.String(5))
 
     # demography survey
     city = db.Column(db.String(30))
@@ -766,6 +767,7 @@ class NafStats(db.Model):
         self.mainq2 = info['mainq2']
         self.mainq3 = info['mainq3']
         self.mainq4 = info['mainq4']
+        self.mainq5 = info['mainq5']
 
         # demography survey
         self.city = info['city']
@@ -789,6 +791,7 @@ class NafStats(db.Model):
             'mainq2': self.mainq2,
             'mainq3': self.mainq3,
             'mainq4': self.mainq4,
+            'mainq5': self.mainq5,
             # demography
             'city': self.city,
             'age': self.age,

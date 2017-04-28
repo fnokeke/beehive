@@ -252,7 +252,8 @@ var naf = (function() {
       is_valid(localStorage.mainq1) &&
       is_valid(localStorage.mainq2) &&
       is_valid(localStorage.mainq3) &&
-      is_valid(localStorage.mainq4)) {
+      is_valid(localStorage.mainq4) &&
+      is_valid(localStorage.mainq5)) {
       $('#next-step-btn').prop('disabled', false);
     }
 
@@ -296,6 +297,7 @@ var naf = (function() {
       'mainq2': parseInt(localStorage.mainq2),
       'mainq3': parseInt(localStorage.mainq3),
       'mainq4': parseInt(localStorage.mainq4),
+      'mainq5': parseInt(localStorage.mainq5),
       // demography
       'city': localStorage.city,
       'age': parseInt(localStorage.age),
@@ -338,14 +340,14 @@ var naf = (function() {
 
   function do_video_countdown(step, worker_group) {
     if (worker_in_group3(worker_group) && step === 1) {
-      // do_countdown(1);
-      do_countdown(167);
+      do_countdown(1);
+    // do_countdown(167);
     } else if (!worker_in_group3(worker_group) && step === 1) {
-      // do_countdown(1);
-      do_countdown(65);
+      do_countdown(1);
+    // do_countdown(65);
     } else if (!worker_in_group3(worker_group) && step === 2) {
-      // do_countdown(1);
-      do_countdown(167);
+      do_countdown(1);
+    // do_countdown(167);
     }
   }
 
@@ -383,7 +385,7 @@ var naf = (function() {
       msg = 'नीचे दिए हुए वीडियो को बहुत ध्यान से देखें। यह वीडियो लगभग 3 मिनट का है। इस वीडियो को देखने के बाद आपको हमें बताना होगा की यह वीडियो आपको कैसा लगा?';
       contents = get_video(msg, 'main.mp4');
     } else if (step === 2) {
-      msg = 'जो वीडियो आपने अभी अभी देखा, सिर्फ उसके आधार पर कृपया इन 4 सवालों के जवाब दे। हम चाहेंगे कि आप इन सवालों का जवाब ईमानदारी से दें।';
+      msg = 'जो वीडियो आपने अभी अभी देखा, सिर्फ उसके आधार पर कृपया इन 5 सवालों के जवाब दे। हम चाहेंगे कि आप इन सवालों का जवाब ईमानदारी से दें।';
       contents = get_main_survey(msg);
     } else if (step === 3) {
       contents = get_demography_survey();
@@ -409,7 +411,7 @@ var naf = (function() {
       msg = 'नीचे दिए हुए वीडियो को बहुत ध्यान से देखें। यह वीडियो लगभग 3 मिनट का है। इस वीडियो को देखने के बाद आपको हमें बताना होगा की यह वीडियो आपको कैसा लगा? ध्यान दें की इस वीडियो को पहले देखे हुए वीडियो (स्टेप 1 ) से compare नहीं करें।';
       contents = get_video(msg, 'main.mp4');
     } else if (step === 3) {
-      msg = 'जो वीडियो आपने अभी अभी देखा (स्टेप 2 में ), सिर्फ उसके आधार पर कृपया इन 4 सवालों के जवाब दे।  हम चाहेंगे कि आप इन सवालों का जवाब ईमानदारी से दें।';
+      msg = 'जो वीडियो आपने अभी अभी देखा (स्टेप 2 में ), सिर्फ उसके आधार पर कृपया इन 5 सवालों के जवाब दे।  हम चाहेंगे कि आप इन सवालों का जवाब ईमानदारी से दें।';
       contents = get_main_survey(msg);
     } else if (step === 4) {
       contents = get_demography_survey();
@@ -549,6 +551,32 @@ var naf = (function() {
       '<br>' +
       '<span>' +
       '<input type="radio" name="{0}q4" value="5"/> बहुत ज्यादा सुधार की जरूरत है' +
+      '</span>' +
+      '</div>' +
+      '<br/>' +
+      '<br/>' +
+      '<div class="form-group">' +
+      // '<label for="">What was the video about?</label>' +
+      '<label for="">यह वीडियो किस विषय पर था ?</label>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q5" value="1"/> नवजात बच्चे के पोषण के बारे में' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q5" value="2"/> धूम्रपान करने के और तम्बाकू खाने के नुकसान' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q5" value="3"/> साफ़ पानी पीने के बारे में' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q5" value="4"/> दस्त के इलाज के बारे में' +
+      '</span>' +
+      '<br>' +
+      '<span>' +
+      '<input type="radio" name="{0}q5" value="5"/> इनमे से कोई नहीं' +
       '</span>' +
       '</div>' +
       '</form>';
@@ -707,11 +735,13 @@ var naf = (function() {
     localStorage.mainq2 = $('input[name=mainq2]:checked').val();
     localStorage.mainq3 = $('input[name=mainq3]:checked').val();
     localStorage.mainq4 = $('input[name=mainq4]:checked').val();
+    localStorage.mainq5 = $('input[name=mainq5]:checked').val();
 
     if (is_valid(localStorage.mainq1) &&
       is_valid(localStorage.mainq2) &&
       is_valid(localStorage.mainq3) &&
-      is_valid(localStorage.mainq4)) {
+      is_valid(localStorage.mainq4) &&
+      is_valid(localStorage.mainq5)) {
       console.log('Next step enabled for main survey.');
       $('#next-step-btn').prop('disabled', false);
     } else {
@@ -772,6 +802,7 @@ localStorage.mainq1 = "undefined";
 localStorage.mainq2 = "undefined";
 localStorage.mainq3 = "undefined";
 localStorage.mainq4 = "undefined";
+localStorage.mainq5 = "undefined";
 
 // demography survey
 localStorage.city = "undefined";
