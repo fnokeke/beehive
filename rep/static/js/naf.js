@@ -340,14 +340,14 @@ var naf = (function() {
 
   function do_video_countdown(step, worker_group) {
     if (worker_in_group3(worker_group) && step === 1) {
-      do_countdown(1);
-    // do_countdown(167);
+      // do_countdown(1);
+      do_countdown(167);
     } else if (!worker_in_group3(worker_group) && step === 1) {
-      do_countdown(1);
-    // do_countdown(65);
+      // do_countdown(1);
+      do_countdown(65);
     } else if (!worker_in_group3(worker_group) && step === 2) {
-      do_countdown(1);
-    // do_countdown(167);
+      // do_countdown(1);
+      do_countdown(167);
     }
   }
 
