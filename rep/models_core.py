@@ -87,7 +87,7 @@ class Experiment(db.Model):
     end = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     no_of_condition = db.Column(db.Integer, default=1)
     ps_per_condition = db.Column(db.Integer, default=1)
-    notif_window = db.Column(db.Boolean, default=False)
+    is_notif_window_enabled = db.Column(db.Boolean, default=False)
     is_mturk_study = db.Column(db.Boolean, default=False)
     rescuetime = db.Column(db.Boolean, default=False)
     calendar = db.Column(db.Boolean, default=False)
@@ -115,7 +115,7 @@ class Experiment(db.Model):
         self.code = info.get('code') if info.get('code') else Experiment.generate_unique_id()
         self.no_of_condition = info.get('no_of_condition')
         self.ps_per_condition = info.get('ps_per_condition')
-        self.notif_window = info.get('notif_window')
+        self.is_notif_window_enabled = info.get('is_notif_window_enabled')
         self.is_mturk_study = info.get('is_mturk_study')
         self.rescuetime = info.get('rescuetime')
         self.calendar = info.get('calendar')
@@ -131,7 +131,7 @@ class Experiment(db.Model):
             'start': str(self.start),
             'end': str(self.end),
             'code': self.code,
-            'notif_window': self.notif_window,
+            'is_notif_window_enabled': self.is_notif_window_enabled,
             'is_mturk_study': self.is_mturk_study,
             'rescuetime': self.rescuetime,
             'calendar': self.calendar,
@@ -288,7 +288,8 @@ class Intervention(db.Model):
     when = db.Column(db.String(30))
     repeat = db.Column(db.String(30))
     intv_type = db.Column(db.String(20))
-    user_window_mins = db.Column(db.String(5))
+    user_window_hours = db.Column(db.Integer)
+    free_hours_before_sleep = db.Column(db.Integer)
 
     def __init__(self, info):
         self.code = info['code']
@@ -300,7 +301,8 @@ class Intervention(db.Model):
         self.repeat = info['repeat']
         self.intv_type = info['intv_type']
         self.notif_id = info['notif_id']
-        self.user_window_mins = info['user_window_mins']
+        self.user_window_hours = info['user_window_hours']
+        self.free_hours_before_sleep = info['free_hours_before_sleep']
 
     def __repr__(self):
         treatment_image = []
@@ -327,7 +329,8 @@ class Intervention(db.Model):
             'every': self.every,
             'when': self.when,
             'repeat': self.repeat,
-            'user_window_mins': self.user_window_mins,
+            'user_window_hours': self.user_window_hours,
+            'free_hours_before_sleep': self.free_hours_before_sleep,
             'notif_id': self.notif_id,
             'notif': notif,
             'intv_type': self.intv_type
