@@ -48,10 +48,15 @@
         <th class="">Notification</th>
         <th>Start</th>
         <th>Every</th>
-        {% if experiment.notif_window %}
-          <th>Alarm Window (mins)</th>
+        {% if experiment.is_notif_window_enabled %}
+          <th>Alarm Window (hours)</th>
         {% else %}
           <th>Alarm Time</th>
+        {% endif %}
+        {% if experiment.is_notif_window_enabled %}
+          <th>
+            Free Hours Before Sleep
+          </th>
         {% endif %}
         <th>Repeat</th>
       </tr>
@@ -139,14 +144,14 @@
             </select>
           </td>
 
-          {% if experiment.notif_window %}
+          {% if experiment.is_notif_window_enabled %}
             <input
               type="text"
               style="display: none"
               id="user-window-enabled"
-              value="{{experiment.notif_window}}">
+              value="{{experiment.is_notif_window_enabled}}">
             <td>
-              <input type="number" class="form-control" id="user-window-mins" min=0 value="120">
+              <input type="number" class="form-control" id="user-window-hours" min=1 max=12 value=1>
             </td>
           {% else %}
             <td>
@@ -154,8 +159,14 @@
             </td>
           {% endif %}
 
+          {% if experiment.is_notif_window_enabled %}
+            <td>
+              <input type="number" class="form-control" id="free-hours-before-sleep" min=1 max=12 value=1>
+            </td>
+          {% endif %}
+
           <td>
-            <input type="number" class="form-control" id="intv-repeat" value="1">
+            <input type="number" class="form-control" id="intv-repeat" min=1 max=30 value=1>
           </td>
         </tr>
       </tbody>

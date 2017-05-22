@@ -62,9 +62,12 @@
       </td>
 
       <td>
-        {% if intv.user_window_mins != ''%}
-          {{ intv.user_window_mins }}
-          minutes window
+        {% if intv.user_window_hours != ''%}
+          *{{ intv.user_window_hours }}
+          hour window
+          <br>
+          *{{ intv.free_hours_before_sleep }}
+          hours b4 sleep
         {% else %}
           {{ intv.when | onlyfancytime }}
         {% endif %}

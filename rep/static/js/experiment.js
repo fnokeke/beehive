@@ -139,7 +139,7 @@ var experiment = (function() {
     var start = $('#edit-start-date').val();
     var end = $('#edit-end-date').val();
     var rescuetime = $('#edit-rescuetime-checkbox-btn').is(':checked');
-    var notif_window = $('#edit-notif-window-checkbox-btn').is(':checked');
+    var is_notif_window_enabled = $('#edit-notif-window-checkbox-btn').is(':checked');
     var is_mturk_study = $('#edit-is-mturk-study-checkbox-btn').is(':checked');
     var calendar = $('#edit-calendar-checkbox-btn').is(':checked');
     var geofence = $('#edit-geofence-checkbox-btn').is(':checked');
@@ -162,7 +162,7 @@ var experiment = (function() {
       'end': end,
       'code': code,
       'rescuetime': rescuetime,
-      'notif_window': notif_window,
+      'is_notif_window_enabled': is_notif_window_enabled,
       'is_mturk_study': is_mturk_study,
       'calendar': calendar,
       'geofence': geofence,

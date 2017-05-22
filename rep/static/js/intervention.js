@@ -108,13 +108,17 @@ var intervention = (function() {
     var intv_when = $('#intv-when').val();
     var user_window_enabled = $('#user-window-enabled').val() === "True";
     var experiment_code = $('#code_from_hidden_element').val();
-    var user_window_mins = $('#user-window-mins').val();
+    var user_window_hours = $('#user-window-hours').val();
+    var free_hours_before_sleep = $('#free-hours-before-sleep').val();
 
-    // disable alarm time if user_window_enabled
+    // disable alarm time if user window is enabled
     if (user_window_enabled) {
       intv_when = '';
+      user_window_hours = parseInt(user_window_hours);
+      free_hours_before_sleep = parseInt(free_hours_before_sleep);
     } else {
-      user_window_mins = '';
+      user_window_hours = -1;
+      free_hours_before_sleep = -1;
     }
 
     var factor = intv_every === 'Daily' ? 1 : 7;
@@ -144,7 +148,8 @@ var intervention = (function() {
       'condition': no_of_condition,
       'treatment': treatment,
       'intv_type': intv_type,
-      'user_window_mins': user_window_mins,
+      'user_window_hours': user_window_hours,
+      'free_hours_before_sleep': free_hours_before_sleep,
       'notif_id': intv_notif,
       'code': experiment_code,
       'start': intv_start_datetime.getTime(), // UTC

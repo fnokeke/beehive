@@ -81,7 +81,7 @@
         <input
           type="checkbox"
           id="edit-notif-window-checkbox-btn"
-          {{ 'checked' if experiment.notif_window else
+          {{ 'checked' if experiment.is_notif_window_enabled else
           'unchecked' }}
           data-toggle="toggle"
           data-on="Yes"
