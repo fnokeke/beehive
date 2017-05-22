@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Research on Feedback
+{% endblock %}
+
+{% block nav_brand %}
+  <a class="navbar-brand" href="#">Mturk Experiment</a>
+{% endblock %}
+
+{% block contents %}
+  {% block nav_signin %}{% endblock %}
+
+  <div class="container">
+
+    <div class="page-header">
+      <h3>
+        Hindi Instructions
+      </h3>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6" id="begin-div-nafe">
+        To complete this HIT, you need to know Hindi. Since the task instructions and tasks are in Hindi,
+        you
+        <strong>
+          MUST NOT
+        </strong>
+        continue if you don't know how to read Hindi.
+        <br>
+        <br>
+        <strong>
+          दस + सात क्या होता है?
+        </strong>
+        <div class="input-group">
+          <input type="text" class="form-control" id="hindi-test-response-nafe" placeholder="जवाब दें">
+          <span class="input-group-btn">
+            <button class="btn btn-secondary" id="hindi-test-response-btn-nafe" type="button">
+              सबमिट करें
+            </button>
+          </span>
+        </div>
+        <br>
+      </div>
+
+      <div class="col-lg-6" id="survey-div-nafe" style="display: none">
+        <a href="https://goo.gl/forms/OEKrbl4IPoGW4R5c2">Take Survey</a>
+      </div>
+
+    </div>
+
+  </div>
+
+{% endblock %}

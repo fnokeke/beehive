@@ -109,6 +109,86 @@ var naf = (function() {
     }
   });
 
+  // #############################################
+  // ############ HINDI GOOGLE FORMS ################
+  // #############################################
+  $('#hindi-test-response-btn-nafa').click(function() {
+    var response = parseInt($('#hindi-test-response-nafa').val());
+    console.log('response: ', response);
+    if (response === 17) {
+      $('#begin-div-nafa').hide();
+      $('#survey-div-nafa').show();
+    } else {
+      alert('You cannot continue with Study. Please close this page.');
+      location.reload();
+    }
+  });
+
+  $('#hindi-test-response-btn-nafb').click(function() {
+    var response = parseInt($('#hindi-test-response-nafb').val());
+    console.log('response: ', response);
+    if (response === 17) {
+      $('#begin-div-nafb').hide();
+      $('#survey-div-nafb').show();
+    } else {
+      alert('You cannot continue with Study. Please close this page.');
+      location.reload();
+    }
+  });
+
+
+  $('#hindi-test-response-btn-nafc').click(function() {
+    var response = parseInt($('#hindi-test-response-nafc').val());
+    console.log('response: ', response);
+    if (response === 17) {
+      $('#begin-div-nafc').hide();
+      $('#survey-div-nafc').show();
+    } else {
+      alert('You cannot continue with Study. Please close this page.');
+      location.reload();
+    }
+  });
+
+
+  $('#hindi-test-response-btn-nafd').click(function() {
+    var response = parseInt($('#hindi-test-response-nafd').val());
+    console.log('response: ', response);
+    if (response === 17) {
+      $('#begin-div-nafd').hide();
+      $('#survey-div-nafd').show();
+    } else {
+      alert('You cannot continue with Study. Please close this page.');
+      location.reload();
+    }
+  });
+
+
+  $('#hindi-test-response-btn-nafe').click(function() {
+    var response = parseInt($('#hindi-test-response-nafe').val());
+    console.log('response: ', response);
+    if (response === 17) {
+      $('#begin-div-nafe').hide();
+      $('#survey-div-nafe').show();
+    } else {
+      alert('You cannot continue with Study. Please close this page.');
+      location.reload();
+    }
+  });
+
+  $('#hindi-test-response-btn-naff').click(function() {
+    var response = parseInt($('#hindi-test-response-naff').val());
+    console.log('response: ', response);
+    if (response === 17) {
+      $('#begin-div-naff').hide();
+      $('#survey-div-naff').show();
+    } else {
+      alert('You cannot continue with Study. Please close this page.');
+      location.reload();
+    }
+  });
+  // #############################################
+  // #############################################
+
   $("#steps-modal").on("hidden.bs.modal", function() {
     g_video_played = false;
     var current_step = parseInt($('#step-value').text());

@@ -801,6 +801,36 @@ def naf_join():
     return render_template('naf/naf-hindi-test.html')
 
 
+@app.route('/nafa')
+def nafa():
+    return render_template('naf/a.html')
+
+
+@app.route('/nafb')
+def nafb():
+    return render_template('naf/b.html')
+
+
+@app.route('/nafc')
+def nafc():
+    return render_template('naf/c.html')
+
+
+@app.route('/nafd')
+def nafd():
+    return render_template('naf/d.html')
+
+
+@app.route('/nafe')
+def nafe():
+    return render_template('naf/e.html')
+
+
+@app.route('/naff')
+def naff():
+    return render_template('naf/f.html')
+
+
 @app.route('/naf/<worker_id>')
 def naf_watch_videos(worker_id):
     enrolled_worker = NafEnroll.query.filter_by(worker_id=worker_id).first()
