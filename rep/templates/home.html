@@ -16,18 +16,39 @@
 
     <div class="page-header">
       <h3>Connect Apps</h3>
+      <br>
+      <div>
+        <h5>RescueTime</h5>
+        {% if not current_user.rescuetime_access_token %}
+          <button type="submit" id="auth-rt-btn" class="btn btn-primary">Connect RescueTime</button><br>
 
-      {% if not current_user.rescuetime_access_token %}
-        <button type="submit" id="auth-rt-btn" class="btn btn-primary">Connect RescueTime</button><br>
+        {% else %}
+          <span class='text-primary'>
+            <em>
+              Rescuetime is connected.
+            </em>
+          </span>
 
-      {% else %}
-        <span class='text-primary'>
-          <em>
-            Rescuetime is connected.
-          </em>
-        </span>
+        {% endif %}
+      </div>
+      <br>
 
-      {% endif %}
+      <div>
+        <h5>Connect PAM</h5>
+
+        {% if not current_user.pam_access_token %}
+          <button type="submit" id="auth-pam-btn" class="btn btn-primary">Connect PAM</button><br>
+
+        {% else %}
+          <span class='text-primary'>
+            <em>
+              PAM is connected.
+            </em>
+          </span>
+
+        {% endif %}
+
+      </div>
 
     </div>
 
