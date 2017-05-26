@@ -52,7 +52,8 @@
     $.get(url, function(resp) {
       show_success_msg(response_field, resp);
     }).fail(function(error) {
-      show_error_msg(response_field, errors.internal_server_error);
+      show_error_msg(response_field, error);
+      console.log('error: ', error);
     });
   });
 
@@ -142,7 +143,8 @@
       show_success_msg('#moves-status-div', resp);
 
     }).fail(function(error) {
-      show_error_msg(response_field, errors.internal_server_error);
+      show_error_msg(response_field, error);
+      console.log('error: ', error);
     });
 
   });
@@ -187,7 +189,8 @@
       show_success_msg(response_field, resp);
 
     }).fail(function(error) {
-      show_error_msg(response_field, errors.internal_server_error);
+      show_error_msg(response_field, error);
+      console.log('error: ', error);
     });
 
   });
@@ -236,7 +239,8 @@
       show_success_msg(response_field, printout);
 
     }).fail(function(error) {
-      show_error_msg(response_field, errors.internal_server_error);
+      show_error_msg(response_field, error);
+      console.log('error: ', error);
     });
 
   });

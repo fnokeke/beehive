@@ -22,7 +22,6 @@ from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats
 from rep.rescuetime import RescueOauth2, RescueTime
 from rep.pam import PamOauth
 from rep.moves import Moves
-from rep.errors import SLMError
 from rep.upload import Upload
 
 from rep import export
@@ -142,11 +141,11 @@ def user_loader(user_id):
 # Handle Errors
 #################################
 
-
-@app.errorhandler(500)
-def internal_server_error(e):
-    app.logger.error('Server Error: %s', (e))
-    return SLMError.internal_server_error
+#
+# @app.errorhandler(500)
+# def internal_server_error(e):
+#     app.logger.error('Server Error: %s', (e))
+#     return SLMError.internal_server_error
 
 
 @app.errorhandler(404)
@@ -719,7 +718,7 @@ def get_rt_data(date):
 def tracking_settings(field, state):
     is_activated = True if state == 'true' else False
     if is_activated == 'invalid':
-        return SLMError.invalid_input_error
+        return -1
 
     if field == 'location':
         current_user.update_field('is_location_active', is_activated)

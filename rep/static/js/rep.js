@@ -7,11 +7,6 @@ $('.input-daterange input').each(function() {
   $(this).datepicker('clearDates');
 });
 
-var errors = {
-  'internal_server_error': 'oops, cannot complete request at this time. contact admin.',
-  'method_not_allowed': 'profile update failed. try again later or contact admin.'
-};
-
 ////////////////////////////////////////////////
 // helper functions
 ////////////////////////////////////////////////
@@ -28,7 +23,8 @@ function submit_checkbox_val(field, input) {
     var results = JSON.parse(resp);
     console.log('results: ', results);
   }).fail(function(error) {
-    show_error_msg(response_field, errors.internal_server_error);
+    console.log('error:', error);
+    show_error_msg(response_field, error);
   });
 }
 
@@ -86,7 +82,8 @@ $('#update-profile-btn').click(function() {
   $.post(url, data).done(function(resp) {
     show_success_msg('#update-profile-status', 'profile successfully updated');
   }).fail(function(error) {
-    show_error_msg('#update-profile-status', errors.method_not_allowed);
+    console.log('error:', error);
+    show_error_msg('#update-profile-status', error);
   });
 
 });
