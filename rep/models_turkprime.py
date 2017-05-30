@@ -50,9 +50,8 @@ class TP_Admin(db.Model):
 
     @staticmethod
     def add_user(info):
-        existing_worker = TP_Admin.query.filter_by(worker_id=info['worker_id']).first()
-        if existing_worker:
-            return (-1, 'WorkerId already in admin dashboard.', existing_worker)
+        TP_Admin.query.filter_by(worker_id=info['worker_id']).delete()
+        db.session.commit()
 
         new_worker = TP_Admin(info)
         db.session.add(new_worker)
