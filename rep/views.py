@@ -1122,14 +1122,14 @@ def append_admin_fb_response(data):
         data['admin_followup_start'] = worker.admin_followup_start
         data['admin_logging_stop'] = worker.admin_logging_stop
         data['admin_daily_reset_hour'] = TP_DailyResetHour.get_last_updated_hour()
-    else:
-        data['admin_experiment_group'] = 1
-        data['admin_fb_max_mins'] = 13
-        data['admin_fb_max_opens'] = 13
-        data['admin_treatment_start'] = '2017-04-24'
-        data['admin_followup_start'] = '2017-05-01'
-        data['admin_logging_stop'] = '2017-05-10'
-        data['admin_daily_reset_hour'] = '0'
+    # else:
+    #     data['admin_experiment_group'] = 1
+    #     data['admin_fb_max_mins'] = 13
+    #     data['admin_fb_max_opens'] = 13
+    #     data['admin_treatment_start'] = '2017-04-24'
+    #     data['admin_followup_start'] = '2017-05-01'
+    #     data['admin_logging_stop'] = '2017-05-10'
+    #     data['admin_daily_reset_hour'] = '0'
     return data
 
 
