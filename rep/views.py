@@ -51,6 +51,23 @@ def download():
 # template views
 #################################
 @app.route('/')
+@app.route('/researcher')
+def researcher_view():
+    return render_template('researcher_index.html')
+
+
+@app.route('/experiments')
+@requires_basic_auth
+def experiments():
+    ctx = {'users': User.query.all(),
+           'mobile_users': MobileUser.query.all(),
+           'mturk_users': Mturk.query.all(),
+           'experiments': Experiment.query.all(),
+           'interventions': Intervention.query.all()}
+    return render_template('researcher_experiments.html', **ctx)
+
+
+@app.route('/participant')
 def index():
 
     if not current_user.is_authenticated:
@@ -103,28 +120,6 @@ def perform_research_analysis(key, study_begin, int_begin, int_end, study_end):
         results[user.email] = store
 
     return json.dumps(results)
-
-
-@app.route('/researcher_login')
-@requires_basic_auth
-def researcher_login():
-    ctx = {'users': User.query.all(),
-           'mobile_users': MobileUser.query.all(),
-           'mturk_users': Mturk.query.all(),
-           'experiments': Experiment.query.all(),
-           'interventions': Intervention.query.all()}
-    return render_template('researcher.html', **ctx)
-
-
-@app.route('/experiments')
-@requires_basic_auth
-def experiments():
-    ctx = {'users': User.query.all(),
-           'mobile_users': MobileUser.query.all(),
-           'mturk_users': Mturk.query.all(),
-           'experiments': Experiment.query.all(),
-           'interventions': Intervention.query.all()}
-    return render_template('researcher.html', **ctx)
 
 
 @app.route('/settings')
@@ -373,6 +368,32 @@ def edit_experiment(code):
         'interventions': interventions
     }
     return render_template('edit-experiment.html', **ctx)
+
+
+@app.route('/old_edit-experiment/<code>')
+def old_edit_experiment(code):
+    experiment = Experiment.query.filter_by(code=code).first()
+    intv_type = get_intv_type(experiment)
+    interventions = Intervention.query.filter_by(code=code, intv_type=intv_type).order_by('start').all()
+    next_start_date = datetime.now().strftime("%Y-%m-%d")
+    if interventions:
+        next_start_date = to_datetime(interventions[-1].end).strftime("%Y-%m-%d")
+
+    ctx = {
+        'today_date': datetime.now().strftime('%Y-%m-%d'),
+        'experiment_start': experiment.start.strftime("%Y-%m-%d"),
+        'experiment_end': experiment.end.strftime("%Y-%m-%d"),
+        'next_start_date': next_start_date,
+        'enrolled_users': MobileUser.query.filter_by(code=code).all(),
+        'users_unfiltered': User.query.all(),
+        'experiment': experiment,
+        'image_texts': ImageTextUpload.query.filter_by(code=code).all(),
+        'uploaded_intvs': ImageTextUpload.query.filter_by(code=code).all(),
+        'general_notifs': GeneralNotificationConfig.query.filter_by(code=code).all(),
+        'gg': GeneralNotificationConfig,
+        'interventions': interventions
+    }
+    return render_template('old-edit-experiment.html', **ctx)
 
 
 @app.route('/notif-clicked-dashboard/<code>')

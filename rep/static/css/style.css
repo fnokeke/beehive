@@ -126,3 +126,21 @@ form .buttons .submit:hover {background-color: #14892c;}
 .naf-small-radio {
   margin-left: 5px;
 }
+
+.borderless td, .borderless th {
+    border: none !important;
+}
+
+.slide-div {
+  background-color: #efefef;
+  padding: 15px;
+}
+
+.slide-th {
+  /*background-color: #2184be;*/
+
+}
+
+.slide-table button.btn:focus {
+  background-color: #2184be;
+}

@@ -1,0 +1,121 @@
+<div class="page-header">
+  <h3>
+    Design Experiment
+  </h3>
+</div>
+
+<table class="table borderless slide-table" id="">
+  <tr>
+
+    <th>
+      <button type="button" name="button" class="btn btn-lg btn-block">1. Basic Info</button>
+    </th>
+
+    <th>
+      <button type="button" name="button" class="btn btn-lg btn-block">2. Data Streams</button>
+    </th>
+
+    <th>
+      <button type="button" name="button" class="btn btn-lg btn-block">3. Protocols</button>
+    </th>
+  </tr>
+
+  <tr>
+    <th>
+      <button type="button" name="button" class="btn btn-lg btn-block">4. Contexts</button>
+    </th>
+
+    <th>
+      <button type="button" name="button" class="btn btn-lg btn-block">5. Approve</button>
+    </th>
+  </tr>
+
+</table>
+
+<div class="page-header"></div>
+<div id="slide-div-id" class="slide-div">
+  <h2>Protocol</h2>
+  <br>
+
+  <h4>Select Existing Protocol</h4>
+  <div class="form-group row">
+    <div class="col-xs-6">
+      <select class="form-control" id="">
+        <option>Remind Users / Push (May 8th - May 15th)</option>
+        <option>Overuse FB / Vibration (May 1st - May 8th)</option>
+        <option>Email Tips / Email (May 17th - June 12th)</option>
+      </select>
+    </div>
+  </div>
+
+  <br>
+  <h4>Create New Protocol</h4>
+  <br>
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Label</label>
+    <div class="col-xs-4">
+      <input class="form-control" type="text" id="" placeholder="simple label to identify protocol"></input>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Frequency</label>
+    <div class="col-xs-4">
+      <select class="form-control" id="intv-every">
+        <option>Daily</option>
+        <option>Weekly</option>
+        <option>Biweekly</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Method</label>
+    <div class="col-xs-4">
+      <select class="form-control" id="intv-every">
+        <option>Push Notification</option>
+        <option>Vibration</option>
+        <option>Email</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Start Date</label>
+    <div class="col-xs-4">
+      <input
+        class="form-control"
+        id="edit-start-date"
+        data-provide="datepicker"
+        data-date-start-date="{{ today_date }}"
+        data-date-format="yyyy-mm-dd"
+        data-date-today-highlight="true"
+        value="{{experiment_start }}"/>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">End Date</label>
+    <div class="col-xs-4">
+      <input
+        class="form-control"
+        id="edit-end-date"
+        data-provide="datepicker"
+        data-date-start-date="{{ experiment_start }}"
+        data-date-format="yyyy-mm-dd"
+        data-date-today-highlight="true"
+        value="{{ experiment_end }}"/>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label"></label>
+    <div class="col-xs-4">
+      <button type="button" class="btn btn-primary" id="">
+        <span class="glyphicon glyphicon-floppy-saved"></span>
+        Save Protocol
+      </button>
+    </div>
+  </div>
+
+</div>
