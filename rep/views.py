@@ -1041,7 +1041,7 @@ def mobile_worker_id():
 @app.route('/mobile/turkprime/fb-stats', methods=['POST'])
 def mobile_worker_fb_stats():
     data = json.loads(request.data) if request.data else request.form.to_dict()
-    data['worker_id'] = data['worker_id'].strip(' ')
+    data['worker_id'] = data['worker_id'].strip()
     _, response, stats = TP_FBStats.add_stats(data)
     server_response = {'response': response, 'worker_id': data['worker_id'], 'summary': to_json(stats)}
     server_response = append_admin_fb_response(server_response)
@@ -1115,13 +1115,13 @@ def get_all_fb_stats():
 def append_admin_fb_response(data):
     worker = TP_Admin.query.filter_by(worker_id=data['worker_id']).first()
     if worker:
-        data['admin_experiment_group'] = worker.admin_experiment_group
-        data['admin_fb_max_mins'] = worker.admin_fb_max_mins
-        data['admin_fb_max_opens'] = worker.admin_fb_max_opens
-        data['admin_treatment_start'] = worker.admin_treatment_start
-        data['admin_followup_start'] = worker.admin_followup_start
-        data['admin_logging_stop'] = worker.admin_logging_stop
-        data['admin_daily_reset_hour'] = TP_DailyResetHour.get_last_updated_hour()
+        data['admin_experiment_group'] = TP_Admin.rm_null(worker.admin_experiment_group)
+        data['admin_fb_max_mins'] = TP_Admin.rm_null(worker.admin_fb_max_mins)
+        data['admin_fb_max_opens'] = TP_Admin.rm_null(worker.admin_fb_max_opens)
+        data['admin_treatment_start'] = TP_Admin.rm_null(worker.admin_treatment_start)
+        data['admin_followup_start'] = TP_Admin.rm_null(worker.admin_followup_start)
+        data['admin_logging_stop'] = TP_Admin.rm_null(worker.admin_logging_stop)
+        data['admin_daily_reset_hour'] = TP_Admin.rm_null(TP_DailyResetHour.get_last_updated_hour())
     # else:
     #     data['admin_experiment_group'] = 1
     #     data['admin_fb_max_mins'] = 13
@@ -1168,10 +1168,10 @@ def register_mturk_workers():
 def get_worker_info(row):
     w_id, exp_group, exp_code, exp_label = row
     return {
-        'worker_id': w_id.strip(" "),
-        'experiment_group': exp_group.strip(" "),
-        'experiment_code': exp_code.strip(" "),
-        'experiment_label': exp_label.strip(" ")
+        'worker_id': w_id.strip(),
+        'experiment_group': exp_group.strip(),
+        'experiment_code': exp_code.strip(),
+        'experiment_label': exp_label.strip()
     }
 
 

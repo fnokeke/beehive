@@ -72,6 +72,10 @@ class TP_Admin(db.Model):
         db.session.commit()
         return (200, 'Successfully updated admin user settings!', worker)
 
+    @staticmethod
+    def rm_null(val):
+        return "" if val == None else val
+
 
 class TP_DailyResetHour(db.Model):
     id = db.Column(db.Integer, primary_key=True)
