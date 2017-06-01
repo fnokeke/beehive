@@ -378,6 +378,7 @@ var naf = (function() {
       'mainq3': parseInt(localStorage.mainq3),
       'mainq4': parseInt(localStorage.mainq4),
       'mainq5': parseInt(localStorage.mainq5),
+      'mainq6': localStorage.mainq6,
       // demography
       'city': localStorage.city,
       'age': parseInt(localStorage.age),
@@ -420,14 +421,14 @@ var naf = (function() {
 
   function do_video_countdown(step, worker_group) {
     if (worker_in_group3(worker_group) && step === 1) {
-      // do_countdown(1);
-      do_countdown(167);
+      do_countdown(1);
+    // do_countdown(167);
     } else if (!worker_in_group3(worker_group) && step === 1) {
-      // do_countdown(1);
-      do_countdown(65);
+      do_countdown(1);
+    // do_countdown(65);
     } else if (!worker_in_group3(worker_group) && step === 2) {
-      // do_countdown(1);
-      do_countdown(167);
+      do_countdown(1);
+    // do_countdown(167);
     }
   }
 
@@ -446,13 +447,13 @@ var naf = (function() {
   }
 
   function get_modal_body(step, worker_group, worker_code) {
-    var contents = '';
-
-    if (worker_in_group3(worker_group)) {
-      return get_contents_group3(step, worker_group);
-    } else {
-      return get_contents_group1_group2(step, worker_group);
-    }
+    return get_contents_group3(step, worker_group);
+  // var contents = '';
+  // if (worker_in_group3(worker_group)) {
+  //   return get_contents_group3(step, worker_group);
+  // } else {
+  //   return get_contents_group1_group2(step, worker_group);
+  // }
   }
 
   function get_contents_group3(step, worker_group) {
@@ -484,9 +485,9 @@ var naf = (function() {
     var contents;
 
     if (step === 1) {
-      // msg = "नीचे दिए हुए वीडियो को ध्यान से fullscreen mode पर देखें।  अपने headphones का इस्तेमाल करें।  यह वीडियो सिर्फ 1 मिनट का है।";
-      // video_name = worker_group % 2 === 0 ? "neg.mp4" : "pos.mp4";
-      // contents = get_video(msg, video_name);
+      msg = "नीचे दिए हुए वीडियो को ध्यान से fullscreen mode पर देखें।  अपने headphones का इस्तेमाल करें।  यह वीडियो सिर्फ 1 मिनट का है।";
+      video_name = worker_group % 2 === 0 ? "neg.mp4" : "pos.mp4";
+      contents = get_video(msg, video_name);
     } else if (step === 2) {
       msg = 'नीचे दिए हुए वीडियो को बहुत ध्यान से देखें। यह वीडियो लगभग 3 मिनट का है। इस वीडियो को देखने के बाद आपको हमें बताना होगा की यह वीडियो आपको कैसा लगा? ध्यान दें की इस वीडियो को पहले देखे हुए वीडियो (स्टेप 1 ) से compare नहीं करें।';
       contents = get_video(msg, 'main.mp4');
@@ -518,15 +519,14 @@ var naf = (function() {
   }
 
   function get_video(msg, video_name) {
-    var raw_html = '<strong>{0}</strong><br><br>' +
-      // '<video width="320" height="240" id="{0}" onplay="naf.play_started()" controls>' +
+    var raw_html = '<div id="mainVideoDiv" class="noshow"><strong>{0}</strong><br><br>' +
       '<video width="550" height="300" id="{0}" onplay="naf.play_started()" controls>' +
       '<source src="/static/videos/compressed/{1}" type="video/mp4">' +
       'Your browser does not support the video.' +
-      '</video>';
+      '</video></div>';
 
     raw_html = raw_html.format(msg, video_name);
-    return raw_html;
+    return get_slide_html() + raw_html;
   }
 
   function get_main_survey(msg) {
@@ -657,6 +657,15 @@ var naf = (function() {
       '<br>' +
       '<span>' +
       '<input type="radio" name="{0}q5" value="5"/> इनमे से कोई नहीं' +
+      '</span>' +
+      '</div>' +
+      '<br>' +
+      '<br>' +
+      '<div class="form-group">' +
+      '<label for="">Any comments or thoughts?</label>' +
+      '<br/>' +
+      '<span>' +
+      '<textarea id="{0}q6" rows="8" cols="60" placeholder="type response here (English or Hindi is fine)"></textarea>' +
       '</span>' +
       '</div>' +
       '</form>';
@@ -816,6 +825,7 @@ var naf = (function() {
     localStorage.mainq3 = $('input[name=mainq3]:checked').val();
     localStorage.mainq4 = $('input[name=mainq4]:checked').val();
     localStorage.mainq5 = $('input[name=mainq5]:checked').val();
+    localStorage.mainq6 = $('#mainq6').val();
 
     if (is_valid(localStorage.mainq1) &&
       is_valid(localStorage.mainq2) &&
@@ -866,6 +876,62 @@ var naf = (function() {
     return worker_in_group3(worker_group);
   }
 
+  function get_slide_html() {
+    return '<div id="mturkSlideShow">' +
+      '<div id="videoLoading">' +
+      'Delay in loading video. Please wait...' +
+      '<br>' +
+      '<br>' +
+      'SWhile waiting, you can see reviews about the video you are about to watch. These recnt reviews are from Mturk workers like you.' +
+      '<br>' +
+      '<br>' +
+      '<button' +
+      '  type="button"' +
+      '  name="button"' +
+      '  class="btn btn-primary"' +
+      '  id="btnViewQuotes"' +
+      '  onclick="show_workers_quotes()">Show me reviews' +
+      '</button>' +
+      ' <div class="sk-circle">' +
+      ' <div class="sk-circle1 sk-child"></div>' +
+      '<div class="sk-circle2 sk-child"></div>' +
+      '<div class="sk-circle3 sk-child"></div>' +
+      '<div class="sk-circle4 sk-child"></div>' +
+      '<div class="sk-circle5 sk-child"></div>' +
+      '<div class="sk-circle6 sk-child"></div>' +
+      '<div class="sk-circle7 sk-child"></div>' +
+      '<div class="sk-circle8 sk-child"></div>' +
+      '<div class="sk-circle9 sk-child"></div>' +
+      '<div class="sk-circle10 sk-child"></div>' +
+      '<div class="sk-circle11 sk-child"></div>' +
+      '<div class="sk-circle12 sk-child"></div>' +
+      '</div>' +
+
+      '<div id="quote1" class="noshow text-center"></div>' +
+
+      '<div id="quote2" class="noshow text-center"></div>' +
+
+      '<div id="quote3" class="noshow text-center"></div>' +
+
+      '</div>' +
+
+      '<div id="videoReady" class="noshow text-center">' +
+      'Video is ready.' +
+      '<br>' +
+      '<br>' +
+      '<button' +
+      '  type="button"' +
+      '  name="button"' +
+      '  class="btn btn-primary"' +
+      '  id="continueToVideo"' +
+      '  onclick="show_main_video()">Click to Continue ' +
+      '</button>' +
+      ' </div>' +
+      '</div>';
+
+  }
+
+
 
   var exposed_functions = {
     'current_worker_in_group3': current_worker_in_group3,
@@ -877,6 +943,7 @@ var naf = (function() {
   return exposed_functions;
 
 })();
+
 
 // main/artifact survey
 localStorage.mainq1 = "undefined";
@@ -897,3 +964,47 @@ localStorage.family_income = "undefined";
 localStorage.has_mobile = "undefined";
 localStorage.watch_video = "undefined";
 localStorage.internet_phone = "undefined";
+
+// (function(window, document) {
+
+function show_workers_quotes() {
+  console.log('clicked to show quotes.');
+  var num_of_seconds = 5;
+  countdown_then_display_quote(1, 0);
+  countdown_then_display_quote(2, num_of_seconds);
+  countdown_then_display_quote(3, 2 * num_of_seconds);
+  display_video_ready(4 * num_of_seconds);
+}
+
+function countdown_then_display_quote(num, seconds) {
+  setTimeout(function() {
+    show_quote(num);
+  }, seconds * 1000);
+}
+
+function show_quote(num) {
+  $('#btnViewQuotes').prop('disabled', true);
+  $('#quote1').hide();
+  $('#quote2').hide();
+  $('#quote3').hide();
+
+  var qid = '#quote' + num;
+  var qidValue = $('#qt' + num).val();
+  $(qid).text(qidValue);
+  $(qid).show();
+}
+
+function display_video_ready(seconds) {
+  setTimeout(function() {
+    $('#videoLoading').hide();
+    $('#videoReady').show();
+  }, seconds * 1000);
+}
+
+// })(window, document);
+
+function show_main_video() {
+  console.log('Now showing main video');
+  $('#videoReady').hide();
+  $('#mainVideoDiv').show();
+}

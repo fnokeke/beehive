@@ -10,6 +10,7 @@ from oauth2client.client import OAuth2WebServerFlow
 from apiclient import discovery
 
 import json, httplib2, pytz, requests, csv
+import naf_quotes
 
 from rep import app, login_manager
 from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkPrelimRecruit
@@ -857,7 +858,8 @@ def naf_watch_videos(worker_id):
     if not enrolled_worker:
         return render_template('mturk/mturk-404.html')
     session['step'] = 1
-    return render_template('naf/naf-main.html', worker=enrolled_worker)
+    ctx = {'worker': enrolled_worker, 'quotes': naf_quotes.get(enrolled_worker.group)}
+    return render_template('naf/naf-main.html', **ctx)
 
 
 @app.route('/naf/update/step', methods=['POST'])
@@ -902,17 +904,6 @@ def naf_verify_worker_id():
 
     link = "<a href='/naf/{}'>continue here</a>.".format(worker_id)
     return 'Welcome {}, {}'.format(worker_id, link)
-
-    # link = "<a href='/naf/{}'>continue here</a>.".format(worker_id)
-    # enrolled_worker = MturkExclusive.query.filter_by(worker_id=worker_id).first()
-    # current_datetime = datetime.now().strftime("%I:%M:%S %p on %B %d %Y")
-    # if not enrolled_worker:
-    # log_submission(current_datetime, worker_id, 'rejected')
-    # return 'Worker ({}) cannot partake in experiment. You have to be registered by researcher.'.format(worker_id)
-
-    # log_submission(current_datetime, worker_id, 'accepted')
-    # link = "<a href='/naf/{}'>continue here</a>.".format(worker_id)
-    # return 'Welcome {}, {}'.format(worker_id, link)
 
 
 def naf_get_next_condition(total_enrolled):
