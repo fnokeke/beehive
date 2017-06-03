@@ -239,8 +239,8 @@ class TP_FgAppLog(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     worker_id = db.Column(db.String(50))
     app_id = db.Column(db.String(30))
-    time_seconds = db.Column(db.Integer)
-    time_millis = db.Column(db.Integer)
+    time_seconds = db.Column(db.String(20))
+    time_millis = db.Column(db.String(20))
 
     def __init__(self, info):
         self.worker_id = info['worker_id']
@@ -263,9 +263,13 @@ class TP_FgAppLog(db.Model):
     def add_stats(info):
         worker_id = info['worker_id']
         logs = info['logs']
-        rows = logs.split('\n')
+        rows = logs.split(';')
 
         for row in rows:
+            if row == "": continue
+            print '***************'
+            print row
+            print '***************'
             app_id, time_seconds, time_millis = row.split(",")
             entry = {'worker_id': worker_id, 'app_id': app_id, 'time_seconds': time_seconds, 'time_millis': time_millis}
             new_stats = TP_FgAppLog(entry)
@@ -280,7 +284,7 @@ class TP_ScreenLog(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     worker_id = db.Column(db.String(50))
     event = db.Column(db.String(30))
-    time_millis = db.Column(db.Integer)
+    time_millis = db.Column(db.String(20))
 
     def __init__(self, info):
         self.worker_id = info['worker_id']
@@ -301,9 +305,10 @@ class TP_ScreenLog(db.Model):
     def add_stats(info):
         worker_id = info['worker_id']
         logs = info['logs']
-        rows = logs.split('\n')
+        rows = logs.split(';')
 
         for row in rows:
+            if row == "": continue
             event, time_millis = row.split(",")
             entry = {'worker_id': worker_id, 'event': event, 'time_millis': time_millis}
             new_stats = TP_ScreenLog(entry)
