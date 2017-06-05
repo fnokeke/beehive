@@ -95,6 +95,7 @@ var naf = (function() {
     var worker_group = parseInt($('#worker-group').text());
     var current_step = parseInt($('#step-value').text());
     countdown_next_step_btn(current_step, worker_group);
+    show_workers_quotes();
   });
 
   $('#hindi-test-response-btn').click(function() {
@@ -379,6 +380,7 @@ var naf = (function() {
       'mainq4': parseInt(localStorage.mainq4),
       'mainq5': parseInt(localStorage.mainq5),
       'mainq6': localStorage.mainq6,
+      'mainq7': localStorage.mainq7,
       // demography
       'city': localStorage.city,
       'age': parseInt(localStorage.age),
@@ -662,10 +664,19 @@ var naf = (function() {
       '<br>' +
       '<br>' +
       '<div class="form-group">' +
+      '<label for="">Please leave a review for the video you watched. Tell us what you liked or did not like about the video.</label>' +
+      '<br/>' +
+      '<span>' +
+      '<textarea id="{0}q6" rows="8" cols="60" placeholder="Optional. Response can be in English or Hindi."></textarea>' +
+      '</span>' +
+      '</div>' +
+      '<br>' +
+      '<br>' +
+      '<div class="form-group">' +
       '<label for="">Any comments or thoughts?</label>' +
       '<br/>' +
       '<span>' +
-      '<textarea id="{0}q6" rows="8" cols="60" placeholder="type response here (English or Hindi is fine)"></textarea>' +
+      '<textarea id="{0}q7" rows="8" cols="60" placeholder="Optional. Response can be in English or Hindi."></textarea>' +
       '</span>' +
       '</div>' +
       '</form>';
@@ -826,6 +837,7 @@ var naf = (function() {
     localStorage.mainq4 = $('input[name=mainq4]:checked').val();
     localStorage.mainq5 = $('input[name=mainq5]:checked').val();
     localStorage.mainq6 = $('#mainq6').val();
+    localStorage.mainq7 = $('#mainq7').val();
 
     if (is_valid(localStorage.mainq1) &&
       is_valid(localStorage.mainq2) &&
@@ -879,39 +891,33 @@ var naf = (function() {
   function get_slide_html() {
     return '<div id="mturkSlideShow">' +
       '<div id="videoLoading">' +
-      'Delay in loading video. Please wait...' +
+      'Please wait. Your video is loading...' +
       '<br>' +
       '<br>' +
-      'SWhile waiting, you can see reviews about the video you are about to watch. These recnt reviews are from Mturk workers like you.' +
+      'While you wait, you can read reviews of the video submitted by mTurk workers like you.' +
       '<br>' +
       '<br>' +
-      '<button' +
-      '  type="button"' +
-      '  name="button"' +
-      '  class="btn btn-primary"' +
-      '  id="btnViewQuotes"' +
-      '  onclick="show_workers_quotes()">Show me reviews' +
-      '</button>' +
-      ' <div class="sk-circle">' +
-      ' <div class="sk-circle1 sk-child"></div>' +
-      '<div class="sk-circle2 sk-child"></div>' +
-      '<div class="sk-circle3 sk-child"></div>' +
-      '<div class="sk-circle4 sk-child"></div>' +
-      '<div class="sk-circle5 sk-child"></div>' +
-      '<div class="sk-circle6 sk-child"></div>' +
-      '<div class="sk-circle7 sk-child"></div>' +
-      '<div class="sk-circle8 sk-child"></div>' +
-      '<div class="sk-circle9 sk-child"></div>' +
-      '<div class="sk-circle10 sk-child"></div>' +
-      '<div class="sk-circle11 sk-child"></div>' +
-      '<div class="sk-circle12 sk-child"></div>' +
-      '</div>' +
 
       '<div id="quote1" class="noshow text-center"></div>' +
 
       '<div id="quote2" class="noshow text-center"></div>' +
 
       '<div id="quote3" class="noshow text-center"></div>' +
+
+      '<div class="sk-circle">' +
+      ' <div class="sk-circle1 sk-child"></div>' +
+      ' <div class="sk-circle2 sk-child"></div>' +
+      ' <div class="sk-circle3 sk-child"></div>' +
+      ' <div class="sk-circle4 sk-child"></div>' +
+      ' <div class="sk-circle5 sk-child"></div>' +
+      ' <div class="sk-circle6 sk-child"></div>' +
+      ' <div class="sk-circle7 sk-child"></div>' +
+      ' <div class="sk-circle8 sk-child"></div>' +
+      ' <div class="sk-circle9 sk-child"></div>' +
+      ' <div class="sk-circle10 sk-child"></div>' +
+      ' <div class="sk-circle11 sk-child"></div>' +
+      ' <div class="sk-circle12 sk-child"></div>' +
+      '</div>' +
 
       '</div>' +
 
@@ -968,11 +974,11 @@ localStorage.internet_phone = "undefined";
 // (function(window, document) {
 
 function show_workers_quotes() {
-  console.log('clicked to show quotes.');
-  var num_of_seconds = 5;
-  countdown_then_display_quote(1, 0);
-  countdown_then_display_quote(2, num_of_seconds);
-  countdown_then_display_quote(3, 2 * num_of_seconds);
+  console.log('Loading video...');
+  var num_of_seconds = 1;
+  countdown_then_display_quote(2, 2);
+  countdown_then_display_quote(2, 2 * num_of_seconds);
+  countdown_then_display_quote(3, 3 * num_of_seconds);
   display_video_ready(4 * num_of_seconds);
 }
 
@@ -990,7 +996,8 @@ function show_quote(num) {
 
   var qid = '#quote' + num;
   var qidValue = $('#qt' + num).val();
-  $(qid).text(qidValue);
+  qidValue = '<em>"' + qidValue + '"</em>';
+  $(qid).html(qidValue);
   $(qid).show();
 }
 
