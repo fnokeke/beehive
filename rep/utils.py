@@ -78,6 +78,8 @@ def to_json(param):
 
 
 def to_datetime(date_str, fmt=None):
+    if not date_str or date_str == "": 
+        return None
     if not fmt:
         fmt = '%Y-%m-%d %H:%M:%S'
     return datetime.strptime(date_str, fmt)
