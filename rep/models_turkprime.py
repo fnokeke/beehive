@@ -22,15 +22,9 @@ class TP_Admin(db.Model):
         self.admin_experiment_group = info.get('admin_experiment_group')
         self.admin_fb_max_mins = info.get('admin_fb_max_mins')
         self.admin_fb_max_opens = info.get('admin_fb_max_opens')
-        # self.admin_treatment_start = info.get('admin_treatment_start')
-        # self.admin_followup_start = info.get('admin_followup_start')
-        # self.admin_logging_stop = info.get('admin_logging_stop')
-        try:
-            self.admin_treatment_start = to_datetime(info.get('admin_treatment_start'), "%Y%m-%d")
-            self.admin_followup_start = to_datetime(info.get('admin_followup_start'), "%Y-%m-%d")
-            self.admin_logging_stop = to_datetime(info.get('admin_logging_stop'), "%Y-%m-%d")
-        except Exception as e:
-            print e
+        self.admin_treatment_start = to_datetime(info.get('admin_treatment_start'), "%Y%m-%d")
+        self.admin_followup_start = to_datetime(info.get('admin_followup_start'), "%Y-%m-%d")
+        self.admin_logging_stop = to_datetime(info.get('admin_logging_stop'), "%Y-%m-%d")
 
     def __repr__(self):
         result = {
@@ -72,10 +66,6 @@ class TP_Admin(db.Model):
         db.session.commit()
         return (200, 'Successfully updated admin user settings!', worker)
 
-    @staticmethod
-    def rm_null(val):
-        return "" if val == None else val
-
 
 class TP_DailyResetHour(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -98,7 +88,7 @@ class TP_DailyResetHour(db.Model):
 
     @staticmethod
     def get_last_updated_hour():
-        most_recent = TP_DailyResetHour.query.order_by('created_at desc').first()
+        most_recent = TP_DailyResetHour.query.order_by(TP_DailyResetHour.created_at.desc()).first()
         return most_recent.admin_reset_hour if most_recent else 0
 
 
@@ -154,10 +144,10 @@ class TP_Enrolled(db.Model):
         existing_device = TP_Enrolled.query.filter_by(device_id=info['device_id']).first()
 
         if existing_worker:
-            return (200, 'WorkerId already registered.', existing_worker)
+            return (200, 'Welcome back!', existing_worker)
 
         if existing_device:
-            return (-1, 'This device is already registered using another WorkerId.', existing_device)
+            return (-1, 'Device already registered with another WorkerId.', existing_device)
 
         new_worker = TP_Enrolled(info)
         db.session.add(new_worker)
@@ -267,9 +257,8 @@ class TP_FgAppLog(db.Model):
 
         for row in rows:
             if row == "": continue
-            #print '***************'
-            #print row
-            #print '***************'
+            print '***************'
+            print row
             app_id, time_seconds, time_millis = row.split(",")
             entry = {'worker_id': worker_id, 'app_id': app_id, 'time_seconds': time_seconds, 'time_millis': time_millis}
             new_stats = TP_FgAppLog(entry)
