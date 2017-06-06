@@ -42,13 +42,14 @@ class TP_Admin(db.Model):
 
     @staticmethod
     def add_user(info):
-        TP_Admin.query.filter_by(worker_id=info['worker_id']).delete()
-        db.session.commit()
+        worker = TP_Admin.query.filter_by(worker_id=info['worker_id']).first()
+        if worker:
+            return (200, 'Admin already added worker.', worker)
 
         new_worker = TP_Admin(info)
         db.session.add(new_worker)
         db.session.commit()
-        return (200, 'Successfully added user settings!', new_worker)
+        return (200, 'Admin successfully added new worker!', new_worker)
 
     @staticmethod
     def update_user(info):
@@ -140,14 +141,13 @@ class TP_Enrolled(db.Model):
 
     @staticmethod
     def add_user(info):
-        existing_worker = TP_Enrolled.query.filter_by(worker_id=info['worker_id']).first()
         existing_device = TP_Enrolled.query.filter_by(device_id=info['device_id']).first()
-
-        if existing_worker:
-            return (200, 'Welcome back!', existing_worker)
-
         if existing_device:
             return (-1, 'Device already registered with another WorkerId.', existing_device)
+
+        existing_worker = TP_Enrolled.query.filter_by(worker_id=info['worker_id']).first()
+        if existing_worker:
+            return (200, 'Welcome back!', existing_worker)
 
         new_worker = TP_Enrolled(info)
         db.session.add(new_worker)
