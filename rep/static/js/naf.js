@@ -974,21 +974,19 @@ localStorage.internet_phone = "undefined";
 
 function show_workers_quotes() {
   var worker_group = parseInt($('#qt-wk-group').val());
-  var seconds_wait = 10;
-
-  console.log('Loading video...');
-  console.log('worker group: ', worker_group);
+  var default_wait = 5; // seconds
+  var quote_wait = 20; // seconds
 
   if (worker_group === 3) {
-    display_video_ready(seconds_wait);
-    show_spinner_percent(seconds_wait);
+    display_video_ready(default_wait);
+    show_spinner_percent(default_wait);
     removeReviewGuide();
   } else {
-    countdown_then_display_quote(1, seconds_wait);
-    countdown_then_display_quote(2, 2 * seconds_wait);
-    countdown_then_display_quote(3, 3 * seconds_wait);
-    display_video_ready(4 * seconds_wait);
-    show_spinner_percent(4 * seconds_wait);
+    countdown_then_display_quote(1, default_wait);
+    countdown_then_display_quote(2, quote_wait + default_wait);
+    countdown_then_display_quote(3, 2 * quote_wait + default_wait);
+    display_video_ready(3 * quote_wait + default_wait);
+    show_spinner_percent(3 * quote_wait + default_wait);
   }
 
 }

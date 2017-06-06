@@ -2,7 +2,7 @@ import random
 
 
 def get(group):
-    quotes = get_pos_quotes() if int(group) % 2 == 1 else get_neg_quotes()
+    quotes = get_pos_quotes() if int(group) == 1 else get_neg_quotes()
     random.shuffle(quotes)
     return quotes
 
