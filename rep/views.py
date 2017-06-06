@@ -1118,24 +1118,20 @@ def get_all_fb_stats():
     return json.dumps({'stats': stats})
 
 
+def rm_null(val):
+    return "" if (val == "None" or val == None) else val
+
+
 def append_admin_fb_response(data):
     worker = TP_Admin.query.filter_by(worker_id=data['worker_id']).first()
     if worker:
-        data['admin_experiment_group'] = TP_Admin.rm_null(worker.admin_experiment_group)
-        data['admin_fb_max_mins'] = TP_Admin.rm_null(worker.admin_fb_max_mins)
-        data['admin_fb_max_opens'] = TP_Admin.rm_null(worker.admin_fb_max_opens)
-        data['admin_treatment_start'] = TP_Admin.rm_null(worker.admin_treatment_start)
-        data['admin_followup_start'] = TP_Admin.rm_null(worker.admin_followup_start)
-        data['admin_logging_stop'] = TP_Admin.rm_null(worker.admin_logging_stop)
-        data['admin_daily_reset_hour'] = TP_Admin.rm_null(TP_DailyResetHour.get_last_updated_hour())
-    # else:
-    #     data['admin_experiment_group'] = 1
-    #     data['admin_fb_max_mins'] = 13
-    #     data['admin_fb_max_opens'] = 13
-    #     data['admin_treatment_start'] = '2017-04-24'
-    #     data['admin_followup_start'] = '2017-05-01'
-    #     data['admin_logging_stop'] = '2017-05-10'
-    #     data['admin_daily_reset_hour'] = '0'
+        data['admin_experiment_group'] = rm_null(worker.admin_experiment_group)
+        data['admin_fb_max_mins'] = rm_null(worker.admin_fb_max_mins)
+        data['admin_fb_max_opens'] = rm_null(worker.admin_fb_max_opens)
+        data['admin_treatment_start'] = rm_null(worker.admin_treatment_start)
+        data['admin_followup_start'] = rm_null(worker.admin_followup_start)
+        data['admin_logging_stop'] = rm_null(worker.admin_logging_stop)
+        data['admin_daily_reset_hour'] = rm_null(TP_DailyResetHour.get_last_updated_hour())
     return data
 
 
