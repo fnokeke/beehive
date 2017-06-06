@@ -673,7 +673,7 @@ var naf = (function() {
       '<br>' +
       '<br>' +
       '<div class="form-group">' +
-      '<label for="">Any comments or thoughts?</label>' +
+      '<label for="">Any other comments or thoughts?</label>' +
       '<br/>' +
       '<span>' +
       '<textarea id="{0}q7" rows="8" cols="60" placeholder="Optional. Response can be in English or Hindi."></textarea>' +
@@ -890,21 +890,21 @@ var naf = (function() {
 
   function get_slide_html() {
     return '<div id="mturkSlideShow">' +
-      '<div id="videoLoading">' +
-      'Please wait. Your video is loading...' +
-      '<br>' +
-      '<br>' +
-      'While you wait, you can read reviews of the video submitted by mTurk workers like you.' +
-      '<br>' +
-      '<br>' +
+      '<div id="quoteDiv">' +
+      ' Please wait. Your video is loading...' +
+      ' <br>' +
+      ' <br>' +
+      ' While you wait, you can read reviews of the video submitted by mTurk workers like you.' +
+      ' <br>' +
+      ' <br>' +
 
-      '<div id="quote1" class="noshow text-center"></div>' +
+      ' <div id="quote1" class="noshow text-center"></div>' +
+      ' <div id="quote2" class="noshow text-center"></div>' +
+      ' <div id="quote3" class="noshow text-center"></div>' +
 
-      '<div id="quote2" class="noshow text-center"></div>' +
+      '</div>' +
 
-      '<div id="quote3" class="noshow text-center"></div>' +
-
-      '<div class="sk-circle">' +
+      '<div class="sk-circle" id="videoLoadingDiv">' +
       ' <div class="sk-circle1 sk-child"></div>' +
       ' <div class="sk-circle2 sk-child"></div>' +
       ' <div class="sk-circle3 sk-child"></div>' +
@@ -919,11 +919,8 @@ var naf = (function() {
       ' <div class="sk-circle12 sk-child"></div>' +
       '</div>' +
 
-      '</div>' +
-
-      '<div id="videoReady" class="noshow text-center">' +
+      '<div id="videoReadyDiv" class="noshow text-center">' +
       'Video is ready.' +
-      '<br>' +
       '<br>' +
       '<button' +
       '  type="button"' +
@@ -936,7 +933,6 @@ var naf = (function() {
       '</div>';
 
   }
-
 
 
   var exposed_functions = {
@@ -971,7 +967,6 @@ localStorage.has_mobile = "undefined";
 localStorage.watch_video = "undefined";
 localStorage.internet_phone = "undefined";
 
-// (function(window, document) {
 
 function show_workers_quotes() {
   console.log('Loading video...');
@@ -1003,15 +998,15 @@ function show_quote(num) {
 
 function display_video_ready(seconds) {
   setTimeout(function() {
-    $('#videoLoading').hide();
-    $('#videoReady').show();
+    $('#videoLoadingDiv').hide();
+    $('#videoReadyDiv').show();
   }, seconds * 1000);
 }
 
-// })(window, document);
 
 function show_main_video() {
   console.log('Now showing main video');
-  $('#videoReady').hide();
+  $('#videoReadyDiv').hide();
+  $('#quoteDiv').hide();
   $('#mainVideoDiv').show();
 }
