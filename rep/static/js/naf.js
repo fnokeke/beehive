@@ -975,7 +975,7 @@ localStorage.internet_phone = "undefined";
 function show_workers_quotes() {
   var worker_group = parseInt($('#qt-wk-group').val());
   var default_wait = 5; // seconds
-  var quote_wait = 20; // seconds
+  var quote_wait = 30; // seconds
 
   if (worker_group === 3) {
     display_video_ready(default_wait);
