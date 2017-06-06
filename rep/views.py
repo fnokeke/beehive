@@ -907,7 +907,7 @@ def naf_verify_worker_id():
 
 
 def naf_get_next_condition(total_enrolled):
-    no_of_groups = 2
+    no_of_groups = 3
     return 1 + (total_enrolled % no_of_groups)
 
 

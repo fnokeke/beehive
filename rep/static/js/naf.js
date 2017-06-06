@@ -894,16 +894,17 @@ var naf = (function() {
       ' Please wait. Your video is loading...' +
       ' <br>' +
       ' <br>' +
+
+      '<div id="readReviewDiv">' +
       ' While you wait, you can read reviews of the video submitted by mTurk workers like you.' +
       ' <br>' +
       ' <br>' +
+      '</div>' +
 
       ' <div id="quote1" class="noshow text-center"></div>' +
       ' <div id="quote2" class="noshow text-center"></div>' +
       ' <div id="quote3" class="noshow text-center"></div>' +
-
       '</div>' +
-
 
       '<div class="sk-circle" id="videoLoadingDiv">' +
       ' <div class="sk-child" id="percentDiv"></div>' +
@@ -972,13 +973,28 @@ localStorage.internet_phone = "undefined";
 
 
 function show_workers_quotes() {
+  var worker_group = parseInt($('#qt-wk-group').val());
+  var seconds_wait = 10;
+
   console.log('Loading video...');
-  var num_of_seconds = 10;
-  countdown_then_display_quote(1, num_of_seconds);
-  countdown_then_display_quote(2, 2 * num_of_seconds);
-  countdown_then_display_quote(3, 3 * num_of_seconds);
-  display_video_ready(4 * num_of_seconds);
-  show_spinner_percent(4 * num_of_seconds);
+  console.log('worker group: ', worker_group);
+
+  if (worker_group === 3) {
+    display_video_ready(seconds_wait);
+    show_spinner_percent(seconds_wait);
+    removeReviewGuide();
+  } else {
+    countdown_then_display_quote(1, seconds_wait);
+    countdown_then_display_quote(2, 2 * seconds_wait);
+    countdown_then_display_quote(3, 3 * seconds_wait);
+    display_video_ready(4 * seconds_wait);
+    show_spinner_percent(4 * seconds_wait);
+  }
+
+}
+
+function removeReviewGuide() {
+  $('#readReviewDiv').hide();
 }
 
 function show_spinner_percent(total_seconds) {
