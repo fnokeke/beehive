@@ -904,20 +904,23 @@ var naf = (function() {
 
       '</div>' +
 
+
       '<div class="sk-circle" id="videoLoadingDiv">' +
-      ' <div class="sk-circle1 sk-child"></div>' +
-      ' <div class="sk-circle2 sk-child"></div>' +
-      ' <div class="sk-circle3 sk-child"></div>' +
-      ' <div class="sk-circle4 sk-child"></div>' +
-      ' <div class="sk-circle5 sk-child"></div>' +
-      ' <div class="sk-circle6 sk-child"></div>' +
-      ' <div class="sk-circle7 sk-child"></div>' +
-      ' <div class="sk-circle8 sk-child"></div>' +
-      ' <div class="sk-circle9 sk-child"></div>' +
-      ' <div class="sk-circle10 sk-child"></div>' +
-      ' <div class="sk-circle11 sk-child"></div>' +
-      ' <div class="sk-circle12 sk-child"></div>' +
-      '</div>' +
+      ' <div class="sk-child" id="percentDiv"></div>' +
+      ' <div class="sk-circle1 sk-child"></div> ' +
+      ' <div class="sk-circle2 sk-child"></div> ' +
+      ' <div class="sk-circle3 sk-child"></div> ' +
+      ' <div class="sk-circle4 sk-child"></div> ' +
+      ' <div class="sk-circle5 sk-child"></div> ' +
+      ' <div class="sk-circle5 sk-child"></div> ' +
+      ' <div class="sk-circle6 sk-child"></div> ' +
+      ' <div class="sk-circle7 sk-child"></div> ' +
+      ' <div class="sk-circle8 sk-child"></div> ' +
+      ' <div class="sk-circle9 sk-child"></div> ' +
+      ' <div class="sk-circle10 sk-child"></div> ' +
+      ' <div class="sk-circle11 sk-child"></div> ' +
+      ' <div class="sk-circle12 sk-child"></div> ' +
+      '</div> ' +
 
       '<div id="videoReadyDiv" class="noshow text-center">' +
       'Video is ready.' +
@@ -970,12 +973,31 @@ localStorage.internet_phone = "undefined";
 
 function show_workers_quotes() {
   console.log('Loading video...');
-  var num_of_seconds = 1;
-  countdown_then_display_quote(2, 2);
+  var num_of_seconds = 10;
+  countdown_then_display_quote(1, num_of_seconds);
   countdown_then_display_quote(2, 2 * num_of_seconds);
   countdown_then_display_quote(3, 3 * num_of_seconds);
   display_video_ready(4 * num_of_seconds);
+  show_spinner_percent(4 * num_of_seconds);
 }
+
+function show_spinner_percent(total_seconds) {
+  var percent = 1;
+  var interval = 1000 * total_seconds / 99;
+  var percentDiv = '#percentDiv';
+  $(percentDiv).show();
+
+  var spinner_intv_id = setInterval(update_percent, 1000 * total_seconds / 99);
+  function update_percent() {
+    percent++;
+    $(percentDiv).text(percent + "%");
+    if (percent >= 100) {
+      $(percentDiv).hide();
+      clearInterval(spinner_intv_id);
+    }
+  }
+}
+
 
 function countdown_then_display_quote(num, seconds) {
   setTimeout(function() {
@@ -984,16 +1006,20 @@ function countdown_then_display_quote(num, seconds) {
 }
 
 function show_quote(num) {
+  var qid,
+    qidValue,
+    percent;
   $('#btnViewQuotes').prop('disabled', true);
   $('#quote1').hide();
   $('#quote2').hide();
   $('#quote3').hide();
 
-  var qid = '#quote' + num;
-  var qidValue = $('#qt' + num).val();
+  qid = '#quote' + num;
+  qidValue = $('#qt' + num).val();
   qidValue = '<em>"' + qidValue + '"</em>';
   $(qid).html(qidValue);
   $(qid).show();
+
 }
 
 function display_video_ready(seconds) {
