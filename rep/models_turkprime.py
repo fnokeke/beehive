@@ -257,8 +257,6 @@ class TP_FgAppLog(db.Model):
 
         for row in rows:
             if row == "": continue
-            print '***************'
-            print row
             app_id, time_seconds, time_millis = row.split(",")
             entry = {'worker_id': worker_id, 'app_id': app_id, 'time_seconds': time_seconds, 'time_millis': time_millis}
             new_stats = TP_FgAppLog(entry)
