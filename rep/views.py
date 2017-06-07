@@ -167,7 +167,7 @@ def connect_study():
     # already in experiment so no need to change anything
     user_in_experiment = MobileUser.query.filter_by(email=data['email'], code=code).first()
     if user_in_experiment:
-        return json.dumps({'response': jsonify_responses('Already enrolled in experiment', ''),
+        return json.dumps({'response': jsonify_responses('Welcome back!', ''),
                            'user': to_json(user_in_experiment),
                            'experiment': to_json(experiment)})
 

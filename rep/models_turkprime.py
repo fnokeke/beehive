@@ -141,13 +141,13 @@ class TP_Enrolled(db.Model):
 
     @staticmethod
     def add_user(info):
-        existing_device = TP_Enrolled.query.filter_by(device_id=info['device_id']).first()
-        if existing_device:
-            return (-1, 'Device already registered with another WorkerId.', existing_device)
-
         existing_worker = TP_Enrolled.query.filter_by(worker_id=info['worker_id']).first()
         if existing_worker:
             return (200, 'Welcome back!', existing_worker)
+
+        existing_device = TP_Enrolled.query.filter_by(device_id=info['device_id']).first()
+        if existing_device:
+            return (-1, 'Device already registered with another WorkerId.', existing_device)
 
         new_worker = TP_Enrolled(info)
         db.session.add(new_worker)
