@@ -1006,17 +1006,17 @@ localStorage.internet_phone = "undefined";
 function show_workers_quotes() {
   var worker_group = parseInt($('#qt-wk-group').val());
   var default_wait = 5; // seconds
-  var quote_wait = 5; // seconds
+  var quote_wait = 7; // seconds
 
   if (worker_group === 3) {
     removeReviewGuide();
   } else {
-    countdown_then_display_quote(1, default_wait);
-    countdown_then_display_quote(2, quote_wait + default_wait);
-    countdown_then_display_quote(3, 2 * quote_wait + default_wait);
+    countdown_then_display_quote(1, default_wait); // 5
+    countdown_then_display_quote(2, default_wait + quote_wait); // 15
+    countdown_then_display_quote(3, default_wait + 2 * quote_wait); // 25
   }
-  display_video_ready(3 * quote_wait + default_wait);
-  show_spinner_percent(3 * quote_wait + default_wait);
+  display_video_ready(default_wait + 3 * quote_wait); // 35
+  show_spinner_percent(default_wait + 3 * quote_wait); // 35
 }
 
 function removeReviewGuide() {
