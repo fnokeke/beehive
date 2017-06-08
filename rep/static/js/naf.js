@@ -246,6 +246,7 @@ var naf = (function() {
   })();
 
   $('#next-step-btn').click(function() {
+    $('#next-step-btn').prop('disabled', true);
     update_steps();
   });
 
@@ -273,7 +274,8 @@ var naf = (function() {
         $('#next-step-btn').hide();
       }
 
-      countdown_next_step_btn(json_resp.next_step, worker_group);
+      // countdown_next_step_btn(json_resp.next_step, worker_group);
+
     }).fail(function(error) {
       $('#next-step-btn').prop('disabled', true);
       console.log('step error: ', error);
@@ -333,12 +335,6 @@ var naf = (function() {
 
   function is_reveal_code_step(step, worker_group) {
     return parseInt(step) === 4;
-  // step = parseInt(step);
-  // worker_group = parseInt(worker_group);
-  // if (worker_in_group3(worker_group)) {
-  //   return step === 4;
-  // }
-  // return step === 5;
   }
 
   function countdown_next_step_btn(step, worker_group) {
@@ -443,18 +439,8 @@ var naf = (function() {
   }
 
   function do_video_countdown(step, worker_group) {
-    // do_countdown(167);
-    do_countdown(1);
-  // if (worker_in_group3(worker_group) && step === 1) {
-  //   // do_countdown(1);
-  //   do_countdown(167);
-  // } else if (!worker_in_group3(worker_group) && step === 1) {
-  //   // do_countdown(65);
-  //   do_countdown(167);
-  // } else if (!worker_in_group3(worker_group) && step === 2) {
-  //   // do_countdown(1);
-  //   do_countdown(167);
-  // }
+    do_countdown(167);
+  // do_countdown(1);
   }
 
   function get_btn_step_content(step, worker_group) {
@@ -498,7 +484,7 @@ var naf = (function() {
     } else if (step === 4) {
       worker_code = $('#worker-code').text();
       contents = 'आपका MTurk Code  है: ' + worker_code;
-    // contents = 'Your mturk code: ' + worker_code;
+      $('#next-step-btn').hide();
     }
     return contents;
   }
@@ -524,6 +510,7 @@ var naf = (function() {
     } else if (step === 5) {
       worker_code = $('#worker-code').text();
       contents = 'आपका MTurk Code  है: ' + worker_code;
+      $('#next-step-btn').hide();
     // contents = 'Your mturk code: ' + worker_code;
     }
 
@@ -532,14 +519,11 @@ var naf = (function() {
 
 
   function get_modal_title(step, worker_group) {
-    // var total_steps = worker_in_group3(worker_group) ? 3 : 4;
     var total_steps = 3;
-
-    // var contents = "Step " + step + " of 5";
     var contents = "स्टेप " + step + " / " + total_steps;
     if (step > total_steps) {
-      // contents = "Submit mturk code";
-      contents = "अपने MTurk Code को सबमिट करें।";
+      // Thank you for completing survey.
+      contents = "स्टडी कम्पलीट करने के लिए आपका धन्यवाद !";
     }
     return contents;
   }
@@ -674,7 +658,7 @@ var naf = (function() {
       '</span>' +
       '<br>' +
       '<span>' +
-      '<input type="radio" name="{0}q5" value="3"/> साफ़ पानी पीने के बारे में' +
+      '<input type="radio" name="{0}q5" value="3"/> साफ़ पानी के बारे में' +
       '</span>' +
       '<br>' +
       '<span>' +
