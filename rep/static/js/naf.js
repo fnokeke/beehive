@@ -89,7 +89,6 @@ var naf = (function() {
 
   $('#btn-begin-step').click(function() {
     $('#steps-modal').modal('show');
-    // $('#next-step-btn').prop('disabled', true);
     $('#next-step-btn').hide();
 
     var worker_group = parseInt($('#worker-group').text());
@@ -191,14 +190,16 @@ var naf = (function() {
   // #############################################
 
   $("#steps-modal").on("hidden.bs.modal", function() {
+    clear_all_timers();
+
     g_video_played = false;
     var current_step = parseInt($('#step-value').text());
     var worker_group = parseInt($('#worker-group').text());
     var return_to_step = is_reveal_code_step(current_step, worker_group) ? current_step : 1;
     $('#step-value').text(return_to_step);
 
+
     if (return_to_step === 1) {
-      clearAllTimers();
       wipe_then_init_values();
       console.log('Reset back to beginning.');
     } else {
@@ -212,14 +213,24 @@ var naf = (function() {
 
   });
 
-  function clearAllTimers() {
+  function clear_all_timers() {
+    clearTimeout(parseInt(localStorage.do_countdown_id));
     clearInterval(parseInt(localStorage.spinner_intv_id));
-    clearTimeout(parseInt(localStorage.show_quote_id));
     clearTimeout(parseInt(localStorage.display_video_ready_id));
+    clearTimeout(parseInt(localStorage.qid1));
+    clearTimeout(parseInt(localStorage.qid2));
+    clearTimeout(parseInt(localStorage.qid3));
 
+    console.log('localStorage.do_countdown_id: ', localStorage.do_countdown_id);
     console.log('localStorage.spinner_intv_id: ', localStorage.spinner_intv_id);
-    console.log('localStorage.show_quote_id: ', localStorage.show_quote_id);
     console.log('localStorage.display_video_ready_id: ', localStorage.display_video_ready_id);
+    console.log('localStorage.qid1: ', localStorage.qid1);
+    console.log('localStorage.qid2: ', localStorage.qid2);
+    console.log('localStorage.qid3: ', localStorage.qid3);
+
+  // $('#quote1').hide();
+  // $('#quote2').hide();
+  // $('#quote3').hide();
   }
 
   $('#naf-read-consent-btn').click(function() {
@@ -988,7 +999,7 @@ localStorage.internet_phone = "undefined";
 function show_workers_quotes() {
   var worker_group = parseInt($('#qt-wk-group').val());
   var default_wait = 5; // seconds
-  var quote_wait = 10; // seconds
+  var quote_wait = 5; // seconds
 
   if (worker_group === 3) {
     display_video_ready(default_wait);
@@ -1026,7 +1037,7 @@ function show_spinner_percent(total_seconds) {
 }
 
 function countdown_then_display_quote(num, seconds) {
-  localStorage.show_quote_id = setTimeout(function() {
+  localStorage['qid' + num] = setTimeout(function() {
     show_quote(num);
   }, seconds * 1000);
 }
@@ -1060,5 +1071,6 @@ function show_main_video() {
   console.log('Now showing main video');
   $('#videoReadyDiv').hide();
   $('#quoteDiv').hide();
+  $('#next-step-btn').show();
   $('#mainVideoDiv').show();
 }
