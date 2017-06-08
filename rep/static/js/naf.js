@@ -332,12 +332,13 @@ var naf = (function() {
   }
 
   function is_reveal_code_step(step, worker_group) {
-    step = parseInt(step);
-    worker_group = parseInt(worker_group);
-    if (worker_in_group3(worker_group)) {
-      return step === 4;
-    }
-    return step === 5;
+    return parseInt(step) === 4;
+  // step = parseInt(step);
+  // worker_group = parseInt(worker_group);
+  // if (worker_in_group3(worker_group)) {
+  //   return step === 4;
+  // }
+  // return step === 5;
   }
 
   function countdown_next_step_btn(step, worker_group) {
