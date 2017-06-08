@@ -991,7 +991,7 @@ localStorage.internet_phone = "undefined";
 function show_workers_quotes() {
   var worker_group = parseInt($('#qt-wk-group').val());
   var default_wait = 5; // seconds
-  var quote_wait = 7; // seconds
+  var quote_wait = 11; // seconds
 
   if (worker_group === 3) {
     removeReviewGuide();
