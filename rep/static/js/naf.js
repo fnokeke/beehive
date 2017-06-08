@@ -221,16 +221,12 @@ var naf = (function() {
     clearTimeout(parseInt(localStorage.qid2));
     clearTimeout(parseInt(localStorage.qid3));
 
-    console.log('localStorage.do_countdown_id: ', localStorage.do_countdown_id);
-    console.log('localStorage.spinner_intv_id: ', localStorage.spinner_intv_id);
-    console.log('localStorage.display_video_ready_id: ', localStorage.display_video_ready_id);
-    console.log('localStorage.qid1: ', localStorage.qid1);
-    console.log('localStorage.qid2: ', localStorage.qid2);
-    console.log('localStorage.qid3: ', localStorage.qid3);
-
-  // $('#quote1').hide();
-  // $('#quote2').hide();
-  // $('#quote3').hide();
+  // console.log('localStorage.do_countdown_id: ', localStorage.do_countdown_id);
+  // console.log('localStorage.spinner_intv_id: ', localStorage.spinner_intv_id);
+  // console.log('localStorage.display_video_ready_id: ', localStorage.display_video_ready_id);
+  // console.log('localStorage.qid1: ', localStorage.qid1);
+  // console.log('localStorage.qid2: ', localStorage.qid2);
+  // console.log('localStorage.qid3: ', localStorage.qid3);
   }
 
   $('#naf-read-consent-btn').click(function() {
@@ -1002,17 +998,14 @@ function show_workers_quotes() {
   var quote_wait = 5; // seconds
 
   if (worker_group === 3) {
-    display_video_ready(default_wait);
-    show_spinner_percent(default_wait);
     removeReviewGuide();
   } else {
     countdown_then_display_quote(1, default_wait);
     countdown_then_display_quote(2, quote_wait + default_wait);
     countdown_then_display_quote(3, 2 * quote_wait + default_wait);
-    display_video_ready(3 * quote_wait + default_wait);
-    show_spinner_percent(3 * quote_wait + default_wait);
   }
-
+  display_video_ready(3 * quote_wait + default_wait);
+  show_spinner_percent(3 * quote_wait + default_wait);
 }
 
 function removeReviewGuide() {
