@@ -442,16 +442,18 @@ var naf = (function() {
   }
 
   function do_video_countdown(step, worker_group) {
-    if (worker_in_group3(worker_group) && step === 1) {
-      // do_countdown(1);
-      do_countdown(167);
-    } else if (!worker_in_group3(worker_group) && step === 1) {
-      // do_countdown(65);
-      do_countdown(167);
-    } else if (!worker_in_group3(worker_group) && step === 2) {
-      // do_countdown(1);
-      do_countdown(167);
-    }
+    // do_countdown(167);
+    do_countdown(1);
+  // if (worker_in_group3(worker_group) && step === 1) {
+  //   // do_countdown(1);
+  //   do_countdown(167);
+  // } else if (!worker_in_group3(worker_group) && step === 1) {
+  //   // do_countdown(65);
+  //   do_countdown(167);
+  // } else if (!worker_in_group3(worker_group) && step === 2) {
+  //   // do_countdown(1);
+  //   do_countdown(167);
+  // }
   }
 
   function get_btn_step_content(step, worker_group) {
@@ -685,7 +687,8 @@ var naf = (function() {
       '<br>' +
       '<br>' +
       '<div class="form-group">' +
-      '<label for="">Please leave a review for the video you watched. Tell us what you liked or did not like about the video.</label>' +
+      // '<label for="">Please leave a review for the video you watched. Tell us what you liked or did not like about the video.</label>' +
+      '<label for="">अभी जो आपने वीडियो देखा, आप उस वीडियो पर अपना review लिख सकते हैं।  कृपया हमें बताएं कि आपको क्या अच्छा लगा और क्या अच्छा नहीं लगा।</label>' +
       '<br/>' +
       '<span>' +
       '<textarea id="{0}q6" rows="8" cols="60" placeholder="Optional. Response can be in English or Hindi."></textarea>' +
@@ -694,7 +697,8 @@ var naf = (function() {
       '<br>' +
       '<br>' +
       '<div class="form-group">' +
-      '<label for="">Any other comments or thoughts?</label>' +
+      // '<label for="">Any other comments or thoughts?</label>' +
+      '<label for="">और कोई प्रतिक्रिया या सुझाव ?</label>' +
       '<br/>' +
       '<span>' +
       '<textarea id="{0}q7" rows="8" cols="60" placeholder="Optional. Response can be in English or Hindi."></textarea>' +
@@ -912,16 +916,20 @@ var naf = (function() {
   function get_slide_html() {
     return '<div id="mturkSlideShow">' +
       '<div id="quoteDiv">' +
-      ' Please wait. Your video is loading...' +
-      ' <br>' +
-      ' <br>' +
+      '<h4>' +
+      // ' Please wait. Your video is loading...' +
+      'कृपया थोड़ा इंतज़ार करें। वीडियो लोड हो रहा है' +
+      '</h4>' +
+      '<br>' +
 
       '<div id="readReviewDiv">' +
-      ' While you wait, you can read reviews of the video submitted by mTurk workers like you.' +
+      '<h4>' +
+      // ' While you wait, you can read reviews of the video submitted by mTurk workers like you.' +
+      'जब तक आप इंतज़ार कर रहे हैं, आपके जैसे  MTurk workers ने इस वीडियो पर जो reviews दिए हैं उनको आप पढ़ सकते हैं।.' +
+      '</h4>' +
       ' <br>' +
-      ' <br>' +
-      '</div>' +
 
+      '</div>' +
       ' <div id="quote1" class="noshow text-center"></div>' +
       ' <div id="quote2" class="noshow text-center"></div>' +
       ' <div id="quote3" class="noshow text-center"></div>' +
@@ -945,14 +953,16 @@ var naf = (function() {
       '</div> ' +
 
       '<div id="videoReadyDiv" class="noshow text-center">' +
-      'Video is ready.' +
+      // 'Video is ready.' +
+      'आपका वीडियो लोड हो गया है.' +
       '<br>' +
       '<button' +
       '  type="button"' +
       '  name="button"' +
       '  class="btn btn-primary"' +
       '  id="continueToVideo"' +
-      '  onclick="show_main_video()">Click to Continue ' +
+      // '  onclick="show_main_video()">Click to Continue ' +
+      '  onclick="show_main_video()">Continue करने के लिए क्लिक करें' +
       '</button>' +
       ' </div>' +
       '</div>';
@@ -1047,7 +1057,7 @@ function show_quote(num) {
 
   qid = '#quote' + num;
   qidValue = $('#qt' + num).val();
-  qidValue = '<em>"' + qidValue + '"</em>';
+  qidValue = '<h3><em>"' + qidValue + '"</em></h3>';
   $(qid).html(qidValue);
   $(qid).show();
 
