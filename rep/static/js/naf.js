@@ -529,7 +529,8 @@ var naf = (function() {
 
 
   function get_modal_title(step, worker_group) {
-    var total_steps = worker_in_group3(worker_group) ? 3 : 4;
+    // var total_steps = worker_in_group3(worker_group) ? 3 : 4;
+    var total_steps = 3;
 
     // var contents = "Step " + step + " of 5";
     var contents = "स्टेप " + step + " / " + total_steps;
