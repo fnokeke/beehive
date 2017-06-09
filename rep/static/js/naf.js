@@ -524,6 +524,7 @@ var naf = (function() {
     if (step > total_steps) {
       // Thank you for completing survey.
       contents = "स्टडी कम्पलीट करने के लिए आपका धन्यवाद !";
+      submit_data();
     }
     return contents;
   }
