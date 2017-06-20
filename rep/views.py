@@ -51,7 +51,6 @@ def download():
 #################################
 # template views
 #################################
-@app.route('/')
 @app.route('/researcher')
 def researcher_view():
     return render_template('researcher_index.html')
@@ -68,6 +67,7 @@ def experiments():
     return render_template('researcher_experiments.html', **ctx)
 
 
+@app.route('/')
 @app.route('/participant')
 def index():
 
@@ -649,7 +649,7 @@ def auth_moves():
 def auth_rt():
     if 'error' in request.args:
         flash('Sorry, authentication denied by user :(', 'danger')
-        return redirect(url_for('home'))
+        return redirect(url_for('index'))
 
     rt = RescueOauth2()
 
@@ -661,7 +661,7 @@ def auth_rt():
     current_user.update_field('rescuetime_access_token', access_token)
     flash('Successfully connected RescueTime!', 'success')
 
-    return redirect(url_for('home'))
+    return redirect(url_for('index'))
 
 
 # PAM
@@ -669,9 +669,6 @@ def auth_rt():
 @login_required
 def auth_pam():
     url = app.config['PAM_DSU'] + '/oauth/authorize?client_id={}&response_type=code'.format(app.config['PAM_CLIENT_ID'])
-
-    print 'pam url: {}'.format(url)
-    print 'pam token url: {}'.format(app.config['PAM_ACCESS_TOKEN_URL'])
     return redirect(url)
 
 
@@ -878,7 +875,6 @@ def naf_update_step():
 def naf_submit():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     status, response, _ = NafStats.submit_worker_info(data)
-    print status, response
     return json.dumps({'status': status, 'response': response})
 
 
@@ -1005,10 +1001,8 @@ def mturk_auth_moves():
 
     if valid == 200:
         flash(msg, 'success')
-        print '{}/{}'.format(msg, gen_code)
     else:
         flash(msg, 'danger')
-        print 'sorry, user add error: {} / {}'.format(msg, gen_code)
 
     return redirect(url_for('mturk', gen_code=gen_code))
 
