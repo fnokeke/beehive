@@ -18,7 +18,7 @@ from rep.models import MturkExclusive, NafEnroll, NafStats, User, ImageTextUploa
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import NotifClickedStats, RescuetimeConfig, ScreenUnlockConfig
 
-from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_ScreenLog
+from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_FacebookLog, TP_ScreenLog
 
 from rep.rescuetime import RescueOauth2, RescueTime
 from rep.pam import PamOauth
@@ -1032,7 +1032,15 @@ def mobile_worker_fb_stats():
     return json.dumps(server_response, default=str)
 
 
-@app.route('/mobile/turkprime/fg-app-logs', methods=['POST'])
+@app.route('/mobile/turkprime/facebook-logs', methods=['POST'])
+def mobile_facebook_logs():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    _, response, __ = TP_FacebookLog.add_stats(data)
+    server_response = {'response': response, 'worker_id': data['worker_id']}
+    return json.dumps(server_response, default=str)
+
+
+@app.route('/mobile/turkprime/app-logs', methods=['POST'])
 def mobile_fg_app_log():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     _, response, __ = TP_FgAppLog.add_stats(data)

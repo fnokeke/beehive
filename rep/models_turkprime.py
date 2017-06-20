@@ -224,6 +224,55 @@ class TP_FBStats(db.Model):
         return (200, 'Successfully added fbstats!', new_stats)
 
 
+class TP_FacebookLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    worker_id = db.Column(db.String(50))
+    time_millis = db.Column(db.BigInteger)
+    fb_date = db.Column(db.String(30))
+    time_spent = db.Column(db.Integer)
+    time_open = db.Column(db.Integer)
+
+    def __init__(self, info):
+        self.worker_id = info['worker_id']
+        self.time_millis = info['time_millis']
+        self.fb_date = info['fb_date']
+        self.time_spent = info['time_spent']
+        self.time_open = info['time_open']
+
+    def __repr__(self):
+        result = {
+            'id': str(self.id),
+            'created_at': str(self.created_at),
+            'worker_id': self.worker_id,
+            'time_millis': self.time_millis,
+            'fb_date': self.fb_date,
+            'time_spent': self.time_spent,
+            'time_open': self.time_open
+        }
+        return json.dumps(result)
+
+    @staticmethod
+    def add_stats(info):
+        worker_id = info['worker_id']
+        logs = info['logs']
+        rows = logs.split(';')
+
+        for row in rows:
+            if row == "": continue
+            time_millis, fb_date, time_spent, time_open = row.split(",")
+            entry = {'worker_id': worker_id,
+                     'time_millis': time_millis,
+                     'fb_date': fb_date,
+                     'time_spent': time_spent,
+                     'time_open': time_open}
+            new_stats = TP_FacebookLog(entry)
+            db.session.add(new_stats)
+
+        db.session.commit()
+        return (200, 'Successfully added Facebook log!', "")
+
+
 class TP_FgAppLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
