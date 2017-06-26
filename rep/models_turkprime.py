@@ -20,7 +20,7 @@ class TP_Admin(db.Model):
 
     def __init__(self, info):
         self.worker_id = info['worker_id']
-        self.worker_id = info['study_code']
+        self.study_code = info['study_code']
         self.admin_experiment_group = info.get('admin_experiment_group')
         self.admin_fb_max_mins = info.get('admin_fb_max_mins')
         self.admin_fb_max_opens = info.get('admin_fb_max_opens')
