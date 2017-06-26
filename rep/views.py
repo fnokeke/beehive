@@ -1014,6 +1014,13 @@ def mobile_worker_id():
     if status == -1:
         return json.dumps({'status': -1, 'response': response, 'worker_id': -1, 'survey_link': ''})
 
+    VALID_CODES = ["mturk", "tech", "hci"]
+    if not data['study_code'] in VALID_CODES:
+        return json.dumps({'status': -1,
+                           'response': "Invalid study code. Check it and try again.",
+                           'worker_id': -1,
+                           'survey_link': ''})
+
     TP_Admin.add_user(data)
     user_response = response + '\nYour Code: {}\nComplete survey link below:'.format(worker.worker_code)
     server_response = {'status': 200,

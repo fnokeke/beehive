@@ -10,6 +10,7 @@ class TP_Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     worker_id = db.Column(db.String(50))
+    study_code = db.Column(db.String(10))
     admin_experiment_group = db.Column(db.Integer)
     admin_fb_max_mins = db.Column(db.Integer)
     admin_fb_max_opens = db.Column(db.Integer)
@@ -19,6 +20,7 @@ class TP_Admin(db.Model):
 
     def __init__(self, info):
         self.worker_id = info['worker_id']
+        self.worker_id = info['study_code']
         self.admin_experiment_group = info.get('admin_experiment_group')
         self.admin_fb_max_mins = info.get('admin_fb_max_mins')
         self.admin_fb_max_opens = info.get('admin_fb_max_opens')
@@ -31,6 +33,7 @@ class TP_Admin(db.Model):
             'id': self.id,
             'created_at': str(self.created_at),
             'worker_id': self.worker_id,
+            'study_code': self.study_code,
             'admin_experiment_group': self.admin_experiment_group,
             'admin_fb_max_mins': self.admin_fb_max_mins,
             'admin_fb_max_opens': self.admin_fb_max_opens,
