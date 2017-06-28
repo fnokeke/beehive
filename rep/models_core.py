@@ -972,7 +972,7 @@ class ScreenUnlockConfig(db.Model):
         return (200, 'Successfully added screen unlock setting.', unlock_setting)
 
 
-class User(db.Model):
+class WebUser(db.Model):
 
     # google login info and credentials for accessing google calendar
     email = db.Column(db.String(120), primary_key=True, unique=True)
@@ -1015,7 +1015,7 @@ class User(db.Model):
 
     def is_authenticated(self):
         """
-        Returns `True`. User is always authenticated. Herp Derp.
+        Returns `True`. WebUser is always authenticated.
         """
         return True
 
@@ -1035,7 +1035,7 @@ class User(db.Model):
         """
         Set user field with give value and save to database.
         """
-        user = User.query.get(self.email)
+        user = WebUser.query.get(self.email)
         setattr(user, key, value)  # same: user.key = value
         db.session.commit()
 
@@ -1043,7 +1043,7 @@ class User(db.Model):
         """
         Set moves_id field
         """
-        if User.query.filter_by(moves_id=moves_id).first():
+        if WebUser.query.filter_by(moves_id=moves_id).first():
             return 'Already Exists'
         self.update_field('moves_id', moves_id)
 
