@@ -1044,6 +1044,7 @@ def mobile_facebook_logs():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     _, response, __ = TP_FacebookLog.add_stats(data)
     server_response = {'response': response, 'worker_id': data['worker_id']}
+    server_response = append_admin_fb_response(server_response)
     return json.dumps(server_response, default=str)
 
 
