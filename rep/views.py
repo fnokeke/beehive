@@ -1026,7 +1026,7 @@ def mobile_worker_id():
     server_response = {'status': 200,
                        'response': user_response,
                        'worker_id': worker.worker_id,
-                       'survey_link': 'http://bit.ly/beginExp'}
+                       'survey_link': 'http://bit.ly/surveyOne'}
     return json.dumps(server_response)
 
 
