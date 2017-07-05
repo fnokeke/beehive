@@ -1142,6 +1142,8 @@ def append_admin_fb_response(data):
         data['admin_followup_start'] = rm_null(worker.admin_followup_start)
         data['admin_logging_stop'] = rm_null(worker.admin_logging_stop)
         data['admin_daily_reset_hour'] = rm_null(TP_DailyResetHour.get_last_updated_hour())
+        data['admin_static_ratio_100'] = 50
+        data['admin_adaptive_ratio_100'] = 80
     return data
 
 
