@@ -167,7 +167,6 @@ class TP_FBStats(db.Model):
     time_spent = db.Column(db.Integer)
     time_open = db.Column(db.Integer)
     ringer_mode = db.Column(db.String(10))
-    screen_logs = db.Column(db.String(2500))
     daily_reset_hour = db.Column(db.Integer)  # 0(midnight) to 23(11PM)
 
     # current params updated through from android app
@@ -177,6 +176,13 @@ class TP_FBStats(db.Model):
     current_treatment_start = db.Column(db.DateTime)
     current_followup_start = db.Column(db.DateTime)
     current_logging_stop = db.Column(db.DateTime)
+    current_firebase_token = db.Column(db.String(500))
+    current_static_ratio_100 = db.Column(db.Integer)
+    current_adaptive_ratio_100 = db.Column(db.Integer)
+    current_ratio_of_limit = db.Column(db.Float)
+    local_time = db.Column(db.String(25))
+    time_spent_list = db.Column(db.String(500))
+    num_opens_list = db.Column(db.String(500))
 
     def __init__(self, info):
         self.worker_id = info['worker_id']
@@ -187,17 +193,19 @@ class TP_FBStats(db.Model):
         self.ringer_mode = info['ringer_mode']
         self.daily_reset_hour = info['daily_reset_hour']
 
-        if len(info['screen_logs']) > 2500:
-            self.screen_logs = "-1"
-        else:
-            self.screen_logs = info['screen_logs']
-
         self.current_experiment_group = info.get('current_experiment_group')
         self.current_fb_max_mins = info.get('current_fb_max_mins')
         self.current_fb_max_opens = info.get('current_fb_max_opens')
         self.current_treatment_start = info.get('current_treatment_start')
         self.current_followup_start = info.get('current_followup_start')
         self.current_logging_stop = info.get('current_logging_stop')
+        self.current_firebase_token = info.get('current_firebase_token')
+        self.current_static_ratio_100 = info.get('current_static_ratio_100')
+        self.current_adaptive_ratio_100 = info.get('current_adaptive_ratio_100')
+        self.current_ratio_of_limit = info.get('current_ratio_of_limit')
+        self.local_time = info.get('local_time')
+        self.time_spent_list = info.get('time_spent_list')
+        self.num_opens_list = info.get('num_opens_list')
 
     def __repr__(self):
         result = {
@@ -209,13 +217,19 @@ class TP_FBStats(db.Model):
             'time_open': self.time_open,
             'ringer_mode': self.ringer_mode,
             'daily_reset_hour': self.daily_reset_hour,
-            'screen_logs': self.screen_logs,
             'current_experiment_group': self.current_experiment_group,
             'current_fb_max_mins': self.current_fb_max_mins,
             'current_fb_max_opens': self.current_fb_max_opens,
             'current_treatment_start': str(self.current_treatment_start),
             'current_followup_start': str(self.current_followup_start),
-            'current_logging_stop': str(self.current_logging_stop)
+            'current_logging_stop': str(self.current_logging_stop),
+            'current_firebase_token': str(self.current_firebase_token),
+            'current_static_ratio_100': str(self.current_static_ratio_100),
+            'current_adaptive_ratio_100': str(self.current_adaptive_ratio_100),
+            'current_ratio_of_limit': str(self.current_ratio_of_limit),
+            'local_time': str(self.local_time),
+            'time_spent_list': str(self.time_spent_list),
+            'num_opens_list': str(self.num_opens_list)
         }
         return json.dumps(result)
 
