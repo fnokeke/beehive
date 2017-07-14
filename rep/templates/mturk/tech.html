@@ -1,0 +1,243 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Technion Facebook Experiment
+{% endblock %}
+
+{% block nav_brand %}
+  <a class="navbar-brand" href="#">Facebook Usage Experiment</a>
+{% endblock %}
+
+{% block contents %}
+  {% block nav_signin %}{% endblock %}
+
+  <div class="container lg-font">
+    <div class="page-header">
+      <h3>
+        Welcome to experiment
+      </h3>
+      <p>
+        We are researchers in the
+        <a href="http://smalldata.io/" target="_blank">Small Data Lab</a>
+        at
+        <a href="https://tech.cornell.edu" target="_blank">Cornell Tech</a>, affiliated with
+        <a href="https://cornell.edu" target="_blank">Cornell University</a>. This experiment investigates
+        how facebook users use Facebook Mobile App on their smartphone. By participating in this experiment,
+        you will be contributing to the growing body of scientific research on mobile computing and digital
+        consumption.
+      </p>
+    </div>
+
+    <div class="page-header">
+      <h3>Compensation</h3>
+      You will receive a payment of
+      <strong>$15.00</strong>
+      if you successfully complete the experiment. Payment will be through Amazon gift cards.
+    </div>
+
+    <div class="page-header">
+      <h3>
+        Your tasks
+      </h3>
+      <p>
+        This experiment is very simple and straightforward. You tasks are:
+
+        <ol>
+          <li>
+            Download an android app and use it on your phone for
+            <strong>3 weeks</strong>. Setting up the app takes about
+            <strong>3 minutes</strong>. You don't have to do anything else throughout the experiment as the app
+            will run quietly in the background so you can go about your normal daily activities.
+          </li>
+          <li>
+            Complete a survey after setting up the android app. The survey link will appear inside the app.
+          </li>
+          <li>
+            Complete 2 - 4 surveys that will be emailed to you at the end of the experiment.
+          </li>
+        </ol>
+      </p>
+    </div>
+
+    <div class="page-header">
+      <h3>
+        How to join
+      </h3>
+
+      {% include "partials/modals/mturk_consent.html" %}
+
+      To join the study, you have to read the consent form.
+      <a id="mturk-read-consent-btn">Click Here</a>
+      to go through the consent form and select "I agree" if you want to continue. The next set of
+      instructions will appear below after you agree to consent form.
+    </div>
+
+    <div id="join-div" style="display: none">
+
+      <div class="page-header">
+        <h3>App Setup</h3>
+        <ol>
+          <li>
+            On your phone, download
+            <a href="https://play.google.com/store/apps/details?id=org.mozilla.firefox&hl=en" target="_blank">firefox browser</a>
+            from playstore (this will help install next app)
+          </li>
+          <br>
+
+          <li>
+            Open firefox and enter link to GoodVibe app:
+            <strong>
+
+              <a href="http://bit.ly/appgoodv">http://bit.ly/appgoodv</a>
+            </strong>
+            then tap "Open" after app downloads.
+          </li>
+          <br>
+
+          <li>
+            GoodVibe Installation page will show up so select “Next” then “Install” on the bottom right then
+            finally “Open” to launch installed app.
+          </li>
+          <br>
+
+          <li class="text-danger">
+            If you get error "phone is not compatible" then you cannot participate in experiment because of
+            phone issues. Please uninstall app.
+          </li>
+          <br>
+
+          <li>
+            If no error, Tap on “Request Permission” button and toggle “GoodVibe” from “off” to “On”
+          </li>
+          <br>
+
+          <li>
+            Then press “back button” on your phone until you return back to “GoodVibe” app.
+          </li>
+          <br>
+
+          <li>
+            Next, tap “Start Service” and look at your phone status bar (notification bar) and you should see
+            “Recent usage stats: Facebook 0”
+          </li>
+          <br>
+
+          <li>
+            Do this to activate your code:
+            <ol>
+              <li>
+                Open “facebook mobile app” and use it for 15 seconds. A notification will appear telling you to
+                submit your id.
+              </li>
+              <li>
+                Go back to “GoodVibe” app and enter your
+                <strong>email address</strong>
+                as "your ID" and
+                <strong>tech</strong>
+                as "study code".
+              </li>
+              <li>
+                Submit and your code will appear together with survey link.
+                <br>
+                <h4>
+                  <span class="text-danger">
+                    Remember to submit survey. You
+                    <u>will not be completely enrolled</u>
+                    if you do not complete survey.
+                  </span>
+                </h4>
+              </li>
+            </ol>
+          </li>
+          <br>
+
+          <li>
+            App Setup DONE!
+            <br>
+            <em>*you can uninstall firefox app now as it was only needed to install GoodVibe app*</em>
+          </li>
+
+        </ol>
+      </div>
+
+      <div class="page-header">
+        <h3>
+          Disqualification (with no payment)
+        </h3>
+        <p>
+          You will be automatically removed from the experiment with no payment if:
+        </p>
+
+        <ul>
+          <li>
+            You
+            <strong>uninstall</strong>
+            app. Uninstalling app means you do not want to participate in experiment anymore.
+          </li>
+          <li>
+            You install app on phone that you don't use regularly.
+          </li>
+          <li>
+            You don't complete surveys or your provide fake response to surveys.
+          </li>
+          <li>
+            Your phone has issues and is not compatible with experiment.
+          </li>
+        </ul>
+      </div>
+
+      <div class="page-header">
+        <h3>How to know if app is working</h3>
+        Facebook stats will always show in your notification bar throughout the experiment. If it does not
+        show up, open "GoodVibe" app and click "Start Service". If it still doesn't show up then your phone
+        is incompatible with the study.
+      </div>
+
+      <div class="page-header">
+        <h3>What does Study App do?</h3>
+        <ul>
+          <li>
+            The study app will monitor which apps you use on your phone and when you use them. For instance, if
+            you use Facebook at 4pm then the app will record: "Facebook: 4pm". The app will also record when you
+            lock and unlock your phone screen. Please note that the app
+            <strong>DOES NOT</strong>
+            collect your personal info or any other phone information as our research only focuses on mobile
+            digital consumption.
+          </li>
+          <li>
+            Data collected will automatically be stored in a secured remote server for research analysis at the
+            end of the experiment. This means you don't have to do anything manually.
+          </li>
+          <li>
+            In the second week of the experiment, the app will automatically compute how much time you have used
+            Facebook and then vibrate your phone if you use Facebook past a certain limit. This vibration will
+            not happen in the 1st week and the last week of experiment but only during 2nd - 5th week. Note that
+            vibration is not a bug but it is part of the experiment.
+          </li>
+        </ul>
+      </div>
+
+      <div class="page-header">
+        <h3>
+          Contact
+        </h3>
+        <p>
+          You may contact research personnels:
+          <strong>Michael Sobolev</strong>
+          (sobolevmic at gmail.com) or
+          <strong>Fabian Okeke
+          </strong>(fno2 at cornell.edu) if you have any questions or concerns. Please make sure to carefully
+          follow all instructions so you can be properly helped whenever you have a question. Please be
+          patient with receiving responses to requests as there are many participants involved. Our goal is to
+          make sure you receive a response in a few hours and latest in 4 days.
+        </p>
+      </div>
+
+      <br>
+      <em>NB: We are not in any way affiliated to Facebook or Firefox mobile apps. We only use these apps
+        primarily for conducting research experiments.
+      </em>
+
+    </div>
+
+  {% endblock %}

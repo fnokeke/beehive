@@ -941,6 +941,11 @@ def plain_mturk():
     return render_template('mturk/enroll.html')
 
 
+@app.route('/tech')
+def enroll_technion():
+    return render_template('mturk/tech.html')
+
+
 @app.route('/mturk/<worker_id>')
 def amturk(worker_id):
     enrolled_worker = MturkExclusive.query.filter_by(worker_id=worker_id).first()
