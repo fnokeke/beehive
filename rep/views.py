@@ -1028,10 +1028,15 @@ def mobile_worker_id():
 
     TP_Admin.add_user(data)
     user_response = response + '\nYour Code: {}\nComplete survey link below:'.format(worker.worker_code)
+
+    survey_link = 'http://bit.ly/surveyOne'
+    if data['study_code'] == 'tech':
+        survey_link = 'http://bit.ly/surveyTech'
+
     server_response = {'status': 200,
                        'response': user_response,
                        'worker_id': worker.worker_id,
-                       'survey_link': 'http://bit.ly/surveyOne'}
+                       'survey_link': survey_link}
     return json.dumps(server_response)
 
 
