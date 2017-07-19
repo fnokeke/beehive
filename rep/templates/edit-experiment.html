@@ -101,19 +101,25 @@
       </p>
     {% endif %} -->
 
-    {% include "partials/table-slide.html" %}
+    {% include "partials/firebase-update.html" %}
 
-    {% include "partials/tools-settings.html" %}
+    {% if not experiment.is_mturk_study %}
 
-    {% include "partials/upload-text-images.html" %}
+      {% include "partials/table-slide.html" %}
 
-    {% include "partials/config-features.html" %}
+      {% include "partials/tools-settings.html" %}
 
-    {% include "partials/experiment-group.html" %}
+      {% include "partials/upload-text-images.html" %}
 
-    {% include "partials/apply-interventions.html" %}
+      {% include "partials/config-features.html" %}
 
-    {% include "partials/archived-interventions.html" %}
+      {% include "partials/experiment-group.html" %}
+
+      {% include "partials/apply-interventions.html" %}
+
+      {% include "partials/archived-interventions.html" %}
+
+    {% endif %}
 
   </div>
 {% endblock %}

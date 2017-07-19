@@ -11,6 +11,7 @@ from apiclient import discovery
 
 import json, httplib2, pytz, requests, csv
 import naf_quotes
+import secret_keys
 
 from rep import app, login_manager
 from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkPrelimRecruit
@@ -1012,6 +1013,17 @@ def mturk_auth_moves():
     return redirect(url_for('mturk', gen_code=gen_code))
 
 
+@app.route('/firebase/sync', methods=['POST'])
+def firebase_sync():
+    form = json.loads(request.data) if request.data else request.form.to_dict()
+    data = {'to': form['firebase_sync_token'], 'data': {'type': 'serverSync'}}
+    data = json.dumps(data)
+    headers = {'Authorization': secret_keys.FIREBASE_KEY, 'content-type': 'application/json'}
+    url = 'https://fcm.googleapis.com/fcm/send'
+    r = requests.post(url, headers=headers, data=data)
+    return json.dumps(r.json())
+
+
 @app.route('/mobile/turkprime/enroll', methods=['POST'])
 def mobile_worker_id():
     data = json.loads(request.data) if request.data else request.form.to_dict()
@@ -1114,7 +1126,7 @@ def get_ordered_entry(db_stats_entry):
     entry = json.loads(str(db_stats_entry))
     ordered = OrderedDict()
 
-    ordered['created_at'] = entry['created_at']
+    ordered['local_time'] = entry['local_time']
     ordered['worker_id'] = entry['worker_id']
     ordered['current_experiment_group'] = entry['current_experiment_group']
     ordered['total_seconds'] = entry['total_seconds']
@@ -1127,7 +1139,8 @@ def get_ordered_entry(db_stats_entry):
     ordered['current_treatment_start'] = entry['current_treatment_start']
     ordered['current_followup_start'] = entry['current_followup_start']
     ordered['current_logging_stop'] = entry['current_logging_stop']
-    ordered['daily_reset_hour'] = entry['daily_reset_hour']
+    ordered['time_spent_list'] = entry['time_spent_list']
+    ordered['current_firebase_token'] = entry['current_firebase_token']
 
     return ordered
 
