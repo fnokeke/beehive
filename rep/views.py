@@ -1039,7 +1039,7 @@ def mobile_worker_id():
                            'survey_link': ''})
 
     TP_Admin.add_user(data)
-    user_response = response + '\nYour Code: {}\nComplete survey link below:'.format(worker.worker_code)
+    user_response = response + '\nYour HIT Code: {}\nClick to complete survey:'.format(worker.worker_code)
 
     survey_link = 'http://bit.ly/surveyOne'
     if data['study_code'] == 'tech':
