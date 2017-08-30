@@ -52,7 +52,7 @@ todo
 
 ## Postgres installation
 - If on mac, best to setup your postgres local environment by installing [postgres app][postgres app link].
-- On linux, use `pip install psycopg2` (psycopg2 is not in requirements.txt because it breaks setup on mac).
+- `pip install psycopg2`
 
 ## Create postgres user
 - Install postgres and launch command line tool.
@@ -84,7 +84,7 @@ $ python manage.py db --help
 ## Run Server
 - `pip install -r requirements.txt`
 - Rename `rep/fake_secret_keys.py` to `rep/secret_keys.py`
-- `python runserver.py` to start server on `localhost:5000`
+- `python runserver.py` to start server on `http://0.0.0.0:5000/`
 
 ## How to run
 - Start redis server: `redis-server`
@@ -93,7 +93,7 @@ $ python manage.py db --help
 - Commit changes: `db.session.commit()`. You can use Postico as a gui for your DB.
 - Start celery in verbose mode: `run celery verbose: celery -A tasks.celery worker --loglevel=info --beat`
 - Start flask server: `python run.py`
-- Go to your server link: [http://localhost:5000](http://localhost:5000)
+- Go to your local server: [http://0.0.0.0:5000/](http://0.0.0.0:5000/)
 
 ## Production deployment with gunicorn, supervisor, wsgi
 - `pip install gunicorn supervisor` (NB: supervisor is installed in virtualenv

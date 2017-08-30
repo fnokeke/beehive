@@ -85,3 +85,4 @@ uritemplate==0.6
 user-agents==0.2.0
 wcwidth==0.1.7
 Werkzeug==0.10.4
+psycopg2
