@@ -83,9 +83,7 @@ $ python manage.py db --help
 
 ## Run Server
 - `pip install -r requirements.txt`
-- Change directory to one directory lower so you see `runserver.py` file
-- Rename `fake_secret_keys.py` to `secret_keys.py`
-- Move `secret_keys.py` so it is in the same directory as `runserver.py`
+- Rename `rep/fake_secret_keys.py` to `rep/secret_keys.py`
 - `python runserver.py` to start server on `localhost:5000`
 
 ## How to run
