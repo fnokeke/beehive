@@ -2,7 +2,7 @@
 A platform for researchers to conduct behavioral studies using user mobile phones and contexts (both individual and environmental such as location traces, phone usage habit, calendar schedules, among others).
 
 ## Application Flow
-- Researcher logs in to create experiment in `/researcher` and activates experiment datastreams using `researcher` and `password` as credentials. This can be changed in `rep/secret_keys.py`.
+- Custom researcher login mode is used and should be changed. Researcher logs in to create experiment in `/researcher` and activates experiment datastreams using `researcher` and `password` as credentials. This can be changed in `rep/secret_keys.py`.
 - Participant joins experiment via mobile app (android/iOS);
 - Participant can also log in via web to see account details through `/participant`
 - Participant grants access to researcher experiment through mobile app or web view
