@@ -1,14 +1,16 @@
-# rep.0
-Research Experiment Testbed for conducting participant experiments
+# Beehive Web 1.5
+A platform for researchers to conduct behavioral studies using mobile phones and user contexts
 
 ## Application Flow
-- Log in with Google Sign in
-- Grant SLM access to your Google Calendar
-- Connect to Moves (you also need to download moves app on your phone for this to work)
+- Researcher logs in to create experiment in `/researcher` and activates experiment datastreams
+- Participant joins experiment via mobile app (android/iOS);
+- Participant can also log in via web to see account details through `/participant`
+- Participant grants access to researcher experiment through mobile app or web view
+- Depending on activated experiment datastreams, participant may need to grant access to datastreams such as Google Calendar, Moves, RescueTime, Photographic Affect Meter (PAM).
 - Enjoy!
 
 ## Privacy
-This only stores oauth access tokens for providing developer access to user accounts.
+todo
 
 ## Frontend / Client
 - HTML 5, Jinja2, CSS, Javascript
@@ -16,22 +18,28 @@ This only stores oauth access tokens for providing developer access to user acco
 ## Backend / Server
 - Flask server for managing & hosting content
 - Postgres database for storing records
-- Celery for periodically exporting moves data to Google calendar
+- Celery for periodically tasks
 - Redis server for supporting celery
 
 ## Services
 - Account Login using Google Oauth2 and Flask-Login
 - Google Calendar Service for accessing user calendar
 - [Moves API][Moves API]
+- [RescueTime API][RescueTime API]
 
 ## Environment
-- Install virtualenv and activate a new environment. Virtualenv was used to set up the environment of this project. If you a little fancy, you can use virtualenvwrapper to manage your virtual environments. You can look at [this helpful virtual env & virtualenvwrapper guide][Virtualenv Guide]
+- Install virtualenv and activate a new environment. Virtualenv was used to set up the environment of this project. If you're a little fancy, you can use virtualenvwrapper to manage your virtual environments. You can look at [this helpful virtual env & virtualenvwrapper guide][Virtualenv Guide]
 - Install requirements: `pip install -r requirements.txt`
 
 ## Oauth2 Setup
 - To [use Google Oauth2][Google Credentials], create a project so you have `client_id` and `client_secret`.  
 *NB: Although countless ways/libraries exist for enabling Oauth2, I recommend [this nice tutorial][Google Flask Oauth Tutorial] for how to setup Google Oauth2 access on a flask server. It's simple and straight to the point.*
 - To [access Moves API][Moves API], you also need to set up a developer account.
+- To access RescueTime API using Oauth, you need to contact RescueTime (applicable July 2017)
+
+## Postgres installation
+- If on mac, best to setup your postgres local environment by installing [postgres app][postgres app link].
+- On linux, use `pip install psycopg2` (psycopg2 is not in requirements.txt because it breaks setup on mac).
 
 ## Create postgres user
 - Install postgres and launch session: `sudo -u postgres psql`
@@ -71,7 +79,7 @@ $ python manage.py db --help
 
 ## Production deployment with gunicorn, supervisor, wsgi
 - `pip install gunicorn supervisor` (NB: supervisor is installed in virtualenv
-		instead of system wide installation) 
+		instead of system wide installation)
 - generate sample supervisor file with `echo_supervisord_conf > supervisord.conf`
 - modify your supervisord.conf to add the program of interest (inside
 		supervisord.conf, our program is titled: rep-webserver)
@@ -85,4 +93,8 @@ $ python manage.py db --help
 
 [Moves API]: [https://dev.moves-app.com/]
 
+[RescueTime API]: [https://www.rescuetime.com/developers]
+
 [Virtualenv Guide]: [http://docs.python-guide.org/en/latest/dev/virtualenvs/]
+
+[postgres app link]: [http://postgresapp.com/]
