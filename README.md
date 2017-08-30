@@ -2,7 +2,7 @@
 A platform for researchers to conduct behavioral studies using user mobile phones and contexts (both individual and environmental such as location traces, phone usage habit, calendar schedules, among others).
 
 ## Application Flow
-- Researcher logs in to create experiment in `/researcher` and activates experiment datastreams
+- Researcher logs in to create experiment in `/researcher` and activates experiment datastreams using `researcher` and `password` as credentials. This can be changed in `rep/secret_keys.py`.
 - Participant joins experiment via mobile app (android/iOS);
 - Participant can also log in via web to see account details through `/participant`
 - Participant grants access to researcher experiment through mobile app or web view
@@ -11,7 +11,8 @@ A platform for researchers to conduct behavioral studies using user mobile phone
 
 ## Quick Setup
 - `mkvirtualenv bhenv` (virtualenv wrapper creates and activates virtualenv / if you don't have plugin, first create virtualenv then activate)
-- `pip install -r requirements.txt`
+- `pip install -r requirements.txt`.
+- If you encounter issues installing `psycopg2`, open `requirements.txt` and change `psycopg2==2.6.1` to `psycopg2` and rerun the install cmd.
 - `mv rep/fake_secret_keys.py rep/secret_keys.py` (rename fake_secret_keys to secret_keys. This file contains empty variables that will be populated later. See example with Google Oauth2.0 below.)
 - `python runserver.py` to start server on `http://localhost:5000/` as dev mode
 
@@ -19,7 +20,7 @@ A platform for researchers to conduct behavioral studies using user mobile phone
 ***NB: You need to setup Google Oauth2.0 for Google Login to work.***
 
 ## Google Oauth2.0 Setup
-- Create a new project on [Google Developer Console](https://console.developers.google.com/project/_/apiui/apis/library)
+- Create a new project on [Google Developer Console](https://console.developers.google.com/project/_/apiui/apis/library).
 - In the console, add `http://localhost:5000` and your domain as Authorized redirect URIs as local and prod urls respectively.
 - Locate your credentials on the developer console and copy your developer client ID and client secret into `secret_keys.py` as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` variables respectively
 

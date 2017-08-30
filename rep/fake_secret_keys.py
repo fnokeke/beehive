@@ -44,8 +44,9 @@ FIREBASE_KEY = ''
 ######################################
 # Researcher Username
 ######################################
-RESEARCHER_USERNAME = ''
-RESEARCHER_PASSWORD = ''
+RESEARCHER_USERNAME = 'researcher'
+RESEARCHER_PASSWORD = 'password'
+
 
 ######################################
 # FILE UPLOADS
