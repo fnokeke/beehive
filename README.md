@@ -27,15 +27,18 @@ todo
 - Celery for periodically exporting moves data to Google calendar
 - Redis server for supporting celery
 
+## Development Backend / Local Server
+- Flask server for managing & hosting content
+- Local Postgres database for storing records
+- Celery for periodically exporting moves data to Google calendar
+- Redis server for supporting celery
+
 ## Services
 - Account Login using Google Oauth2 and Flask-Login
 - Google Calendar Service for accessing user calendar
 - [Moves API][Moves API]
 - [RescueTime API][RescueTime API]
 
-## Environment
-- Install virtualenv and activate a new environment. Virtualenv was used to set up the environment of this project. If you're a little fancy, you can use virtualenvwrapper to manage your virtual environments. You can look at [this helpful virtual env & virtualenvwrapper guide][Virtualenv Guide]
-=======
 ## Development Environment
 - Install virtualenv and activate a new environment. Virtualenv was used to set up the environment of this project. If you a little fancy, you can use virtualenvwrapper to manage your virtual environments. You can look at [this helpful virtual env & virtualenvwrapper guide][Virtualenv Guide]
 - Install Postgres or Postgres app on your local development machine. Make sure postgres sql (or postgres sql app) is installed and the path to pg_config is included in the $PATH variable. For Mac/Linux users this involves adding appropriate path to the .bash_profile file.
