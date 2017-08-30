@@ -48,10 +48,11 @@ def justdoit():
 def download():
     return render_template('download.html')
 
-
 #################################
 # template views
 #################################
+
+
 @app.route('/researcher')
 def researcher_view():
     return render_template('researcher_index.html')
@@ -68,6 +69,7 @@ def experiments():
     return render_template('researcher_experiments.html', **ctx)
 
 
+@app.route
 @app.route('/')
 @app.route('/participant')
 def index():
