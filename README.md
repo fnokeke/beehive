@@ -13,9 +13,15 @@ This only stores oauth access tokens for providing developer access to user acco
 ## Frontend / Client
 - HTML 5, Jinja2, CSS, Javascript
 
-## Backend / Server
+## Production Backend / Server
 - Flask server for managing & hosting content
 - Postgres database for storing records
+- Celery for periodically exporting moves data to Google calendar
+- Redis server for supporting celery
+
+## Development Backend / Local Server
+- Flask server for managing & hosting content
+- Local Postgres database for storing records
 - Celery for periodically exporting moves data to Google calendar
 - Redis server for supporting celery
 
@@ -24,8 +30,9 @@ This only stores oauth access tokens for providing developer access to user acco
 - Google Calendar Service for accessing user calendar
 - [Moves API][Moves API]
 
-## Environment
+## Development Environment
 - Install virtualenv and activate a new environment. Virtualenv was used to set up the environment of this project. If you a little fancy, you can use virtualenvwrapper to manage your virtual environments. You can look at [this helpful virtual env & virtualenvwrapper guide][Virtualenv Guide]
+- Install Postgres or Postgres app on your local development machine. Make sure postgres sql (or postgres sql app) is installed and the path to pg_config is included in the $PATH variable. For Mac/Linux users this involves adding appropriate path to the .bash_profile file.
 - Install requirements: `pip install -r requirements.txt`
 
 ## Oauth2 Setup
@@ -34,19 +41,19 @@ This only stores oauth access tokens for providing developer access to user acco
 - To [access Moves API][Moves API], you also need to set up a developer account.
 
 ## Create postgres user
-- Install postgres and launch session: `sudo -u postgres psql`
-- create user: `CREATE USER slmadmin WITH password 'password';`
-- you can alter user password later: `ALTER USER slmadmin WITH PASSWORD '<new password>' # password must be in quotes`
-- create db: `CREATE DATABASE slmdb WITH OWNER slmadmin;`
-- grant privileges: `grant all privileges on database slmdb to slmadmin;`
-- change database owner: `ALTER DATABASE slmdb OWNER to slmadmin;`
-- login: `psql -d slmdb -U slmadmin -W # -W prompts for a password`
+- Install postgres and launch command line tool.
+- create user: `CREATE USER repadmin WITH password 'password';`
+- you can alter user password later: `ALTER USER repadmin WITH PASSWORD '<new password>' # password must be in quotes`
+- create db: `CREATE DATABASE repdb WITH OWNER slmadmin;`
+- grant privileges: `grant all privileges on database repdb to repadmin;`
+- change database owner: `ALTER DATABASE repdb OWNER to repadmin;`
+- login: `psql -d repdb -U repadmin -W # -W prompts for a password`
 
 ## Additional postgres config
 You may need to configure postgres file: `pg_hba.conf` if getting error:
 `FATAL: Ident authentication failed for user`:
 - For linux, login as postgres user: `sudo su - postgres` or open config file in `/var/lib/<pgsql_version>/data/`
-- Add this line to pg_hba.conf file: `host slmdb slmadmin all md5`
+- Add this line to pg_hba.conf file: `host repdb repadmin all md5`
 - Save file and launch postgres session as shown above and reload config: `SELECT pg_reload_conf();`
 
 ## PAM
