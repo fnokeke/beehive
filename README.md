@@ -1,5 +1,11 @@
 # Beehive Web 1.5
-A platform for researchers to conduct behavioral studies using mobile phones and user contexts
+A platform for researchers to conduct behavioral studies using user mobile phones and contexts (both individual and environmental such as location traces, phone usage habit, calendar schedules, among others).
+
+## Quick Setup
+- `mkvirtualenv bhenv` (virtualenv wrapper creates and activates virtualenv / if you don't have plugin, first create virtualenv then activate)
+- `pip install -r requirements.txt`
+- `mv rep/fake_secret_keys.py rep/secret_keys.py` (rename fake_secret_keys to secret_keys)
+- `python runserver.py` to start server on `http://0.0.0.0:5000/`
 
 ## Application Flow
 - Researcher logs in to create experiment in `/researcher` and activates experiment datastreams
@@ -8,9 +14,6 @@ A platform for researchers to conduct behavioral studies using mobile phones and
 - Participant grants access to researcher experiment through mobile app or web view
 - Depending on activated experiment datastreams, participant may need to grant access to datastreams such as Google Calendar, Moves, RescueTime, Photographic Affect Meter (PAM).
 - Enjoy!
-
-## Privacy
-todo
 
 ## Frontend / Client
 - HTML 5, Jinja2, CSS, Javascript
@@ -81,12 +84,7 @@ $ python manage.py db upgrade
 $ python manage.py db --help
 ```
 
-## Run Server
-- `pip install -r requirements.txt`
-- Rename `rep/fake_secret_keys.py` to `rep/secret_keys.py`
-- `python runserver.py` to start server on `http://0.0.0.0:5000/`
-
-## How to run
+## Extensive how to run (todo: consider removing)
 - Start redis server: `redis-server`
 - Start postgresql server by launching `Postgres` application
 - Create database: `db.create_all() # you can do this by importing db from models`.
@@ -103,6 +101,9 @@ $ python manage.py db --help
 		supervisord.conf, our program is titled: rep-webserver)
 - start supervisor: `supervisord -c supervisord.conf`
 - Refresh your browser and good to go!
+
+## Privacy
+todo
 
 
 [Google Credentials]: [https://console.developers.google.com/apis/credentials?project=_]
