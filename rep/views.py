@@ -52,14 +52,28 @@ def download():
 # template views
 #################################
 
-
+# Default login view for the beehive platform
+@app.route('/')
 @app.route('/researcher')
 def researcher_view():
-    return render_template('researcher_index.html')
+    if not current_user.is_authenticated:
+        return render_template('index_researcher.html')
+
+    if 'code' in request.args:
+        code = request.args.get('code')
+        return redirect(url_for('auth_rt', code=code))
+
+    if 'error' in request.args:
+        error = request.args.get('error')
+        return redirect(url_for('auth_rt', error=error))
+
+    return redirect(url_for('experiments'))
+    # return render_template('index_researcher.html')
 
 
 @app.route('/experiments')
-@requires_basic_auth
+@login_required
+# @requires_basic_auth
 def experiments():
     ctx = {'users': WebUser.query.all(),
            'mobile_users': MobileUser.query.all(),
@@ -69,11 +83,8 @@ def experiments():
     return render_template('researcher_experiments.html', **ctx)
 
 
-@app.route
-@app.route('/')
 @app.route('/participant')
 def index():
-
     if not current_user.is_authenticated:
         return render_template('index.html')
 
@@ -99,7 +110,7 @@ def home():
 def logout():
     logout_user()
     session.clear()
-    return redirect(url_for('index'))
+    return redirect(url_for('researcher_view'))
 
 
 @app.route('/researcher_analysis/<key>/<study_begin>/<int_begin>/<int_end>/<study_end>')
@@ -577,8 +588,7 @@ def fetch_uploaded_intv(code):
 # Connect Service Providers
 # /////////////////////////////////////
 
-
-# Google login and calendar
+# Google login and calendar access for participants
 @app.route('/google_login')
 def google_login():
     if current_user.is_authenticated:
@@ -612,6 +622,40 @@ def google_login():
     login_user(user)
     return redirect(url_for('home'))
 
+
+# Google login for researchers
+@app.route('/google_login_researcher')
+def google_login_researcher():
+    if current_user.is_authenticated:
+        return redirect(url_for('experiments'))
+
+    flow = OAuth2WebServerFlow(
+        client_id=app.config['GOOGLE_CLIENT_ID'],
+        client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+        scope=app.config['GOOGLE_SCOPE_RESEARCHER'],
+        access_type='offline',
+        prompt='consent',
+        redirect_uri=url_for(
+            'google_login_researcher', _external=True))
+
+    auth_code = request.args.get('code')
+    if not auth_code:
+        auth_uri = flow.step1_get_authorize_url()
+        return redirect(auth_uri)
+
+    credentials = flow.step2_exchange(auth_code, http=httplib2.Http())
+    if credentials.access_token_expired:
+        credentials.refresh(httplib2.Http())
+
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('oauth2', 'v2', http=http)
+
+    profile = service.userinfo().get().execute()
+    user = WebUser.from_profile(profile)
+    user.update_field('google_credentials', credentials.to_json())
+
+    login_user(user)
+    return redirect(url_for('experiments'))
 
 # Moves
 @app.route("/auth-moves")

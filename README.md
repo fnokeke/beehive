@@ -65,7 +65,7 @@ A platform for researchers to conduct behavioral studies using user mobile phone
 - Install postgres and launch command line tool.
 - create user: `CREATE USER repadmin WITH password 'password';`.
 - you can alter user password later: `ALTER USER repadmin WITH PASSWORD '<new password>' # password must be in quotes`.
-- Create db: `CREATE DATABASE repdb WITH OWNER slmadmin;`.
+- Create db: `CREATE DATABASE repdb WITH OWNER repadmin;`.
 - Grant privileges: `grant all privileges on database repdb to repadmin;`.
 - Change database owner: `ALTER DATABASE repdb OWNER to repadmin;`.
 - Login: `psql -d repdb -U repadmin -W # -W prompts for a password`.
@@ -86,13 +86,17 @@ $ python manage.py db --help
 ```
 
 ###### Redis and Celery (optional)
+Celery is a task queue. Celery requires a solution to send and receive messages; usually this comes in the form of a separate service called a message broker.
+There are several choices available, including:  RabbitMQ, Redis, Amazon SQS etc. In this project we user Redis as the message broker.
+Redis is an open source (BSD licensed), in-memory data structure store, used as a database, cache and message broker. 
+
 You can follow these instructions if you plan to run periodic tasks. In this project, Celery is used for running cron jobs that dump results in the postresql database.
 - Start redis server: `redis-server`.
 - Start postgresql server by launching `Postgres` application.
 - Create database: `db.create_all() # you can do this by importing db from models`.
 - Commit changes: `db.session.commit()`. You can use Postico as a gui for your DB.
 - Start celery in verbose mode: `run celery verbose: celery -A tasks.celery worker --loglevel=info --beat`.
-- Start flask server: `python run.py`.
+- Start flask server: `python runserver.py`.
 - Go to your local server: [http://localhost:5000/](http://localhost:5000/).
 
 ###### Production deployment with gunicorn, supervisor, wsgi

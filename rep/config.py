@@ -19,6 +19,7 @@ GOOGLE_CLIENT_ID = secret_keys.GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET = secret_keys.GOOGLE_CLIENT_SECRET
 BASE_SCOPE = 'https://www.googleapis.com/auth'
 GOOGLE_SCOPE = '{}/userinfo.email {}/calendar.readonly {}/calendar'.format(BASE_SCOPE, BASE_SCOPE, BASE_SCOPE)
+GOOGLE_SCOPE_RESEARCHER = '{}/userinfo.email'.format(BASE_SCOPE)
 
 ###################
 # celery app config
