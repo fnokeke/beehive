@@ -64,6 +64,7 @@ var experiment = (function() {
 
   update_experiment_view();
 
+// Function that updates the experiment view
   function update_experiment_view() {
     var view,
       exp,
@@ -81,41 +82,21 @@ var experiment = (function() {
     });
   }
 
+// Function to populate the experiments table
   function create_experiment_view(experiments) {
     view = '<table id="exp-view-id" class="table table-striped table-bordered"><tr>' +
       '<th> Title </th>' +
-      '<th> Code </th>' +
-      '<th> RescueTime </th>' +
-      '<th> Aware </th>' +
-      '<th> Geofence </th>' +
-      '<th> Text </th>' +
-      '<th> Image </th>' +
-      '<th> Reminder </th>' +
-      '<th> Actuators </th>' +
+      '<th> Code </th>'  +
       '</tr><tbody>';
 
-    // show css background class for cell to provide visual effect for enable/disable buttons
-    var rescuetime_c,
-      calendar_c,
-      geofence_c,
-      text_c,
-      image_c,
-      reminder_c,
-      actuators_c;
-
+    // Add each experiment details to the table
     for (var i = experiments.length - 1; i >= 0; i--) {
       exp = experiments[i];
 
-      rescuetime_c = exp.rescuetime ? 'success' : 'danger';
-      calendar_c = exp.calendar ? 'success' : 'danger';
-      geofence_c = exp.geofence ? 'success' : 'danger';
-      text_c = exp.text ? 'success' : 'danger';
-      image_c = exp.image ? 'success' : 'danger';
-      reminder_c = exp.reminder ? 'success' : 'danger';
-      actuators_c = exp.actuators ? 'success' : 'danger';
-
       row = '<tr>' +
-        '<td><button id={1} class="btn btn-link">{0}</button></td>'.format(exp.title, exp.code) + '<td>' + exp.code + '</td>' + '<td class={0}> {1} </td>'.format(rescuetime_c, exp.rescuetime) + '<td class={0}> {1} </td>'.format(calendar_c, exp.calendar) + '<td class={0}> {1} </td>'.format(geofence_c, exp.geofence) + '<td class={0}> {1} </td>'.format(text_c, exp.text) + '<td class={0}> {1} </td>'.format(image_c, exp.image) + '<td class={0}> {1} </td>'.format(reminder_c, exp.reminder) + '<td class={0}> {1} </td>'.format(actuators_c, exp.actuators) + '</tr>';
+        '<td><button id={1} class="btn btn-link">{0}</button></td>'.format(exp.title, exp.code) +
+        '<td>' + exp.code + '</td>' +
+        '</tr>';
 
       view += row;
     }
