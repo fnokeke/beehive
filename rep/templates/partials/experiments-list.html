@@ -4,6 +4,7 @@
     <h3>Experiments</h3>
   </div>
 
+  <!--
   <div>
   <button
     type="button"
@@ -14,11 +15,22 @@
     Add Experiment
   </button>
   </div>
+  -->
+
+  <div>
+  <button
+    type="button"
+    class="btn btn-primary"
+    onclick="window.location.href='{{ url_for('create_experiment') }}';"
+    <span class="glyphicon glyphicon-plus"></span>
+    Add Experiment
+  </button>
+  </div>
 
   <br>
 
   <div id="display_existing_experiments">
-    <span id="experiment-view-id"></span>
+    <span id="experiment-list-view"></span>
     <span id="experiment-view-status"></span>
   </div>
 

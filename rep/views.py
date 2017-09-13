@@ -340,6 +340,7 @@ def fetch_interventions():
 #////////////////////////////////////
 # Researcher modify experiments
 #////////////////////////////////////
+# Endpoint to add new experiment to the database
 @app.route('/add/experiment', methods=['POST'])
 def add_experiment():
     experiment = {
@@ -358,6 +359,11 @@ def add_experiment():
     _, response, __ = Experiment.add_experiment(experiment)
     return response
 
+
+# New experiment create view
+@app.route('/experiments/create')
+def create_experiment():
+    return render_template('create-experiment.html')
 
 @app.route('/edit-experiment/<code>')
 def edit_experiment(code):

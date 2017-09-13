@@ -5,6 +5,11 @@
   color: #f88;
 }
 
+
+.center-text{
+text-align: center;
+}
+
 .mfooter {
     margin-top: 1em;
     margin-bottom: 2em;

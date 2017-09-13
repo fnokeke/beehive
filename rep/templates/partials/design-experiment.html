@@ -1,0 +1,308 @@
+<div class="page-header">
+  <h3>
+    Design Experiment
+  </h3>
+</div>
+
+<table class="table borderless slide-table" id="">
+  <tr>
+    <th>
+      <button type="button" id="step1-basic" class="btn btn-lg btn-block">1. Basic Info</button>
+    </th>
+
+    <th>
+      <button type="button" id="step2-data" class="btn btn-lg btn-block">2. Data Streams</button>
+    </th>
+
+    <th>
+      <button type="button" id="step3-protocols" class="btn btn-lg btn-block">3. Protocols</button>
+    </th>
+  </tr>
+
+  <tr>
+    <th>
+      <!-- Dummy column to place approve button in the middle -->
+    </th>
+
+    <th>
+      <button type="button" id="step4-approve" class="btn btn-lg btn-block">4. Preview & Approve</button>
+    </th>
+  </tr>
+
+</table>
+
+<div class="page-header"></div>
+
+<!--##################### slide1 #####################-->
+<div id="slide1" class="noshow">
+  <br>
+  <h2>Basic Info</h2>
+  <br>
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Experiment Label</label>
+    <div class="col-xs-4">
+      <input class="form-control" type="text" id="researcher-exp-label" placeholder="visible to only you"></input>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Experiment Title</label>
+    <div class="col-xs-4">
+      <input
+        class="form-control"
+        type="text"
+        id="participant-exp-label"
+        placeholder="experiment title will be visible to participants"></input>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Experiment Description</label>
+    <div class="col-xs-4">
+      <input class="form-control" type="text" id="" placeholder="brief summary visible to participants"></input>
+    </div>
+  </div>
+
+    <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Start Date</label>
+    <div class="col-xs-4">
+      <input
+        class="form-control"
+        id="exp-start-date"
+        data-provide="datepicker"
+        data-date-start-date="{{ today_date }}"
+        data-date-format="yyyy-mm-dd"
+        data-date-today-highlight="true"
+        value="{{experiment_start }}"/>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">End Date</label>
+    <div class="col-xs-4">
+      <input
+        class="form-control"
+        id="exp-end-date"
+        data-provide="datepicker"
+        data-date-start-date="{{ today_date }}"
+        data-date-format="yyyy-mm-dd"
+        data-date-today-highlight="true"
+        value="{{ experiment_end }}"/>
+    </div>
+  </div>
+</div>
+
+<!--##################### slide2 #####################-->
+<div id="slide2" class="noshow">
+  <h2>Data Streams</h2>
+  <br>
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Google Calendar</label>
+    <div class="col-xs-10">
+      {% if experiment  %}
+      <input
+        type="checkbox"
+        id="edit-rescuetime-checkbox-btn"
+        {{ 'checked' if experiment.rescuetime else
+          'unchecked' }}
+        data-toggle="toggle"
+        data-on="Yes"
+        data-off="No"
+        data-onstyle="primary"
+        data-offstyle="danger">
+      {% else %}
+
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">PAM Survey</label>
+    <div class="col-xs-10">
+      {% if experiment %}
+      <input
+        type="checkbox"
+        id="edit-rescuetime-checkbox-btn"
+        {{ 'checked' if experiment.rescuetime else
+          'unchecked' }}
+        data-toggle="toggle"
+        data-on="Yes"
+        data-off="No"
+        data-onstyle="primary"
+        data-offstyle="danger">
+      {% else %}
+
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Mobile App Usage</label>
+    <div class="col-xs-10">
+      {% if experiment %}
+      <input
+        type="checkbox"
+        id="edit-actuators-checkbox-btn"
+        {{ 'checked' if experiment.actuators else
+          'unchecked' }}
+        data-toggle="toggle"
+        data-on="Yes"
+        data-off="No"
+        data-onstyle="primary"
+        data-offstyle="danger">
+      {% else %}
+
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">RescueTime</label>
+    <div class="col-xs-10">
+      {% if experiment %}
+      <input
+        type="checkbox"
+        id="edit-rescuetime-checkbox-btn"
+        {{ 'checked' if experiment.rescuetime else
+          'unchecked' }}
+        data-toggle="toggle"
+        data-on="Yes"
+        data-off="No"
+        data-onstyle="primary"
+        data-offstyle="danger">
+      {% else %}
+
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Geofence</label>
+    <div class="col-xs-10">
+      {% if experiment %}
+      <input
+        type="checkbox"
+        id="edit-geofence-checkbox-btn"
+        {{ 'checked' if experiment.geofence else
+          'unchecked' }}
+        data-toggle="toggle"
+        data-on="Yes"
+        data-off="No"
+        data-onstyle="primary"
+        data-offstyle="danger">
+      {% else %}
+
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<!--##################### slide3 #####################-->
+<div id="slide3" class="noshow">
+  <h2>Protocols</h2>
+  <br>
+
+  <h4>Select Existing Protocol</h4>
+  <div class="form-group row">
+    <div class="col-xs-6">
+      <select class="form-control" id="">
+        <option>Remind Users / Push (May 8th - May 15th)</option>
+        <option>Overuse FB / Vibration (May 1st - May 8th)</option>
+        <option>Email Tips / Email (May 17th - June 12th)</option>
+      </select>
+    </div>
+  </div>
+
+  <br>
+  <h4>Create New Protocol</h4>
+  <br>
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Label</label>
+    <div class="col-xs-4">
+      <input class="form-control" type="text" id="" placeholder="simple label to identify protocol"></input>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Frequency</label>
+    <div class="col-xs-4">
+      <select class="form-control" id="intv-every">
+        <option>Daily</option>
+        <option>Weekly</option>
+        <option>Biweekly</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Method</label>
+    <div class="col-xs-4">
+      <select class="form-control" id="intv-every">
+        <option>Push Notification</option>
+        <option>Vibration</option>
+        <option>Email</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Start Date</label>
+    <div class="col-xs-4">
+      <input
+        class="form-control"
+        id="edit-start-date"
+        data-provide="datepicker"
+        data-date-start-date="{{ today_date }}"
+        data-date-format="yyyy-mm-dd"
+        data-date-today-highlight="true"
+        value="{{experiment_start }}"/>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">End Date</label>
+    <div class="col-xs-4">
+      <input
+        class="form-control"
+        id="edit-end-date"
+        data-provide="datepicker"
+        data-date-start-date="{{ experiment_start }}"
+        data-date-format="yyyy-mm-dd"
+        data-date-today-highlight="true"
+        value="{{ experiment_end }}"/>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label"></label>
+    <div class="col-xs-4">
+      <button type="button" class="btn btn-primary" id="">
+        <span class="glyphicon glyphicon-floppy-saved"></span>
+        Save Protocol
+      </button>
+    </div>
+  </div>
+
+</div>
+
+
+<!--##################### slide4 #####################-->
+<div id="slide4" class="noshow">
+  <h3>Approve</h3>
+  <br>
+  <button type="button"
+          class="btn btn-primary"
+          onclick="window.location.href='{{ url_for('experiments') }}';">
+    <span class="glyphicon glyphicon-check"></span>
+    Approve & Launch
+  </button>
+  <br>
+  Review experiment settings before you approve and launch it.
+</div>
+
+
+<div>
+  <br/>
+  <hr/>
+</div>

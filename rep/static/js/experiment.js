@@ -75,7 +75,7 @@ var experiment = (function() {
     $.get('/fetch/experiments', function(results) {
       var experiments = JSON.parse(results);
       var view = create_experiment_view(experiments);
-      $('#experiment-view-id').html(view);
+      $('#experiment-list-view').html(view);
     }).fail(function(error) {
       show_error_msg(response_field, 'Could not load experiment view.');
       console.warn(error);
@@ -84,9 +84,11 @@ var experiment = (function() {
 
 // Function to populate the experiments table
   function create_experiment_view(experiments) {
-    view = '<table id="exp-view-id" class="table table-striped table-bordered"><tr>' +
-      '<th> Title </th>' +
-      '<th> Code </th>'  +
+    view = '<table id="exp-list-table" class="table table-striped table-bordered"><tr>' +
+      '<th class="center-text"> Title </th>' +
+      '<th class="center-text"> Code </th>'  +
+      '<th class="center-text"> Start </th>'  +
+      '<th class="center-text"> End </th>'  +
       '</tr><tbody>';
 
     // Add each experiment details to the table
@@ -95,7 +97,9 @@ var experiment = (function() {
 
       row = '<tr>' +
         '<td><button id={1} class="btn btn-link">{0}</button></td>'.format(exp.title, exp.code) +
-        '<td>' + exp.code + '</td>' +
+        '<td class="center-text">' + exp.code + '</td>' +
+        '<td class="center-text">' + formatDate(exp.start) + '</td>' +
+        '<td class="center-text">' + formatDate(exp.end) + '</td>' +
         '</tr>';
 
       view += row;
@@ -105,10 +109,17 @@ var experiment = (function() {
     return view;
   }
 
+
+  function formatDate(rawDate){
+    var date = new Date(rawDate);
+    date = date.toString().slice(0,15);
+    return date;
+  }
+
   /////////////////////////////
   // edit / delete experiment
   /////////////////////////////
-  $(document).on('click', '#exp-view-id .btn-link', function() {
+  $(document).on('click', '#exp-list-table .btn-link', function() {
     var code = this.id;
     window.location.href = '/edit-experiment/{0}'.format(code);
   });
