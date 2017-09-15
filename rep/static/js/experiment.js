@@ -109,7 +109,9 @@ var experiment = (function() {
     return view;
   }
 
-
+  /////////////////////////////
+  // Format Date
+  /////////////////////////////
   function formatDate(rawDate){
     var date = new Date(rawDate);
     date = date.toString().slice(0,15);

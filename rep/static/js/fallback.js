@@ -12,7 +12,10 @@
     insert_script(filepath);
   }
 
-  if (!window.bootstrap) {
+  var bootstrap_enabled = (typeof $().modal == 'function');
+
+  // Load fallbacks only if Bootstrap was not loaded from CDN
+  if (!bootstrap_enabled) {
     filepath = '/static/lib/js/bootstrap.js';
     insert_script(filepath);
 

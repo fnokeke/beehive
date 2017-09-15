@@ -4,7 +4,7 @@
   </h3>
 </div>
 
-<table class="table borderless slide-table" id="">
+<table class="table borderless slide-table">
   <tr>
     <th>
       <button type="button" id="step1-basic" class="btn btn-lg btn-block">1. Basic Info</button>
@@ -35,7 +35,6 @@
 
 <!--##################### slide1 #####################-->
 <div id="slide1" class="noshow">
-  <br>
   <h2>Basic Info</h2>
   <br>
   <div class="form-group row">
@@ -94,105 +93,20 @@
 
 <!--##################### slide2 #####################-->
 <div id="slide2" class="noshow">
+
   <h2>Data Streams</h2>
   <br>
   <div class="form-group row">
-    <label class="col-xs-2 col-form-label">Google Calendar</label>
+    <label class="col-xs-2 col-form-label">Screen events</label>
     <div class="col-xs-10">
-      {% if experiment  %}
       <input
         type="checkbox"
-        id="edit-rescuetime-checkbox-btn"
-        {{ 'checked' if experiment.rescuetime else
-          'unchecked' }}
+        id="screen-events-checkbox-btn"
         data-toggle="toggle"
         data-on="Yes"
         data-off="No"
         data-onstyle="primary"
         data-offstyle="danger">
-      {% else %}
-
-      {% endif %}
-    </div>
-  </div>
-
-  <div class="form-group row">
-    <label class="col-xs-2 col-form-label">PAM Survey</label>
-    <div class="col-xs-10">
-      {% if experiment %}
-      <input
-        type="checkbox"
-        id="edit-rescuetime-checkbox-btn"
-        {{ 'checked' if experiment.rescuetime else
-          'unchecked' }}
-        data-toggle="toggle"
-        data-on="Yes"
-        data-off="No"
-        data-onstyle="primary"
-        data-offstyle="danger">
-      {% else %}
-
-      {% endif %}
-    </div>
-  </div>
-
-  <div class="form-group row">
-    <label class="col-xs-2 col-form-label">Mobile App Usage</label>
-    <div class="col-xs-10">
-      {% if experiment %}
-      <input
-        type="checkbox"
-        id="edit-actuators-checkbox-btn"
-        {{ 'checked' if experiment.actuators else
-          'unchecked' }}
-        data-toggle="toggle"
-        data-on="Yes"
-        data-off="No"
-        data-onstyle="primary"
-        data-offstyle="danger">
-      {% else %}
-
-      {% endif %}
-    </div>
-  </div>
-
-  <div class="form-group row">
-    <label class="col-xs-2 col-form-label">RescueTime</label>
-    <div class="col-xs-10">
-      {% if experiment %}
-      <input
-        type="checkbox"
-        id="edit-rescuetime-checkbox-btn"
-        {{ 'checked' if experiment.rescuetime else
-          'unchecked' }}
-        data-toggle="toggle"
-        data-on="Yes"
-        data-off="No"
-        data-onstyle="primary"
-        data-offstyle="danger">
-      {% else %}
-
-      {% endif %}
-    </div>
-  </div>
-
-  <div class="form-group row">
-    <label class="col-xs-2 col-form-label">Geofence</label>
-    <div class="col-xs-10">
-      {% if experiment %}
-      <input
-        type="checkbox"
-        id="edit-geofence-checkbox-btn"
-        {{ 'checked' if experiment.geofence else
-          'unchecked' }}
-        data-toggle="toggle"
-        data-on="Yes"
-        data-off="No"
-        data-onstyle="primary"
-        data-offstyle="danger">
-      {% else %}
-
-      {% endif %}
     </div>
   </div>
 
@@ -203,6 +117,7 @@
   <h2>Protocols</h2>
   <br>
 
+  <!--
   <h4>Select Existing Protocol</h4>
   <div class="form-group row">
     <div class="col-xs-6">
@@ -213,75 +128,26 @@
       </select>
     </div>
   </div>
+  -->
 
-  <br>
-  <h4>Create New Protocol</h4>
-  <br>
-  <div class="form-group row">
-    <label class="col-xs-2 col-form-label">Label</label>
-    <div class="col-xs-4">
-      <input class="form-control" type="text" id="" placeholder="simple label to identify protocol"></input>
-    </div>
-  </div>
-
-  <div class="form-group row">
-    <label class="col-xs-2 col-form-label">Frequency</label>
-    <div class="col-xs-4">
-      <select class="form-control" id="intv-every">
-        <option>Daily</option>
-        <option>Weekly</option>
-        <option>Biweekly</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="form-group row">
-    <label class="col-xs-2 col-form-label">Method</label>
-    <div class="col-xs-4">
-      <select class="form-control" id="intv-every">
-        <option>Push Notification</option>
-        <option>Vibration</option>
-        <option>Email</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="form-group row">
-    <label class="col-xs-2 col-form-label">Start Date</label>
-    <div class="col-xs-4">
-      <input
-        class="form-control"
-        id="edit-start-date"
-        data-provide="datepicker"
-        data-date-start-date="{{ today_date }}"
-        data-date-format="yyyy-mm-dd"
-        data-date-today-highlight="true"
-        value="{{experiment_start }}"/>
-    </div>
-  </div>
-
-  <div class="form-group row">
-    <label class="col-xs-2 col-form-label">End Date</label>
-    <div class="col-xs-4">
-      <input
-        class="form-control"
-        id="edit-end-date"
-        data-provide="datepicker"
-        data-date-start-date="{{ experiment_start }}"
-        data-date-format="yyyy-mm-dd"
-        data-date-today-highlight="true"
-        value="{{ experiment_end }}"/>
-    </div>
-  </div>
-
-  <div class="form-group row">
-    <label class="col-xs-2 col-form-label"></label>
-    <div class="col-xs-4">
-      <button type="button" class="btn btn-primary" id="">
-        <span class="glyphicon glyphicon-floppy-saved"></span>
-        Save Protocol
+  <div class="col-xs-4">
+      <button type="button"
+              class="btn btn-primary"
+              id="add-protocol-button"
+              data-toggle="modal"
+              data-target="#add-protocol-modal">
+        <span class="glyphicon glyphicon-plus-sign"></span>
+        Add Protocol
       </button>
-    </div>
+  </div>
+  <hr>
+
+
+  <div id="display-protocols">
+    <br/>
+    <span id="protocols-list-view"></span>
+    <span id="protocols-error-view"></span>
+    <br/>
   </div>
 
 </div>
@@ -305,4 +171,104 @@
 <div>
   <br/>
   <hr/>
+</div>
+
+
+<!--##################### Add Protocol Modal  #####################-->
+ <div
+    class="modal fade"
+    tabindex="-1"
+    id="add-protocol-modal"
+    role="dialog"
+    aria-labelledby="myModalLabel">
+
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Add Protocol
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </h4>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="form-group row">
+            <label class="col-xs-2 col-form-label">Name</label>
+            <div class="col-xs-10">
+              <input class="form-control" type="text" placeholder="label to identify the protocol" id="protocol-title">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-xs-2 col-form-label">Frequency</label>
+            <div class="col-xs-4">
+              <select class="form-control" id="protocol-frequency">
+                  <option>Daily</option>
+                  <option>Weekly</option>
+                  <option>Biweekly</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-xs-2 col-form-label">Method</label>
+            <div class="col-xs-4">
+              <select class="form-control" id="protocol-method">
+                <option>Push Notification</option>
+                <option>Vibration</option>
+                <option>Email</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-xs-2 col-form-label">Dates</label>
+            <div class="col-xs-10">
+              <div class="input-group input-daterange">
+                <input
+                  type="text"
+                  id="protocol-start-date"
+                  class="form-control"
+                  placeholder="start date"
+                  data-date-start-date="+1d"
+                  data-date-today-highlight=true
+                  data-date-format='yyyy-mm-dd'>
+
+                <div class="input-group-addon">to</div>
+                <input
+                  type="text"
+                  id="protocol-end-date"
+                  class="form-control"
+                  placeholder="end date"
+                  data-date-start-date="+1d"
+                  data-date-today-highlight=true
+                  data-date-format='yyyy-mm-dd'>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-xs-2 col-form-label">Time</label>
+            <div class="col-xs-10">
+               <div class="input-group input-timerange">
+                  <input  class="form-control" type="time" name="start-time" id="start-time">
+                   <div class="input-group-addon">to</div>
+                  <input  class="form-control" type="time" name="end-time" id="end-time">
+               </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="create-protocol-btn" onclick="create_protocol_handler()">Create</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
 </div>
