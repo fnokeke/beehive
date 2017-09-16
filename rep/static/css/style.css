@@ -5,10 +5,40 @@
   color: #f88;
 }
 
-
 .center-text{
-text-align: center;
+    text-align: center;
 }
+
+hr.style1{
+	border-top: 1px solid #8c8b8b;
+}
+
+hr.style2 {
+	height: 5px;
+	border: 0;
+	box-shadow: 0 10px 10px -10px #8c8b8b inset;
+}
+
+hr.style3 {
+    border: 0;
+    height: 1px;
+    background: #333;
+}
+
+hr.style4 {
+    border: 0;
+    height: 1px;
+    background: #333;
+    background-image: linear-gradient(to right, #ccc, #333, #ccc);
+}
+
+hr.style5 {
+    border: 0;
+    height: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
 
 .mfooter {
     margin-top: 1em;

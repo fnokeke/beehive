@@ -1,5 +1,8 @@
 (function(window, document) {
 
+  $('#exp-start-date').datepicker('setDate', new Date());
+  $('#exp-end-date').datepicker('setDate', new Date());
+
   $('#step1-basic').click(function() {
     show_slide(1);
   });
@@ -9,15 +12,30 @@
   });
 
   $('#step3-protocols').click(function() {
-    show_slide(3);
     update_protocols_view();
+    show_slide(3);
   });
 
-  $('#step4-approve').click(function() {
+  $('#step4-preview').click(function() {
+    // load preview state variables
     show_slide(4);
   });
 
-  function show_slide(num) {
+//  function show_slide(num) {
+//    $('#slide1').hide();
+//    $('#slide2').hide();
+//    $('#slide3').hide();
+//    $('#slide4').hide();
+//    $('#slide' + num).show();
+//  }
+
+  load_slide1();
+})(window, document);
+
+
+/////////////////////////////////////////////////////////
+/*######## Next handlers for design experiment ########*/
+function show_slide(num) {
     $('#slide1').hide();
     $('#slide2').hide();
     $('#slide3').hide();
@@ -25,7 +43,44 @@
     $('#slide' + num).show();
   }
 
-})(window, document);
+function load_slide1(){
+    // TO DO: Slide1 validations
+    show_slide(1);
+}
+
+function load_slide2(){
+    // TO DO: Slide1 validations
+    show_slide(2);
+}
+
+function load_slide3(){
+    // TO DO: Slide2 validations
+    update_protocols_view();
+    show_slide(3);
+}
+
+function load_slide4(){
+    // TO DO: all validations
+
+      var experiment = {
+      'label': $('#exp-label').val(),
+      'title': $('#exp-title').val(),
+      'description': $('#exp-title').val(),
+      'start': $('#exp-end-date').val(),
+      'end': $('#exp-end-date').val(),
+      'screen-events': '',
+      'protocols':{
+      },
+    };
+
+    // Show data for review
+    $('#review-label').val(experiment.label);
+    $('#review-title').val(experiment.title);
+    $('#review-description').val(experiment.description);
+    $('#review-start-date').val(experiment.start);
+    $('#review-end-date').val(experiment.end);
+    show_slide(4);
+}
 
 
 /////////////////////////////////////////////////////////
@@ -33,9 +88,22 @@
 function create_protocol_handler() {
 // TO DO: Handle create protocol by adding to local storage
     $('#add-protocol-modal').modal('hide');
-    alert("Protocol saved")
 
+    if (typeof(Storage) !== "undefined") {
+        // Code for localStorage/sessionStorage.
+        // Store
+        localStorage.setItem("title", "Smith");
+        // Retrieve
+        var local = localStorage.getItem("title");
+        alert("Saved to storage " + local);
+    } else {
+        // Sorry! No Web Storage support..
+        var msg = "Your browser does not support local storage. Please update your browser or try a different browser."
+        alert(msg);
+    }
 }
+
+
 
 /////////////////////////////////////////////////////////
 /*######## Functions to display protocols table ########*/

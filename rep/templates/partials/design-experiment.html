@@ -4,14 +4,15 @@
   </h3>
 </div>
 
+<!--
 <table class="table borderless slide-table">
   <tr>
     <th>
-      <button type="button" id="step1-basic" class="btn btn-lg btn-block">1. Basic Info</button>
+      <button type="button" id="step1-basic" onclick="load_slide1()" class="btn btn-lg btn-block">1. Basic Info</button>
     </th>
 
     <th>
-      <button type="button" id="step2-data" class="btn btn-lg btn-block">2. Data Streams</button>
+      <button type="button" id="step2-data" onclick="load_slide2()" class="btn btn-lg btn-block">2. Data Streams</button>
     </th>
 
     <th>
@@ -21,50 +22,51 @@
 
   <tr>
     <th>
-      <!-- Dummy column to place approve button in the middle -->
+       Dummy column to place approve button in the middle
     </th>
 
     <th>
-      <button type="button" id="step4-approve" class="btn btn-lg btn-block">4. Preview & Approve</button>
+      <button type="button" id="step4-preview" class="btn btn-lg btn-block">4. Review & Launch</button>
     </th>
   </tr>
 
 </table>
+-->
 
 <div class="page-header"></div>
 
 <!--##################### slide1 #####################-->
 <div id="slide1" class="noshow">
-  <h2>Basic Info</h2>
+  <h3>Basic Info</h3>
   <br>
   <div class="form-group row">
     <label class="col-xs-2 col-form-label">Experiment Label</label>
-    <div class="col-xs-4">
-      <input class="form-control" type="text" id="researcher-exp-label" placeholder="visible to only you"></input>
+    <div class="col-xs-8">
+      <input class="form-control" type="text" id="exp-label" placeholder="visible to only you"></input>
     </div>
   </div>
 
   <div class="form-group row">
     <label class="col-xs-2 col-form-label">Experiment Title</label>
-    <div class="col-xs-4">
+    <div class="col-xs-8">
       <input
         class="form-control"
         type="text"
-        id="participant-exp-label"
-        placeholder="experiment title will be visible to participants"></input>
+        id="exp-title"
+        placeholder="experiment title will be visible to participants"/>
     </div>
   </div>
 
   <div class="form-group row">
     <label class="col-xs-2 col-form-label">Experiment Description</label>
-    <div class="col-xs-4">
+    <div class="col-xs-8">
       <input class="form-control" type="text" id="" placeholder="brief summary visible to participants"></input>
     </div>
   </div>
 
     <div class="form-group row">
     <label class="col-xs-2 col-form-label">Start Date</label>
-    <div class="col-xs-4">
+    <div class="col-xs-8">
       <input
         class="form-control"
         id="exp-start-date"
@@ -78,7 +80,7 @@
 
   <div class="form-group row">
     <label class="col-xs-2 col-form-label">End Date</label>
-    <div class="col-xs-4">
+    <div class="col-xs-8">
       <input
         class="form-control"
         id="exp-end-date"
@@ -89,12 +91,24 @@
         value="{{ experiment_end }}"/>
     </div>
   </div>
+  <br/  >
+  <div class="text-center">
+    <button type="button"
+          class="btn btn-primary"
+          onclick="load_slide2()">
+      <span> &nbsp &nbsp Next </span>
+      <span class="glyphicon glyphicon-arrow-right"></span>
+      <span> &nbsp &nbsp </span>
+    </button>
+  </div>
+
+  <br/>
 </div>
 
 <!--##################### slide2 #####################-->
 <div id="slide2" class="noshow">
 
-  <h2>Data Streams</h2>
+  <h3>Data Streams</h3>
   <br>
   <div class="form-group row">
     <label class="col-xs-2 col-form-label">Screen events</label>
@@ -110,11 +124,23 @@
     </div>
   </div>
 
+  <br/>
+
+  <div class="text-center">
+    <button type="button"
+          class="btn btn-primary"
+          onclick="load_slide3()">
+      <span> &nbsp &nbsp Next </span>
+      <span class="glyphicon glyphicon-arrow-right"></span>
+      <span> &nbsp &nbsp </span>
+    </button>
+  </div>
+  <br/>
 </div>
 
 <!--##################### slide3 #####################-->
 <div id="slide3" class="noshow">
-  <h2>Protocols</h2>
+  <h3>Protocols</h3>
   <br>
 
   <!--
@@ -150,21 +176,116 @@
     <br/>
   </div>
 
+  <div class="text-center">
+    <button type="button"
+          class="btn btn-primary"
+          onclick="load_slide4()">
+      <span> &nbsp &nbsp Next </span>
+      <span class="glyphicon glyphicon-arrow-right"></span>
+      <span> &nbsp &nbsp </span>
+    </button>
+  </div>
+  <br/>
 </div>
 
 
 <!--##################### slide4 #####################-->
 <div id="slide4" class="noshow">
-  <h3>Approve</h3>
+  <h3>Review & Launch</h3>
+  <div>
+    Review experiment settings before you approve and launch it.
+  </div>
+  <hr class="style5">
   <br>
-  <button type="button"
+
+  <!--------------------------- Section 1 --------------------------->
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Label</label>
+    <div class="col-xs-8">
+      <input type="text" id="review-label" class="form-control classname" value="Demo" readonly />
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Title</label>
+    <div class="col-xs-8">
+      <input type="text" id="review-title" class="form-control classname" value="Demo" readonly />
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Description</label>
+    <div class="col-xs-8">
+      <input type="text" id="review-description" class="form-control classname" value="Demo" readonly />
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Start Date</label>
+    <div class="col-xs-8">
+      <input type="text" id="review-start-date" class="form-control classname" value="Demo" readonly />
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">End Date</label>
+    <div class="col-xs-8">
+      <input type="text" id="review-end-date" class="form-control classname" value="Demo" readonly />
+    </div>
+  </div>
+
+  <div class="center-text">
+    <button type="button" id="edit-step1" onclick="load_slide1()" class="btn">&nbsp Edit &nbsp </button>
+  </div>
+  <hr class="style5">
+
+  <!--------------------------- Section 2 --------------------------->
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Screen events</label>
+    <div class="col-xs-8">
+      <input type="text" class="form-control classname" value="Demo" readonly />
+    </div>
+  </div>
+
+  <div class="center-text">
+    <button type="button" id="edit-step2" onclick="load_slide2()" class="btn">&nbsp Edit &nbsp </button>
+  </div>
+  <hr class="style5">
+
+  <!--------------------------- Section 3 --------------------------->
+  <div class="form-group row">
+    <label class="col-xs-2 col-form-label">Protocols</label>
+    <div class="col-xs-8">
+      <input type="text" class="form-control classname" value="Demo" readonly />
+    </div>
+  </div>
+
+  <div class="center-text">
+    <button type="button" id="edit-step3" onclick="load_slide3()" class="btn">&nbsp Edit &nbsp </button>
+  </div>
+  <hr class="style5">
+
+   <!--------------------------- Submit --------------------------->
+  <div class="text-center">
+    <button type="button"
           class="btn btn-primary"
           onclick="window.location.href='{{ url_for('experiments') }}';">
-    <span class="glyphicon glyphicon-check"></span>
-    Approve & Launch
-  </button>
+      <span class="glyphicon glyphicon-ok"></span>
+      Create experiment
+    </button>
+    <!--
+    <span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </span>
+    <button type="button"
+          class="btn btn-danger"
+          onclick="window.location.href='{{ url_for('experiments') }}';">
+      <span class="glyphicon glyphicon-remove"></span>
+      Cancel experiment
+    </button>
+    -->
+  </div>
   <br>
-  Review experiment settings before you approve and launch it.
+
 </div>
 
 
@@ -231,7 +352,7 @@
                   type="text"
                   id="protocol-start-date"
                   class="form-control"
-                  placeholder="start date"
+                  placeholder="yyyy-mm-dd"
                   data-date-start-date="+1d"
                   data-date-today-highlight=true
                   data-date-format='yyyy-mm-dd'>
@@ -241,8 +362,8 @@
                   type="text"
                   id="protocol-end-date"
                   class="form-control"
-                  placeholder="end date"
-                  data-date-start-date="+1d"
+                  placeholder="yyyy-mm-dd"
+                  data-date-start-date="+2d"
                   data-date-today-highlight=true
                   data-date-format='yyyy-mm-dd'>
               </div>
