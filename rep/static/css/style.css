@@ -9,6 +9,14 @@
     text-align: center;
 }
 
+.color-red {
+    color: #F10606;
+}
+
+.hide{
+    display: none;
+}
+
 hr.style1{
 	border-top: 1px solid #8c8b8b;
 }
