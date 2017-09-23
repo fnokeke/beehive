@@ -4,21 +4,21 @@
   $('#exp-end-date').datepicker('setDate', new Date());
 
   $('#step1-basic').click(function() {
-    show_slide(1);
+    //show_slide(1);
   });
 
   $('#step2-data').click(function() {
-    show_slide(2);
+    //show_slide(2);
   });
 
   $('#step3-protocols').click(function() {
     update_protocols_view();
-    show_slide(3);
+    //show_slide(3);
   });
 
   $('#step4-preview').click(function() {
     // load preview state variables
-    show_slide(4);
+    //show_slide(4);
   });
 
 //  function show_slide(num) {
@@ -42,6 +42,7 @@ function show_slide(num) {
     $('#slide2').hide();
     $('#slide3').hide();
     $('#slide4').hide();
+    $('#slide5').hide();
     $('#slide' + num).show();
   }
 
@@ -63,6 +64,9 @@ function load_slide3(){
 
 function load_slide4(){
     // TO DO: all validations
+
+      //clear errors
+      $('#review-experiment-error').html('');
 
       var experiment = {
       'label': $('#exp-label').val(),
@@ -154,6 +158,85 @@ function load_slide4(){
 
 
 //////////////////////////////////////////////////////////
+/*######## Function to create in experiment in database ########*/
+//////////////////////////////////////////////////////////
+
+function create_experiment_handler(){
+    // Clean up data and call server api
+    console.log("Creating experiment");
+    var response_field = '#review-experiment-error';
+
+    var label = $('#exp-label').val();
+    var title = $('#exp-title').val();
+    var description = $('#exp-description').val();
+    var start_date =  $('#exp-start-date').val();
+    var end_date = $('#exp-end-date').val();
+    var screen_events = $('#exp-screen-events').val();
+    var protocols = localStorage.getItem("protocols") ;
+
+    // Perform data validation
+    start_date = '{0}T00:00:00-05:00'.format(start_date);
+    start_date = new Date(start_date);
+
+    end_date = '{0}T00:00:00-05:00'.format(end_date);
+    end_date = new Date(end_date);
+
+    if (start_date.getTime() > end_date.getTime()) {
+      show_error_msg(response_field, 'Start date must come before end date.');
+      return;
+    }
+
+    if(protocols){
+        protocols = JSON.parse(protocols);
+        console.log('Adding protocols: ' + protocols);
+    }else{
+        protocols = {};
+    }
+
+    url = '/add/experiment/v2';
+    var data = {
+      'label': label,
+      'title': title,
+      'description': description,
+      'start_date': start_date.toJSON(),
+      'end_date': end_date.toJSON(),
+      'screen_events': screen_events,
+      'protocols':protocols,
+    };
+
+    // Hide button on click to avoid multiple requests
+    $('#create_experiment_btn').hide();
+
+    $.post(url, data).done(function(resp) {
+      // show_success_msg(response_field, '<br/>Experiment successfully updated. Reloading experiment...');
+      console.log("Submission success");
+
+      var msg = '<div class="text-center text-success"> <h4> Data Submitted  Successfully </h4></div>';
+      $('#review-experiment-success').html(msg);
+      $('#create_experiment_btn').hide();
+      //$('#success-modal').modal('show');
+      show_slide(5);
+
+      setTimeout(function() {
+        window.location.href = window.location.origin;
+      }, 1500);
+
+    }).fail(function(response) {
+        $('#create_experiment_btn').show();
+        response_field = '#review-experiment-error';
+        console.log(response);
+        show_error_msg(response_field, response.responseText);
+    });
+}
+
+//
+//function on_success_handler(){
+//    console.log("Submission on_success_handler");
+//    window.location.href = window.location.origin;
+//}
+
+
+//////////////////////////////////////////////////////////
 /*######## Functions to handle add new protocol ########*/
 //////////////////////////////////////////////////////////
 /*######## Function to clean local storage variables ########*/
@@ -171,8 +254,6 @@ function clean_localStorage(){
         alert(msg);
    }
 }
-
-
 
 /*######## Function to delete protocol ########*/
 function delete_protocol_handler(id) {

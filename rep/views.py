@@ -4,7 +4,7 @@ Handle all app views
 
 from flask import flash, redirect, url_for, session, render_template, request
 from flask_login import login_user, logout_user, current_user, login_required
-
+from flask import Response
 from oauth2client.client import OAuth2WebServerFlow
 
 from apiclient import discovery
@@ -14,7 +14,7 @@ import naf_quotes
 import secret_keys
 
 from rep import app, login_manager
-from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkPrelimRecruit
+from rep.models import Experiment, Experiment_v2, Intervention, MobileUser, Mturk, MturkPrelimRecruit
 from rep.models import MturkExclusive, NafEnroll, NafStats, WebUser, ImageTextUpload
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import NotifClickedStats, RescuetimeConfig, ScreenUnlockConfig
@@ -78,7 +78,7 @@ def experiments():
     ctx = {'users': WebUser.query.all(),
            'mobile_users': MobileUser.query.all(),
            'mturk_users': Mturk.query.all(),
-           'experiments': Experiment.query.all(),
+           'experiments': Experiment_v2.query.all(),
            'interventions': Intervention.query.all()}
     return render_template('researcher_experiments.html', **ctx)
 
@@ -355,9 +355,29 @@ def add_experiment():
         'reminder': request.form.get('reminder', False),
         'actuators': request.form.get('actuators', False)
     }
-
     _, response, __ = Experiment.add_experiment(experiment)
     return response
+
+# Endpoint to add new experiment to the database v2
+@app.route('/add/experiment/v2', methods=['POST'])
+def add_experiment_v2():
+    experiment = {
+        'label': request.form.get('label'),
+        'title': request.form.get('title'),
+        'description': request.form.get('description'),
+        'start_date': request.form.get('start_date'),
+        'end_date': request.form.get('end_date', False),
+        'screen_events': request.form.get('text', False),
+    }
+
+    protocols = request.form.get('protocols')
+    print "Adding experiment to database.."
+    #_, response, __ = Experiment_v2.add_experiment(experiment, protocols)
+    status, response, _ = Experiment_v2.add_experiment(experiment, protocols)
+    if(status == 200):
+        return response
+    else:
+        return Response(response, status=status, mimetype='application/json')
 
 
 # New experiment create view
@@ -512,6 +532,17 @@ def fetch_experiments():
     results = []
 
     for exp in Experiment.query.all():
+        exp_json = json.loads(str(exp))
+        results.append(exp_json)
+
+    return json.dumps(results)
+
+# Fetch experiments from v2 table
+@app.route('/fetch/experiments/v2', methods=['GET'])
+def fetch_experiments_v2():
+    results = []
+
+    for exp in Experiment_v2.query.all():
         exp_json = json.loads(str(exp))
         results.append(exp_json)
 

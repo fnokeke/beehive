@@ -72,10 +72,13 @@ var experiment = (function() {
       response_field;
     response_field = '#experiment-view-status';
 
-    $.get('/fetch/experiments', function(results) {
+    var url = '/fetch/experiments';
+    var url_v2 =  '/fetch/experiments/v2';
+    $.get(url_v2, function(results) {
       var experiments = JSON.parse(results);
       var view = create_experiment_view(experiments);
-      $('#experiment-list-view').html(view);
+      var view_v2 = create_experiment_view_v2(experiments);
+      $('#experiment-list-view').html(view_v2);
     }).fail(function(error) {
       show_error_msg(response_field, 'Could not load experiment view.');
       console.warn(error);
@@ -100,6 +103,35 @@ var experiment = (function() {
         '<td class="center-text">' + exp.code + '</td>' +
         '<td class="center-text">' + formatDate(exp.start) + '</td>' +
         '<td class="center-text">' + formatDate(exp.end) + '</td>' +
+        '</tr>';
+
+      view += row;
+    }
+
+    view += '</tbody></table>';
+    return view;
+  }
+
+
+  // Function to populate the experiments table v2
+  function create_experiment_view_v2(experiments) {
+    view = '<table id="exp-list-table" class="table table-striped table-bordered"><tr>' +
+      '<th class="center-text"> Title </th>' +
+      '<th class="center-text"> Code </th>'  +
+      '<th class="center-text"> Start Date</th>'  +
+      '<th class="center-text"> End Date</th>'  +
+      '</tr><tbody>';
+
+    // Add each experiment details to the table
+    for (var i = experiments.length - 1; i >= 0; i--) {
+      exp = experiments[i];
+
+      row = '<tr>' +
+        //'<td><button id={1} class="btn btn-link">{0}</button></td>'.format(exp.title, exp.code) +
+        '<td class="">' + exp.title + '</td>' +
+        '<td class="center-text">' + exp.code + '</td>' +
+        '<td class="center-text">' + formatDate(exp.start_date) + '</td>' +
+        '<td class="center-text">' + formatDate(exp.end_date) + '</td>' +
         '</tr>';
 
       view += row;

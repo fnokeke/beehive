@@ -74,7 +74,10 @@
   <div class="form-group row">
     <label class="col-xs-2 col-form-label">Experiment Description</label>
     <div class="col-xs-8">
-      <input class="form-control" type="text" id="" placeholder="brief summary visible to participants"></input>
+      <input class="form-control"
+             type="text"
+             id="exp-description"
+             placeholder="brief summary visible to participants">
     </div>
   </div>
 
@@ -88,7 +91,7 @@
         data-date-start-date="{{ today_date }}"
         data-date-format="yyyy-mm-dd"
         data-date-today-highlight="true"
-        value="{{experiment_start }}"/>
+        value="{{ today_date }}"/>
     </div>
   </div>
 
@@ -102,7 +105,7 @@
         data-date-start-date="{{ today_date }}"
         data-date-format="yyyy-mm-dd"
         data-date-today-highlight="true"
-        value="{{ experiment_end }}"/>
+        value="{{ today_date }}"/>
     </div>
   </div>
 
@@ -326,7 +329,8 @@
   <div class="text-center">
     <button type="button"
           class="btn btn-primary btn-lg"
-          onclick="window.location.href='{{ url_for('experiments') }}';">
+            id="create_experiment_btn"
+          onclick="create_experiment_handler()">
       <span class="glyphicon glyphicon-ok"></span>
       Launch experiment
     </button>
@@ -342,8 +346,22 @@
   </div>
 
   <br>
+
+  <div class="text-center" id="review-experiment-view">
+    <span id="review-experiment-success"></span>
+    <span id="review-experiment-error"></span>
+  </div>
+
 </div>
 
+
+<!--##################### slide5 #####################-->
+<div id="slide5" class="noshow">
+  <br/>
+  <br/>
+<div class="text-center text-success"> <h4> Data Submitted Successfully </h4></div>
+  <br/>
+</div>
 
 <div>
   <br/>
@@ -361,6 +379,7 @@
 
     <div class="modal-dialog" role="document">
       <div class="modal-content">
+
         <div class="modal-header">
           <h4 class="modal-title">Add Protocol
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -370,7 +389,6 @@
         </div>
 
         <div class="modal-body">
-
           <div class="form-group row">
             <label class="col-xs-2 col-form-label">Name</label>
             <div class="col-xs-10">
@@ -409,9 +427,10 @@
                   id="protocol-start-date"
                   class="form-control"
                   placeholder="yyyy-mm-dd"
-                  data-date-start-date="+1d"
+                  data-date-start-date="{{ today_date }}"
                   data-date-today-highlight=true
-                  data-date-format='yyyy-mm-dd'>
+                  data-date-format='yyyy-mm-dd'
+                  value="{{ today_date }}">
 
                 <div class="input-group-addon">to</div>
                 <input
@@ -419,9 +438,10 @@
                   id="protocol-end-date"
                   class="form-control"
                   placeholder="yyyy-mm-dd"
-                  data-date-start-date="+2d"
+                  data-date-start-date="{{ today_date }}"
                   data-date-today-highlight=true
-                  data-date-format='yyyy-mm-dd'>
+                  data-date-format='yyyy-mm-dd'
+                  value="{{ today_date }}">
               </div>
             </div>
           </div>
@@ -430,9 +450,9 @@
             <label class="col-xs-2 col-form-label">Time</label>
             <div class="col-xs-10">
                <div class="input-group input-timerange">
-                  <input  class="form-control" type="time" name="start-time" value="" id="protocol-start-time">
+                  <input  class="form-control" type="time" name="start-time" value="12:00:00" id="protocol-start-time">
                    <div class="input-group-addon">to</div>
-                  <input  class="form-control" type="time" name="end-time"  value="" id="protocol-end-time">
+                  <input  class="form-control" type="time" name="end-time"  value="15:00:00" id="protocol-end-time">
                </div>
             </div>
           </div>
@@ -450,3 +470,44 @@
   </div>
 
 </div>
+
+
+
+<!--##################### Submission successful modal  #####################-->
+<!--
+ <div
+    class="modal fade"
+    tabindex="-1"
+    id="success-modal"
+    role="dialog"
+    aria-labelledby="myModalLabel">
+
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h4 class="modal-title">Success
+            <button type="button" class="close"  onclick="on_success_handler()" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </h4>
+        </div>
+
+        <div class="modal-body">
+          <div class="text-center text-success">
+            <br>
+             <h4 class=""> Woo hoo! New experiment created successfully. </h4>
+            <br>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn button btn-primary" id="success-modal-btn" onclick="on_success_handler()">
+            &nbsp;&nbsp; close  &nbsp;&nbsp;
+          </button>
+        </div>
+
+      </div>
+    </div>
+ </div>
+-->
