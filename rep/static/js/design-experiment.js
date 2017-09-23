@@ -104,8 +104,6 @@ function load_slide4(){
    }
 
     $('#review-screen-events').val(experiment.screenEvents);
-    console.log("experiment.screenEvents : ", $('#exp-screen-events').is(':checked') );
-    console.log("experiment.screenEvents : ", $('#exp-screen-events').val() );
 
     $('#review-screen-event-btn').hide();
     if(experiment.screenEvents === "on"){
@@ -118,7 +116,6 @@ function load_slide4(){
 
     if(protocols && (JSON.parse(protocols).length > 0)){
         protocols = JSON.parse(protocols);
-        console.log("Protocols length: " , protocols.length);
         var view ;
         view = '<table id="protocol-list-table" class="table table-striped table-bordered"><tr>' +
             '<th class="center-text"> Name </th>' +
@@ -163,7 +160,6 @@ function load_slide4(){
 
 function create_experiment_handler(){
     // Clean up data and call server api
-    console.log("Creating experiment");
     var response_field = '#review-experiment-error';
 
     var label = $('#exp-label').val();
@@ -188,7 +184,6 @@ function create_experiment_handler(){
 
     if(protocols){
         protocols = JSON.parse(protocols);
-        console.log('Adding protocols: ' + protocols);
     }else{
         protocols = {};
     }
@@ -208,9 +203,6 @@ function create_experiment_handler(){
     $('#create_experiment_btn').hide();
 
     $.post(url, data).done(function(resp) {
-      // show_success_msg(response_field, '<br/>Experiment successfully updated. Reloading experiment...');
-      console.log("Submission success");
-
       var msg = '<div class="text-center text-success"> <h4> Data Submitted  Successfully </h4></div>';
       $('#review-experiment-success').html(msg);
       $('#create_experiment_btn').hide();
@@ -224,7 +216,6 @@ function create_experiment_handler(){
     }).fail(function(response) {
         $('#create_experiment_btn').show();
         response_field = '#review-experiment-error';
-        console.log(response);
         show_error_msg(response_field, response.responseText);
     });
 }
@@ -243,10 +234,7 @@ function create_experiment_handler(){
 function clean_localStorage(){
    if (typeof(Storage) !== "undefined") {
         if(localStorage.getItem("protocols")){
-            console.log('protocols[] with length'+ localStorage.getItem("protocols").length +'found.');
             localStorage.removeItem("protocols");
-        }else{
-            console.log('protocols[] not found.');
         }
    } else {
         // Sorry! No Web Storage support..
@@ -257,16 +245,16 @@ function clean_localStorage(){
 
 /*######## Function to delete protocol ########*/
 function delete_protocol_handler(id) {
-    console.log("deleting protocol" , id);
-
     var protocols = localStorage.getItem("protocols");
     protocols = JSON.parse(protocols);
     var result=[];
-    for (var i = protocols.length - 1; i >= 0; i--) {
+
+    for (var i = 0;  i < protocols.length; i++) {
         if(id != protocols[i].id){
            result.push( protocols[i] );
         }
     }
+
     result = JSON.stringify(result);
     localStorage.setItem("protocols", result);
     update_protocols_view();
@@ -281,11 +269,9 @@ function create_protocol_handler() {
         var protocols = [];
         var id = 0;
         if(localStorage.getItem("protocols")){
-            console.log('protocols[] with length'+ localStorage.getItem("protocols").length +'  found.');
             protocols = localStorage.getItem("protocols");
             // Convert JSON to object
             protocols = JSON.parse(protocols);
-            console.log('protocols[] array found of length: ' + protocols.length );
             if(protocols.length>0){
                 var max=0;
                     for (var i = protocols.length - 1; i >= 0; i--) {
@@ -295,12 +281,6 @@ function create_protocol_handler() {
                     }
                 id = max + 1;
             }
-
-            console.log( "Next id; " , id );
-            console.log( "All elemenst in protocols; " , protocols );
-
-        }else{
-            console.log('protocols[] not found.');
         }
 
         // Create protocol objects
@@ -382,11 +362,7 @@ function create_protocol_handler() {
 
     if (protocols && (JSON.parse(protocols).length > 0)) {
         protocols = JSON.parse(protocols);
-        console.log(' Parse protocols length :' , protocols.length);
-        console.log(' Parse protocols object :' , protocols);
-
         view = '<table id="protocol-list-table" class="table table-striped table-bordered"><tr>' +
-            '<th class="center-text"> Id </th>' +
             '<th class="center-text"> Name </th>' +
             '<th class="center-text"> Frequency </th>'  +
             '<th class="center-text"> Method </th>'  +
@@ -401,7 +377,6 @@ function create_protocol_handler() {
         for (var i = protocols.length - 1; i >= 0; i--) {
             protocol = protocols[i];
             row = '<tr>' +
-                '<td class="center-text">' + protocol.id + '</td>' +
                 '<td class="center-text">' + protocol.name + '</td>' +
                 '<td class="center-text">' + protocol.frequency + '</td>' +
                 '<td class="center-text">' + protocol.method + '</td>' +
