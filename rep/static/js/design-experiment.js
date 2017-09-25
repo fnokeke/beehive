@@ -4,20 +4,36 @@
   $('#exp-end-date').datepicker('setDate', new Date());
 
   $('#step1-basic').click(function() {
+    $("#step2-data").removeClass("btn-info");
+    $("#step3-protocols").removeClass("btn-info");
+    $("#step4-preview").removeClass("btn-info");
+    $("#step1-basic").addClass("btn-info");
      show_slide(1);
   });
 
   $('#step2-data').click(function() {
+     $("#step1-basic").removeClass("btn-info");
+     $("#step3-protocols").removeClass("btn-info");
+     $("#step4-preview").removeClass("btn-info");
+     $("#step2-data").addClass("btn-info");
      show_slide(2);
   });
 
   $('#step3-protocols').click(function() {
+     $("#step1-basic").removeClass("btn-info");
+     $("#step2-data").removeClass("btn-info");
+     $("#step4-preview").removeClass("btn-info");
+     $("#step3-protocols").addClass("btn-info");
     update_protocols_view();
      show_slide(3);
   });
 
   $('#step4-preview').click(function() {
     // load preview state variables
+     $("#step1-basic").removeClass("btn-info");
+     $("#step2-data").removeClass("btn-info");
+     $("#step3-protocols").removeClass("btn-info");
+     $("#step4-preview").addClass("btn-info");
      show_slide(4);
   });
 
