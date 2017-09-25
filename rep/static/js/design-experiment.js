@@ -4,21 +4,21 @@
   $('#exp-end-date').datepicker('setDate', new Date());
 
   $('#step1-basic').click(function() {
-    //show_slide(1);
+     show_slide(1);
   });
 
   $('#step2-data').click(function() {
-    //show_slide(2);
+     show_slide(2);
   });
 
   $('#step3-protocols').click(function() {
     update_protocols_view();
-    //show_slide(3);
+     show_slide(3);
   });
 
   $('#step4-preview').click(function() {
     // load preview state variables
-    //show_slide(4);
+     show_slide(4);
   });
 
 //  function show_slide(num) {
