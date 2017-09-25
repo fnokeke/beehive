@@ -4,36 +4,24 @@
   $('#exp-end-date').datepicker('setDate', new Date());
 
   $('#step1-basic').click(function() {
-    $("#step2-data").removeClass("btn-info");
-    $("#step3-protocols").removeClass("btn-info");
-    $("#step4-preview").removeClass("btn-info");
-    $("#step1-basic").addClass("btn-info");
+     focus_slide1();
      show_slide(1);
   });
 
   $('#step2-data').click(function() {
-     $("#step1-basic").removeClass("btn-info");
-     $("#step3-protocols").removeClass("btn-info");
-     $("#step4-preview").removeClass("btn-info");
-     $("#step2-data").addClass("btn-info");
+     focus_slide2();
      show_slide(2);
   });
 
   $('#step3-protocols').click(function() {
-     $("#step1-basic").removeClass("btn-info");
-     $("#step2-data").removeClass("btn-info");
-     $("#step4-preview").removeClass("btn-info");
-     $("#step3-protocols").addClass("btn-info");
-    update_protocols_view();
+     focus_slide3();
+     update_protocols_view();
      show_slide(3);
   });
 
   $('#step4-preview').click(function() {
     // load preview state variables
-     $("#step1-basic").removeClass("btn-info");
-     $("#step2-data").removeClass("btn-info");
-     $("#step3-protocols").removeClass("btn-info");
-     $("#step4-preview").addClass("btn-info");
+     focus_slide4();
      show_slide(4);
   });
 
@@ -51,6 +39,35 @@
 })(window, document);
 
 
+function focus_slide1(){
+    $("#step2-data").removeClass("btn-info");
+    $("#step3-protocols").removeClass("btn-info");
+    $("#step4-preview").removeClass("btn-info");
+    $("#step1-basic").addClass("btn-info");
+}
+
+function focus_slide2(){
+    $("#step1-basic").removeClass("btn-info");
+    $("#step3-protocols").removeClass("btn-info");
+    $("#step4-preview").removeClass("btn-info");
+    $("#step2-data").addClass("btn-info");
+}
+
+function focus_slide3(){
+    $("#step1-basic").removeClass("btn-info");
+    $("#step2-data").removeClass("btn-info");
+    $("#step4-preview").removeClass("btn-info");
+    $("#step3-protocols").addClass("btn-info");
+}
+
+function focus_slide4(){
+    $("#step1-basic").removeClass("btn-info");
+    $("#step2-data").removeClass("btn-info");
+    $("#step3-protocols").removeClass("btn-info");
+    $("#step4-preview").addClass("btn-info");
+}
+
+
 /////////////////////////////////////////////////////////
 /*######## Next handlers for design experiment ########*/
 function show_slide(num) {
@@ -64,22 +81,26 @@ function show_slide(num) {
 
 function load_slide1(){
     // TO DO: Slide1 validations
+    focus_slide1();
     show_slide(1);
 }
 
 function load_slide2(){
     // TO DO: Slide1 validations
+    focus_slide2();
     show_slide(2);
 }
 
 function load_slide3(){
     // TO DO: Slide2 validations
+    focus_slide3();
     update_protocols_view();
     show_slide(3);
 }
 
 function load_slide4(){
     // TO DO: all validations
+    focus_slide4();
 
       //clear errors
       $('#review-experiment-error').html('');
