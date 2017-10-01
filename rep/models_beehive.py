@@ -17,6 +17,7 @@ class Experiment_v2(db.Model):
     start_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     end_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     screen_events = db.Column(db.Boolean, default=False)
+    app_usage = db.Column(db.Boolean, default=False)
     protocols = db.relationship('Protocol', backref='experiment', lazy='select')
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
@@ -28,6 +29,7 @@ class Experiment_v2(db.Model):
         self.start_date = info['start_date']
         self.end_date = info['end_date']
         self.screen_events = info.get('screen_events')
+        self.app_usage = info.get('app_usage')
 
     def __repr__(self):
         result = {
@@ -38,6 +40,7 @@ class Experiment_v2(db.Model):
             'start_date': str(self.start_date),
             'end_date': str(self.end_date),
             'screen_events': self.screen_events,
+            'app_usage': self.app_usage,
             'protocols': to_json(self.protocols),
             'created_date': str(self.created_date)
         }

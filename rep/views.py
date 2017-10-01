@@ -367,7 +367,8 @@ def add_experiment_v2():
         'description': request.form.get('description'),
         'start_date': request.form.get('start_date'),
         'end_date': request.form.get('end_date', False),
-        'screen_events': request.form.get('text', False),
+        'screen_events': request.form.get('screen_events', False),
+        'app_usage': request.form.get('app_usage', False),
     }
 
     protocols = request.form.get('protocols')

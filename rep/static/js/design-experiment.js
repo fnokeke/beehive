@@ -108,10 +108,11 @@ function load_slide4(){
       var experiment = {
       'label': $('#exp-label').val(),
       'title': $('#exp-title').val(),
-      'description': $('#exp-title').val(),
+      'description': $('#exp-description').val(),
       'start': $('#exp-end-date').val(),
       'end': $('#exp-end-date').val(),
       'screenEvents': $('#exp-screen-events').val(),
+      'appUsage': $('#exp-app-usage').val(),
       'protocols':{
       },
     };
@@ -126,12 +127,19 @@ function load_slide4(){
 
     // Review data streams
     var count = 0;
-     $('#review-screen-events-btn').hide();
+    $('#review-screen-events-btn').hide();
+    $('#review-app-usage-btn').hide();
+
     experiment.screenEvents = $('#exp-screen-events').is(':checked');
     if(experiment.screenEvents){
         count  = count+ 1;
         $('#review-screen-events-btn').show();
-        $('#review-screen-events-text').val('ON');
+    }
+
+    experiment.appUsage = $('#exp-app-usage').is(':checked');
+     if(experiment.appUsage){
+        count  = count+ 1;
+        $('#review-app-usage-btn').show();
     }
 
     $('#review-data-streams-msg').html('');
@@ -204,8 +212,9 @@ function create_experiment_handler(){
     var description = $('#exp-description').val();
     var start_date =  $('#exp-start-date').val();
     var end_date = $('#exp-end-date').val();
-    var screen_events = $('#exp-screen-events').val();
-    var protocols = localStorage.getItem("protocols") ;
+    var screen_events = $('#exp-screen-events').is(':checked');
+    var app_usage = $('#exp-app-usage').is(':checked');
+    var protocols = localStorage.getItem("protocols");
 
     // Perform data validation
     start_date = '{0}T00:00:00-05:00'.format(start_date);
@@ -233,6 +242,7 @@ function create_experiment_handler(){
       'start_date': start_date.toJSON(),
       'end_date': end_date.toJSON(),
       'screen_events': screen_events,
+      'app_usage': app_usage,
       'protocols':protocols,
     };
 
@@ -243,7 +253,6 @@ function create_experiment_handler(){
       var msg = '<div class="text-center text-success"> <h4> Data Submitted  Successfully </h4></div>';
       $('#review-experiment-success').html(msg);
       $('#create_experiment_btn').hide();
-      //$('#success-modal').modal('show');
       show_slide(5);
 
       setTimeout(function() {
