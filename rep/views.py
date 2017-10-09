@@ -3,8 +3,8 @@ Handle all app views
 """
 
 from flask import flash, redirect, url_for, session, render_template, request
+from flask import abort, Response
 from flask_login import login_user, logout_user, current_user, login_required
-from flask import Response
 from oauth2client.client import OAuth2WebServerFlow
 
 from apiclient import discovery
@@ -34,6 +34,9 @@ from rep.utils import requires_basic_auth
 from rep.utils import to_json, to_datetime
 from datetime import datetime
 from db_init import db
+
+##########################################################################################################
+# app.debug = True
 
 @app.route('/googlebcabee7122e5544b.html')
 def google_domain_verification():
@@ -570,21 +573,46 @@ def fetch_experiment_by_code_v2(code):
 @app.route('/enroll', methods=['POST'])
 def participant_enroll():
     data = json.loads(request.data) if request.data else request.form.to_dict()
+    # Checkc request validity
+    if not 'email' in data:
+        abort(400, "email is required")
 
-    print data
-    mail = data['email']
-    print data['email']
-    #result = db.participant.filter(db.participant.email == data['email'])
-    print  Participant.query.filter_by(email=data['email']).first()
+    if not 'exp_code' in data:
+        abort(400, "exp_code is required")
+
+    # Check if experiment code is valid
+    if Experiment_v2.query.filter_by(code=data['exp_code']).first() == None:
+        message =  "Invalid experiment code."
+        print 'message'
+        abort(400, message)
+
+    # Add missing data
+    data['google_oauth'] = 'None'
+    data['oauth_token'] = 'None'
+
+    # Check if participant is already registered
+    # print Participant.query.filter_by(email=data['email']).first()
 
     if Participant.query.filter_by(email=data['email']).first() == None:
         print 'User doesn\'t exist.'
+        # Register new participant
     else:
         print 'User FOUND!'
+        # get participant ID
+        participant = Participant.query.filter_by(email=data['email']).first()
+        print participant.id
 
-    #print str(result)
-    result = 200
-    return json.dumps(result)
+    # Append participant ID
+    data['participant_id'] = participant.id
+
+    # Enroll the participant in experiment
+    new_enrollment = {}
+    new_enrollment['participant_id'] = participant.id
+    new_enrollment['exp_code'] = str(data['exp_code'])
+
+    status, response, _ = Enrollment.enroll(new_enrollment)
+
+    return Response(response=json.dumps(response), status=status, mimetype='application/json')
 
 
 #////////////////////////////////////

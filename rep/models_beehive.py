@@ -1,6 +1,6 @@
 from db_init import db
 from utils import to_json
-from flask import Response
+from flask import Response, abort
 
 import datetime
 import json
@@ -158,32 +158,34 @@ class Participant(db.Model):
     oauth_token = db.Column(db.String(250))
     registered_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-def __init__(self, info):
-    self.email = info.get('email')
-    self.google_oauth = info.get('google_oauth')
-    self.oauth_token = info.get('google_oauth')
+    def __init__(self, info):
+        self.email = info.get('email')
+        self.google_oauth = info.get('google_oauth')
+        self.oauth_token = info.get('oauth_token')
 
-def __repr__(self):
-    result = {
-        'id': self.id,
-        'email': self.email,
-        'google_oauth': self.google_oauth,
-        'registered_date': str(self.registered_date)
-    }
-    return json.dumps(result)
+    def __repr__(self):
+        result = {
+            'id': self.id,
+            'email': self.email,
+            'google_oauth': self.google_oauth,
+            'registered_date': str(self.registered_date)
+        }
+        return json.dumps(result)
 
 
-@staticmethod
-def register_participant(data):
-    # Check if participant already registered
-    check_participant = Participant.query.filter_by(email=data['email']).first()
-    print check_participant
-    #new_participant = Participant(data)
-    #db.session.add(new_participant)
-    #db.session.commit()
-    #check_participant = Experiment_v2.query.filter_by(oauth_token=data['oauth_token']).first()
-    return (200, 'Successfully added intervention', check_participant)
+    @staticmethod
+    def register_participant(data):
+        # Check if participant already registered
+        check_participant = Participant.query.filter_by(email=data['email']).first()
+        print check_participant
+        #new_participant = Participant(data)
+        #db.session.add(new_participant)
+        #db.session.commit()
+        #check_participant = Experiment_v2.query.filter_by(oauth_token=data['oauth_token']).first()
+        return (200, 'Successfully added intervention', check_participant)
 
+
+#############################################################################################################
 # Database model to store enrollment information
 class Enrollment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -191,3 +193,32 @@ class Enrollment(db.Model):
     exp_code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
     enrolled_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
+    def __init__(self, data):
+        self.participant_id = data.get('participant_id')
+        self.exp_code = data.get('exp_code')
+
+    def __repr__(self):
+        result = {
+            'participant_id': self.participant_id,
+            'exp_code': self.exp_code,
+            'enrolled_date': str(self.enrolled_date)
+        }
+        return json.dumps(result)
+
+
+    @staticmethod
+    def enroll(data):
+        # Check if participant already registered
+        # if Participant.query.filter_by(email=data['email']).first() == None:
+        #     abort(400, "Participant not registered")
+        new_enrollment = Enrollment(data)
+        db.session.add(new_enrollment)
+        db.session.commit()
+        result = Enrollment.query.filter_by(exp_code=data['exp_code'], participant_id=data['participant_id'])
+        if Enrollment.query.filter_by(exp_code=data['exp_code'], participant_id=data['participant_id']) is not None:
+            response_message = {'message' : 'Participant enrolled successfully'}
+            http_response_code = 200
+        else:
+            response_message = {'error': 'Participant enrollment failed'}
+            http_response_code = 400
+        return (http_response_code, response_message, result)
