@@ -570,21 +570,27 @@ def fetch_experiment_by_code_v2(code):
 
 
 # Register a participant and enroll in an experiment
+# All responses must be in JSON format to support with mobile applications
 @app.route('/enroll', methods=['POST'])
 def participant_enroll():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     # Checkc request validity
     if not 'email' in data:
-        abort(400, "email is required")
+        response_message = {'error': 'email is required'}
+        http_status = 400
+        return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
 
     if not 'exp_code' in data:
-        abort(400, "exp_code is required")
+        response_message = {'error': 'exp_code is required'}
+        http_status = 400
+        return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
 
     # Check if experiment code is valid
     if Experiment_v2.query.filter_by(code=data['exp_code']).first() == None:
-        message =  "Invalid experiment code."
-        print 'message'
-        abort(400, message)
+        response_message = {'error': 'Invalid experiment code'}
+        http_status = 400
+        return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
+
 
     # Add missing data
     data['google_oauth'] = 'None'
