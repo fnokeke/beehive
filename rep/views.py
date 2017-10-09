@@ -15,6 +15,7 @@ import secret_keys
 
 from rep import app, login_manager
 from rep.models import Experiment, Experiment_v2, Intervention, MobileUser, Mturk, MturkPrelimRecruit
+from rep.models import Participant, Enrollment
 from rep.models import MturkExclusive, NafEnroll, NafStats, WebUser, ImageTextUpload
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import NotifClickedStats, RescuetimeConfig, ScreenUnlockConfig
@@ -32,7 +33,7 @@ from gcal import Calendar, EventFactory
 from rep.utils import requires_basic_auth
 from rep.utils import to_json, to_datetime
 from datetime import datetime
-
+from db_init import db
 
 @app.route('/googlebcabee7122e5544b.html')
 def google_domain_verification():
@@ -538,6 +539,14 @@ def fetch_experiments():
 
     return json.dumps(results)
 
+
+@app.route('/fetch/experiment/<code>')
+def fetch_experiment_by_code(code):
+    experiment = Experiment.query.filter_by(code=code).first()
+    return str(experiment)
+
+
+##########################################################################################################
 # Fetch experiments from v2 table
 @app.route('/fetch/experiments/v2', methods=['GET'])
 def fetch_experiments_v2():
@@ -550,10 +559,32 @@ def fetch_experiments_v2():
     return json.dumps(results)
 
 
-@app.route('/fetch/experiment/<code>')
-def fetch_experiment_by_code(code):
+@app.route('/fetch/experiment/v2/<code>')
+def fetch_experiment_by_code_v2(code):
     experiment = Experiment.query.filter_by(code=code).first()
     return str(experiment)
+
+
+
+# Register a participant and enroll in an experiment
+@app.route('/enroll', methods=['POST'])
+def participant_enroll():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+
+    print data
+    mail = data['email']
+    print data['email']
+    #result = db.participant.filter(db.participant.email == data['email'])
+    print  Participant.query.filter_by(email=data['email']).first()
+
+    if Participant.query.filter_by(email=data['email']).first() == None:
+        print 'User doesn\'t exist.'
+    else:
+        print 'User FOUND!'
+
+    #print str(result)
+    result = 200
+    return json.dumps(result)
 
 
 #////////////////////////////////////

@@ -6,7 +6,7 @@ import datetime
 import json
 import uuid
 
-
+#############################################################################################################
 # Database model for experiments
 class Experiment_v2(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -41,7 +41,6 @@ class Experiment_v2(db.Model):
             'end_date': str(self.end_date),
             'screen_events': self.screen_events,
             'app_usage': self.app_usage,
-            'protocols': to_json(self.protocols),
             'created_date': str(self.created_date)
         }
         return json.dumps(result)
@@ -95,8 +94,8 @@ class Experiment_v2(db.Model):
         experiment = Experiment_v2.query.filter_by(code=update['code']).first()
         return experiment
 
-
-# Database model for experiments
+#############################################################################################################
+# Database model to store protocols for an experiment
 class Protocol(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     #exp_id = db.Column(db.Integer, db.ForeignKey('experiment_v2.id'))
@@ -148,4 +147,47 @@ class Protocol(db.Model):
         Protocol.query.filter_by(id=id).delete()
         db.session.commit()
         return (200, 'Successfully deleted protocol.', deleted_protocol)
+
+
+#############################################################################################################
+#Database model to store enrollment information
+class Participant(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(250))
+    google_oauth = db.Column(db.String(250))
+    oauth_token = db.Column(db.String(250))
+    registered_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+def __init__(self, info):
+    self.email = info.get('email')
+    self.google_oauth = info.get('google_oauth')
+    self.oauth_token = info.get('google_oauth')
+
+def __repr__(self):
+    result = {
+        'id': self.id,
+        'email': self.email,
+        'google_oauth': self.google_oauth,
+        'registered_date': str(self.registered_date)
+    }
+    return json.dumps(result)
+
+
+@staticmethod
+def register_participant(data):
+    # Check if participant already registered
+    check_participant = Participant.query.filter_by(email=data['email']).first()
+    print check_participant
+    #new_participant = Participant(data)
+    #db.session.add(new_participant)
+    #db.session.commit()
+    #check_participant = Experiment_v2.query.filter_by(oauth_token=data['oauth_token']).first()
+    return (200, 'Successfully added intervention', check_participant)
+
+# Database model to store enrollment information
+class Enrollment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    participant_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
+    exp_code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
+    enrolled_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
