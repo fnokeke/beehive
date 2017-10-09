@@ -211,6 +211,14 @@ class Enrollment(db.Model):
         # Check if participant already registered
         # if Participant.query.filter_by(email=data['email']).first() == None:
         #     abort(400, "Participant not registered")
+
+        # Check if already enrolled to prevent duplicate enrollment
+        result = Enrollment.query.filter_by(exp_code=data['exp_code'], participant_id=data['participant_id']).count()
+        if result > 0:
+            response_message = {'message' : 'Participant already enrolled'}
+            http_response_code = 200
+            return (http_response_code, response_message, str(result))
+
         new_enrollment = Enrollment(data)
         db.session.add(new_enrollment)
         db.session.commit()
