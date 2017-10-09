@@ -63,6 +63,8 @@ class Experiment_v2(db.Model):
         db.session.add(new_experiment)
         db.session.commit()
         new_experiment = Experiment_v2.query.filter_by(title=info['title']).first()
+
+        # To DO:  Add protocols  to protocols table
         return (200, 'Successfully added experiment', new_experiment)
         #return Response("{'Experiment successfully created'}", status=200, mimetype='application/json')
 
@@ -109,7 +111,7 @@ class Protocol(db.Model):
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, info):
-        self.code = info['code']
+        self.exp_code = info['exp_code']
         self.frequency = info['frequency']
         self.method = info['method']
         self.start_date = info['start_date']
@@ -122,7 +124,7 @@ class Protocol(db.Model):
     def __repr__(self):
         result = {
             'id': self.id,
-            'code': self.code,
+            'exp_code': self.exp_code,
             'frequency': str(self.frequency),
             'method': str(self.method),
             'start_date': str(self.start_date),
@@ -168,21 +170,36 @@ class Participant(db.Model):
             'id': self.id,
             'email': self.email,
             'google_oauth': self.google_oauth,
+            'oauth_token' : self.oauth_token,
             'registered_date': str(self.registered_date)
         }
         return json.dumps(result)
 
 
     @staticmethod
-    def register_participant(data):
+    def register(data):
         # Check if participant already registered
-        check_participant = Participant.query.filter_by(email=data['email']).first()
-        print check_participant
-        #new_participant = Participant(data)
-        #db.session.add(new_participant)
-        #db.session.commit()
-        #check_participant = Experiment_v2.query.filter_by(oauth_token=data['oauth_token']).first()
-        return (200, 'Successfully added intervention', check_participant)
+        result = Participant.query.filter_by(email=data['email']).count()
+        print 'count: ', result
+        print 'data:' , data
+
+        if result > 0:
+            response_message = {'message' : 'Participant already enrolled'}
+            http_response_code = 200
+            return (http_response_code, response_message, str(result))
+
+        new_participant = Participant(data)
+        db.session.add(new_participant)
+        db.session.commit()
+
+        result = Participant.query.filter_by(email=data['email']).count()
+        if result>0:
+            response_message = {'message': 'Participant enrolled successfully'}
+            http_response_code = 200
+        else:
+            response_message = {'error': 'Participant enrollment failed'}
+            http_response_code = 500
+        return (http_response_code, response_message, result)
 
 
 #############################################################################################################
@@ -228,5 +245,5 @@ class Enrollment(db.Model):
             http_response_code = 200
         else:
             response_message = {'error': 'Participant enrollment failed'}
-            http_response_code = 400
+            http_response_code = 500
         return (http_response_code, response_message, result)

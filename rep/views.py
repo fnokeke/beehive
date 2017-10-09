@@ -14,8 +14,8 @@ import naf_quotes
 import secret_keys
 
 from rep import app, login_manager
-from rep.models import Experiment, Experiment_v2, Intervention, MobileUser, Mturk, MturkPrelimRecruit
-from rep.models import Participant, Enrollment
+from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkPrelimRecruit
+from rep.models import Protocol, Participant, Enrollment, Experiment_v2
 from rep.models import MturkExclusive, NafEnroll, NafStats, WebUser, ImageTextUpload
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import NotifClickedStats, RescuetimeConfig, ScreenUnlockConfig
@@ -36,7 +36,7 @@ from datetime import datetime
 from db_init import db
 
 ##########################################################################################################
-# app.debug = True
+app.debug = True
 
 @app.route('/googlebcabee7122e5544b.html')
 def google_domain_verification():
@@ -549,30 +549,43 @@ def fetch_experiment_by_code(code):
     return str(experiment)
 
 
+
 ##########################################################################################################
-# Fetch experiments from v2 table
-@app.route('/fetch/experiments/v2', methods=['GET'])
-def fetch_experiments_v2():
-    results = []
+# Participant registration and enrollment APIs
+##########################################################################################################
+# All responses must be in JSON format to support with mobile applications
 
-    for exp in Experiment_v2.query.all():
-        exp_json = json.loads(str(exp))
-        results.append(exp_json)
+# Register a participant and enroll in an experiment
+@app.route('/participant/register', methods=['POST'])
+def participant_enroll():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    # Checkc request validity
+    if not 'email' in data:
+        response_message = {'error': 'email is required'}
+        http_status = 400
+        return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
 
-    return json.dumps(results)
-
-
-@app.route('/fetch/experiment/v2/<code>')
-def fetch_experiment_by_code_v2(code):
-    experiment = Experiment.query.filter_by(code=code).first()
-    return str(experiment)
-
+    # Check if participant already registered
+    if Participant.query.filter_by(email=data['email']).first() == None:
+        # Register new participant
+        # TO DO : Perform ooAuth redirection Add missing data
+        new_participant = {}
+        new_participant['email'] = data['email']
+        new_participant['google_oauth'] = 'TO DO'
+        new_participant['oauth_token'] = 'TO DO'
+        status, response, _ = Participant.register(new_participant)
+        return Response(response=json.dumps(response), status=status, mimetype='application/json')
+    else :
+        # get participant ID
+        participant = Participant.query.filter_by(email=data['email']).first()
+        response_message = {'message': 'Participant already registered'}
+        http_status = 200
+        return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
 
 
 # Register a participant and enroll in an experiment
-# All responses must be in JSON format to support with mobile applications
 @app.route('/enroll', methods=['POST'])
-def participant_enroll():
+def participant_register():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     # Checkc request validity
     if not 'email' in data:
@@ -591,14 +604,11 @@ def participant_enroll():
         http_status = 400
         return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
 
-
     # Add missing data
     data['google_oauth'] = 'None'
     data['oauth_token'] = 'None'
 
     # Check if participant is already registered
-    # print Participant.query.filter_by(email=data['email']).first()
-
     if Participant.query.filter_by(email=data['email']).first() == None:
         print 'User doesn\'t exist.'
         # Register new participant
@@ -617,8 +627,37 @@ def participant_enroll():
     new_enrollment['exp_code'] = str(data['exp_code'])
 
     status, response, _ = Enrollment.enroll(new_enrollment)
-
     return Response(response=json.dumps(response), status=status, mimetype='application/json')
+
+##########################################################################################################
+# Experiments V2 APIs
+##########################################################################################################
+# Fetch experiments from v2 table
+@app.route('/fetch/experiments/v2', methods=['GET'])
+def fetch_experiments_v2():
+    results = []
+
+    for exp in Experiment_v2.query.all():
+        exp_json = json.loads(str(exp))
+        results.append(exp_json)
+
+    return json.dumps(results)
+
+
+@app.route('/fetch/experiment/v2/<code>')
+def fetch_experiment_by_code_v2(code):
+
+    experiment = Experiment_v2.query.filter_by(code=code).first()
+    print 'Experiment: ', str(experiment)
+    protocols = Protocol.query.filter_by(exp_code=code).all()
+    print 'protocol count ', Protocol.query.filter_by(exp_code=code).count()
+    print 'protocols: ',str(protocols)
+    print
+    experiment = json.loads(str(experiment))
+    experiment['protocols'] = json.loads(str(protocols))
+    experiment = json.dumps(experiment)
+    return str(experiment)
+
 
 
 #////////////////////////////////////
