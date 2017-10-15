@@ -559,9 +559,20 @@ def fetch_experiment_by_code(code):
 @app.route('/participant/register', methods=['POST'])
 def participant_enroll():
     data = json.loads(request.data) if request.data else request.form.to_dict()
-    # Checkc request validity
+    # Check request validity
     if not 'email' in data:
         response_message = {'error': 'email is required'}
+        http_status = 400
+        return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
+
+    # Check request referrer
+    if not 'application' in data:
+        response_message = {'error': 'application is required'}
+        http_status = 400
+        return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
+
+    if  data['application'] != 'swift' and data['application'] != 'objc':
+        response_message = {'error': 'application must be swift or objc'}
         http_status = 400
         return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
 
@@ -580,7 +591,9 @@ def participant_enroll():
         participant = Participant.query.filter_by(email=data['email']).first()
         response_message = {'message': 'Participant already registered'}
         http_status = 200
-        return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
+        return redirect('https://www.google.com')
+        #return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
+        #return redirect(url_for('experiments'))
 
 
 # Register a participant and enroll in an experiment
