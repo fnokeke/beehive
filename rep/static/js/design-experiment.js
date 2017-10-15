@@ -33,7 +33,6 @@
 //    $('#slide' + num).show();
 //  }
 
-
   clean_localStorage();
   load_slide1();
 })(window, document);
@@ -197,6 +196,66 @@ function load_slide4(){
     $('#review-protocols-list-view').html(view);
     show_slide(4);
 }
+
+
+//////////////////////////////////////////////////////////
+/*######## Function to handle protocol option selection ########*/
+//////////////////////////////////////////////////////////
+
+// Function to toggle menu based on Protocol options
+ $('#protocol-method').on('change',function(){
+        if( $(this).val()==="None"){
+            $("#protocol-date-time").addClass("hidden");
+            $("#notification-types").addClass("hidden");
+        }
+        else if( $(this).val()==="Push Notification"){
+            $("#protocol-date-time").addClass("hidden");
+            $("#notification-types").removeClass("hidden");
+        }
+        else{
+           $("#protocol-date-time").removeClass("hidden");
+           $("#notification-types").addClass("hidden");
+        }
+    });
+
+
+ // Function to toggle menu based on Notification options
+     $('#notification-options').on('change',function(){
+        if( $(this).val()==="Fixed time"){
+            $("#notification-fixed").removeClass("hidden");
+            $("#notification-user").addClass("hidden");
+            $("#notification-sleep").addClass("hidden");
+        }
+        else if( $(this).val()==="User window"){
+            $("#notification-fixed").addClass("hidden");
+            $("#notification-user").removeClass("hidden");
+            $("#notification-sleep").addClass("hidden");
+        }
+        else{
+            $("#notification-fixed").addClass("hidden");
+            $("#notification-user").addClass("hidden");
+            $("#notification-sleep").removeClass("hidden");
+        }
+    });
+
+// Function to handle notification-fixed-random checkbox
+$('#notification-fixed-random').click(function(){
+    if($(this).is(':checked')){
+        $("#notification-fixed-time").prop("disabled", true);
+    } else {
+        $("#notification-fixed-time").prop("disabled", false);
+    }
+});
+
+
+// Function to handle notification-user-random checkbox
+$('#notification-user-random').click(function(){
+    if($(this).is(':checked')){
+        $("#notification-user-time-options").prop("disabled", true);
+    } else {
+        $("#notification-user-time-options").prop("disabled", false);
+    }
+});
 
 
 //////////////////////////////////////////////////////////
