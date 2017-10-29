@@ -5,31 +5,248 @@
 {% endblock %}
 
 {% block extras %}
-  <link href="{{ url_for('static', filename='css/cover.css') }}" rel="stylesheet">
+  <!--<link href="{{ url_for('static', filename='css/cover.css') }}" rel="stylesheet">-->
 {% endblock %}
 
 {% block body %}
 
-  <div class="background-image"></div>
+  <!--<div class="background-image"></div>-->
 
-  <div class="center-content">
+  <!--<div class="center-content">-->
 
-    <div class="content">
+    <!--<div class="content">-->
 
-      <h1 class="larger-text">Beehive Platform</h1>
-      <p class="lead">
-        <small>deploy behavioral experiments that leverage data captured through ubiquitous technology.</small>
-      </p>
+<div class="section">
+  <div class="container-fluid  text-center home-cover" style="
+  background-image: url(/static/images/school.jpg);
+  height: 100%;
+  padding: 200px;
+">
 
-      <div class="btn-group" role="group">
-        <button
-          type="button"
-          class="btn btn-lg btn-warning"
-          alt="Researcher Sign In"
-          onclick="window.location.href='/google_login_researcher'">Researcher Sign In</button>
-      </div>
+    <h1 class="larger-text">Beehive Platform</h1>
+    <p class="lead">
+      <small>deploy behavioral experiments that leverage data captured through ubiquitous technology.</small>
+    </p>
 
+    <div class="btn-group" role="group">
+      <button
+              type="button"
+              class="btn btn-lg btn-warning"
+              alt="Researcher Sign In"
+              onclick="window.location.href='/google_login_researcher'">Researcher Sign In
+      </button>
     </div>
 
   </div>
+</div>
+
+
+        <div class="section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                    <h2 class="header-text">About</h2>
+                      <p class="lead"> BeeHive makes it easy for researchers to capture participant/patient reported outcomes using mobile devices. </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <br>
+    <br>
+    <hr>
+
+        <div class="section section-presentation">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="description lead">
+                            <h2 class="header-text">Researchers</h2>
+                          <small>
+                            <p>Customize BeeHive interface to fit the specific needs for your research project using our web-based manager. Features:</p>
+                            <ul>
+                                <li>add project participants</li>
+                                <li>create tasks/surveys using <a href="https://beehive.org">BeeHive</a></li>
+                                <li>create <a href="http://researchkit.org/docs/docs/ActiveTasks/ActiveTasks.html">active tasks</a></li>
+                                <li>schedule when and how often tasks should appear</li>
+                                <li>send secure messages to individual participants</li>
+                                <li>send announcements to all participants</li>
+                                <li>create information screens</li>
+                                <li>create a custom theme</li>
+                            </ul>
+                            <p>Participant data is synchronized to your <a href="https://beehive.org">BeeHive</a> project. Available to Cornell research teams now. Coming soon to other institutions.</p>
+                            </small>
+                        </div>
+                    </div>
+
+             <div class="col-md-6">
+                        <img src="/static/images/researcher_edit_task.png" style="width:120%;"/>
+             </div>
+
+            </div>
+        </div>
+
+        <hr/>
+          <div class="section section-demo">
+            <div class="container lead">
+                <div class="row">
+                    <div class="col-md-3 col-md-offset-1">
+                      <img src="/static/images/participant_2.png" alt="participant_2" style="width:90%;"/>
+                        <!--
+                        <div id="description-carousel" class="carousel fade" data-ride="carousel">
+                          <div class="carousel-inner">
+                                <div class="item active">
+                                    <img src="/static/images/participant_2.png" alt="participant_1">
+                                </div>
+                                <div class="item">
+                                    <img src="/static/images/participant_2.png" alt="participant_2">
+                                </div>
+                                <div class="item">
+                                    <img src="/static/images/participant_3.png" alt="participant_3">
+                                </div>
+                            </div>
+                            <ol class="carousel-indicators carousel-indicators-blue">
+                                <li data-target="#description-carousel" data-slide-to="0" class=""></li>
+                                <li data-target="#description-carousel" data-slide-to="1" class="active"></li>
+                                <li data-target="#description-carousel" data-slide-to="2" class=""></li>
+                            </ol>
+                        </div>
+                        -->
+                    </div>
+                    <div class="col-md-5 col-md-offset-3">
+                        <h2 class="header-text">Participants</h2>
+                      <small>
+                        <p>If you are participating in a research project that uses BeeHive:</p>
+                        <ol>
+                            <li>Install the app</li>
+                            <li>Open the app and tap the Join Project button</li>
+                            <li>Scan the QR code that your project coordinator provided</li>
+                        </ol>
+                        </small>
+                        <a href="https://itunes.apple.com/us/app/mycap/id1209842552?ls=1&mt=8" class="btn btn-fill btn-info" data-button="info"><i class="fa fa-apple"></i> App Store</a>
+                        <a href="#" class="btn btn-fill btn-info disabled" data-button="info"><i class="fa fa-android"></i> Play Store</a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+     <hr/>
+
+  <div class="section section-features">
+            <div class="container">
+                <h2 class="header-text text-center">Features</h2>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card card-blue">
+                            <div class="icon">
+                                <i class="pe-7s-server"></i>
+                            </div>
+                            <div class="text">
+                                <h4>Security</h4>
+                                <p>MyCap protects participant data by requiring a 4-digit passcode to unlock the app. Data are stored in an encrypted database on the device.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-blue">
+                            <div class="icon">
+                                <i class="pe-7s-paper-plane"></i>
+                            </div>
+                            <h4>Communication</h4>
+                            <p>Send announcements to all project participants or a message to an individual participant.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-blue">
+                            <div class="icon">
+                                <i class="pe-7s-date"></i>
+                            </div>
+                            <div class="text">
+                                <h4>Scheduling</h4>
+                                <p>Flexible scheduling for one-time tasks, repeating tasks, and permanent tasks.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card card-blue">
+                            <div class="icon">
+                                <i class="pe-7s-graph1"></i>
+                            </div>
+                            <h4>Results</h4>
+                            <p>Synchronized to the researcher's REDCap project.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-blue">
+                            <div class="icon">
+                                <i class="pe-7s-look"></i>
+                            </div>
+                            <h4>Custom Themes</h4>
+                            <p>Create a custom look for your project. Choose images and a color scheme.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-blue">
+                            <div class="icon">
+                                <i class="pe-7s-folder"></i>
+                            </div>
+                            <h4>Multi-project Support</h4>
+                            <p>Participants can switch between projects if they are participating in multiple projects.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+          <br/>
+          <br/>
+
+          <div class="section section-gray section-clients">
+            <div class="container text-center">
+              <br/>
+                <h2 class="header-text lead">Technology</h2>
+                <p class="lead"> <small>BeeHive leverages <a href="https://beehive.org/">BeeHive</a>, <a href="http://researchkit.org/">ResearchKit</a>, and <a href="http://researchstack.org/">ResearchStack</a> to capture participant/patient reported outcomes via mobile devices.
+                  BeeHive is used to define tasks/instruments/surveys to be completed by participants. BeeHive translates BeeHive task metadata into a structure compatible with ResearchKit and ResearchStack.
+                  When a project participant completes a task, MyCap converts the results into a format compatible with BeeHive before synchronizing back to the BeeHive project.
+                </small></p>
+                <div class="row">
+                        <div class="col-md-3"><a href="http://researchkit.org/"><img src=""  /></a></div>
+                        <div class="col-md-3"><a href="http://researchkit.org/"><img src="/static/images/research_kit_logo.png"  style="width:90%;"/></a></div>
+
+                        <div class="col-md-3"><a href="http://researchstack.org/"><img src="/static/images/research_stack_logo.png" style="width:115%;"/></a></div>
+                        <div class="col-md-3"><a href="http://researchkit.org/"><img src=""  /></a></div>
+                </div>
+              <br/>
+            </div>
+        </div>
+
+        <br/>
+          <footer class="footer">
+            <div class="container">
+                <div class=" footer-style ">
+                </div>
+                <!--
+                <div class="social-area pull-right">
+                    <a class="btn btn-social btn-facebook btn-simple">
+                        <i class="fa fa-facebook-square"></i>
+                    </a>
+                    <a class="btn btn-social btn-twitter btn-simple">
+                        <i class="fa fa-twitter"></i>
+                    </a>
+                    <a class="btn btn-social btn-pinterest btn-simple">
+                        <i class="fa fa-pinterest"></i>
+                    </a>
+                </div>
+                -->
+                <div class="copyright text-center">
+                   <img src="/static/images/beehive.png" style="height: 30px;"/> BeeHive
+                    &copy; 2017 <a href="https://tech.cornell.edu/"> Cornell Tech - Small Data Lab</a>
+                </div>
+              <br>
+            </div>
+        </footer>
+    </div>
 {% endblock %}

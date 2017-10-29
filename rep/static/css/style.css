@@ -1,5 +1,115 @@
 /* style.css */
 
+
+
+.section-gray {
+  background-color: #EEEEEE;
+}
+
+.section-white {
+  background-color: #FFFFFF;
+}
+
+.logos .list-unstyled img {
+    height: 100px;
+}
+
+
+ .header-text{
+      text-transform: uppercase;
+      font-weight: 200;
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 30px;
+      position: relative;
+      line-height: 24px;
+}
+
+.footer-style{
+    padding: 20px 0;
+}
+
+ .card{
+        width: 100%;
+        min-height: 390px;
+        padding: 10px 30px;
+        border: 1px solid #DDDDDD;
+        border-radius: 10px;
+        margin-top: 30px;
+        text-align: center;
+   }
+
+ .card .icon i{
+        font-size: 63px;
+        color: #9a9a9a;
+        width: 85px;
+        height: 85px;
+        line-height: 80px;
+        text-align: center;
+        border-radius: 50%;
+        margin: 0 auto;
+        margin-top: 20px;
+   }
+
+
+    .card.card-blue{
+      border-color: #CCE7F5;
+    }
+    .card.card-blue .icon i{
+      color:#00bbff;
+    }
+    .card.card-green{
+      border-color: #BDF8C0;
+    }
+    .card.card-green .icon i{
+      color:#3ABE41;
+    }
+    .card.card-orange{
+      border-color: #FAD9CD;
+    }
+    .card.card-orange .icon i{
+      color:#ff967f;
+    }
+    .card.card-red{
+      border-color: #FFBFC3;
+    }
+    .card.card-red .icon i{
+      color:#E01724;
+    }
+     .card  h4{
+        font-weight: 300;
+        font-size: 18px;
+        margin: 30px;
+   }
+
+    .card  p{
+        font-size: 16px;
+        line-height: 22px;
+        color: #777;
+   }
+
+.home-cover{
+  color: #fff;
+}
+
+
+.background-image {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 1;
+
+  background-image: url(/static/images/school.jpg);
+  height: 100%;
+
+  -webkit-filter: blur(5px);
+  -moz-filter: blur(5px);
+  -o-filter: blur(5px);
+  -ms-filter: blur(5px);
+  filter: blur(5px);
+}
+
+
 .center-content {
   text-align: center;
   color: #f88;
