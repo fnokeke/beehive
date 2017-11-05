@@ -1,21 +1,23 @@
 """
-fetches PAM data
+Connects to Ohmage OMH and fetches PAM data
 """
 
 import requests
 import base64
 import json
+from rep import secret_keys
 
 
-class PamOauth(object):
+class OMHOauth(object):
     """
     Provide PAM oauth connection
     """
-    CLIENT_ID = 'io.smalldata.slm'
-    CLIENT_SECRET = 'fr2fedsvfQW9Aa7GQtB^CDSn6mf&dY'
+    CLIENT_ID = secret_keys.OMH_CLIENT_ID
+    CLIENT_SECRET = secret_keys.OMH_CLIENT_SECRET
     DSU = 'https://ohmage-omh.smalldata.io/dsu'
-    ACCESS_TOKEN_URL = DSU + '/oauth/token?grant_type=authorization_code&code='
 
+    AUTH_CODE_URL = DSU + '/oauth/authorize?client_id={}&response_type=code'.format(CLIENT_ID)
+    ACCESS_TOKEN_URL = DSU + '/oauth/token?grant_type=authorization_code&code='
     AUTH = base64.b64encode(CLIENT_ID + ":" + CLIENT_SECRET)
     HEADERS = {'Authorization': 'Basic {}'.format(AUTH)}
 
@@ -67,7 +69,7 @@ class PAM(object):
         if not (self.access_token and self.refresh_token):
             return
 
-        pam_oauth = PamOauth()
+        pam_oauth = OMHOauth()
         if not pam_oauth.is_valid(self.access_token):
             self.access_token, self.refresh_token = pam_oauth.refresh_token(self.refresh_token)
 

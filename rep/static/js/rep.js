@@ -49,8 +49,8 @@ $('#auth-moves-btn').click(function() {
   window.location.href = '/auth-moves';
 });
 
-$('#auth-pam-btn').click(function() {
-  window.location.href = '/auth-pam';
+$('#auth-omh-btn').click(function() {
+  window.location.href = '/auth-omh';
 });
 
 $('#auth-rt-btn').click(function() {

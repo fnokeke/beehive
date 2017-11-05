@@ -4,7 +4,7 @@ export data
 
 from rep import app
 from rep.moves import Moves
-from rep.pam import PAM
+from rep.omh import PAM
 from rep.rescuetime import RescueTime
 from rep.gcal import Calendar, EventFactory
 

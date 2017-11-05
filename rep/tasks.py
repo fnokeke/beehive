@@ -4,7 +4,7 @@ from datetime import date, timedelta
 
 from rep import app
 from rep import export
-from rep.models import WebUser
+from rep.models import Researcher
 
 
 def make_celery(app):
@@ -46,7 +46,7 @@ def export_data():
     yesterday = date.today() - timedelta(1)
     yesterday = yesterday.strftime('%Y-%m-%d')
 
-    all_users = WebUser.get_all_users()
+    all_users = Researcher.get_all_users()
     for user in all_users:
         print '*** Exporting for user: {} ***'.format(user)
 
