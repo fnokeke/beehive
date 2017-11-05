@@ -1088,7 +1088,7 @@ class Researcher(db.Model):
         user = cls.query.get(email)
         return user
 
-#TODO: refactor with Researcher
+
 class NewParticipant(db.Model):
 
     # google login info and credentials for accessing google calendar
@@ -1099,8 +1099,8 @@ class NewParticipant(db.Model):
     picture = db.Column(db.String(120))
     google_credentials = db.Column(db.String(2500), unique=True)
 
-    omh_access_token = db.Column(db.String(120), unique=True)
-    omh_refresh_token = db.Column(db.String(120), unique=True)
+    omh_access_token = db.Column(db.String(120))
+    omh_refresh_token = db.Column(db.String(120))
 
     def __init__(self, profile):
         self.email = profile.get('email', '')
@@ -1117,7 +1117,7 @@ class NewParticipant(db.Model):
 
     def is_authenticated(self):
         """
-        Returns `True`. Researcher is always authenticated.
+        Returns `True`. NewParticipant is always authenticated.
         """
         return True
 
@@ -1137,7 +1137,7 @@ class NewParticipant(db.Model):
         """
         Set user field with give value and save to database.
         """
-        user = Researcher.query.get(self.email)
+        user = NewParticipant.query.get(self.email)
         setattr(user, key, value)  # same: user.key = value
         db.session.commit()
 
@@ -1145,7 +1145,7 @@ class NewParticipant(db.Model):
         """
         Set moves_id field
         """
-        if Researcher.query.filter_by(moves_id=moves_id).first():
+        if NewParticipant.query.filter_by(moves_id=moves_id).first():
             return 'Already Exists'
         self.update_field('moves_id', moves_id)
 

@@ -79,7 +79,6 @@ def researcher_view():
 
 @app.route('/experiments')
 @login_required
-# @requires_basic_auth
 def experiments():
     ctx = {'users': Researcher.query.all(),
            'mobile_users': MobileUser.query.all(),
@@ -108,7 +107,8 @@ def index():
 @app.route('/home')
 @login_required
 def home():
-    return render_template('home.html')
+    ctx = {'participant': NewParticipant.query.get(current_user.email)}
+    return render_template('home.html', **ctx)
 
 
 @app.route("/logout")
@@ -794,8 +794,9 @@ def omh_oauth2callback():
     else:
         omh_oauth = OMHOauth()
         access_token, refresh_token = omh_oauth.get_tokens(code)
-        current_user.update_field('omh_access_token', access_token)
-        current_user.update_field('omh_refresh_token', refresh_token)
+        user = NewParticipant.get_user(str(current_user))
+        user.update_field('omh_access_token', access_token)
+        user.update_field('omh_refresh_token', refresh_token)
 
         if not (access_token and refresh_token):
             flash('Sorry, connection failed. contact admin.', 'danger')

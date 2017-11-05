@@ -4,43 +4,26 @@
   {{current_user.firstname + ' | Home'}}
 {% endblock %}
 
+{% block user_type %}
+<em>
+  participant
+</em>
+
+{% endblock %}
 {% block contents %}
 
   <div class="container">
 
     <div class="page-header">
       <h3>Welcome,
-        {{current_user.firstname}}
+        {{participant.firstname}}
       </h3>
     </div>
 
 
-    <!--<div class="page-header">-->
-      <!--<h3>Connect Apps</h3>-->
-    <!--</div>-->
-
-
-    <!--<div>-->
-      <!--<h5>RescueTime</h5>-->
-      <!--{% if not current_user.rescuetime_access_token %}-->
-        <!--<button type="submit" id="auth-rt-btn" class="btn btn-primary">Connect RescueTime</button><br>-->
-
-      <!--{% else %}-->
-        <!--<span class='text-primary'>-->
-          <!--<em>-->
-            <!--Rescuetime is connected.-->
-          <!--</em>-->
-        <!--</span>-->
-
-      <!--{% endif %}-->
-    <!--</div>-->
-
-    <!--<br>-->
-
     <div>
-      <!--<h5>Connect Ohmage</h5>-->
 
-      {% if not current_user.pam_access_token %}
+      {% if not participant.omh_access_token and not participant.omh_refresh_token %}
         <button type="submit" id="auth-omh-btn" class="btn btn-primary">Connect Ohmage
         </button><br>
 

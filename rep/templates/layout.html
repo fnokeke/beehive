@@ -32,6 +32,7 @@
       <p class="nav navbar-nav navbar-right navbar-text">
         {% if current_user %}
         <strong>
+          {% block user_type %} {% endblock %}
           signed in as {{ current_user.email if current_user.email else 'researcher' }}
         </strong>
         &nbsp;&nbsp;&nbsp;
