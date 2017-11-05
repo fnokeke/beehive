@@ -57,13 +57,6 @@ MTURK_MOVES_CLIENT_ID = secret_keys.MTURK_MOVES_CLIENT_ID
 MTURK_MOVES_CLIENT_SECRET = secret_keys.MTURK_MOVES_CLIENT_SECRET
 MTURK_MOVES_REDIRECT_URI = 'http://localhost:5000/mturk-auth-moves'
 
-###################
-# PAM
-###################
-PAM_CLIENT_ID = secret_keys.PAM_CLIENT_ID
-PAM_CLIENT_SECRET = secret_keys.PAM_CLIENT_SECRET
-PAM_DSU = 'https://ohmage-omh.smalldata.io/dsu'
-PAM_ACCESS_TOKEN_URL = PAM_DSU + '/oauth/token?grant_type=authorization_code&code='
 
 ###################
 # RESCUETIME
