@@ -1,5 +1,5 @@
 """
-fetches PAM data
+Connects to Ohmage OMH and fetches PAM data
 """
 
 import requests
@@ -7,7 +7,7 @@ import base64
 import json
 
 
-class PamOauth(object):
+class OMHOauth(object):
     """
     Provide PAM oauth connection
     """
@@ -67,7 +67,7 @@ class PAM(object):
         if not (self.access_token and self.refresh_token):
             return
 
-        pam_oauth = PamOauth()
+        pam_oauth = OMHOauth()
         if not pam_oauth.is_valid(self.access_token):
             self.access_token, self.refresh_token = pam_oauth.refresh_token(self.refresh_token)
 

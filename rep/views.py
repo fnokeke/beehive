@@ -23,7 +23,7 @@ from rep.models import NotifClickedStats, RescuetimeConfig, ScreenUnlockConfig
 from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_FacebookLog, TP_ScreenLog
 
 from rep.rescuetime import RescueOauth2, RescueTime
-from rep.pam import PamOauth
+from rep.omh import OMHOauth
 from rep.moves import Moves
 from rep.upload import Upload
 
@@ -37,6 +37,7 @@ from db_init import db
 
 ##########################################################################################################
 app.debug = True
+
 
 @app.route('/googlebcabee7122e5544b.html')
 def google_domain_verification():
@@ -55,6 +56,7 @@ def download():
 #################################
 # template views
 #################################
+
 
 # Default login view for the beehive platform
 @app.route('/')
@@ -362,6 +364,7 @@ def add_experiment():
     _, response, __ = Experiment.add_experiment(experiment)
     return response
 
+
 # Endpoint to add new experiment to the database v2
 @app.route('/add/experiment/v2', methods=['POST'])
 def add_experiment_v2():
@@ -379,7 +382,7 @@ def add_experiment_v2():
     print "Adding experiment to database.."
     #_, response, __ = Experiment_v2.add_experiment(experiment, protocols)
     status, response, _ = Experiment_v2.add_experiment(experiment, protocols)
-    if(status == 200):
+    if (status == 200):
         return response
     else:
         return Response(response, status=status, mimetype='application/json')
@@ -389,6 +392,7 @@ def add_experiment_v2():
 @app.route('/experiments/create')
 def create_experiment():
     return render_template('create-experiment.html')
+
 
 @app.route('/edit-experiment/<code>')
 def edit_experiment(code):
@@ -548,12 +552,11 @@ def fetch_experiment_by_code(code):
     experiment = Experiment.query.filter_by(code=code).first()
     return str(experiment)
 
-
-
 ##########################################################################################################
 # Participant registration and enrollment APIs
 ##########################################################################################################
 # All responses must be in JSON format to support with mobile applications
+
 
 # Register a participant and enroll in an experiment
 @app.route('/participant/register', methods=['POST'])
@@ -571,7 +574,7 @@ def participant_enroll():
         http_status = 400
         return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
 
-    if  data['application'] != 'swift' and data['application'] != 'objc':
+    if data['application'] != 'swift' and data['application'] != 'objc':
         response_message = {'error': 'application must be swift or objc'}
         http_status = 400
         return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
@@ -586,7 +589,7 @@ def participant_enroll():
         new_participant['oauth_token'] = 'TO DO'
         status, response, _ = Participant.register(new_participant)
         return Response(response=json.dumps(response), status=status, mimetype='application/json')
-    else :
+    else:
         # get participant ID
         participant = Participant.query.filter_by(email=data['email']).first()
         response_message = {'message': 'Participant already registered'}
@@ -596,7 +599,7 @@ def participant_enroll():
         #return redirect(url_for('experiments'))
 
 
-# Register a participant and enroll in an experiment
+    # Register a participant and enroll in an experiment
 @app.route('/enroll', methods=['POST'])
 def participant_register():
     data = json.loads(request.data) if request.data else request.form.to_dict()
@@ -642,6 +645,7 @@ def participant_register():
     status, response, _ = Enrollment.enroll(new_enrollment)
     return Response(response=json.dumps(response), status=status, mimetype='application/json')
 
+
 ##########################################################################################################
 # Experiments V2 APIs
 ##########################################################################################################
@@ -664,13 +668,12 @@ def fetch_experiment_by_code_v2(code):
     print 'Experiment: ', str(experiment)
     protocols = Protocol.query.filter_by(exp_code=code).all()
     print 'protocol count ', Protocol.query.filter_by(exp_code=code).count()
-    print 'protocols: ',str(protocols)
+    print 'protocols: ', str(protocols)
     print
     experiment = json.loads(str(experiment))
     experiment['protocols'] = json.loads(str(protocols))
     experiment = json.dumps(experiment)
     return str(experiment)
-
 
 
 #////////////////////////////////////
@@ -743,20 +746,16 @@ def fetch_uploaded_intv(code):
 # Connect Service Providers
 # /////////////////////////////////////
 
-# Google login and calendar access for participants
-@app.route('/google_login')
-def google_login():
-    if current_user.is_authenticated:
-        return redirect(url_for('home'))
-
+@app.route('/google_login_participant')
+def google_login_participant():
     flow = OAuth2WebServerFlow(
         client_id=app.config['GOOGLE_CLIENT_ID'],
         client_secret=app.config['GOOGLE_CLIENT_SECRET'],
-        scope=app.config['GOOGLE_SCOPE'],
+        scope=app.config['GOOGLE_SCOPE_PARTICIPANT'],
         access_type='offline',
         prompt='consent',
         redirect_uri=url_for(
-            'google_login', _external=True))
+            'google_login_participant', _external=True))
 
     auth_code = request.args.get('code')
     if not auth_code:
@@ -775,6 +774,36 @@ def google_login():
     user.update_field('google_credentials', credentials.to_json())
 
     login_user(user)
+    return redirect(url_for('home'))
+
+# Connect to PAM, a datastream in Ohmage.
+@app.route("/auth-pam")
+@login_required
+def auth_pam():
+    url = app.config['PAM_DSU'] + '/oauth/authorize?client_id={}&response_type=code'.format(app.config['PAM_CLIENT_ID'])
+    return redirect(url)
+
+
+@app.route("/oauth2callback-pam")
+def pam_oauth2callback():
+
+    code = request.args.get('code')
+
+    if not code:
+        flash('sorry, could not connect PAM', 'danger')
+    else:
+        pam_oauth = OMHOauth()
+        access_token, refresh_token = pam_oauth.get_tokens(code)
+        current_user.update_field('pam_access_token', access_token)
+        current_user.update_field('pam_refresh_token', refresh_token)
+
+        if not (access_token and refresh_token):
+            flash('Sorry, connection failed. contact admin.', 'danger')
+        else:
+            flash('Successfully connected to Ohmage!', 'success')
+
+    #     mobile_app_link = 'http://play.google.com/store/apps/details?id=com.google.android.apps.maps'
+    #     return redirect(mobile_app_link)
     return redirect(url_for('home'))
 
 
@@ -811,6 +840,7 @@ def google_login_researcher():
 
     login_user(user)
     return redirect(url_for('experiments'))
+
 
 # Moves
 @app.route("/auth-moves")
@@ -866,34 +896,6 @@ def auth_rt():
     return redirect(url_for('index'))
 
 
-# PAM
-@app.route("/auth-pam")
-@login_required
-def auth_pam():
-    url = app.config['PAM_DSU'] + '/oauth/authorize?client_id={}&response_type=code'.format(app.config['PAM_CLIENT_ID'])
-    return redirect(url)
-
-
-@app.route("/oauth2callback-pam")
-def pam_oauth2callback():
-
-    code = request.args.get('code')
-
-    if not code:
-        flash('sorry, could not connect PAM', 'danger')
-    else:
-        pam_oauth = PamOauth()
-        access_token, refresh_token = pam_oauth.get_tokens(code)
-        current_user.update_field('pam_access_token', access_token)
-        current_user.update_field('pam_refresh_token', refresh_token)
-
-        if not (access_token and refresh_token):
-            flash('Sorry, connection failed. contact admin.', 'danger')
-        else:
-            flash('Successfully connected to PAM!', 'success')
-
-    return redirect(url_for('home'))
-
 
 #######################################################
 # fetch different datastreams: Moves, PAM, RescueTime
@@ -913,7 +915,7 @@ def get_moves_data(date):
 @login_required
 def get_pam_data(date):
     if not current_user.moves_access_token:
-        flash('Sorry, you have not authenticated PAM', 'danger')
+        flash('Sorry, you have not authenticated Ohmage', 'danger')
 
     calname = app.config['MOOD']
     resp = export.to_cal(calname, current_user.pam_access_token, date)

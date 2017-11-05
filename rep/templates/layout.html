@@ -18,7 +18,8 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        {% set links = ['experiments', 'settings'] if current_user.email else [] %}
+        <!--{% set links = ['experiments', 'settings'] if current_user.email else [] %}-->
+        {% set links = [] if current_user.email else [] %}
 
         {% for ni in links %}
         <li {% if request.path==url_for(ni) %} class="active" {% endif %}>

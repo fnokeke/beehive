@@ -14,36 +14,40 @@
       </h3>
     </div>
 
-    <div class="page-header">
-      <h3>Connect Apps</h3>
-    </div>
+
+    <!--<div class="page-header">-->
+      <!--<h3>Connect Apps</h3>-->
+    <!--</div>-->
+
+
+    <!--<div>-->
+      <!--<h5>RescueTime</h5>-->
+      <!--{% if not current_user.rescuetime_access_token %}-->
+        <!--<button type="submit" id="auth-rt-btn" class="btn btn-primary">Connect RescueTime</button><br>-->
+
+      <!--{% else %}-->
+        <!--<span class='text-primary'>-->
+          <!--<em>-->
+            <!--Rescuetime is connected.-->
+          <!--</em>-->
+        <!--</span>-->
+
+      <!--{% endif %}-->
+    <!--</div>-->
+
+    <!--<br>-->
 
     <div>
-      <h5>RescueTime</h5>
-      {% if not current_user.rescuetime_access_token %}
-        <button type="submit" id="auth-rt-btn" class="btn btn-primary">Connect RescueTime</button><br>
-
-      {% else %}
-        <span class='text-primary'>
-          <em>
-            Rescuetime is connected.
-          </em>
-        </span>
-
-      {% endif %}
-    </div>
-    <br>
-
-    <div>
-      <h5>Connect PAM</h5>
+      <!--<h5>Connect Ohmage</h5>-->
 
       {% if not current_user.pam_access_token %}
-        <button type="submit" id="auth-pam-btn" class="btn btn-primary">Connect PAM</button><br>
+        <button type="submit" id="auth-pam-btn" class="btn btn-primary">Connect Ohmage
+        </button><br>
 
       {% else %}
         <span class='text-primary'>
           <em>
-            PAM is connected.
+            Ohmage is connected.
           </em>
         </span>
 
