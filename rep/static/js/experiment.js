@@ -163,7 +163,7 @@ var experiment = (function() {
 
   $(document).on('click', '#exp-list-table .btn-link', function() {
     var code = this.id;
-    window.location.href = '/edit-experiment-v2/{0}'.format(code);
+    window.location.href = '/experiment/{0}'.format(code);
   });
 
 
