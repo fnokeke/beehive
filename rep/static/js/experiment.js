@@ -127,8 +127,9 @@ var experiment = (function() {
       exp = experiments[i];
 
       row = '<tr>' +
-        //'<td><button id={1} class="btn btn-link">{0}</button></td>'.format(exp.title, exp.code) +
-        '<td class="">' + exp.title + '</td>' +
+        // '<td><button id={1} class="btn btn-link">{0}</button></td>'.format(exp.title, exp.code) +
+        // '<td class="">' + exp.title + '</td>' +
+        '<td><button id={1} class="btn btn-link">{0}</button></td>'.format(exp.title, exp.code) +
         '<td class="center-text">' + exp.code + '</td>' +
         '<td class="center-text">' + formatDate(exp.start_date) + '</td>' +
         '<td class="center-text">' + formatDate(exp.end_date) + '</td>' +
@@ -151,12 +152,20 @@ var experiment = (function() {
   }
 
   /////////////////////////////
-  // edit / delete experiment
+  // OnClick handler for experiment click
   /////////////////////////////
+  /*
   $(document).on('click', '#exp-list-table .btn-link', function() {
     var code = this.id;
     window.location.href = '/edit-experiment/{0}'.format(code);
   });
+*/
+
+  $(document).on('click', '#exp-list-table .btn-link', function() {
+    var code = this.id;
+    window.location.href = '/edit-experiment-v2/{0}'.format(code);
+  });
+
 
 
   $('#update-experiment-btn').click(function() {
