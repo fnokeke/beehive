@@ -2,10 +2,12 @@
 Connects to Ohmage OMH and fetches PAM data
 """
 
-import requests
 import base64
 import json
-import omh_keys
+
+import requests
+
+from rep import omh_keys
 
 
 class OMHOauth(object):
