@@ -394,6 +394,16 @@ def create_experiment():
     return render_template('create-experiment.html')
 
 
+
+@app.route('/experiment/<code>')
+def experiment_options(code):
+    # Fetch experiment details and pass to template
+    ctx = {
+        'exp-code': code
+    }
+    return render_template('experiment-options.html', **ctx)
+
+
 @app.route('/edit-experiment/<code>')
 def edit_experiment(code):
     experiment = Experiment.query.filter_by(code=code).first()
