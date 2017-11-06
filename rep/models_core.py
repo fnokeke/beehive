@@ -982,24 +982,6 @@ class Researcher(db.Model):
     picture = db.Column(db.String(120))
     google_credentials = db.Column(db.String(2500), unique=True)
 
-    # activate datastreams
-    is_location_active = db.Column(db.Boolean, default=False)
-    is_mood_active = db.Column(db.Boolean, default=False)
-    is_sn_active = db.Column(db.Boolean, default=False)
-
-    # moves
-    moves_id = db.Column(db.String(120), unique=True)
-    moves_access_token = db.Column(db.String(120), unique=True)
-    moves_refresh_token = db.Column(db.String(120), unique=True)
-
-    # rescuetime
-    rescuetime_access_token = db.Column(db.String(120), unique=True)
-    rescuetime_refresh_token = db.Column(db.String(120), unique=True)
-
-    # pam
-    pam_access_token = db.Column(db.String(120), unique=True)
-    pam_refresh_token = db.Column(db.String(120), unique=True)
-
     def __init__(self, profile):
         self.email = profile.get('email', '')
         self.firstname = profile.get('given_name', '')
@@ -1038,14 +1020,6 @@ class Researcher(db.Model):
         user = Researcher.query.get(self.email)
         setattr(user, key, value)  # same: user.key = value
         db.session.commit()
-
-    def update_moves_id(self, moves_id):
-        """
-        Set moves_id field
-        """
-        if Researcher.query.filter_by(moves_id=moves_id).first():
-            return 'Already Exists'
-        self.update_field('moves_id', moves_id)
 
     def is_authorized(self, label):
         """
