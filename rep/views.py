@@ -794,6 +794,7 @@ def auth_omh():
 
 
 #TODO: update this callback so it shows omh not pam
+@app.route("/ohmage")
 @app.route("/oauth2callback-pam")
 def omh_oauth2callback():
 
@@ -803,13 +804,13 @@ def omh_oauth2callback():
         flash('sorry, could not connect PAM', 'danger')
     else:
         omh_oauth = OMHOauth()
-        access_token, refresh_token = omh_oauth.get_tokens(code)
+        access_token, refresh_token, response = omh_oauth.get_tokens(code)
         user = NewParticipant.get_user(current_user.email)
         user.update_field('omh_access_token', access_token)
         user.update_field('omh_refresh_token', refresh_token)
 
         if not (access_token and refresh_token):
-            flash('Sorry, connection failed. contact admin.', 'danger')
+            flash('Sorry, connection failed. contact admin: {}'.format(response), 'danger')
         else:
             flash('Successfully connected to Ohmage!', 'success')
 
