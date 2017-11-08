@@ -15,7 +15,7 @@ import secret_keys
 
 from rep import app, login_manager
 from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkPrelimRecruit
-from rep.models import Enrollment, Experiment_v2, Protocol, Researcher, NewParticipant
+from rep.models import Enrollment, Experiment_v2, Protocol, Researcher, NewParticipant, TechnionUser
 from rep.models import MturkExclusive, NafEnroll, NafStats, ImageTextUpload
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import NotifClickedStats, RescuetimeConfig, ScreenUnlockConfig
@@ -57,13 +57,11 @@ def download():
 # template views
 #################################
 
-
-# Default login view for the beehive platform
-@app.route('/')
+@app.route('/rx')
 @app.route('/researcher')
 def researcher_view():
     if not current_user.is_authenticated:
-        return render_template('index_researcher.html')
+        return render_template('index-researcher.html')
 
     if 'code' in request.args:
         code = request.args.get('code')
@@ -74,7 +72,6 @@ def researcher_view():
         return redirect(url_for('auth_rt', error=error))
 
     return redirect(url_for('experiments'))
-    # return render_template('index_researcher.html')
 
 
 @app.route('/experiments')
@@ -86,22 +83,6 @@ def experiments():
            'experiments': Experiment_v2.query.all(),
            'interventions': Intervention.query.all()}
     return render_template('researcher_experiments.html', **ctx)
-
-
-@app.route('/participant')
-def index():
-    if not current_user.is_authenticated:
-        return render_template('index.html')
-
-    if 'code' in request.args:
-        code = request.args.get('code')
-        return redirect(url_for('auth_rt', code=code))
-
-    if 'error' in request.args:
-        error = request.args.get('error')
-        return redirect(url_for('auth_rt', error=error))
-
-    return redirect(url_for('home'))
 
 
 @app.route('/home')
@@ -116,7 +97,7 @@ def home():
 def logout():
     logout_user()
     session.clear()
-    return redirect(url_for('researcher_view'))
+    return redirect(url_for('technion_home'))
 
 
 @app.route('/researcher_analysis/<key>/<study_begin>/<int_begin>/<int_end>/<study_end>')
@@ -590,18 +571,18 @@ def participant_enroll():
         return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
 
     # Check if participant already registered
-    if Participant.query.filter_by(email=data['email']).first() == None:
+    if NewParticipant.query.filter_by(email=data['email']).first() == None:
         # Register new participant
         # TO DO : Perform ooAuth redirection Add missing data
         new_participant = {}
         new_participant['email'] = data['email']
         new_participant['google_oauth'] = 'TO DO'
         new_participant['oauth_token'] = 'TO DO'
-        status, response, _ = Participant.register(new_participant)
+        status, response, _ = NewParticipant.register(new_participant)
         return Response(response=json.dumps(response), status=status, mimetype='application/json')
     else:
         # get participant ID
-        participant = Participant.query.filter_by(email=data['email']).first()
+        participant = NewParticipant.query.filter_by(email=data['email']).first()
         response_message = {'message': 'Participant already registered'}
         http_status = 200
         return redirect('https://www.google.com')
@@ -635,13 +616,13 @@ def participant_register():
     data['oauth_token'] = 'None'
 
     # Check if participant is already registered
-    if Participant.query.filter_by(email=data['email']).first() == None:
+    if NewParticipant.query.filter_by(email=data['email']).first() == None:
         print 'User doesn\'t exist.'
         # Register new participant
     else:
         print 'User FOUND!'
         # get participant ID
-        participant = Participant.query.filter_by(email=data['email']).first()
+        participant = NewParticipant.query.filter_by(email=data['email']).first()
         print participant.id
 
     # Append participant ID
@@ -883,28 +864,6 @@ def auth_moves():
     current_user.update_field('moves_refresh_token', results['refresh_token'])
     flash('Successfully connected Moves.', 'success')
     return redirect(url_for('home'))
-
-
-# RescueTime
-@app.route("/auth-rt")
-@login_required
-def auth_rt():
-    if 'error' in request.args:
-        flash('Sorry, authentication denied by user :(', 'danger')
-        return redirect(url_for('index'))
-
-    rt = RescueOauth2()
-
-    code = request.args.get('code')
-    if not code:
-        return redirect(rt.auth_url)
-
-    access_token = rt.fetch_access_token(code)
-    current_user.update_field('rescuetime_access_token', access_token)
-    flash('Successfully connected RescueTime!', 'success')
-
-    return redirect(url_for('index'))
-
 
 
 #######################################################
@@ -1490,3 +1449,78 @@ def split_into_text_image(text_image_id):
 # TODO: merge update group and update experiment functions
 # TODO: add proper confirmation prompty library
 # TODO: add testing
+
+
+
+# RescueTime
+@app.route("/auth-rt")
+@login_required
+def auth_rt():
+    if 'error' in request.args:
+        flash('Sorry, authentication denied by user :(', 'danger')
+        return redirect(url_for('technion_home'))
+
+    rt = RescueOauth2()
+
+    code = request.args.get('code')
+    if not code:
+        return redirect(rt.auth_url)
+
+    access_token = rt.fetch_access_token(code)
+    # import ipdb; ipdb.set_trace()
+    user = TechnionUser.get_user(current_user.email)
+    user.update_field('rescuetime_access_token', access_token)
+    flash('Successfully connected RescueTime!', 'success')
+
+    return redirect(url_for('technion_home'))
+
+
+@app.route('/login-technion-user')
+def login_technion_user():
+    flow = OAuth2WebServerFlow(
+        client_id=app.config['GOOGLE_CLIENT_ID'],
+        client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+        scope=app.config['GOOGLE_SCOPE_PARTICIPANT'],
+        access_type='offline',
+        prompt='consent',
+        redirect_uri=url_for(
+            'login_technion_user', _external=True))
+
+    auth_code = request.args.get('code')
+    if not auth_code:
+        auth_uri = flow.step1_get_authorize_url()
+        return redirect(auth_uri)
+
+    credentials = flow.step2_exchange(auth_code, http=httplib2.Http())
+    if credentials.access_token_expired:
+        credentials.refresh(httplib2.Http())
+
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('oauth2', 'v2', http=http)
+
+    profile = service.userinfo().get().execute()
+    user = TechnionUser.from_profile(profile)
+    user.update_field('google_credentials', credentials.to_json())
+
+    login_user(user)
+    return redirect(url_for('technion_home'))
+
+# DO NOT REMOVE THIS AS IT IS FOR ONGOING EXPERIMENT
+# MOVING default view to show participant page because of an experiment
+# Default login view for the beehive platform
+@app.route('/')
+@app.route('/technion-home')
+def technion_home():
+    if not current_user.is_authenticated:
+        return render_template('technion/technion-index.html')
+
+    if 'code' in request.args:
+        code = request.args.get('code')
+        return redirect(url_for('auth_rt', code=code))
+
+    if 'error' in request.args:
+        error = request.args.get('error')
+        return redirect(url_for('auth_rt', error=error))
+
+    ctx = {'participant': TechnionUser.query.get(current_user.email)}
+    return render_template('technion/technion-home.html', **ctx)

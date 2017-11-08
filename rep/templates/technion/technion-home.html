@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  {{current_user.firstname + ' | Home'}}
+{% endblock %}
+
+{% block brand_name %}
+Technion Study
+{% endblock %}
+
+{% block user_type %}
+<em>
+  participant
+</em>
+
+{% endblock %}
+{% block contents %}
+
+  <div class="container">
+
+    <div class="page-header">
+      <h3>Welcome,
+        {{participant.firstname}}
+      </h3>
+    </div>
+
+
+    <div>
+
+      {% if not participant.rescuetime_access_token %}
+        <button type="submit" id="auth-rt-btn" class="btn btn-primary">Connect RescueTime
+        </button><br>
+
+      {% else %}
+        <span class='text-primary'>
+          <em>
+            Rescuetime is connected.
+          </em>
+        </span>
+
+      {% endif %}
+
+    </div>
+
+  </div>
+
+{% endblock %}
