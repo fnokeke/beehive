@@ -8,6 +8,7 @@ dump.rdb
 .ftpconfig
 .cache/
 secret_keys.py
+omh_keys.py
 fake_secret_keys.py
 celerybeat-schedule
 uploads/
