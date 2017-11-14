@@ -7,9 +7,6 @@ dump.rdb
 *.log
 .ftpconfig
 .cache/
-secret_keys.py
-omh_keys.py
-fake_secret_keys.py
 celerybeat-schedule
 uploads/
 node_modules/
@@ -18,3 +15,7 @@ migrations/
 bower_components/
 videos/
 .tags*
+
+# secret keys
+secret_keys.py
+omh_keys.py

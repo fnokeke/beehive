@@ -2,19 +2,21 @@
 Connects to Ohmage OMH and fetches PAM data
 """
 
-import requests
 import base64
 import json
-from rep import secret_keys
+
+import requests
+
+from rep import omh_keys
 
 
 class OMHOauth(object):
     """
     Provide PAM oauth connection
     """
-    CLIENT_ID = secret_keys.OMH_CLIENT_ID
-    CLIENT_SECRET = secret_keys.OMH_CLIENT_SECRET
-    DSU = 'https://ohmage-omh.smalldata.io/dsu'
+    CLIENT_ID = omh_keys.OMH_CLIENT_ID
+    CLIENT_SECRET = omh_keys.OMH_CLIENT_SECRET
+    DSU = omh_keys.OMH_DSU
 
     AUTH_CODE_URL = DSU + '/oauth/authorize?client_id={}&response_type=code'.format(CLIENT_ID)
     ACCESS_TOKEN_URL = DSU + '/oauth/token?grant_type=authorization_code&code='
@@ -26,11 +28,11 @@ class OMHOauth(object):
         r = requests.post(url, headers=self.HEADERS)
 
         if r.status_code != 200:
-            print 'PAM connection failed: {}'.format(r.text)
-            return None, None
+            print 'Ohmage connection failed: {}'.format(r.text)
+            return None, None, r.text
         else:
             results = json.loads(r.text)
-            return results['access_token'], results['refresh_token']
+            return results['access_token'], results['refresh_token'], 'success'
 
     def is_valid(self, token):
         url = '{}/oauth/check_token?token={}'.format(self.DSU, token)

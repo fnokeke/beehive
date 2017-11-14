@@ -44,6 +44,9 @@ class RescueOauth2(object):
         }
 
         r = requests.post(self.access_token_url, data=data)
+        print '**********************'
+        print r.text
+        print '**********************'
         if r.status_code == 200:
             results = json.loads(r.text)
             return results['access_token']
