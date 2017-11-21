@@ -152,61 +152,164 @@ class Protocol(db.Model):
 
 
 #############################################################################################################
-#Database model to store enrollment information
-class Participant(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(250))
-    google_oauth = db.Column(db.String(250))
-    oauth_token = db.Column(db.String(250))
-    registered_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+# Database model to store enrollment information
+# class Participant(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     email = db.Column(db.String(250))
+#     google_oauth = db.Column(db.String(250))
+#     oauth_token = db.Column(db.String(250))
+#     registered_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+#
+#     def __init__(self, info):
+#         self.email = info.get('email')
+#         self.google_oauth = info.get('google_oauth')
+#         self.oauth_token = info.get('oauth_token')
+#
+#     def __repr__(self):
+#         result = {
+#             'id': self.id,
+#             'email': self.email,
+#             'google_oauth': self.google_oauth,
+#             'oauth_token' : self.oauth_token,
+#             'registered_date': str(self.registered_date)
+#         }
+#         return json.dumps(result)
+#
+#
+#     @staticmethod
+#     def register(data):
+#         # Check if participant already registered
+#         result = Participant.query.filter_by(email=data['email']).count()
+#         print 'count: ', result
+#         print 'data:' , data
+#
+#         if result > 0:
+#             response_message = {'message' : 'Participant already enrolled'}
+#             http_response_code = 200
+#             return (http_response_code, response_message, str(result))
+#
+#         new_participant = Participant(data)
+#         db.session.add(new_participant)
+#         db.session.commit()
+#
+#         result = Participant.query.filter_by(email=data['email']).count()
+#         if result>0:
+#             response_message = {'message': 'Participant enrolled successfully'}
+#             http_response_code = 200
+#         else:
+#             response_message = {'error': 'Participant enrollment failed'}
+#             http_response_code = 500
+#         return (http_response_code, response_message, result)
 
-    def __init__(self, info):
-        self.email = info.get('email')
-        self.google_oauth = info.get('google_oauth')
-        self.oauth_token = info.get('oauth_token')
+
+#############################################################################################################
+# Database model to store participant information
+class Participant(db.Model):
+    # google login info and credentials for accessing google calendar
+    id = db.Column(db.Integer, autoincrement=True)
+    email = db.Column(db.String(120), primary_key=True, unique=True)
+    firstname = db.Column(db.String(120))
+    lastname = db.Column(db.String(120))
+    gender = db.Column(db.String(10))
+    picture = db.Column(db.String(120))
+    google_credentials = db.Column(db.String(2500), unique=True)
+
+    omh_access_token = db.Column(db.String(120))
+    omh_refresh_token = db.Column(db.String(120))
+
+    def __init__(self, profile):
+        self.email = profile.get('email', '')
+        self.firstname = profile.get('given_name', '')
+        self.lastname = profile.get('family_name', '')
+        self.gender = profile.get('gender', '')
+        self.picture = profile.get('picture', '')
 
     def __repr__(self):
-        result = {
-            'id': self.id,
-            'email': self.email,
-            'google_oauth': self.google_oauth,
-            'oauth_token' : self.oauth_token,
-            'registered_date': str(self.registered_date)
-        }
-        return json.dumps(result)
+        return self.email
 
+    def is_active(self):
+        return True
 
-    @staticmethod
-    def register(data):
-        # Check if participant already registered
-        result = Participant.query.filter_by(email=data['email']).count()
-        print 'count: ', result
-        print 'data:' , data
+    def is_authenticated(self):
+        """
+        Returns `True`. NewParticipant is always authenticated.
+        """
+        return True
 
-        if result > 0:
-            response_message = {'message' : 'Participant already enrolled'}
-            http_response_code = 200
-            return (http_response_code, response_message, str(result))
+    def is_anonymous(self):
+        """
+        Returns `False`. There are no Anonymous here.
+        """
+        return False
 
-        new_participant = Participant(data)
-        db.session.add(new_participant)
+    def get_id(self):
+        """
+        Take `id` attribute and convert it to `unicode`.
+        """
+        return unicode(self.email)
+
+    def update_field(self, key, value):
+        """
+        Set user field with give value and save to database.
+        """
+        user = Participant.query.get(self.email)
+        setattr(user, key, value)  # same: user.key = value
         db.session.commit()
 
-        result = Participant.query.filter_by(email=data['email']).count()
-        if result>0:
-            response_message = {'message': 'Participant enrolled successfully'}
-            http_response_code = 200
-        else:
-            response_message = {'error': 'Participant enrollment failed'}
-            http_response_code = 500
-        return (http_response_code, response_message, result)
+    def update_moves_id(self, moves_id):
+        """
+        Set moves_id field
+        """
+        if Participant.query.filter_by(moves_id=moves_id).first():
+            return 'Already Exists'
+        self.update_field('moves_id', moves_id)
 
+    def is_authorized(self, label):
+        """
+        Return True if datastream label has been authenticated else False.
+        """
+        if label == 'moves':
+            return self.moves_id and self.moves_access_token and self.moves_refresh_token
+        elif label == 'gcal':
+            return self.google_credentials
+        elif label == 'pam':
+            return self.pam_access_token and self.pam_refresh_token
+        else:
+            raise NotImplementedError("Auth failed for label: %s." % label)
+
+    @classmethod
+    def get_user(cls, email):
+        """
+        Return user object from database using primary_key(email).
+        """
+        return cls.query.get(email)
+
+    @classmethod
+    def get_all_users(cls):
+        """
+        Return list of all users from database.
+        """
+        return cls.query.all()
+
+    @classmethod
+    def from_profile(cls, profile):
+        """
+        Return new user or existing user from database using their profile information.
+        """
+        email = profile.get('email')
+        if not cls.query.get(email):
+            new_user = cls(profile)
+            db.session.add(new_user)
+            db.session.commit()
+
+        user = cls.query.get(email)
+        return user
 
 #############################################################################################################
 # Database model to store enrollment information
 class Enrollment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    participant_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
+    participant_id = db.Column(db.String(120), db.ForeignKey('participant.email'))
     exp_code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
     enrolled_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
@@ -232,7 +335,7 @@ class Enrollment(db.Model):
         # Check if already enrolled to prevent duplicate enrollment
         result = Enrollment.query.filter_by(exp_code=data['exp_code'], participant_id=data['participant_id']).count()
         if result > 0:
-            response_message = {'message' : 'Participant already enrolled'}
+            response_message = {'message' : 'Participant already enrolled in ' + data['exp_code']}
             http_response_code = 200
             return (http_response_code, response_message, str(result))
 
