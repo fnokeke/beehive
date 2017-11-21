@@ -21,6 +21,22 @@
                 <small>nudging you beyond the threshold of conscious perception</small>
             </p>
 
+            <br>
+            <br>
+            <br>
+            <label> Display speed (ms): </label>
+            <input type="text" id="speed-value" placeholder="10, 100, 1000" style="color: black"/>
+
+            <div class="btn-group" role="group">
+                <button
+                        type="button"
+                        class="btn btn-sm btn-primary"
+                        name="btn-apply-speed"
+                        id="btn-apply-speed"
+                        alt="Apply Speed Button"
+                        onclick="applySpeed()">Apply Speed
+                </button>
+            </div>
         </div>
 
     </div>
@@ -29,10 +45,24 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <script>
+        function applySpeed() {
+            var speedValue = $('#speed-value').val();
+            localStorage.speedValue = speedValue;
+            console.log('speed value: ', speedValue);
+            alert("Speed changed to " + speedValue + "ms.");
+        }
+
+        var speedValue = 10;
+        if (localStorage.speedValue) {
+            speedValue = parseInt(localStorage.speedValue);
+        }
+        $('#speed-value').val(speedValue);
+
         displayOverlay("");
         setTimeout(function () {
             removeOverlay();
-        }, 10);
+            console.log("removeOverlay after", speedValue, "ms");
+        }, speedValue);
 
         function displayOverlay(text) {
             $("<table id='overlay'><tbody><tr><td>" + text + "</td></tr></tbody></table>").css({
@@ -49,7 +79,7 @@
             var num = getRandomNum();
             console.log('random generated number: ', num);
             if (num > 66) {
-               $('#overlay').css('background-image', 'url(static/images/apple.jpg');
+                $('#overlay').css('background-image', 'url(static/images/apple.jpg');
             } else if (num > 33) {
                 $('#overlay').css('background-image', 'url(static/images/berries.jpg');
             } else {
@@ -62,7 +92,7 @@
         }
 
         function getRandomNum() {
-           return Math.floor(Math.random() * 100);
+            return Math.floor(Math.random() * 100);
         }
 
     </script>
