@@ -663,7 +663,7 @@ def participant_register():
 
     # Enroll the participant in experiment
     new_enrollment = {}
-    new_enrollment['participant_id'] = participant.id
+    new_enrollment['participant_id'] = participant.email
     new_enrollment['exp_code'] = str(data['code'])
 
     status, response, _ = Enrollment.enroll(new_enrollment)
