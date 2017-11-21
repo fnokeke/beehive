@@ -219,8 +219,8 @@ class Participant(db.Model):
 
     def __init__(self, profile):
         self.email = profile.get('email', '')
-        self.firstname = profile.get('given_name', '')
-        self.lastname = profile.get('family_name', '')
+        self.firstname = profile.get('firstname', '')
+        self.lastname = profile.get('lastname', '')
         self.gender = profile.get('gender', '')
         self.picture = profile.get('picture', '')
 
