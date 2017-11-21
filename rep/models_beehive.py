@@ -337,7 +337,8 @@ class Enrollment(db.Model):
         if result > 0:
             response_message = {'message' : 'Participant already enrolled in ' + data['exp_code']}
             http_response_code = 200
-            return (http_response_code, response_message, str(result))
+            experiment = Experiment_v2.query.filter_by(code=data['exp_code']).first()
+            return (http_response_code, json.loads(str(experiment)), result)
 
         new_enrollment = Enrollment(data)
         db.session.add(new_enrollment)
@@ -346,6 +347,8 @@ class Enrollment(db.Model):
         if Enrollment.query.filter_by(exp_code=data['exp_code'], participant_id=data['participant_id']) is not None:
             response_message = {'message' : 'Participant enrolled successfully'}
             http_response_code = 200
+            experiment = Experiment_v2.query.filter_by(code=data['exp_code']).first()
+            return (http_response_code, json.loads(str(experiment)), result)
         else:
             response_message = {'error': 'Participant enrollment failed'}
             http_response_code = 500
