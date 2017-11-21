@@ -15,7 +15,7 @@ import secret_keys
 
 from rep import app, login_manager
 from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkPrelimRecruit
-from rep.models import Enrollment, Experiment_v2, Protocol, Researcher, NewParticipant, TechnionUser
+from rep.models import Experiment_v2, Protocol, Researcher, Enrollment, Participant, NewParticipant, TechnionUser
 from rep.models import MturkExclusive, NafEnroll, NafStats, ImageTextUpload
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import NotifClickedStats, RescuetimeConfig, ScreenUnlockConfig
@@ -546,10 +546,8 @@ def fetch_experiment_by_code(code):
 ##########################################################################################################
 # Participant registration and enrollment APIs
 ##########################################################################################################
-# All responses must be in JSON format to support with mobile applications
-
-
 # Register a participant and enroll in an experiment
+# -------- NOT USED -------- #
 @app.route('/participant/register', methods=['POST'])
 def participant_enroll():
     data = json.loads(request.data) if request.data else request.form.to_dict()
@@ -590,7 +588,40 @@ def participant_enroll():
         #return redirect(url_for('experiments'))
 
 
-    # Register a participant and enroll in an experiment
+# Register a participant in an experiment
+@app.route('/google_login_participant')
+def google_login_participant():
+    flow = OAuth2WebServerFlow(
+        client_id=app.config['GOOGLE_CLIENT_ID'],
+        client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+        scope=app.config['GOOGLE_SCOPE_PARTICIPANT'],
+        access_type='offline',
+        prompt='consent',
+        redirect_uri=url_for(
+            'google_login_participant', _external=True))
+
+    auth_code = request.args.get('code')
+    if not auth_code:
+        auth_uri = flow.step1_get_authorize_url()
+        return redirect(auth_uri)
+
+    credentials = flow.step2_exchange(auth_code, http=httplib2.Http())
+    if credentials.access_token_expired:
+        credentials.refresh(httplib2.Http())
+
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('oauth2', 'v2', http=http)
+
+    profile = service.userinfo().get().execute()
+    user = Participant.from_profile(profile)
+    user.update_field('google_credentials', credentials.to_json())
+
+    login_user(user)
+    # TODO: Redirect user back to app
+    return redirect(url_for('home'))
+
+
+# Enroll a participant in an experiment
 @app.route('/enroll', methods=['POST'])
 def participant_register():
     data = json.loads(request.data) if request.data else request.form.to_dict()
@@ -600,13 +631,13 @@ def participant_register():
         http_status = 400
         return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
 
-    if not 'exp_code' in data:
-        response_message = {'error': 'exp_code is required'}
+    if not 'code' in data:
+        response_message = {'error': 'code is required'}
         http_status = 400
         return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
 
     # Check if experiment code is valid
-    if Experiment_v2.query.filter_by(code=data['exp_code']).first() == None:
+    if Experiment_v2.query.filter_by(code=data['code']).first() == None:
         response_message = {'error': 'Invalid experiment code'}
         http_status = 400
         return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
@@ -617,21 +648,23 @@ def participant_register():
 
     # Check if participant is already registered
     if NewParticipant.query.filter_by(email=data['email']).first() == None:
-        print 'User doesn\'t exist.'
-        # Register new participant
+        print 'User does not exist.'
+        response_message = {'error': 'User does not exist!'}
+        http_status = 400
+        return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
     else:
         print 'User FOUND!'
         # get participant ID
-        participant = NewParticipant.query.filter_by(email=data['email']).first()
-        print participant.id
+        participant = Participant.query.filter_by(email=data['email']).first()
+        print participant.email
 
     # Append participant ID
-    data['participant_id'] = participant.id
+    data['participant_id'] = participant.email
 
     # Enroll the participant in experiment
     new_enrollment = {}
     new_enrollment['participant_id'] = participant.id
-    new_enrollment['exp_code'] = str(data['exp_code'])
+    new_enrollment['exp_code'] = str(data['code'])
 
     status, response, _ = Enrollment.enroll(new_enrollment)
     return Response(response=json.dumps(response), status=status, mimetype='application/json')
@@ -737,35 +770,35 @@ def fetch_uploaded_intv(code):
 # Connect Service Providers
 # /////////////////////////////////////
 
-@app.route('/google_login_participant')
-def google_login_participant():
-    flow = OAuth2WebServerFlow(
-        client_id=app.config['GOOGLE_CLIENT_ID'],
-        client_secret=app.config['GOOGLE_CLIENT_SECRET'],
-        scope=app.config['GOOGLE_SCOPE_PARTICIPANT'],
-        access_type='offline',
-        prompt='consent',
-        redirect_uri=url_for(
-            'google_login_participant', _external=True))
-
-    auth_code = request.args.get('code')
-    if not auth_code:
-        auth_uri = flow.step1_get_authorize_url()
-        return redirect(auth_uri)
-
-    credentials = flow.step2_exchange(auth_code, http=httplib2.Http())
-    if credentials.access_token_expired:
-        credentials.refresh(httplib2.Http())
-
-    http = credentials.authorize(httplib2.Http())
-    service = discovery.build('oauth2', 'v2', http=http)
-
-    profile = service.userinfo().get().execute()
-    user = NewParticipant.from_profile(profile)
-    user.update_field('google_credentials', credentials.to_json())
-
-    login_user(user)
-    return redirect(url_for('home'))
+# @app.route('/google_login_participant')
+# def google_login_participant():
+#     flow = OAuth2WebServerFlow(
+#         client_id=app.config['GOOGLE_CLIENT_ID'],
+#         client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+#         scope=app.config['GOOGLE_SCOPE_PARTICIPANT'],
+#         access_type='offline',
+#         prompt='consent',
+#         redirect_uri=url_for(
+#             'google_login_participant', _external=True))
+#
+#     auth_code = request.args.get('code')
+#     if not auth_code:
+#         auth_uri = flow.step1_get_authorize_url()
+#         return redirect(auth_uri)
+#
+#     credentials = flow.step2_exchange(auth_code, http=httplib2.Http())
+#     if credentials.access_token_expired:
+#         credentials.refresh(httplib2.Http())
+#
+#     http = credentials.authorize(httplib2.Http())
+#     service = discovery.build('oauth2', 'v2', http=http)
+#
+#     profile = service.userinfo().get().execute()
+#     user = NewParticipant.from_profile(profile)
+#     user.update_field('google_credentials', credentials.to_json())
+#
+#     login_user(user)
+#     return redirect(url_for('home'))
 
 # Connect to Ohmage
 @app.route("/auth-omh")

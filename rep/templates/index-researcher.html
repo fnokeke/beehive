@@ -16,13 +16,8 @@
 
     <!--<div class="content">-->
 
-<div class="section">
-  <div class="container-fluid  text-center home-cover" style="
-  /* background-image: url(/static/images/school.jpg); */
-  background-image: url(/static/images/home-1.jpg);
-  height: 100%;
-  padding: 200px;
-">
+<div class="section black-900 ">
+  <div class="container-fluid  text-center home-cover" style="padding: 200px;">
 
     <h1 class="larger-text">Beehive Platform</h1>
     <p class="lead">
@@ -49,7 +44,7 @@
                 <div class="row">
                     <div class="col-md-12 text-center">
                     <h2 class="header-text">About</h2>
-                      <p class="lead"> <small> BeeHive makes it easy for researchers to capture participant/patient reported outcomes using mobile devices. </small></p>
+                      <p class="lead"> <small> Beehive makes it easy for researchers to capture participant/patient reported outcomes using mobile devices. </small></p>
                     </div>
                 </div>
             </div>
@@ -58,18 +53,19 @@
     <br>
     <br>
     <hr>
-
+    <br>
         <div class="section section-presentation">
+
             <div class="container">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="description lead">
                             <h2 class="header-text">Researchers</h2>
                           <small>
-                            <p>Customize BeeHive interface to fit the specific needs for your research project using our web-based manager. Features:</p>
+                            <p>Customize Beehive interface to fit the specific needs for your research project using our web-based manager. Features:</p>
                             <ul>
                                 <li>add project participants</li>
-                                <li>create tasks/surveys using <a href="https://beehive.org">BeeHive</a></li>
+                                <li>create tasks/surveys using <a href="https://slm.smalldata.io/researcher">Beehive</a></li>
                                 <li>create <a href="http://researchkit.org/docs/docs/ActiveTasks/ActiveTasks.html">active tasks</a></li>
                                 <li>schedule when and how often tasks should appear</li>
                                 <li>send secure messages to individual participants</li>
@@ -77,7 +73,7 @@
                                 <li>create information screens</li>
                                 <li>create a custom theme</li>
                             </ul>
-                            <p>Participant data is synchronized to your <a href="https://beehive.org">BeeHive</a> project. Available to Cornell research teams now. Coming soon to other institutions.</p>
+                            <p>Participant data is synchronized to your <a href="https://slm.smalldata.io/researcher">Beehive</a> project. Available to Cornell research teams now. Coming soon to other institutions.</p>
                             </small>
                         </div>
                     </div>
@@ -89,39 +85,82 @@
             </div>
         </div>
 
-          <hr/>
-          <br>
+            <br>
+            <hr/>
+
 
           <div class="section section-demo">
             <div class="container lead">
                 <div class="row">
-                    <div class="col-md-3 col-md-offset-1">
-                      <img src="/static/images/participant_2.png" alt="participant_2" style="width:90%;"/>
-                        <!--
-                        <div id="description-carousel" class="carousel fade" data-ride="carousel">
-                          <div class="carousel-inner">
-                                <div class="item active">
-                                    <img src="/static/images/participant_2.png" alt="participant_1">
-                                </div>
-                                <div class="item">
-                                    <img src="/static/images/participant_2.png" alt="participant_2">
-                                </div>
-                                <div class="item">
-                                    <img src="/static/images/participant_3.png" alt="participant_3">
-                                </div>
-                            </div>
-                            <ol class="carousel-indicators carousel-indicators-blue">
-                                <li data-target="#description-carousel" data-slide-to="0" class=""></li>
-                                <li data-target="#description-carousel" data-slide-to="1" class="active"></li>
-                                <li data-target="#description-carousel" data-slide-to="2" class=""></li>
+                    <div class="col-sm-4 col-sm-offset-1">
+                      <!-- <img src="/static/images/participant_2.png" alt="participant_2" style="width:90%;"/> -->
+
+                        <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                            <!-- Indicators -->
+                            <ol class="carousel-indicators">
+                                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                                <li data-target="#myCarousel" data-slide-to="1"></li>
+                                <li data-target="#myCarousel" data-slide-to="2"></li>
                             </ol>
+
+                            <!-- Wrapper for slides style="max-width:300px;" -->
+                            <div class="carousel-inner">
+
+                                <div class="item active">
+                                    <img src="/static/images/app/framed1.png" alt="app1" >
+                                </div>
+
+                                <div class="item">
+                                    <img src="/static/images/app/framed2.png" alt="app2" >
+                                </div>
+
+                                <div class="item">
+                                    <img src="/static/images/app/framed3.png" alt="app3" >
+                                </div>
+
+                            </div>
+
+                            <!-- Left and right controls -->
+                            <!--
+                            <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                                <span class="glyphicon glyphicon-chevron-left"></span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                                <span class="glyphicon glyphicon-chevron-right"></span>
+                                <span class="sr-only">Next</span>
+                            </a>
+                            -->
                         </div>
-                        -->
                     </div>
-                    <div class="col-md-5 col-md-offset-3">
+
+
+                    <!--
+                    <div id="description-carousel" class="carousel fade" data-ride="carousel">
+                      <div class="carousel-inner">
+                            <div class="item active">
+                                <img src="/static/images/participant_1.png" alt="participant_1">
+                            </div>
+                            <div class="item">
+                                <img src="/static/images/participant_2.png" alt="participant_2">
+                            </div>
+                            <div class="item">
+                                <img src="/static/images/participant_3.png" alt="participant_3">
+                            </div>
+                        </div>
+                        <ol class="carousel-indicators carousel-indicators-blue">
+                            <li data-target="#description-carousel" data-slide-to="0" class=""></li>
+                            <li data-target="#description-carousel" data-slide-to="1" class="active"></li>
+                            <li data-target="#description-carousel" data-slide-to="2" class=""></li>
+                        </ol>
+                    </div>
+-                   -->
+
+                    <div class="col-sm-6 col-sm-offset-1">
+                        <br>
                         <h2 class="header-text">Participants</h2>
                       <small>
-                        <p>If you are participating in a research project that uses BeeHive:</p>
+                        <p>If you are participating in a research project that uses Beehive:</p>
                         <ol>
                             <li>Install the app</li>
                             <li>Open the app and tap the Join Project button</li>
@@ -136,7 +175,7 @@
             </div>
         </div>
 
-          <br>
+
           <hr/>
 
   <div class="section section-features">
@@ -150,7 +189,7 @@
                             </div>
                             <div class="text">
                                 <h4>Security</h4>
-                                <p>MyCap protects participant data by requiring a 4-digit passcode to unlock the app. Data are stored in an encrypted database on the device.</p>
+                                <p>Beehive protects participant data by requiring a 4-digit passcode to unlock the app. Data are stored in an encrypted database on the device.</p>
                             </div>
                         </div>
                     </div>
@@ -175,6 +214,7 @@
                         </div>
                     </div>
                 </div>
+                <!--
                 <div class="row">
                     <div class="col-md-4">
                         <div class="card card-blue">
@@ -182,7 +222,7 @@
                                 <i class="pe-7s-graph1"></i>
                             </div>
                             <h4>Results</h4>
-                            <p>Synchronized to the researcher's REDCap project.</p>
+                            <p>Synchronized to the researcher's Research Suite project.</p>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -204,6 +244,24 @@
                         </div>
                     </div>
                 </div>
+                -->
+                <div class="row">
+                    <div class="col-md-4">
+
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-blue">
+                            <div class="icon">
+                                <i class="pe-7s-graph1"></i>
+                            </div>
+                            <h4>Results</h4>
+                            <p>Synchronized to the researcher's Research Suite project.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -214,9 +272,9 @@
             <div class="container text-center">
               <br/>
                 <h2 class="header-text lead">Technology</h2>
-                <p class="lead"> <small>BeeHive leverages <a href="https://beehive.org/">BeeHive</a>, <a href="http://researchkit.org/">ResearchKit</a>, and <a href="http://researchstack.org/">ResearchStack</a> to capture participant/patient reported outcomes via mobile devices.
-                  BeeHive is used to define tasks/instruments/surveys to be completed by participants. BeeHive translates BeeHive task metadata into a structure compatible with ResearchKit and ResearchStack.
-                  When a project participant completes a task, MyCap converts the results into a format compatible with BeeHive before synchronizing back to the BeeHive project.
+                <p class="lead"> <small>Beehive leverages <a href="https://beehive.org/">BeeHive</a>, <a href="http://researchkit.org/">ResearchKit</a>, and <a href="http://researchstack.org/">ResearchStack</a> to capture participant/patient reported outcomes via mobile devices.
+                  Beehive is used to define tasks/instruments/surveys to be completed by participants. Beehive translates Beehive task metadata into a structure compatible with ResearchKit and ResearchStack.
+                  When a project participant completes a task, Beehive converts the results into a format compatible with Beehive before synchronizing back to the Beehive project.
                 </small></p>
                 <div class="row">
                         <div class="col-md-3"><a href="http://researchkit.org/"><img src=""  /></a></div>
@@ -248,8 +306,8 @@
                 </div>
                 -->
                 <div class="copyright text-center">
-                   <img src="/static/images/beehive.png" style="height: 30px;"/> BeeHive
-                    &copy; 2017 <a href="https://tech.cornell.edu/"> Cornell Tech - Small Data Lab</a>
+                   <img src="/static/images/beehive.png" style="height: 30px;"/> Beehive
+                    &copy; 2017 <a href="http://smalldata.io/"> Cornell Tech - Small Data Lab</a>
                 </div>
               <br>
             </div>

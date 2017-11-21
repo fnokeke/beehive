@@ -7,7 +7,6 @@ dump.rdb
 *.log
 .ftpconfig
 .cache/
-fake_secret_keys.py
 celerybeat-schedule
 uploads/
 node_modules/
