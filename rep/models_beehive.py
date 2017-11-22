@@ -206,7 +206,6 @@ class Protocol(db.Model):
 # Database model to store participant information
 class Participant(db.Model):
     # google login info and credentials for accessing google calendar
-    id = db.Column(db.Integer, autoincrement=True)
     email = db.Column(db.String(120), primary_key=True, unique=True)
     firstname = db.Column(db.String(120))
     lastname = db.Column(db.String(120))

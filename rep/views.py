@@ -613,12 +613,15 @@ def google_login_participant():
     service = discovery.build('oauth2', 'v2', http=http)
 
     profile = service.userinfo().get().execute()
+
     user = Participant.from_profile(profile)
     user.update_field('google_credentials', credentials.to_json())
 
     login_user(user)
+    email = str(profile['email'])
+    redirect_url = 'http://smalldata.io/?email=' + email
     # TODO: Redirect user back to app
-    return redirect(url_for('home'))
+    return redirect(redirect_url)
 
 
 # Enroll a participant in an experiment
