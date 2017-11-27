@@ -1560,3 +1560,8 @@ def technion_home():
 
     ctx = {'participant': TechnionUser.query.get(current_user.email)}
     return render_template('technion/technion-home.html', **ctx)
+
+@app.route('/subliminal')
+def subliminal():
+    return render_template('subliminal.html')
+
