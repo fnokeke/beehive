@@ -1174,6 +1174,7 @@ class TechnionUser(db.Model):
     picture = db.Column(db.String(120))
     google_credentials = db.Column(db.String(2500), unique=True)
     rescuetime_access_token = db.Column(db.String(120))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, profile):
         self.email = profile.get('email', '')
