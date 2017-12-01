@@ -1239,7 +1239,7 @@ def mobile_worker_id():
     if status == -1:
         return json.dumps({'status': -1, 'response': response, 'worker_id': -1, 'survey_link': ''})
 
-    VALID_CODES = ["mturk", "tech", "hci"]
+    VALID_CODES = ["mturk", "tech", "hci", "uncdf"]
     if not data['study_code'] in VALID_CODES:
         return json.dumps({'status': -1,
                            'response': "Invalid study code. Check it and try again.",
