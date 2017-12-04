@@ -824,7 +824,8 @@ def omh_oauth2callback():
     else:
         omh_oauth = OMHOauth()
         access_token, refresh_token, response = omh_oauth.get_tokens(code)
-        user = NewParticipant.get_user(current_user.email)
+        #user = NewParticipant.get_user(current_user.email)
+        user = Participant.get_user(current_user.email)
         user.update_field('omh_access_token', access_token)
         user.update_field('omh_refresh_token', refresh_token)
 
