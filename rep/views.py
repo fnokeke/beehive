@@ -835,9 +835,10 @@ def omh_oauth2callback():
             flash('Successfully connected to Ohmage!', 'success')
 
     #return redirect(url_for('home'))
+    print "User: ", current_user
     # TODO: Redirect user back to app
-    if session.username:
-        redirect_url = 'http://smalldata.io/?email=' + session.username
+    if current_user.is_authenticated():
+        redirect_url = 'http://smalldata.io/?email=' + current_user
     else:
         redirect_url = 'http://smalldata.io/'
     return redirect(redirect_url)
