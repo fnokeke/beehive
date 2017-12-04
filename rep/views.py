@@ -652,7 +652,7 @@ def participant_register():
     data['oauth_token'] = 'None'
 
     # Check if participant is already registered
-    if NewParticipant.query.filter_by(email=data['email']).first() == None:
+    if Participant.query.filter_by(email=data['email']).first() == None:
         print 'User does not exist.'
         response_message = {'error': 'User does not exist!'}
         http_status = 400
