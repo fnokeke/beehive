@@ -616,12 +616,14 @@ def google_login_participant():
 
     user = Participant.from_profile(profile)
     user.update_field('google_credentials', credentials.to_json())
-
     login_user(user)
-    email = str(profile['email'])
-    redirect_url = 'http://smalldata.io/?email=' + email
-    # TODO: Redirect user back to app
-    return redirect(redirect_url)
+    return redirect(url_for('home'))
+
+    # login_user(user)
+    # email = str(profile['email'])
+    # redirect_url = 'http://smalldata.io/?email=' + email
+    # # TODO: Redirect user back to app
+    # return redirect(redirect_url)
 
 
 # Enroll a participant in an experiment
@@ -831,7 +833,14 @@ def omh_oauth2callback():
         else:
             flash('Successfully connected to Ohmage!', 'success')
 
-    return redirect(url_for('home'))
+    #return redirect(url_for('home'))
+    # TODO: Redirect user back to app
+    if session.logged_in:
+        redirect_url = 'http://smalldata.io/?email=' + session.username
+    else:
+        redirect_url = 'http://smalldata.io/'
+    return redirect(redirect_url)
+
 
 
 # Google login for researchers
