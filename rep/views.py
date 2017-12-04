@@ -836,7 +836,7 @@ def omh_oauth2callback():
 
     #return redirect(url_for('home'))
     # TODO: Redirect user back to app
-    if session.logged_in:
+    if session.username:
         redirect_url = 'http://smalldata.io/?email=' + session.username
     else:
         redirect_url = 'http://smalldata.io/'
