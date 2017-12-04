@@ -838,7 +838,7 @@ def omh_oauth2callback():
     print "User: ", current_user
     # TODO: Redirect user back to app
     if current_user.is_authenticated():
-        redirect_url = 'http://smalldata.io/?email='
+        redirect_url = 'http://smalldata.io/?email=' + str(current_user)
     else:
         redirect_url = 'http://smalldata.io/'
     return redirect(redirect_url)
