@@ -1248,7 +1248,7 @@ def mobile_worker_id():
     if status == -1:
         return json.dumps({'status': -1, 'response': response, 'worker_id': -1, 'survey_link': ''})
 
-    VALID_CODES = ["mturk", "tech", "hci"]
+    VALID_CODES = ["mturk", "tech", "hci", "uncdf"]
     if not data['study_code'] in VALID_CODES:
         return json.dumps({'status': -1,
                            'response': "Invalid study code. Check it and try again.",
@@ -1569,6 +1569,11 @@ def technion_home():
 
     ctx = {'participant': TechnionUser.query.get(current_user.email)}
     return render_template('technion/technion-home.html', **ctx)
+
+@app.route('/tdash')
+def technion_dashboard():
+    ctx = {'technion_users': TechnionUser.query.all()}
+    return render_template('technion/technion-dashboard.html', **ctx)
 
 @app.route('/subliminal')
 def subliminal():
