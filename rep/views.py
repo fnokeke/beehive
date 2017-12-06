@@ -616,12 +616,14 @@ def google_login_participant():
 
     user = Participant.from_profile(profile)
     user.update_field('google_credentials', credentials.to_json())
-
     login_user(user)
-    email = str(profile['email'])
-    redirect_url = 'http://smalldata.io/?email=' + email
-    # TODO: Redirect user back to app
-    return redirect(redirect_url)
+    return redirect(url_for('home'))
+
+    # login_user(user)
+    # email = str(profile['email'])
+    # redirect_url = 'http://smalldata.io/?email=' + email
+    # # TODO: Redirect user back to app
+    # return redirect(redirect_url)
 
 
 # Enroll a participant in an experiment
@@ -650,7 +652,7 @@ def participant_register():
     data['oauth_token'] = 'None'
 
     # Check if participant is already registered
-    if NewParticipant.query.filter_by(email=data['email']).first() == None:
+    if Participant.query.filter_by(email=data['email']).first() == None:
         print 'User does not exist.'
         response_message = {'error': 'User does not exist!'}
         http_status = 400
@@ -822,7 +824,8 @@ def omh_oauth2callback():
     else:
         omh_oauth = OMHOauth()
         access_token, refresh_token, response = omh_oauth.get_tokens(code)
-        user = NewParticipant.get_user(current_user.email)
+        #user = NewParticipant.get_user(current_user.email)
+        user = Participant.get_user(current_user.email)
         user.update_field('omh_access_token', access_token)
         user.update_field('omh_refresh_token', refresh_token)
 
@@ -831,7 +834,15 @@ def omh_oauth2callback():
         else:
             flash('Successfully connected to Ohmage!', 'success')
 
-    return redirect(url_for('home'))
+    #return redirect(url_for('home'))
+    print "User: ", current_user
+    # TODO: Redirect user back to app
+    if current_user.is_authenticated():
+        redirect_url = 'http://smalldata.io/?email=' + str(current_user)
+    else:
+        redirect_url = 'http://smalldata.io/'
+    return redirect(redirect_url)
+
 
 
 # Google login for researchers
@@ -1239,7 +1250,7 @@ def mobile_worker_id():
     if status == -1:
         return json.dumps({'status': -1, 'response': response, 'worker_id': -1, 'survey_link': ''})
 
-    VALID_CODES = ["mturk", "tech", "hci"]
+    VALID_CODES = ["mturk", "tech", "hci", "uncdf"]
     if not data['study_code'] in VALID_CODES:
         return json.dumps({'status': -1,
                            'response': "Invalid study code. Check it and try again.",
