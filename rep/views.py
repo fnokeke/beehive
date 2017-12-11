@@ -88,7 +88,7 @@ def experiments():
 @app.route('/home')
 @login_required
 def home():
-    ctx = {'participant': NewParticipant.query.get(current_user.email)}
+    ctx = {'participant': Participant.query.get(current_user.email)}
     return render_template('home.html', **ctx)
 
 
@@ -588,6 +588,78 @@ def participant_enroll():
         #return redirect(url_for('experiments'))
 
 
+@app.route('/android_google_login_participant')
+def android_google_login_participant():
+    flow = OAuth2WebServerFlow(
+        client_id=app.config['GOOGLE_CLIENT_ID'],
+        client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+        scope=app.config['GOOGLE_SCOPE_PARTICIPANT'],
+        access_type='offline',
+        prompt='consent',
+        redirect_uri=url_for(
+            'android_google_login_participant', _external=True))
+
+    auth_code = request.args.get('code')
+    if not auth_code:
+        auth_uri = flow.step1_get_authorize_url()
+        return redirect(auth_uri)
+
+    credentials = flow.step2_exchange(auth_code, http=httplib2.Http())
+    if credentials.access_token_expired:
+        credentials.refresh(httplib2.Http())
+
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('oauth2', 'v2', http=http)
+
+    profile = service.userinfo().get().execute()
+
+    user = Participant.from_profile(profile)
+    user.update_field('google_credentials', credentials.to_json())
+    login_user(user)
+
+    session['ohmage_deeplink'] = ''
+    if current_user.is_authenticated():
+        session['ohmage_deeplink'] = 'beehive://androidlogin'
+
+    return redirect(url_for('home'))
+
+
+@app.route('/ios_google_login_participant')
+def ios_google_login_participant():
+    flow = OAuth2WebServerFlow(
+        client_id=app.config['GOOGLE_CLIENT_ID'],
+        client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+        scope=app.config['GOOGLE_SCOPE_PARTICIPANT'],
+        access_type='offline',
+        prompt='consent',
+        redirect_uri=url_for(
+            'ios_google_login_participant', _external=True))
+
+    auth_code = request.args.get('code')
+    if not auth_code:
+        auth_uri = flow.step1_get_authorize_url()
+        return redirect(auth_uri)
+
+    credentials = flow.step2_exchange(auth_code, http=httplib2.Http())
+    if credentials.access_token_expired:
+        credentials.refresh(httplib2.Http())
+
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('oauth2', 'v2', http=http)
+
+    profile = service.userinfo().get().execute()
+
+    user = Participant.from_profile(profile)
+    user.update_field('google_credentials', credentials.to_json())
+    login_user(user)
+
+    session['ohmage_deeplink'] = ''
+    if current_user.is_authenticated():
+        session['ohmage_deeplink'] = 'beehive://ioslogin'
+
+    return redirect(url_for('home'))
+
+
 # Register a participant in an experiment
 @app.route('/google_login_participant')
 def google_login_participant():
@@ -617,13 +689,8 @@ def google_login_participant():
     user = Participant.from_profile(profile)
     user.update_field('google_credentials', credentials.to_json())
     login_user(user)
-    return redirect(url_for('home'))
 
-    # login_user(user)
-    # email = str(profile['email'])
-    # redirect_url = 'http://smalldata.io/?email=' + email
-    # # TODO: Redirect user back to app
-    # return redirect(redirect_url)
+    return redirect(url_for('home'))
 
 
 # Enroll a participant in an experiment
@@ -824,7 +891,6 @@ def omh_oauth2callback():
     else:
         omh_oauth = OMHOauth()
         access_token, refresh_token, response = omh_oauth.get_tokens(code)
-        #user = NewParticipant.get_user(current_user.email)
         user = Participant.get_user(current_user.email)
         user.update_field('omh_access_token', access_token)
         user.update_field('omh_refresh_token', refresh_token)
@@ -834,13 +900,11 @@ def omh_oauth2callback():
         else:
             flash('Successfully connected to Ohmage!', 'success')
 
-    #return redirect(url_for('home'))
-    print "User: ", current_user
-    # TODO: Redirect user back to app
     if current_user.is_authenticated():
-        redirect_url = 'http://smalldata.io/?email=' + str(current_user)
+        redirect_url = '{}?email={}'.format(session['ohmage_deeplink'], current_user.email)
     else:
         redirect_url = 'http://smalldata.io/'
+
     return redirect(redirect_url)
 
 

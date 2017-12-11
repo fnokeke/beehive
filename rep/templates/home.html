@@ -1,47 +1,51 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-  {{current_user.firstname + ' | Home'}}
+    {{ current_user.firstname + ' | Home' }}
 {% endblock %}
 
 {% block user_type %}
-<em>
-  participant
-</em>
+    <em>
+        participant
+    </em>
 
 {% endblock %}
 {% block contents %}
 
-  <div class="container">
+    <div class="container">
 
-    <div class="page-header">
-      <h3>Welcome,
-        {{participant.firstname}}
-      </h3>
-    </div>
+        <div class="page-header">
+            <h3>Welcome,
+                {{ participant.firstname }}
+            </h3>
+        </div>
 
 
-    <div>
+        <div>
 
-      {% if not participant.omh_access_token and not participant.omh_refresh_token %}
-        <button type="submit" id="auth-omh-btn" class="btn btn-primary">Connect Ohmage
-        </button><br>
+            {% if not participant.omh_access_token and not participant.omh_refresh_token %}
+                <button type="submit" id="auth-omh-btn" class="btn btn-primary">Connect Ohmage
+                </button><br>
 
-      {% else %}
-        <span class='text-primary'>
+            {% else %}
+                <span class='text-primary'>
           <em>
             Ohmage is connected.
           </em>
         </span>
 
-				<br>
-				<br>
-        <button type="submit" class="btn btn-primary" onclick="window.location.href='beehive://androidlogin'">Continue to Mobile App</button>
+                <br>
+                <br>
+                {#        <button type="submit" class="btn btn-primary" onclick="window.location.href='https://play.google.com/store/apps/details?id=com.facebook.katana&hl=en'">Continue to Mobile App</button>#}
+                <button type="submit" class="btn btn-primary"
+                        onclick="window.location.href='beehive://androidlogin?email={{ participant.email }}'">Continue to
+                    Mobile App
+                </button>
 
-      {% endif %}
+            {% endif %}
+
+        </div>
 
     </div>
-
-  </div>
 
 {% endblock %}
