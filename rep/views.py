@@ -53,6 +53,7 @@ def justdoit():
 def download():
     return render_template('download.html')
 
+
 #################################
 # template views
 #################################
@@ -77,18 +78,23 @@ def researcher_view():
 @app.route('/experiments')
 @login_required
 def experiments():
-    ctx = {'users': Researcher.query.all(),
-           'mobile_users': MobileUser.query.all(),
-           'mturk_users': Mturk.query.all(),
-           'experiments': Experiment_v2.query.all(),
-           'interventions': Intervention.query.all()}
+    ctx = {
+        'user_type': 'researcher',
+        'users': Researcher.query.all(),
+        'mobile_users': MobileUser.query.all(),
+        'mturk_users': Mturk.query.all(),
+        'experiments': Experiment_v2.query.all(),
+        'interventions': Intervention.query.all()}
     return render_template('researcher_experiments.html', **ctx)
 
 
 @app.route('/home')
 @login_required
 def home():
-    ctx = {'participant': Participant.query.get(current_user.email)}
+    ctx = {
+        'user_type': 'participant',
+        'participant': Participant.query.get(current_user.email)
+    }
     return render_template('home.html', **ctx)
 
 
@@ -127,12 +133,17 @@ def perform_research_analysis(key, study_begin, int_begin, int_end, study_end):
 @app.route('/settings')
 @login_required
 def settings():
-    return render_template('settings.html')
+    ctx = {
+        'user_type': session['user_type'],
+        'participant': Participant.query.get(current_user.email)
+    }
+    return render_template('settings.html', **ctx)
 
 
 @login_manager.user_loader
 def user_loader(user_id):
     return NewParticipant.get_user(user_id) or Researcher.get_user(user_id)
+
 
 #################################
 # Handle Errors
@@ -154,9 +165,9 @@ def get_next_condition(total_enrolled, ps_per_condition):
     return 1 + (total_enrolled % ps_per_condition)
 
 
-#//////////////////////////////////////
+# //////////////////////////////////////
 # Beehive mobile user study connection
-#//////////////////////////////////////
+# //////////////////////////////////////
 @app.route('/mobile/connect/study', methods=['POST'])
 def connect_study():
     data = json.loads(request.data) if request.data else request.form.to_dict()
@@ -250,9 +261,9 @@ def add_notif_clicked_stats():
     return json.dumps({'response': response, 'notif_stats': to_json(notif_stats)})
 
 
-#////////////////////////////////////////////
+# ////////////////////////////////////////////
 # mobile Beehive rescuetime && interventions
-#////////////////////////////////////////////
+# ////////////////////////////////////////////
 @app.route("/rescuetime/summary", methods=['POST'])
 def fetch_rt_summary():
     data = json.loads(request.data) if request.data else request.form.to_dict()
@@ -324,9 +335,9 @@ def fetch_interventions():
     return json.dumps({"intv_response": intv_response})
 
 
-#////////////////////////////////////
+# ////////////////////////////////////
 # Researcher modify experiments
-#////////////////////////////////////
+# ////////////////////////////////////
 # Endpoint to add new experiment to the database
 @app.route('/add/experiment', methods=['POST'])
 def add_experiment():
@@ -361,7 +372,7 @@ def add_experiment_v2():
 
     protocols = request.form.get('protocols')
     print "Adding experiment to database.."
-    #_, response, __ = Experiment_v2.add_experiment(experiment, protocols)
+    # _, response, __ = Experiment_v2.add_experiment(experiment, protocols)
     status, response, _ = Experiment_v2.add_experiment(experiment, protocols)
     if (status == 200):
         return response
@@ -373,7 +384,6 @@ def add_experiment_v2():
 @app.route('/experiments/create')
 def create_experiment():
     return render_template('create-experiment.html')
-
 
 
 @app.route('/experiment/<code>')
@@ -543,6 +553,7 @@ def fetch_experiment_by_code(code):
     experiment = Experiment.query.filter_by(code=code).first()
     return str(experiment)
 
+
 ##########################################################################################################
 # Participant registration and enrollment APIs
 ##########################################################################################################
@@ -584,8 +595,8 @@ def participant_enroll():
         response_message = {'message': 'Participant already registered'}
         http_status = 200
         return redirect('https://www.google.com')
-        #return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
-        #return redirect(url_for('experiments'))
+        # return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
+        # return redirect(url_for('experiments'))
 
 
 @app.route('/android_google_login_participant')
@@ -616,6 +627,7 @@ def android_google_login_participant():
     user = Participant.from_profile(profile)
     user.update_field('google_credentials', credentials.to_json())
     login_user(user)
+    session['user_type'] = 'participant'
 
     session['ohmage_deeplink'] = ''
     if current_user.is_authenticated():
@@ -652,6 +664,7 @@ def ios_google_login_participant():
     user = Participant.from_profile(profile)
     user.update_field('google_credentials', credentials.to_json())
     login_user(user)
+    session['user_type'] = 'participant'
 
     session['ohmage_deeplink'] = ''
     if current_user.is_authenticated():
@@ -689,6 +702,7 @@ def google_login_participant():
     user = Participant.from_profile(profile)
     user.update_field('google_credentials', credentials.to_json())
     login_user(user)
+    session['user_type'] = 'participant'
 
     return redirect(url_for('home'))
 
@@ -759,7 +773,6 @@ def fetch_experiments_v2():
 
 @app.route('/fetch/experiment/v2/<code>')
 def fetch_experiment_by_code_v2(code):
-
     experiment = Experiment_v2.query.filter_by(code=code).first()
     print 'Experiment: ', str(experiment)
     protocols = Protocol.query.filter_by(exp_code=code).all()
@@ -772,9 +785,9 @@ def fetch_experiment_by_code_v2(code):
     return str(experiment)
 
 
-#////////////////////////////////////
+# ////////////////////////////////////
 # Researcher modify interventions
-#////////////////////////////////////
+# ////////////////////////////////////
 @app.route('/add/intervention', methods=['POST'])
 def add_intervention():
     # data['start'] = datetime.strptime(data['start'], '%Y-%m-%dT%H:%M:%S.000Z')
@@ -825,18 +838,19 @@ def fetch_uploaded_intv(code):
         'image_text_uploads': to_json(ImageTextUpload.query.filter_by(code=code).order_by('created_at').all()),
         'last_calendar_config': to_json(CalendarConfig.query.filter_by(code=code).order_by('created_at desc').first()),
         'last_daily_reminder_config':
-        to_json(DailyReminderConfig.query.filter_by(code=code).order_by('created_at desc').first()),
+            to_json(DailyReminderConfig.query.filter_by(code=code).order_by('created_at desc').first()),
         'last_rescuetime_config':
-        to_json(RescuetimeConfig.query.filter_by(code=code).order_by('created_at desc').first()),
+            to_json(RescuetimeConfig.query.filter_by(code=code).order_by('created_at desc').first()),
         'last_general_notification_config':
-        to_json(GeneralNotificationConfig.query.filter_by(code=code).order_by('created_at desc').first()),
+            to_json(GeneralNotificationConfig.query.filter_by(code=code).order_by('created_at desc').first()),
         'last_screen_unlock_config':
-        to_json(ScreenUnlockConfig.query.filter_by(code=code).order_by('created_at desc').first()),
+            to_json(ScreenUnlockConfig.query.filter_by(code=code).order_by('created_at desc').first()),
         'last_vibration_config':
-        to_json(VibrationConfig.query.filter_by(code=code).order_by('created_at desc').first()),
+            to_json(VibrationConfig.query.filter_by(code=code).order_by('created_at desc').first()),
         #
     }
     return json.dumps(data)
+
 
 # /////////////////////////////////////
 # Connect Service Providers
@@ -879,11 +893,10 @@ def auth_omh():
     return redirect(OMHOauth.AUTH_CODE_URL)
 
 
-#TODO: update this callback so it shows omh not pam
+# TODO: update this callback so it shows omh not pam
 @app.route("/ohmage")
 @app.route("/oauth2callback-pam")
 def omh_oauth2callback():
-
     code = request.args.get('code')
 
     if not code:
@@ -906,7 +919,6 @@ def omh_oauth2callback():
         redirect_url = 'http://smalldata.io/'
 
     return redirect(redirect_url)
-
 
 
 # Google login for researchers
@@ -941,6 +953,7 @@ def google_login_researcher():
     user.update_field('google_credentials', credentials.to_json())
 
     login_user(user)
+    session['user_type'] = 'researcher'
     return redirect(url_for('experiments'))
 
 
@@ -1077,6 +1090,7 @@ def execute_calendar_command(calname, cmd):
 
     return response or 'Successfully completed!'
 
+
 #################################
 # MTURK
 #################################
@@ -1092,10 +1106,11 @@ def registermturk():
 def welcome_and_check():
     return render_template('mturk/checkmturk.html')
 
-#///////////////// Nicki - Aditya - Fabian ///////////////////
-#/////////////////////////////////////////////////////////////
-#/////////////////////////////////////////////////////////////
-#/////////////////////////////////////////////////////////////
+
+# ///////////////// Nicki - Aditya - Fabian ///////////////////
+# /////////////////////////////////////////////////////////////
+# /////////////////////////////////////////////////////////////
+# /////////////////////////////////////////////////////////////
 
 
 @app.route('/naf')
@@ -1210,9 +1225,11 @@ def naf_register_mturk_workers():
         response = 'Successfully registered {} new user(s).<br><br>Duplicates:<br>{}'.format(count, duplicates)
 
     return response
-#/////////////////////////////////////////////////////////////
-#/////////////////////////////////////////////////////////////
-#/////////////////////////////////////////////////////////////
+
+
+# /////////////////////////////////////////////////////////////
+# /////////////////////////////////////////////////////////////
+# /////////////////////////////////////////////////////////////
 
 
 @app.route('/mturkdownload')
@@ -1546,6 +1563,7 @@ def split_into_text_image(text_image_id):
         return 200, ImageTextUpload.query.get(int(text_image_id))
     return -1, text_image_id
 
+
 # TODO: handle moves expired access token
 # TODO: only enable activate tracking for an app that has been connected
 # TODO: create table to delete any image
@@ -1614,11 +1632,10 @@ def login_technion_user():
     user.update_field('google_credentials', credentials.to_json())
 
     login_user(user)
+    session['user_type'] = 'participant'
     return redirect(url_for('technion_home'))
 
-# DO NOT REMOVE THIS AS IT IS FOR ONGOING EXPERIMENT
-# MOVING default view to show participant page because of an experiment
-# Default login view for the beehive platform
+
 @app.route('/')
 @app.route('/technion-home')
 def technion_home():
@@ -1636,12 +1653,13 @@ def technion_home():
     ctx = {'participant': TechnionUser.query.get(current_user.email)}
     return render_template('technion/technion-home.html', **ctx)
 
+
 @app.route('/tdash')
 def technion_dashboard():
     ctx = {'technion_users': TechnionUser.query.all()}
     return render_template('technion/technion-dashboard.html', **ctx)
 
+
 @app.route('/subliminal')
 def subliminal():
     return render_template('subliminal.html')
-
