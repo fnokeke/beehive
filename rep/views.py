@@ -72,6 +72,9 @@ def researcher_view():
         error = request.args.get('error')
         return redirect(url_for('auth_rt', error=error))
 
+    if session['user_type'] == 'participant':
+        return redirect(url_for('home'))
+
     return redirect(url_for('experiments'))
 
 
@@ -91,6 +94,10 @@ def experiments():
 @app.route('/home')
 @login_required
 def home():
+
+    if session['user_type'] == 'researcher':
+        return redirect(url_for('researcher_view'))
+
     ctx = {
         'user_type': 'participant',
         'participant': Participant.query.get(current_user.email)
