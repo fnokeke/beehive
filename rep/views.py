@@ -710,7 +710,7 @@ def google_login_participant():
 @app.route('/isvalidcode/<code>')
 def check_experiment_code(code):
     return json.dumps({
-        'is_valid': Experiment_v2.query.filter_by(code=code).first() != None
+        'is_valid': Experiment_v2.query.filter_by(code=code).first() is not None
     })
 
 
