@@ -99,8 +99,8 @@ def home():
         return redirect(url_for('researcher_view'))
 
     ctx = {
-        'user_type': 'participant',
-        'participant': Participant.query.get(current_user.email)
+        'disable_navbar': session.get('disable_navbar'),
+        'user_type': 'participant'
     }
     return render_template('home.html', **ctx)
 
@@ -141,15 +141,14 @@ def perform_research_analysis(key, study_begin, int_begin, int_end, study_end):
 @login_required
 def settings():
     ctx = {
-        'user_type': session['user_type'],
-        'participant': Participant.query.get(current_user.email)
+        'user_type': session['user_type']
     }
     return render_template('settings.html', **ctx)
 
 
 @login_manager.user_loader
 def user_loader(user_id):
-    return NewParticipant.get_user(user_id) or Researcher.get_user(user_id)
+    return Researcher.get_user(user_id) if session['user_type'] == 'researcher' else Participant.get_user(user_id)
 
 
 #################################
@@ -639,6 +638,7 @@ def android_google_login_participant():
     session['ohmage_deeplink'] = ''
     if current_user.is_authenticated():
         session['ohmage_deeplink'] = 'beehive://androidlogin'
+        session['disable_navbar'] = True
 
     return redirect(url_for('home'))
 

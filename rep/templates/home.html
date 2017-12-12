@@ -16,14 +16,14 @@
 
         <div class="page-header">
             <h3>Welcome,
-                {{ participant.firstname }}
+                {{ current_user.firstname }}
             </h3>
         </div>
 
 
         <div>
 
-            {% if not participant.omh_access_token and not participant.omh_refresh_token %}
+            {% if not current_user.omh_access_token and not current_user.omh_refresh_token %}
                 <button type="submit" id="auth-omh-btn" class="btn btn-primary btn-lg btn-block">Connect Ohmage
                 </button><br>
 
@@ -38,7 +38,8 @@
                 <br>
                 {#        <button type="submit" class="btn btn-primary" onclick="window.location.href='https://play.google.com/store/apps/details?id=com.facebook.katana&hl=en'">Continue to Mobile App</button>#}
                 <button type="submit" class="btn btn-primary btn-lg btn-block"
-                        onclick="window.location.href='beehive://androidlogin?email={{ participant.email }}'">Continue to
+                        onclick="window.location.href='beehive://androidlogin?email={{ participant.email }}'">Continue
+                    to
                     Mobile App
                 </button>
 

@@ -10,40 +10,44 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="#">
-                    {{ 'Beehive' | upper }} <small> - 1.5</small>
+                    {{ 'Beehive' | upper }}
+                    <small> - 1.5</small>
                 </a>
             </div>
 
 
             <div class="collapse navbar-collapse" id="myNavbar">
+                {% if not disable_navbar %}
 
-                {% block navbar_links %}
-                    <ul class="nav navbar-nav">
-                        {% set links = ['experiments', 'settings'] if user_type == 'researcher' else ['home', 'settings'] %}
-                        {% for ni in links %}
-                            <li {% if request.path==url_for(ni) %} class="active" {% endif %}>
-                                <a href="{{ url_for(ni) }}">
-                                    {% if ni=='experiments' %}
-                                    <span class="glyphicon glyphicon-hourglass"></span>
-                                    {% elif ni=='settings' %}
-                                    <span class="glyphicon glyphicon-cog"></span>
-                                    {% elif ni=='home' %}
-                                    <span class="glyphicon glyphicon-home"></span>
-                                    {% endif %}
-                                    {{ ni | capitalize }} </a>
+                    {% block navbar_links %}
+                        <ul class="nav navbar-nav">
+                            {% set links = ['experiments', 'settings'] if user_type == 'researcher' else ['home', 'settings'] %}
+                            {% for ni in links %}
+                                <li {% if request.path==url_for(ni) %} class="active" {% endif %}>
+                                    <a href="{{ url_for(ni) }}">
+                                        {% if ni=='experiments' %}
+                                            <span class="glyphicon glyphicon-hourglass"></span>
+                                        {% elif ni=='settings' %}
+                                            <span class="glyphicon glyphicon-cog"></span>
+                                        {% elif ni=='home' %}
+                                            <span class="glyphicon glyphicon-home"></span>
+                                        {% endif %}
+                                        {{ ni | capitalize }} </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li>
+                                <a href="{{ url_for('logout') }}">
+                                    <span class="glyphicon glyphicon-log-out"></span>
+                                    Sign out {{ user_type }} - {{ current_user.email }}
+                                </a>
                             </li>
-                        {% endfor %}
-                    </ul>
-
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="{{ url_for('logout') }}">
-                                <span class="glyphicon glyphicon-log-out"></span>
-                                Sign out {{ user_type }} - {{ current_user.email }}
-                            </a>
-                        </li>
-                    </ul>
-                {% endblock %}
+                        </ul>
+                    {% endblock %}
+                    
+                {% endif %}
 
             </div>
         </div>
