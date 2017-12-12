@@ -24,7 +24,7 @@
         <div>
 
             {% if not participant.omh_access_token and not participant.omh_refresh_token %}
-                <button type="submit" id="auth-omh-btn" class="btn btn-primary">Connect Ohmage
+                <button type="submit" id="auth-omh-btn" class="btn btn-primary btn-lg btn-block">Connect Ohmage
                 </button><br>
 
             {% else %}
@@ -37,7 +37,7 @@
                 <br>
                 <br>
                 {#        <button type="submit" class="btn btn-primary" onclick="window.location.href='https://play.google.com/store/apps/details?id=com.facebook.katana&hl=en'">Continue to Mobile App</button>#}
-                <button type="submit" class="btn btn-primary"
+                <button type="submit" class="btn btn-primary btn-lg btn-block"
                         onclick="window.location.href='beehive://androidlogin?email={{ participant.email }}'">Continue to
                     Mobile App
                 </button>
