@@ -707,11 +707,25 @@ def google_login_participant():
     return redirect(url_for('home'))
 
 
-@app.route('/isvalidcode/<code>')
-def check_experiment_code(code):
-    return json.dumps({
-        'is_valid': Experiment_v2.query.filter_by(code=code).first() is not None
-    })
+@app.route('/mobile/fetchstudy', methods=["POST"])
+def fetch_study():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    code = data.get('code')
+    experiment = Experiment_v2.query.filter_by(code=code).first()
+    protocols = Protocol.query.filter_by(exp_code=code).all(),  # FIXME: consistent using exp_code or code for models
+    response = {
+        'experiment': json.loads(str(experiment)) if experiment else None,
+        'protocols': json.loads(str(protocols)) if protocols == [] else None,
+        'login_type': ['google_login'],
+        'google_login_type': 'google_no_ohmage'
+    }
+    status = 200
+
+    if not experiment:
+        status = 400
+        response = {"error": "Invalid experiment code"}
+
+    return Response(response=json.dumps(response), status=status, mimetype='application/json')
 
 
 # Enroll a participant in an experiment
