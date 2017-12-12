@@ -4,12 +4,6 @@
     {{ current_user.firstname + ' | Home' }}
 {% endblock %}
 
-{% block user_type %}
-    <em>
-        participant
-    </em>
-
-{% endblock %}
 {% block contents %}
 
     <div class="container">
@@ -38,7 +32,7 @@
                 <br>
                 {#        <button type="submit" class="btn btn-primary" onclick="window.location.href='https://play.google.com/store/apps/details?id=com.facebook.katana&hl=en'">Continue to Mobile App</button>#}
                 <button type="submit" class="btn btn-primary btn-lg btn-block"
-                        onclick="window.location.href='beehive://androidlogin?email={{ participant.email }}'">Continue
+                        onclick="window.location.href='beehive://androidlogin?email={{ current_user.email }}'">Continue
                     to
                     Mobile App
                 </button>
