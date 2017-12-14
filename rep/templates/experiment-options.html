@@ -1,9 +1,18 @@
 {% extends "layout.html" %}
 
 {% block title %}
-
+    Experiment-{{ experiment.code }}
 {% endblock %}
 
 {% block contents %}
+    <div class="container">
+
+        <div class="page-header">
+            <h3>
+                {{ experiment.title }} ({{ experiment.code }})
+            </h3>
+        </div>
+
+    </div>
 
 {% endblock %}

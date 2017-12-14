@@ -1,32 +1,61 @@
 {% extends 'layout.html' %}
-{% block title %}
-  Researcher | Home
-{% endblock %}
 
-{% block user_type %}
-<em>
-researcher
-</em>
+{% block title %}
+    Researcher | Home
 {% endblock %}
 
 {% block contents %}
 
-  <div class="container">
+    <div class="container">
+        <div class="page-header">
+            <h3>Ongoing Experiments</h3>
+        </div>
 
-    <div class="page-header">
-      <h3>Beehive Stats</h3>
+        <div id="experiment-table-list">
+
+            <button
+                    type="button"
+                    class="btn btn-primary"
+                    onclick="window.location.href='{{ url_for('create_experiment') }}';">
+                <span class="glyphicon glyphicon-plus"></span>
+                Add Experiment
+            </button>
+
+            <br>
+            <br>
+
+            {% if experiments | length < 1 %}
+                <em> Add new experiments using button above. </em>
+            {% else %}
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th> TITLE</th>
+                        <th> CODE</th>
+                        <th> START DATE</th>
+                        <th> END DATE</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for exp in  experiments %}
+                        <tr>
+                            <td class="col-md-3">
+                                <a href="/experiment/{{ exp.code }}">
+                                    {{ exp.title }}
+                                </a>
+                            </td>
+                            <td class="col-md-2"> {{ exp.code }} </td>
+                            <td class="col-md-2"> {{ exp.start_date | onlyfancydate }} </td>
+                            <td class="col-md-2"> {{ exp.end_date | onlyfancydate }} </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+        </div>
+
     </div>
-
-    <div>
-      <p>
-        Total active experiments:
-        {{ experiments | length }}
-        <br>
-      </p>
-    </div>
-
-    {% include "partials/experiments-list.html" %}
-
-  </div>
 
 {% endblock %}

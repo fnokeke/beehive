@@ -6,6 +6,7 @@ import datetime
 import json
 import uuid
 
+
 #############################################################################################################
 # Database model for experiments
 class Experiment_v2(db.Model):
@@ -20,6 +21,7 @@ class Experiment_v2(db.Model):
     app_usage = db.Column(db.Boolean, default=False)
     protocols = db.relationship('Protocol', backref='experiment', lazy='select')
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    owner = db.Column(db.String(120), db.ForeignKey('researcher.email'))
 
     def __init__(self, info):
         self.code = info.get('code') if info.get('code') else Experiment_v2.generate_unique_id()
@@ -30,9 +32,11 @@ class Experiment_v2(db.Model):
         self.end_date = info['end_date']
         self.screen_events = info.get('screen_events')
         self.app_usage = info.get('app_usage')
+        self.owner = info['owner']
 
     def __repr__(self):
         result = {
+            'owner': self.owner,
             'code': self.code,
             'label': self.label,
             'title': self.title,
@@ -53,16 +57,16 @@ class Experiment_v2(db.Model):
         return code
 
     @staticmethod
-    def add_experiment(info, protocols):
-        existing_experiment = Experiment_v2.query.filter_by(title=info['title']).first()
+    def add_experiment(exp_info, protocols):
+        existing_experiment = Experiment_v2.query.filter_by(title=exp_info['title']).first()
         if existing_experiment:
             #return  Response('Experiment with that name exists', status=400, mimetype='application/json')
             return (400, 'Experiment with that title exists', existing_experiment)
 
-        new_experiment = Experiment_v2(info)
+        new_experiment = Experiment_v2(exp_info)
         db.session.add(new_experiment)
         db.session.commit()
-        new_experiment = Experiment_v2.query.filter_by(title=info['title']).first()
+        new_experiment = Experiment_v2.query.filter_by(title=exp_info['title']).first()
 
         # To DO:  Add protocols  to protocols table
         return (200, 'Successfully added experiment', new_experiment)
@@ -203,6 +207,97 @@ class Protocol(db.Model):
 
 
 #############################################################################################################
+class Researcher(db.Model):
+
+    # google login info and credentials for accessing google calendar
+    email = db.Column(db.String(120), primary_key=True, unique=True)
+    firstname = db.Column(db.String(120))
+    lastname = db.Column(db.String(120))
+    gender = db.Column(db.String(10))
+    picture = db.Column(db.String(120))
+    google_credentials = db.Column(db.String(2500), unique=True)
+
+    def __init__(self, profile):
+        self.email = profile.get('email', '')
+        self.firstname = profile.get('given_name', '')
+        self.lastname = profile.get('family_name', '')
+        self.gender = profile.get('gender', '')
+        self.picture = profile.get('picture', '')
+
+    def __repr__(self):
+        return self.email
+
+    def is_active(self):
+        return True
+
+    def is_authenticated(self):
+        """
+        Returns `True`. Researcher is always authenticated.
+        """
+        return True
+
+    def is_anonymous(self):
+        """
+        Returns `False`. There are no Anonymous here.
+        """
+        return False
+
+    def get_id(self):
+        """
+        Take `id` attribute and convert it to `unicode`.
+        """
+        return unicode(self.email)
+
+    def update_field(self, key, value):
+        """
+        Set user field with give value and save to database.
+        """
+        user = Researcher.query.get(self.email)
+        setattr(user, key, value)  # same: user.key = value
+        db.session.commit()
+
+    def is_authorized(self, label):
+        """
+        Return True if datastream label has been authenticated else False.
+        """
+        if label == 'moves':
+            return self.moves_id and self.moves_access_token and self.moves_refresh_token
+        elif label == 'gcal':
+            return self.google_credentials
+        elif label == 'pam':
+            return self.pam_access_token and self.pam_refresh_token
+        else:
+            raise NotImplementedError("Auth failed for label: %s." % label)
+
+    @classmethod
+    def get_user(cls, email):
+        """
+        Return user object from database using primary_key(email).
+        """
+        return cls.query.get(email)
+
+    @classmethod
+    def get_all_users(cls):
+        """
+        Return list of all users from database.
+        """
+        return cls.query.all()
+
+    @classmethod
+    def from_profile(cls, profile):
+        """
+        Return new user or existing user from database using their profile information.
+        """
+        email = profile.get('email')
+        if not cls.query.get(email):
+            new_user = cls(profile)
+            db.session.add(new_user)
+            db.session.commit()
+
+        user = cls.query.get(email)
+        return user
+
+
 # Database model to store participant information
 class Participant(db.Model):
     # google login info and credentials for accessing google calendar
@@ -359,3 +454,65 @@ class Enrollment(db.Model):
             response_message = {'error': 'Participant enrollment failed'}
             http_response_code = 500
         return (http_response_code, response_message, result)
+
+
+class ProtocolPushNotif(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    label = db.Column(db.String(50))
+    exp_code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    start_date = db.Column(db.DateTime)
+    end_date = db.Column(db.DateTime)
+    frequency = db.Column(db.String(10))
+    notif_title = db.Column(db.String(10))
+    notif_content = db.Column(db.String(20))
+    notif_appid = db.Column(db.String(30))
+    notif_type = db.Column(db.String(20))
+    probable_half_notify = db.Column(db.Boolean, default=False)
+
+    def __init__(self, data):
+        self.label = data.get('label')
+        self.exp_code = data.get('exp_code')
+        self.start_date = data.get('start_date')
+        self.end_date = data.get('end_date')
+        self.frequency = data.get('frequency')
+        self.notif_title = data.get('notif_title')
+        self.notif_content = data.get('notif_content')
+        self.notif_appid = data.get('notif_appid')
+        self.notif_type = data.get('notif_type')
+        self.probable_half_notify = data.get('probable_half_notify')
+
+    def __repr__(self):
+        result = {
+            'id': self.id,
+            'label': self.label,
+            'exp_code': self.exp_code,
+            'created_at': str(self.created_at),
+            'start_date': str(self.start_date),
+            'end_date': str(self.end_date),
+            'frequency': str(self.frequency),
+            'notif_title': str(self.notif_title),
+            'notif_content': str(self.notif_content),
+            'notif_appid': str(self.notif_appid),
+            'notif_type': str(self.notif_type),
+            'probable_half_notify': str(self.probable_half_notify)
+        }
+        return json.dumps(result)
+
+    @staticmethod
+    def add_protocol(data):
+        new_protocol = ProtocolPushNotif(data)
+        db.session.add(new_protocol)
+        db.session.commit()
+        latest_protocol = Protocol.query.order_by('created_at desc').first()
+        return 200, 'Successfully added intervention', latest_protocol
+
+    @staticmethod
+    def delete_protocol(pid):
+        deleted_protocol = ProtocolPushNotif.query.filter_by(id=pid)
+        Protocol.query.filter_by(id=pid).delete()
+        db.session.commit()
+        return 200, 'Successfully deleted protocol.', deleted_protocol
+
+
+# TODO: have only one experiment table
