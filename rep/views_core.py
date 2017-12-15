@@ -22,7 +22,7 @@ from rep import app, login_manager
 from rep import export
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkPrelimRecruit
-from rep.models import Experiment_v2, Protocol, Researcher, Enrollment, Participant, NewParticipant, TechnionUser
+from rep.models import Experiment_v2, ProtocolPushNotif, Researcher, Enrollment, Participant, NewParticipant, TechnionUser
 from rep.models import MturkExclusive, NafEnroll, NafStats, ImageTextUpload
 from rep.models import NotifClickedStats, RescuetimeConfig, ScreenUnlockConfig
 from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_FacebookLog, TP_ScreenLog
@@ -332,102 +332,76 @@ def fetch_interventions():
 # Researcher modify experiments
 # ////////////////////////////////////
 # Endpoint to add new experiment to the database
-@app.route('/add/experiment', methods=['POST'])
-def add_experiment():
-    experiment = {
-        'title': request.form.get('title'),
-        'start': request.form.get('start'),
-        'end': request.form.get('end'),
-        'rescuetime': request.form.get('rescuetime', False),
-        'calendar': request.form.get('calendar', False),
-        'geofence': request.form.get('geofence', False),
-        'text': request.form.get('text', False),
-        'image': request.form.get('image', False),
-        'reminder': request.form.get('reminder', False),
-        'actuators': request.form.get('actuators', False)
-    }
-    _, response, __ = Experiment.add_experiment(experiment)
-    return response
+# @app.route('/add/experiment', methods=['POST'])
+# def add_experiment():
+#     experiment = {
+#         'title': request.form.get('title'),
+#         'start': request.form.get('start'),
+#         'end': request.form.get('end'),
+#         'rescuetime': request.form.get('rescuetime', False),
+#         'calendar': request.form.get('calendar', False),
+#         'geofence': request.form.get('geofence', False),
+#         'text': request.form.get('text', False),
+#         'image': request.form.get('image', False),
+#         'reminder': request.form.get('reminder', False),
+#         'actuators': request.form.get('actuators', False)
+#     }
+#     _, response, __ = Experiment.add_experiment(experiment)
+#     return response
 
 
-# Endpoint to add new experiment to the database v2
-@app.route('/add/experiment/v2', methods=['POST'])
-def add_experiment_v2():
-    experiment = request.form.to_dict()
-    # experiment = {
-    #     'label': request.form.get('label'),
-    #     'title': request.form.get('title'),
-    #     'description': request.form.get('description'),
-    #     'start_date': request.form.get('start_date'),
-    #     'end_date': request.form.get('end_date', False),
-    #     'screen_events': request.form.get('screen_events', False),
-    #     'app_usage': request.form.get('app_usage', False),
-    # }
-
-    protocols = request.form.get('protocols')
-    status, response, _ = Experiment_v2.add_experiment(experiment, protocols)
-    if (status == 200):
-        return response
-    else:
-        return Response(response, status=status, mimetype='application/json')
 
 
-# New experiment create view
-@app.route('/experiments/create')
-def create_experiment():
-    return render_template('create-experiment.html')
+# @app.route('/edit-experiment/<code>')
+# def edit_experiment(code):
+#     experiment = Experiment.query.filter_by(code=code).first()
+#     intv_type = get_intv_type(experiment)
+#     interventions = Intervention.query.filter_by(code=code, intv_type=intv_type).order_by('start').all()
+#     next_start_date = datetime.now().strftime("%Y-%m-%d")
+#     if interventions:
+#         next_start_date = to_datetime(interventions[-1].end).strftime("%Y-%m-%d")
+#
+#     ctx = {
+#         'today_date': datetime.now().strftime('%Y-%m-%d'),
+#         'experiment_start': experiment.start.strftime("%Y-%m-%d"),
+#         'experiment_end': experiment.end.strftime("%Y-%m-%d"),
+#         'next_start_date': next_start_date,
+#         'enrolled_users': MobileUser.query.filter_by(code=code).all(),
+#         'users_unfiltered': Researcher.query.all(),
+#         'experiment': experiment,
+#         'image_texts': ImageTextUpload.query.filter_by(code=code).all(),
+#         'uploaded_intvs': ImageTextUpload.query.filter_by(code=code).all(),
+#         'general_notifs': GeneralNotificationConfig.query.filter_by(code=code).all(),
+#         'gg': GeneralNotificationConfig,
+#         'interventions': interventions
+#     }
+#     return render_template('edit-experiment.html', **ctx)
 
 
-@app.route('/edit-experiment/<code>')
-def edit_experiment(code):
-    experiment = Experiment.query.filter_by(code=code).first()
-    intv_type = get_intv_type(experiment)
-    interventions = Intervention.query.filter_by(code=code, intv_type=intv_type).order_by('start').all()
-    next_start_date = datetime.now().strftime("%Y-%m-%d")
-    if interventions:
-        next_start_date = to_datetime(interventions[-1].end).strftime("%Y-%m-%d")
-
-    ctx = {
-        'today_date': datetime.now().strftime('%Y-%m-%d'),
-        'experiment_start': experiment.start.strftime("%Y-%m-%d"),
-        'experiment_end': experiment.end.strftime("%Y-%m-%d"),
-        'next_start_date': next_start_date,
-        'enrolled_users': MobileUser.query.filter_by(code=code).all(),
-        'users_unfiltered': Researcher.query.all(),
-        'experiment': experiment,
-        'image_texts': ImageTextUpload.query.filter_by(code=code).all(),
-        'uploaded_intvs': ImageTextUpload.query.filter_by(code=code).all(),
-        'general_notifs': GeneralNotificationConfig.query.filter_by(code=code).all(),
-        'gg': GeneralNotificationConfig,
-        'interventions': interventions
-    }
-    return render_template('edit-experiment.html', **ctx)
-
-
-@app.route('/old_edit-experiment/<code>')
-def old_edit_experiment(code):
-    experiment = Experiment.query.filter_by(code=code).first()
-    intv_type = get_intv_type(experiment)
-    interventions = Intervention.query.filter_by(code=code, intv_type=intv_type).order_by('start').all()
-    next_start_date = datetime.now().strftime("%Y-%m-%d")
-    if interventions:
-        next_start_date = to_datetime(interventions[-1].end).strftime("%Y-%m-%d")
-
-    ctx = {
-        'today_date': datetime.now().strftime('%Y-%m-%d'),
-        'experiment_start': experiment.start.strftime("%Y-%m-%d"),
-        'experiment_end': experiment.end.strftime("%Y-%m-%d"),
-        'next_start_date': next_start_date,
-        'enrolled_users': MobileUser.query.filter_by(code=code).all(),
-        'users_unfiltered': Researcher.query.all(),
-        'experiment': experiment,
-        'image_texts': ImageTextUpload.query.filter_by(code=code).all(),
-        'uploaded_intvs': ImageTextUpload.query.filter_by(code=code).all(),
-        'general_notifs': GeneralNotificationConfig.query.filter_by(code=code).all(),
-        'gg': GeneralNotificationConfig,
-        'interventions': interventions
-    }
-    return render_template('old-edit-experiment.html', **ctx)
+# @app.route('/old_edit-experiment/<code>')
+# def old_edit_experiment(code):
+#     experiment = Experiment.query.filter_by(code=code).first()
+#     intv_type = get_intv_type(experiment)
+#     interventions = Intervention.query.filter_by(code=code, intv_type=intv_type).order_by('start').all()
+#     next_start_date = datetime.now().strftime("%Y-%m-%d")
+#     if interventions:
+#         next_start_date = to_datetime(interventions[-1].end).strftime("%Y-%m-%d")
+#
+#     ctx = {
+#         'today_date': datetime.now().strftime('%Y-%m-%d'),
+#         'experiment_start': experiment.start.strftime("%Y-%m-%d"),
+#         'experiment_end': experiment.end.strftime("%Y-%m-%d"),
+#         'next_start_date': next_start_date,
+#         'enrolled_users': MobileUser.query.filter_by(code=code).all(),
+#         'users_unfiltered': Researcher.query.all(),
+#         'experiment': experiment,
+#         'image_texts': ImageTextUpload.query.filter_by(code=code).all(),
+#         'uploaded_intvs': ImageTextUpload.query.filter_by(code=code).all(),
+#         'general_notifs': GeneralNotificationConfig.query.filter_by(code=code).all(),
+#         'gg': GeneralNotificationConfig,
+#         'interventions': interventions
+#     }
+#     return render_template('old-edit-experiment.html', **ctx)
 
 
 @app.route('/notif-clicked-dashboard/<code>')
@@ -696,7 +670,7 @@ def fetch_study():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     code = data.get('code')
     experiment = Experiment_v2.query.filter_by(code=code).first()
-    protocols = Protocol.query.filter_by(exp_code=code).all(),  # FIXME: consistent using exp_code or code for models
+    protocols = ProtocolPushNotif.query.filter_by(exp_code=code).all(),  # FIXME: consistent using exp_code or code for models
     response = {
         'experiment': json.loads(str(experiment)) if experiment else None,
         'protocols': json.loads(str(protocols)) if protocols == [] else None,
@@ -780,8 +754,8 @@ def fetch_experiments_v2():
 def fetch_experiment_by_code_v2(code):
     experiment = Experiment_v2.query.filter_by(code=code).first()
     print 'Experiment: ', str(experiment)
-    protocols = Protocol.query.filter_by(exp_code=code).all()
-    print 'protocol count ', Protocol.query.filter_by(exp_code=code).count()
+    protocols = ProtocolPushNotif.query.filter_by(exp_code=code).all()
+    print 'protocol count ', ProtocolPushNotif.query.filter_by(exp_code=code).count()
     print 'protocols: ', str(protocols)
     print
     experiment = json.loads(str(experiment))
@@ -1551,6 +1525,9 @@ def _jinja2_strformatonly_time(time_str):
 def _jinja2_strformat_ftime(datestr):
     return datetime.strptime(datestr, '%Y-%m-%d %H:%M:%S')
 
+@app.template_filter('onlydatefmt')
+def _jinja2_strformat_onlydatefmt(date):
+    return date.strftime('%Y-%m-%d')
 
 @app.template_filter('ms_to_datetime')
 def _jinja2_ms_to_datetime_ftime(time_milli):

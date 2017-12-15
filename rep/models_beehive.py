@@ -19,7 +19,7 @@ class Experiment_v2(db.Model):
     end_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     screen_events = db.Column(db.Boolean, default=False)
     app_usage = db.Column(db.Boolean, default=False)
-    protocols = db.relationship('Protocol', backref='experiment', lazy='select')
+    protocols = db.relationship('ProtocolPushNotif', backref='experiment_v2', lazy='select')
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     owner = db.Column(db.String(120), db.ForeignKey('researcher.email'))
 
@@ -57,18 +57,23 @@ class Experiment_v2(db.Model):
         return code
 
     @staticmethod
-    def add_experiment(exp_info, protocols):
-        existing_experiment = Experiment_v2.query.filter_by(title=exp_info['title']).first()
+    def add_experiment(exp):
+        existing_experiment = Experiment_v2.query.filter_by(title=exp['title']).first()
         if existing_experiment:
             #return  Response('Experiment with that name exists', status=400, mimetype='application/json')
             return (400, 'Experiment with that title exists', existing_experiment)
 
-        new_experiment = Experiment_v2(exp_info)
+        new_experiment = Experiment_v2(exp)
         db.session.add(new_experiment)
         db.session.commit()
-        new_experiment = Experiment_v2.query.filter_by(title=exp_info['title']).first()
+        new_experiment = Experiment_v2.query.filter_by(title=exp['title']).first()
 
-        # To DO:  Add protocols  to protocols table
+        # Add protocols  to protocols table
+        protocols = json.loads(exp['protocols'])
+        for p in protocols:
+            p['exp_code'] = new_experiment.code
+            ProtocolPushNotif.add_protocol(p)
+
         return (200, 'Successfully added experiment', new_experiment)
         #return Response("{'Experiment successfully created'}", status=200, mimetype='application/json')
 
@@ -102,57 +107,57 @@ class Experiment_v2(db.Model):
 
 #############################################################################################################
 # Database model to store protocols for an experiment
-class Protocol(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    #exp_id = db.Column(db.Integer, db.ForeignKey('experiment_v2.id'))
-    exp_code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
-    frequency = db.Column(db.String(120))
-    method = db.Column(db.String(120))
-    start_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    end_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    start_time = db.Column(db.String(50))
-    end_time = db.Column(db.String(50))
-    created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-
-    def __init__(self, info):
-        self.exp_code = info['exp_code']
-        self.frequency = info['frequency']
-        self.method = info['method']
-        self.start_date = info['start_date']
-        self.end_date = info['end_date']
-        self.start_time = info['start_time']
-        self.end_time = info['end_time']
-        self.created_date = info['created_date']
-
-
-    def __repr__(self):
-        result = {
-            'id': self.id,
-            'exp_code': self.exp_code,
-            'frequency': str(self.frequency),
-            'method': str(self.method),
-            'start_date': str(self.start_date),
-            'end_date': str(self.end_date),
-            'start_time': str(self.start_time),
-            'end_time': str(self.end_time),
-            'created_date': str(self.created_date)
-        }
-        return json.dumps(result)
-
-    @staticmethod
-    def add_protocol(info):
-        new_protocol = Protocol(info)
-        db.session.add(new_protocol)
-        db.session.commit()
-        latest_protocol = Protocol.query.order_by('created_at desc').first()
-        return (200, 'Successfully added intervention', latest_protocol)
-
-    @staticmethod
-    def delete_protocol(id):
-        deleted_protocol = Protocol.query.filter_by(id=id)
-        Protocol.query.filter_by(id=id).delete()
-        db.session.commit()
-        return (200, 'Successfully deleted protocol.', deleted_protocol)
+# class Protocol(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     #exp_id = db.Column(db.Integer, db.ForeignKey('experiment_v2.id'))
+#     exp_code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
+#     frequency = db.Column(db.String(120))
+#     method = db.Column(db.String(120))
+#     start_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+#     end_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+#     start_time = db.Column(db.String(50))
+#     end_time = db.Column(db.String(50))
+#     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+#
+#     def __init__(self, info):
+#         self.exp_code = info['exp_code']
+#         self.frequency = info['frequency']
+#         self.method = info['method']
+#         self.start_date = info['start_date']
+#         self.end_date = info['end_date']
+#         self.start_time = info['start_time']
+#         self.end_time = info['end_time']
+#         self.created_date = info['created_date']
+#
+#
+#     def __repr__(self):
+#         result = {
+#             'id': self.id,
+#             'exp_code': self.exp_code,
+#             'frequency': str(self.frequency),
+#             'method': str(self.method),
+#             'start_date': str(self.start_date),
+#             'end_date': str(self.end_date),
+#             'start_time': str(self.start_time),
+#             'end_time': str(self.end_time),
+#             'created_date': str(self.created_date)
+#         }
+#         return json.dumps(result)
+#
+#     @staticmethod
+#     def add_protocol(info):
+#         new_protocol = Protocol(info)
+#         db.session.add(new_protocol)
+#         db.session.commit()
+#         latest_protocol = Protocol.query.order_by('created_at desc').first()
+#         return (200, 'Successfully added intervention', latest_protocol)
+#
+#     @staticmethod
+#     def delete_protocol(id):
+#         deleted_protocol = Protocol.query.filter_by(id=id)
+#         Protocol.query.filter_by(id=id).delete()
+#         db.session.commit()
+#         return (200, 'Successfully deleted protocol.', deleted_protocol)
 
 
 #############################################################################################################
@@ -468,6 +473,7 @@ class ProtocolPushNotif(db.Model):
     notif_content = db.Column(db.String(20))
     notif_appid = db.Column(db.String(30))
     notif_type = db.Column(db.String(20))
+    notif_time = db.Column(db.String(20))
     probable_half_notify = db.Column(db.Boolean, default=False)
 
     def __init__(self, data):
@@ -480,6 +486,7 @@ class ProtocolPushNotif(db.Model):
         self.notif_content = data.get('notif_content')
         self.notif_appid = data.get('notif_appid')
         self.notif_type = data.get('notif_type')
+        self.notif_time = data.get('notif_time')
         self.probable_half_notify = data.get('probable_half_notify')
 
     def __repr__(self):
@@ -495,6 +502,7 @@ class ProtocolPushNotif(db.Model):
             'notif_content': str(self.notif_content),
             'notif_appid': str(self.notif_appid),
             'notif_type': str(self.notif_type),
+            'notif_time': str(self.notif_time),
             'probable_half_notify': str(self.probable_half_notify)
         }
         return json.dumps(result)
@@ -504,13 +512,13 @@ class ProtocolPushNotif(db.Model):
         new_protocol = ProtocolPushNotif(data)
         db.session.add(new_protocol)
         db.session.commit()
-        latest_protocol = Protocol.query.order_by('created_at desc').first()
+        latest_protocol = ProtocolPushNotif.query.order_by('created_at desc').first()
         return 200, 'Successfully added intervention', latest_protocol
 
     @staticmethod
     def delete_protocol(pid):
         deleted_protocol = ProtocolPushNotif.query.filter_by(id=pid)
-        Protocol.query.filter_by(id=pid).delete()
+        ProtocolPushNotif.query.filter_by(id=pid).delete()
         db.session.commit()
         return 200, 'Successfully deleted protocol.', deleted_protocol
 

@@ -30,24 +30,30 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
+                        <th class="col-md-1"> NO</th>
                         <th> TITLE</th>
                         <th> CODE</th>
                         <th> START DATE</th>
                         <th> END DATE</th>
+{#                        <th> DELETE</th>#}
                     </tr>
                     </thead>
 
                     <tbody>
                     {% for exp in  experiments %}
                         <tr>
-                            <td class="col-md-3">
+                        <td class="col-md-1">{{ loop.index }}</td>
+                            <td class="col-md-4">
                                 <a href="/experiment/{{ exp.code }}">
                                     {{ exp.title }}
                                 </a>
                             </td>
-                            <td class="col-md-2"> {{ exp.code }} </td>
-                            <td class="col-md-2"> {{ exp.start_date | onlyfancydate }} </td>
-                            <td class="col-md-2"> {{ exp.end_date | onlyfancydate }} </td>
+                            <td class="col-md-1"> {{ exp.code }} </td>
+                            <td class="col-md-1"> {{ exp.start_date | onlyfancydate }} </td>
+                            <td class="col-md-1"> {{ exp.end_date | onlyfancydate }} </td>
+{#                            <td class="col-md-2"><button class="btn btn-danger btn-sm" onclick="{{ exp.id }}">#}
+{#                                <span class="glyphicon glyphicon-remove"></span>#}
+                            </button> </td>
                         </tr>
                     {% endfor %}
                     </tbody>

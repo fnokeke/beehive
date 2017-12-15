@@ -1,7 +1,7 @@
 (function (window, document) {
 
-    $('#exp-start-date').datepicker('setDate', new Date());
-    $('#exp-end-date').datepicker('setDate', new Date());
+    // $('#exp-start-date').datepicker('setDate', new Date());
+    // $('#exp-end-date').datepicker('setDate', new Date());
 
     $('#step1-basic').click(function () {
         focus_slide1();
@@ -108,19 +108,19 @@ function load_slide4() {
         'label': $('#exp-label').val(),
         'title': $('#exp-title').val(),
         'description': $('#exp-description').val(),
-        'start': $('#exp-end-date').val(),
-        'end': $('#exp-end-date').val(),
-        'screenEvents': $('#exp-screen-events').val(),
-        'appUsage': $('#exp-app-usage').val(),
-        'protocols': {},
+        'start_date': $('#exp-end-date').val(),
+        'end_date': $('#exp-end-date').val(),
+        'screen_events': $('#exp-screen-events').is(':checked'),
+        'app_usage': $('#exp-app-usage').is(':checked'),
+        'protocols': {}
     };
 
     // Review basic info
     $('#review-label').val(experiment.label);
     $('#review-title').val(experiment.title);
     $('#review-description').val(experiment.description);
-    $('#review-start-date').val(experiment.start);
-    $('#review-end-date').val(experiment.end);
+    $('#review-start-date').val(experiment.start_date);
+    $('#review-end-date').val(experiment.end_date);
 
 
     // Review data streams
@@ -161,26 +161,31 @@ function load_slide4() {
         protocols = JSON.parse(protocols);
         var view;
         view = '<table id="protocol-list-table" class="table table-striped table-bordered"><tr>' +
-            '<th class="center-text"> Name </th>' +
+            '<th class="center-text"> Label </th>' +
             '<th class="center-text"> Frequency </th>' +
             '<th class="center-text"> Method </th>' +
             '<th class="center-text"> Start Date </th>' +
             '<th class="center-text"> End Date </th>' +
-            '<th class="center-text"> Start Time </th>' +
-            '<th class="center-text"> End Time </th>' +
+            '<th class="center-text"> Notification </th>' +
+            '<th class="center-text"> Half Notify </th>' +
             '</tr><tbody>';
 
         // Add each experiment details to the table
+        var notif, protocol, row;
         for (var i = protocols.length - 1; i >= 0; i--) {
             protocol = protocols[i];
+            notif = 'n/a';
+            if (protocol.method === 'push_notification') {
+                notif = protocol.notif_title + ' / ' + protocol.notif_content + ' / ' + protocol.notif_appid;
+            }
             row = '<tr>' +
-                '<td class="center-text">' + protocol.name + '</td>' +
+                '<td class="center-text">' + protocol.label + '</td>' +
                 '<td class="center-text">' + protocol.frequency + '</td>' +
                 '<td class="center-text">' + protocol.method + '</td>' +
-                '<td class="center-text">' + formatDate(protocol.startDate) + '</td>' +
-                '<td class="center-text">' + formatDate(protocol.endEate) + '</td>' +
-                '<td class="center-text">' + protocol.startTime + '</td>' +
-                '<td class="center-text">' + protocol.endTime + '</td>' +
+                '<td class="center-text">' + formatDate(protocol.start_date) + '</td>' +
+                '<td class="center-text">' + formatDate(protocol.end_date) + '</td>' +
+                '<td class="center-text">' + notif + '</td>' +
+                '<td class="center-text">' + protocol.probable_half_notify + '</td>' +
                 '</tr>';
             view += row;
         }
@@ -203,11 +208,12 @@ function load_slide4() {
 
 // Function to toggle menu based on Protocol options
 $('#protocol-method').on('change', function () {
-    if ($(this).val() === "None") {
+    console.log('value:', $(this).val());
+    if ($(this).val() === "none") {
         $("#protocol-date-time").addClass("hidden");
         $("#notification-types").addClass("hidden");
     }
-    else if ($(this).val() === "Push Notification") {
+    else if ($(this).val() === "push_notification") {
         $("#protocol-date-time").addClass("hidden");
         $("#notification-types").removeClass("hidden");
     }
@@ -219,21 +225,21 @@ $('#protocol-method').on('change', function () {
 
 
 // Function to toggle menu based on Notification options
-$('#notification-options').on('change', function () {
-    if ($(this).val() === "Fixed time") {
-        $("#notification-fixed").removeClass("hidden");
-        $("#notification-user").addClass("hidden");
-        $("#notification-sleep").addClass("hidden");
+$('#protocol-options-notif-type').on('change', function () {
+    if ($(this).val() === "fixed") {
+        $("#div-notif-fixed").removeClass("hidden");
+        $("#div-notif-user-window").addClass("hidden");
+        $("#div-notif-sleep-awake").addClass("hidden");
     }
-    else if ($(this).val() === "User window") {
-        $("#notification-fixed").addClass("hidden");
-        $("#notification-user").removeClass("hidden");
-        $("#notification-sleep").addClass("hidden");
+    else if ($(this).val() === "user_window") {
+        $("#div-notif-fixed").addClass("hidden");
+        $("#div-notif-user-window").removeClass("hidden");
+        $("#div-notif-sleep-awake").addClass("hidden");
     }
     else {
-        $("#notification-fixed").addClass("hidden");
-        $("#notification-user").addClass("hidden");
-        $("#notification-sleep").removeClass("hidden");
+        $("#div-notif-fixed").addClass("hidden");
+        $("#div-notif-user-window").addClass("hidden");
+        $("#div-notif-sleep-awake").removeClass("hidden");
     }
 });
 
@@ -248,13 +254,14 @@ $('#notification-fixed-random').click(function () {
 
 
 // Function to handle notification-user-random checkbox
-$('#notification-user-random').click(function () {
-    if ($(this).is(':checked')) {
-        $("#notification-user-time-options").prop("disabled", true);
-    } else {
-        $("#notification-user-time-options").prop("disabled", false);
-    }
-});
+// $('#probable-half-notify').click(function () {
+//     console.log($(this).is(':checked'));
+//     if ($(this).is(':checked')) {
+//         $("#notification-user-time-options").prop("disabled", true);
+//     } else {
+//         $("#notification-user-time-options").prop("disabled", false);
+//     }
+// });
 
 
 //////////////////////////////////////////////////////////
@@ -267,7 +274,6 @@ function create_experiment_handler() {
     var response_field = '#review-experiment-error';
 
     var owner = $('#exp-owner').val();
-    console.log('owner: ', owner);
     var label = $('#exp-label').val();
     var title = $('#exp-title').val();
     var description = $('#exp-description').val();
@@ -289,12 +295,6 @@ function create_experiment_handler() {
         return;
     }
 
-    if (protocols) {
-        protocols = JSON.parse(protocols);
-    } else {
-        protocols = {};
-    }
-
     var url = '/add/experiment/v2';
     var data = {
         'label': label,
@@ -304,8 +304,9 @@ function create_experiment_handler() {
         'end_date': end_date.toJSON(),
         'screen_events': screen_events,
         'app_usage': app_usage,
-        'protocols': protocols,
-        'owner': owner
+        'protocols': localStorage.protocols || '[]',
+        'owner': owner,
+        'probable_half_notify': $('#probable-half-notify').is(':checked')
     };
 
     // Hide button on click to avoid multiple requests
@@ -392,38 +393,40 @@ function create_protocol_handler() {
         }
 
         // Create protocol objects
+        var notif_type = $('#protocol-options-notif-type').val();
+        var sleep_window_hrs = $('#notification-sleep-time-options').val();
+        var sleep_or_awake_mode = $('#protocol-notif-sleep-awake').val();
+        var sleep_time = sleep_window_hrs + ';' + sleep_or_awake_mode; // e.g. 2_hour;before_sleep
+        var user_window_hrs = $('#notification-user-time-options').val(); // e.g. 3_hour
+        var fixed_time = $('#protocol-fixed-exact-time').val(); // e.g. 12:00:00
+
+        var notif_time = 'n/a';
+        if (notif_type === 'fixed') {
+            notif_time = fixed_time;
+        } else if (notif_type === 'user_window') {
+            notif_time = user_window_hrs;
+        } else if (notif_type === 'sleep_wake') {
+           notif_time = sleep_time
+        }
+
         var protocol = {
             'id': id,
-            'name': $('#protocol-name').val(),
-            'frequency': $('#protocol-frequency').val(),
+            'label': $('#protocol-label').val(),
             'method': $('#protocol-method').val(),
-            'startDate': $('#protocol-start-date').val(),
-            'endDate': $('#protocol-end-date').val(),
-            'startTime': $('#protocol-start-time').val(),
-            'endTime': $('#protocol-end-time').val(),
+            'start_date': $('#protocol-start-date').val(),
+            'end_date': $('#protocol-end-date').val(),
+            'frequency': $('#protocol-frequency').val(),
+            'notif_title': $('#protocol-notif-title').val(),
+            'notif_content': $('#protocol-notif-content').val(),
+            'notif_appid': $('#protocol-notif-appid').val(),
+            'notif_type': notif_type,
+            'notif_time': notif_time,
+            'probable_half_notify': $('#probable-half-notify').is(':checked')
         };
 
         protocols.push(protocol);
         protocols = JSON.stringify(protocols);
         localStorage.setItem("protocols", protocols);
-
-        // Code for localStorage/sessionStorage.
-        // Store
-        // localStorage.setItem("title", protocol);
-        // localStorage.setItem("protocols", protocol);
-        // Retrieve
-        // var local = localStorage.getItem("title");
-        // remove
-        // localStorage.removeItem("title");
-
-        /*
-        console.log("Num storage:" + localStorage.length);
-        for(var i=0, len=localStorage.length; i<len; i++) {
-            var key = localStorage.key(i);
-            var value = localStorage[key];
-            console.log(key + " => " + value);
-        }
-        */
 
     } else {
         // Sorry! No Web Storage support..
@@ -457,7 +460,7 @@ function update_protocols_view() {
     });
 
     // TO DO : Extract data from local storage and display protocols
-    protocols = localStorage.getItem("protocols");
+    var protocols = localStorage.getItem("protocols");
 }
 
 /* Function to populate the protocols table */
@@ -471,27 +474,33 @@ function create_protocols_table(experiments) {
     if (protocols && (JSON.parse(protocols).length > 0)) {
         protocols = JSON.parse(protocols);
         view = '<table id="protocol-list-table" class="table table-striped table-bordered"><tr>' +
-            '<th class="center-text"> Name </th>' +
+            '<th class="center-text"> Label </th>' +
             '<th class="center-text"> Frequency </th>' +
             '<th class="center-text"> Method </th>' +
             '<th class="center-text"> Start Date </th>' +
             '<th class="center-text"> End Date </th>' +
-            '<th class="center-text"> Start Time </th>' +
-            '<th class="center-text"> End Time </th>' +
+            '<th class="center-text"> Notification </th>' +
+            '<th class="center-text"> Half Notify </th>' +
             '<th class="center-text"> Delete </th>' +
             '</tr><tbody>';
 
         // Add each experiment details to the table
+        var notif, protocol, row;
         for (var i = protocols.length - 1; i >= 0; i--) {
             protocol = protocols[i];
+            notif = 'n/a';
+            //TODO: refactor this repeating code
+            if (protocol.method === 'push_notification') {
+                notif = protocol.notif_title + ' / ' + protocol.notif_content + ' / ' + protocol.notif_appid;
+            }
             row = '<tr>' +
-                '<td class="center-text">' + protocol.name + '</td>' +
+                '<td class="center-text">' + protocol.label + '</td>' +
                 '<td class="center-text">' + protocol.frequency + '</td>' +
                 '<td class="center-text">' + protocol.method + '</td>' +
-                '<td class="center-text">' + formatDate(protocol.startDate) + '</td>' +
-                '<td class="center-text">' + formatDate(protocol.endDate) + '</td>' +
-                '<td class="center-text">' + protocol.startTime + '</td>' +
-                '<td class="center-text">' + protocol.endTime + '</td>' +
+                '<td class="center-text">' + formatDate(protocol.start_date) + '</td>' +
+                '<td class="center-text">' + formatDate(protocol.end_date) + '</td>' +
+                '<td class="center-text">' + notif + '</td>' +
+                '<td class="center-text">' + protocol.probable_half_notify + '</td>' +
                 '<td class="center-text">' + '<button class="btn btn-danger btn-sm " onclick="delete_protocol_handler( ' + protocol.id + ' )">' +
                 '<span class="glyphicon glyphicon-remove"></span>' + '</button>' + '</td>' +
                 '</tr>';

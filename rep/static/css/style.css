@@ -347,3 +347,11 @@ form .buttons .submit:hover {background-color: #14892c;}
     background: inherit;
     left: 20px;
 }
+
+.float-i-right{
+    float: right;
+}
+
+.review-section-title {
+    font-size: 140%;
+}
