@@ -77,6 +77,11 @@ def to_json(param):
     return json.loads(str(param))
 
 
+def to_json_list(param):
+    if not param: return []
+    return [to_json(p) for p in param]
+
+
 def to_datetime(date_str, fmt=None):
     if not date_str or date_str == "": 
         return None

@@ -284,10 +284,10 @@ function create_experiment_handler() {
     var protocols = localStorage.getItem("protocols");
 
     // Perform data validation
-    start_date = '{0}T00:00:00-05:00'.format(start_date);
+    // start_date = '{0}T00:00:00-05:00'.format(start_date);
     start_date = new Date(start_date);
 
-    end_date = '{0}T00:00:00-05:00'.format(end_date);
+    // end_date = '{0}T00:00:00-05:00'.format(end_date);
     end_date = new Date(end_date);
 
     if (start_date.getTime() > end_date.getTime()) {
@@ -393,32 +393,45 @@ function create_protocol_handler() {
         }
 
         // Create protocol objects
-        var notif_type = $('#protocol-options-notif-type').val();
         var sleep_window_hrs = $('#notification-sleep-time-options').val();
         var sleep_or_awake_mode = $('#protocol-notif-sleep-awake').val();
         var sleep_time = sleep_window_hrs + ';' + sleep_or_awake_mode; // e.g. 2_hour;before_sleep
         var user_window_hrs = $('#notification-user-time-options').val(); // e.g. 3_hour
         var fixed_time = $('#protocol-fixed-exact-time').val(); // e.g. 12:00:00
 
-        var notif_time = 'n/a';
+        var notif_time;
+        var notif_type = $('#protocol-options-notif-type').val();
         if (notif_type === 'fixed') {
             notif_time = fixed_time;
         } else if (notif_type === 'user_window') {
             notif_time = user_window_hrs;
         } else if (notif_type === 'sleep_wake') {
-           notif_time = sleep_time
+            notif_time = sleep_time
+        }
+
+        var notif_title = $('#protocol-notif-title').val();
+        var notif_content = $('#protocol-notif-content').val();
+        var notif_appid = $('#protocol-notif-appid').val();
+
+        var protocol_method = $('#protocol-method').val();
+        if (protocol_method === 'none') {
+            notif_type = 'none';
+            notif_time = undefined;
+            notif_title = undefined;
+            notif_content = undefined;
+            notif_appid = undefined;
         }
 
         var protocol = {
             'id': id,
             'label': $('#protocol-label').val(),
-            'method': $('#protocol-method').val(),
             'start_date': $('#protocol-start-date').val(),
             'end_date': $('#protocol-end-date').val(),
             'frequency': $('#protocol-frequency').val(),
-            'notif_title': $('#protocol-notif-title').val(),
-            'notif_content': $('#protocol-notif-content').val(),
-            'notif_appid': $('#protocol-notif-appid').val(),
+            'method': protocol_method,
+            'notif_title': notif_title,
+            'notif_content': notif_content,
+            'notif_appid': notif_appid,
             'notif_type': notif_type,
             'notif_time': notif_time,
             'probable_half_notify': $('#probable-half-notify').is(':checked')

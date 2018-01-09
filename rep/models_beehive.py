@@ -15,8 +15,8 @@ class Experiment_v2(db.Model):
     label = db.Column(db.String(120))
     title = db.Column(db.String(120))
     description = db.Column(db.String(250))
-    start_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    end_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    start_date = db.Column(db.Date, default=datetime.datetime.utcnow().date)
+    end_date = db.Column(db.Date, default=datetime.datetime.utcnow().date)
     screen_events = db.Column(db.Boolean, default=False)
     app_usage = db.Column(db.Boolean, default=False)
     protocols = db.relationship('ProtocolPushNotif', backref='experiment_v2', lazy='select')
@@ -81,7 +81,7 @@ class Experiment_v2(db.Model):
     @staticmethod
     def delete_experiment(code):
         Experiment_v2.query.filter_by(code=code).delete()
-        Protocol.query.filter_by(code=code).delete()
+        ProtocolPushNotif.query.filter_by(code=code).delete()
         db.session.commit()
 
     @staticmethod
@@ -466,10 +466,10 @@ class ProtocolPushNotif(db.Model):
     label = db.Column(db.String(50))
     exp_code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    start_date = db.Column(db.DateTime)
-    end_date = db.Column(db.DateTime)
+    start_date = db.Column(db.Date)
+    end_date = db.Column(db.Date)
     frequency = db.Column(db.String(10))
-    notif_title = db.Column(db.String(10))
+    notif_title = db.Column(db.String(15))
     notif_content = db.Column(db.String(20))
     notif_appid = db.Column(db.String(30))
     notif_type = db.Column(db.String(20))

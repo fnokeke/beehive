@@ -17,27 +17,25 @@
 
         <div>
 
-            {% if not current_user.omh_access_token and not current_user.omh_refresh_token %}
-                <button type="submit" id="auth-omh-btn" class="btn btn-primary btn-lg btn-block">Connect Ohmage
-                </button><br>
+            {% if ohmage_signin %}
+                <div id="div_ohmage_signin">
+                    {% if not current_user.omh_access_token and not current_user.omh_refresh_token %}
+                        <button type="submit" id="auth-omh-btn" class="btn btn-primary btn-lg btn-block">Connect Ohmage
+                        </button><br>
 
-            {% else %}
-                <span class='text-primary'>
-          <em>
-            Ohmage is connected.
-          </em>
-        </span>
-
-                <br>
-                <br>
-                {#        <button type="submit" class="btn btn-primary" onclick="window.location.href='https://play.google.com/store/apps/details?id=com.facebook.katana&hl=en'">Continue to Mobile App</button>#}
-                <button type="submit" class="btn btn-primary btn-lg btn-block"
-                        onclick="window.location.href='beehive://androidlogin?email={{ current_user.email }}'">Continue
-                    to
-                    Mobile App
-                </button>
-
+                    {% else %}
+                        <span class='text-primary'> <em> Ohmage is connected. </em> </span>
+                    {% endif %}
+                </div>
             {% endif %}
+
+            <br>
+            <br>
+            <button type="submit" class="btn btn-primary btn-lg btn-block"
+                    onclick="window.location.href='{{ android_deeplink }}'">
+                Continue to Mobile App
+            </button>
+
 
         </div>
 
