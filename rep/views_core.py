@@ -594,11 +594,7 @@ def android_google_no_ohmage():
     login_user(user)
 
     android_app_deeplink = 'beehive://androidlogin'
-    info = {
-        'firstname': user.firstname,
-        'username': user.email
-    }
-    redirect_url = '{}={}'.format(android_app_deeplink, json.dumps(info))
+    redirect_url = "{}?{}?{}".format(android_app_deeplink, user.firstname, str(user))
     return redirect(redirect_url)
 
 

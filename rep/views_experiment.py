@@ -39,9 +39,9 @@ def experiment_options(code):
 def add_experiment_v2():
     experiment = request.form.to_dict()
     status, response, _ = Experiment_v2.add_experiment(experiment)
-    # protocols_str = request.form.get('protocols')
 
-    # status, response, _ = Experiment_v2.add_experiment(experiment, protocols_str)
+    print 'experiment to add: '
+    print experiment
     if status == 200:
         return response
     else:

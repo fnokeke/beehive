@@ -15,8 +15,8 @@ class Experiment_v2(db.Model):
     label = db.Column(db.String(120))
     title = db.Column(db.String(120))
     description = db.Column(db.String(250))
-    start_date = db.Column(db.Date, default=datetime.datetime.utcnow().date)
-    end_date = db.Column(db.Date, default=datetime.datetime.utcnow().date)
+    start_date = db.Column(db.Date)
+    end_date = db.Column(db.Date)
     screen_events = db.Column(db.Boolean, default=False)
     app_usage = db.Column(db.Boolean, default=False)
     protocols = db.relationship('ProtocolPushNotif', backref='experiment_v2', lazy='select')
@@ -33,6 +33,9 @@ class Experiment_v2(db.Model):
         self.screen_events = info.get('screen_events')
         self.app_usage = info.get('app_usage')
         self.owner = info['owner']
+
+        print 'info[start_date] = ', info['start_date']
+        print 'self.start_date = ', self.start_date
 
     def __repr__(self):
         result = {
