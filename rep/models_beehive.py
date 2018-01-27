@@ -6,9 +6,9 @@ import datetime
 import json
 import uuid
 
-
-#############################################################################################################
 # Database model for experiments
+
+
 class Experiment_v2(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(10), unique=True)
@@ -63,7 +63,7 @@ class Experiment_v2(db.Model):
     def add_experiment(exp):
         existing_experiment = Experiment_v2.query.filter_by(title=exp['title']).first()
         if existing_experiment:
-            #return  Response('Experiment with that name exists', status=400, mimetype='application/json')
+            # return  Response('Experiment with that name exists', status=400, mimetype='application/json')
             return (400, 'Experiment with that title exists', existing_experiment)
 
         new_experiment = Experiment_v2(exp)
@@ -78,8 +78,7 @@ class Experiment_v2(db.Model):
             ProtocolPushNotif.add_protocol(p)
 
         return (200, 'Successfully added experiment', new_experiment)
-        #return Response("{'Experiment successfully created'}", status=200, mimetype='application/json')
-
+        # return Response("{'Experiment successfully created'}", status=200, mimetype='application/json')
 
     @staticmethod
     def delete_experiment(code):
@@ -108,115 +107,8 @@ class Experiment_v2(db.Model):
         experiment = Experiment_v2.query.filter_by(code=update['code']).first()
         return experiment
 
-#############################################################################################################
-# Database model to store protocols for an experiment
-# class Protocol(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     #exp_id = db.Column(db.Integer, db.ForeignKey('experiment_v2.id'))
-#     exp_code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
-#     frequency = db.Column(db.String(120))
-#     method = db.Column(db.String(120))
-#     start_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-#     end_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-#     start_time = db.Column(db.String(50))
-#     end_time = db.Column(db.String(50))
-#     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-#
-#     def __init__(self, info):
-#         self.exp_code = info['exp_code']
-#         self.frequency = info['frequency']
-#         self.method = info['method']
-#         self.start_date = info['start_date']
-#         self.end_date = info['end_date']
-#         self.start_time = info['start_time']
-#         self.end_time = info['end_time']
-#         self.created_date = info['created_date']
-#
-#
-#     def __repr__(self):
-#         result = {
-#             'id': self.id,
-#             'exp_code': self.exp_code,
-#             'frequency': str(self.frequency),
-#             'method': str(self.method),
-#             'start_date': str(self.start_date),
-#             'end_date': str(self.end_date),
-#             'start_time': str(self.start_time),
-#             'end_time': str(self.end_time),
-#             'created_date': str(self.created_date)
-#         }
-#         return json.dumps(result)
-#
-#     @staticmethod
-#     def add_protocol(info):
-#         new_protocol = Protocol(info)
-#         db.session.add(new_protocol)
-#         db.session.commit()
-#         latest_protocol = Protocol.query.order_by('created_at desc').first()
-#         return (200, 'Successfully added intervention', latest_protocol)
-#
-#     @staticmethod
-#     def delete_protocol(id):
-#         deleted_protocol = Protocol.query.filter_by(id=id)
-#         Protocol.query.filter_by(id=id).delete()
-#         db.session.commit()
-#         return (200, 'Successfully deleted protocol.', deleted_protocol)
 
-
-#############################################################################################################
-# Database model to store enrollment information
-# class Participant(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     email = db.Column(db.String(250))
-#     google_oauth = db.Column(db.String(250))
-#     oauth_token = db.Column(db.String(250))
-#     registered_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-#
-#     def __init__(self, info):
-#         self.email = info.get('email')
-#         self.google_oauth = info.get('google_oauth')
-#         self.oauth_token = info.get('oauth_token')
-#
-#     def __repr__(self):
-#         result = {
-#             'id': self.id,
-#             'email': self.email,
-#             'google_oauth': self.google_oauth,
-#             'oauth_token' : self.oauth_token,
-#             'registered_date': str(self.registered_date)
-#         }
-#         return json.dumps(result)
-#
-#
-#     @staticmethod
-#     def register(data):
-#         # Check if participant already registered
-#         result = Participant.query.filter_by(email=data['email']).count()
-#         print 'count: ', result
-#         print 'data:' , data
-#
-#         if result > 0:
-#             response_message = {'message' : 'Participant already enrolled'}
-#             http_response_code = 200
-#             return (http_response_code, response_message, str(result))
-#
-#         new_participant = Participant(data)
-#         db.session.add(new_participant)
-#         db.session.commit()
-#
-#         result = Participant.query.filter_by(email=data['email']).count()
-#         if result>0:
-#             response_message = {'message': 'Participant enrolled successfully'}
-#             http_response_code = 200
-#         else:
-#             response_message = {'error': 'Participant enrollment failed'}
-#             http_response_code = 500
-#         return (http_response_code, response_message, result)
-
-
-#############################################################################################################
 class Researcher(db.Model):
-
     # google login info and credentials for accessing google calendar
     email = db.Column(db.String(120), primary_key=True, unique=True)
     firstname = db.Column(db.String(120))
@@ -308,16 +200,15 @@ class Researcher(db.Model):
 
 # Database model to store participant information
 class Participant(db.Model):
-    # google login info and credentials for accessing google calendar
     email = db.Column(db.String(120), primary_key=True, unique=True)
     firstname = db.Column(db.String(120))
     lastname = db.Column(db.String(120))
     gender = db.Column(db.String(10))
     picture = db.Column(db.String(120))
     google_credentials = db.Column(db.String(2500), unique=True)
-
     omh_access_token = db.Column(db.String(120))
     omh_refresh_token = db.Column(db.String(120))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, profile):
         self.email = profile.get('email', '')
@@ -407,6 +298,7 @@ class Participant(db.Model):
         user = cls.query.get(email)
         return user
 
+
 #############################################################################################################
 # Database model to store enrollment information
 class Enrollment(db.Model):
@@ -427,7 +319,6 @@ class Enrollment(db.Model):
         }
         return json.dumps(result)
 
-
     @staticmethod
     def enroll(data):
         # Check if participant already registered
@@ -437,7 +328,7 @@ class Enrollment(db.Model):
         # Check if already enrolled to prevent duplicate enrollment
         result = Enrollment.query.filter_by(exp_code=data['exp_code'], participant_id=data['participant_id']).count()
         if result > 0:
-            response_message = {'message' : 'Participant already enrolled in ' + data['exp_code']}
+            response_message = {'message': 'Participant already enrolled in ' + data['exp_code']}
             http_response_code = 200
             resp = {}
             experiment = Experiment_v2.query.filter_by(code=data['exp_code']).first()
@@ -526,4 +417,123 @@ class ProtocolPushNotif(db.Model):
         return 200, 'Successfully deleted protocol.', deleted_protocol
 
 
+class NotifEvent(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), db.ForeignKey('participant.email'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+
+    alarm_millis = db.Column(db.BigInteger)
+    ringer_mode = db.Column(db.String(10))
+    title = db.Column(db.String(50))
+    content = db.Column(db.String(50))
+    app_id = db.Column(db.String(30))
+
+    was_dismissed = db.Column(db.Boolean)
+    event_time_millis = db.Column(db.BigInteger)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, info):
+        self.email = info['email']
+        self.code = info['code']
+        self.alarm_millis = info['alarm_millis']
+        self.ringer_mode = info['ringer_mode']
+        self.title = info['title']
+        self.content = info['content']
+        self.app_id = info['app_id']
+        self.was_dismissed = info['was_dismissed']
+        self.event_time_millis = info['event_time_millis']
+
+    def __repr__(self):
+        result = {
+            'id': self.id,
+            'email': self.email,
+            'code': self.code,
+            'alarm_millis': self.alarm_millis,
+            'ringer_mode': self.ringer_mode,
+            'title': self.title,
+            'content': self.content,
+            'app_id': self.app_id,
+            'was_dismissed': self.was_dismissed,
+            'event_time_millis': str(self.event_time_millis),
+            'created_at': str(self.created_at)
+        }
+        return json.dumps(result)
+
+    @staticmethod
+    def add_stats(info):
+        rows = info['logs'].split(';')
+
+        for row in rows:
+            if row == "":
+                continue
+
+            username, code, alarm_millis, ringer_mode, title, content, app_id, was_dismissed, event_time_millis = \
+                row.split(",")
+
+            entry = {
+                'email': username.strip('#'),  # temp fix because for some reason username has '#
+                'code': code.strip(),
+                'alarm_millis': alarm_millis,
+                'ringer_mode': ringer_mode,
+                'title': title,
+                'content': content,
+                'app_id': app_id,
+                'was_dismissed': was_dismissed,
+                'event_time_millis': event_time_millis
+            }
+            new_stat = NotifEvent(entry)
+            db.session.add(new_stat)
+
+        db.session.commit()
+        return 200, 'Successfully added Notif Event!', ""
+
+
+class InAppAnalytics(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), db.ForeignKey('participant.email'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    event_time_millis = db.Column(db.BigInteger)
+    event_desc = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, info):
+        self.email = info['email']
+        self.code = info['code']
+        self.event_time_millis = info['event_time_millis']
+        self.event_desc = info['event_desc']
+
+    def __repr__(self):
+        result = {
+            'id': self.id,
+            'email': self.email,
+            'code': self.code,
+            'event_time_millis': str(self.event_time_millis),
+            'event_desc': self.event_desc,
+            'created_at': str(self.created_at)
+        }
+        return json.dumps(result)
+
+    @staticmethod
+    def add_stats(info):
+        rows = info['logs'].split(';')
+        for row in rows:
+            if row == "":
+                continue
+
+            event_time_millis, event_desc = row.split(",")
+            entry = {
+                'email': info['username'].strip('#'),
+                'code': info['code'].strip(),
+                'event_time_millis': event_time_millis,
+                'event_desc': event_desc
+            }
+            new_stat = InAppAnalytics(entry)
+            db.session.add(new_stat)
+
+        db.session.commit()
+        return 200, 'Successfully added InAppAnalytics Event!', ""
+
 # TODO: have only one experiment table
+# TODO: move to same place: Beehive Researcher, Participant, NotifEvent
+# TODO: consider creating a beehive package instead of prefixing every file with Beehive
+# TODO: increase the length of notification title and content

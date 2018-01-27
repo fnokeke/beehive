@@ -24,7 +24,7 @@ from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationC
 from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkPrelimRecruit
 from rep.models import Experiment_v2, ProtocolPushNotif, Researcher, Enrollment, Participant, NewParticipant, TechnionUser
 from rep.models import MturkExclusive, NafEnroll, NafStats, ImageTextUpload
-from rep.models import NotifClickedStats, RescuetimeConfig, ScreenUnlockConfig
+from rep.models import RescuetimeConfig, ScreenUnlockConfig
 from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_FacebookLog, TP_ScreenLog
 from rep.moves import Moves
 from rep.omh import OMHOauth
@@ -253,16 +253,6 @@ def millis_to_dt(time_milli):
     return datetime.utcfromtimestamp(time_milli // 1000).replace(microsecond=time_milli % 1000 * 1000)
 
 
-@app.route('/mobile/add/notif-clicked-stats', methods=['POST'])
-def add_notif_clicked_stats():
-    data = json.loads(request.data) if request.data else request.form.to_dict()
-    data['time_appeared'] = millis_to_dt(data['time_appeared'])
-    data['time_clicked'] = millis_to_dt(data['time_clicked'])
-
-    _, response, notif_stats = NotifClickedStats.add_stats(data)
-    return json.dumps({'response': response, 'notif_stats': to_json(notif_stats)})
-
-
 # ////////////////////////////////////////////
 # mobile Beehive rescuetime && interventions
 # ////////////////////////////////////////////
@@ -413,13 +403,6 @@ def fetch_interventions():
 #     return render_template('old-edit-experiment.html', **ctx)
 
 
-@app.route('/notif-clicked-dashboard/<code>')
-def notif_clicked_dashboard(code):
-    experiment = Experiment.query.filter_by(code=code).first()
-    ctx = {'notif_stats': NotifClickedStats.query.filter_by(code=code).all(), 'experiment': experiment}
-    return render_template('/dashboards/notif-clicked-dashboard.html', **ctx)
-
-
 @app.route('/participants-dashboard/<code>')
 def participant_dashboard(code):
     experiment = Experiment.query.filter_by(code=code).first()
@@ -565,6 +548,7 @@ def participant_enroll():
         # return redirect(url_for('experiments'))
 
 
+# TODO: track what adds '#' to emails from Google
 @app.route('/android_google_no_ohmage')
 def android_google_no_ohmage():
     flow = OAuth2WebServerFlow(

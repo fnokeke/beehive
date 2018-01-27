@@ -4,6 +4,7 @@ from flask import render_template, request, Response
 import json
 
 from rep.models import Experiment_v2, ProtocolPushNotif
+from rep.models_beehive import NotifEvent, InAppAnalytics
 from rep.utils import to_json
 
 
@@ -26,4 +27,22 @@ def fetch_study():
         response = {"error": "Invalid experiment code"}
 
     return Response(response=json.dumps(response), status=status, mimetype='application/json')
+
+
+@app.route('/mobile/add/notif', methods=['POST'])
+def add_notif_events():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    data['username'] = data['username'].strip('#')  # temp fix because for some reason '#' is appended to username :/
+    _, response, __ = NotifEvent.add_stats(data)
+    return json.dumps({'response': response, 'email': data['username']})
+
+
+@app.route('/mobile/add/analytics', methods=['POST'])
+def add_app_analytics():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    data['username'] = data['username'].strip('#')  # temp fix because for some reason '#' is appended to username :/
+    _, response, __ = InAppAnalytics.add_stats(data)
+    return json.dumps({'response': response, 'email': data['username']})
+
+
 
