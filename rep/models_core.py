@@ -918,8 +918,8 @@ class ScreenUnlockConfig(db.Model):
         return (200, 'Successfully added screen unlock setting.', unlock_setting)
 
 
-class NewParticipant(db.Model):
 
+class NewParticipant(db.Model):
     # google login info and credentials for accessing google calendar
     email = db.Column(db.String(120), primary_key=True, unique=True)
     firstname = db.Column(db.String(120))
@@ -1019,8 +1019,9 @@ class NewParticipant(db.Model):
         user = cls.query.get(email)
         return user
 
-class TechnionUser(db.Model):
 
+########################################################################################################################
+class TechnionUser(db.Model):
     # google login info and credentials for accessing google calendar
     email = db.Column(db.String(120), primary_key=True, unique=True)
     firstname = db.Column(db.String(120))
@@ -1106,6 +1107,22 @@ class TechnionUser(db.Model):
         return cls.query.all()
 
     @classmethod
+    def get_all_users_data(cls):
+        """
+        Return list of all users data from database.
+        """
+        users = cls.query.all()
+        all_users = []
+
+        for user in users:
+            #user_data = []
+            user_data = {}
+            user_data['email'] = user.email
+            user_data['access_token'] = user.rescuetime_access_token
+            all_users.append(user_data)
+        return all_users
+
+    @classmethod
     def from_profile(cls, profile):
         """
         Return new user or existing user from database using their profile information.
@@ -1118,6 +1135,7 @@ class TechnionUser(db.Model):
 
         user = cls.query.get(email)
         return user
+
 
 class VibrationConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)

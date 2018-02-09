@@ -124,3 +124,15 @@ class RescueTime(object):
         }
         r = requests.get(activity_url, params=params)
         return r.text
+
+    @staticmethod
+    def fetch_daily_activity(access_token):
+        """ Can fetch daily activities from RescueTime server """
+        if not access_token: return '[]'
+        activity_url = 'https://www.rescuetime.com/api/oauth/daily_summary_feed?'
+        params = {
+            'access_token': access_token
+        }
+        print "token:",access_token
+        r = requests.get(activity_url, params=params)
+        return r.text

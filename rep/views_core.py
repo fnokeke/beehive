@@ -1653,7 +1653,18 @@ def subliminal():
 # Dashboard for all user RescueTime stats
 @app.route('/dashboard/rescuetime')
 def dashboard_rescuetime():
-    ctx = {'users': TechnionUser.query.all()}
-    # TODO : for each user get Oauth Token and fetch daily data
-    #return render_template('technion/technion-dashboard.html', **ctx)
+    users =  TechnionUser.get_all_users_data()
+
+    data = []
+    for user in users:
+        temp = {}
+        temp['email'] = user['email']
+        # TODO : for each user get Oauth Token and fetch daily data
+        temp['data'] = RescueTime.fetch_daily_activity(user['access_token'])
+        data.append(temp)
+
+    #print data
+    ctx = {'users': data}
     return render_template('/dashboards/rescuetime-dashboard-v2.html', **ctx)
+
+
