@@ -33,7 +33,7 @@ from rep.upload import Upload
 from rep.utils import requires_basic_auth
 from rep.utils import to_json, to_datetime
 
-##########################################################################################################
+########################################################################################################################
 app.debug = True
 
 
@@ -167,9 +167,9 @@ def get_next_condition(total_enrolled, ps_per_condition):
     return 1 + (total_enrolled % ps_per_condition)
 
 
-# //////////////////////////////////////
+########################################################################################################################
 # Beehive mobile user study connection
-# //////////////////////////////////////
+########################################################################################################################
 @app.route('/mobile/connect/study', methods=['POST'])
 def connect_study():
     data = json.loads(request.data) if request.data else request.form.to_dict()
@@ -253,9 +253,9 @@ def millis_to_dt(time_milli):
     return datetime.utcfromtimestamp(time_milli // 1000).replace(microsecond=time_milli % 1000 * 1000)
 
 
-# ////////////////////////////////////////////
+########################################################################################################################
 # mobile Beehive rescuetime && interventions
-# ////////////////////////////////////////////
+########################################################################################################################
 @app.route("/rescuetime/summary", methods=['POST'])
 def fetch_rt_summary():
     data = json.loads(request.data) if request.data else request.form.to_dict()
@@ -503,9 +503,9 @@ def fetch_experiment_by_code(code):
     return str(experiment)
 
 
-##########################################################################################################
+########################################################################################################################
 # Participant registration and enrollment APIs
-##########################################################################################################
+########################################################################################################################
 # Register a participant and enroll in an experiment
 # -------- NOT USED -------- #
 @app.route('/participant/register', methods=['POST'])
@@ -975,9 +975,9 @@ def auth_moves():
     return redirect(url_for('home'))
 
 
-#######################################################
+########################################################################################################################
 # fetch different datastreams: Moves, PAM, RescueTime
-#######################################################
+########################################################################################################################
 @app.route("/data-moves/<date>")
 @login_required
 def get_moves_data(date):
@@ -1076,27 +1076,12 @@ def execute_calendar_command(calname, cmd):
     return response or 'Successfully completed!'
 
 
-#################################
-# MTURK
-#################################
 
 
-@app.route('/mturkregister')
-@requires_basic_auth
-def registermturk():
-    return render_template('mturk/register-mturk.html')
 
-
-@app.route('/mturk')
-def welcome_and_check():
-    return render_template('mturk/checkmturk.html')
-
-
-# ///////////////// Nicki - Aditya - Fabian ///////////////////
-# /////////////////////////////////////////////////////////////
-# /////////////////////////////////////////////////////////////
-# /////////////////////////////////////////////////////////////
-
+########################################################################################################################
+# ////////////////////////////////////////////// Nicki - Aditya - Fabian ///////////////////////////////////////////////
+########################################################################################################################
 
 @app.route('/naf')
 def naf_join():
@@ -1212,9 +1197,19 @@ def naf_register_mturk_workers():
     return response
 
 
-# /////////////////////////////////////////////////////////////
-# /////////////////////////////////////////////////////////////
-# /////////////////////////////////////////////////////////////
+
+########################################################################################################################
+# MTURK
+########################################################################################################################
+@app.route('/mturkregister')
+@requires_basic_auth
+def registermturk():
+    return render_template('mturk/register-mturk.html')
+
+
+@app.route('/mturk')
+def welcome_and_check():
+    return render_template('mturk/checkmturk.html')
 
 
 @app.route('/mturkdownload')
@@ -1653,14 +1648,12 @@ def technion_dashboard():
 def subliminal():
     return render_template('subliminal.html')
 
+
 # Note that ther is similar function defined above for the path ('/rescuetime-dashboard/<code>')
 # Dashboard for all user RescueTime stats
 @app.route('/dashboard/rescuetime')
 def dashboard_rescuetime():
     ctx = {'users': TechnionUser.query.all()}
+    # TODO : for each user get Oauth Token and fetch daily data
     #return render_template('technion/technion-dashboard.html', **ctx)
     return render_template('/dashboards/rescuetime-dashboard-v2.html', **ctx)
-
-
-# ctx = {'experiment': experiment, 'users_unfiltered': Participant.query.all()}
-# return render_template('/dashboards/rescuetime-dashboard.html', **ctx)
