@@ -741,9 +741,9 @@ def participant_register():
     return Response(response=json.dumps(response), status=status, mimetype='application/json')
 
 
-##########################################################################################################
+########################################################################################################################
 # Experiments V2 APIs
-##########################################################################################################
+########################################################################################################################
 # Fetch experiments from v2 table
 @app.route('/fetch/experiments/v2', methods=['GET'])
 def fetch_experiments_v2():
@@ -1569,7 +1569,9 @@ def split_into_text_image(text_image_id):
 
 
 
+########################################################################################################################
 # RescueTime
+########################################################################################################################
 @app.route("/auth-rt")
 @login_required
 def auth_rt():
@@ -1650,3 +1652,15 @@ def technion_dashboard():
 @app.route('/subliminal')
 def subliminal():
     return render_template('subliminal.html')
+
+# Note that ther is similar function defined above for the path ('/rescuetime-dashboard/<code>')
+# Dashboard for all user RescueTime stats
+@app.route('/dashboard/rescuetime')
+def dashboard_rescuetime():
+    ctx = {'users': TechnionUser.query.all()}
+    #return render_template('technion/technion-dashboard.html', **ctx)
+    return render_template('/dashboards/rescuetime-dashboard-v2.html', **ctx)
+
+
+# ctx = {'experiment': experiment, 'users_unfiltered': Participant.query.all()}
+# return render_template('/dashboards/rescuetime-dashboard.html', **ctx)

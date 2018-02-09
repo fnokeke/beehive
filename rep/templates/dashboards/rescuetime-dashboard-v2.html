@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Dashboard Stats
+{% endblock %}
+
+{% block contents %}
+
+
+  <div class="container">
+
+    <div class="page-header">
+      <h3>RescueTime Dashboard
+        <br>
+        <small>Total:
+          {{ users | length }}
+          user(s)</small>
+      </h3>
+      <br>
+      <em>To sort by multiple columns, hold down shift key and select columns.</em>
+    </div>
+
+    <table id="stats-table">
+
+      <thead>
+        <tr>
+          <th>
+            No
+          </th>
+
+          <th>
+            Email
+          </th>
+
+          <th>
+            Firstname
+          </th>
+
+          <th>
+            Lastname
+          </th>
+
+          <th>
+            Gender
+          </th>
+
+          <th>
+            Rescuetime Connected
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for user in users %}
+          <tr>
+            <td>
+              {{ loop.index }}
+            </td>
+
+            <td>
+              {{ user.email }}
+            </td>
+
+            <td>
+              {{ user.firstname }}
+            </td>
+
+            <td>
+              {{ user.lastname }}
+            </td>
+
+            <td>
+              {{ user.gender }}
+            </td>
+
+            <td>
+              {% if user.rescuetime_access_token %}
+                <span class="text-primary">
+                  &#10004;
+                </span>
+              {% else %}
+                <span class="text-danger">
+                  &#x2717;
+                </span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
