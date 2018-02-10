@@ -1660,14 +1660,17 @@ def dashboard_rescuetime():
 
     data = []
     for user in users:
-        temp = {}
-        temp['email'] = user['email']
         # TODO : for each user get Oauth Token and fetch daily data
-        temp['data'] = RescueTime.fetch_daily_activity(user['access_token'], date_yesterday)
-        data.append(temp)
+        # "row_headers":["Rank","Time Spent (seconds)","Number of People","Activity","Category","Productivity"],
+        json_data= json.loads(RescueTime.fetch_daily_activity(user['access_token'], date_yesterday))
+        json_data = json_data['rows']
+        json_data = json_data[0:5]
+        user['data'] = json_data
+        del user['access_token']
+        data.append(user)
 
-    print data
-    ctx = {'users': data}
+    #print data
+    ctx = {'users': data, 'date': date_yesterday}
 
     return render_template('/dashboards/rescuetime-dashboard-v2.html', **ctx)
 

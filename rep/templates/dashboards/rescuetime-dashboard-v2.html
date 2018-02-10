@@ -10,20 +10,27 @@
   <div class="container">
 
     <div class="page-header">
-      <h3>RescueTime Dashboard
+      <h3>RescueTime Dashboard:
         <br>
         <small>Total:
           {{ users | length }}
-          user(s)</small>
+          user(s)
+        </small>
+        <br>
+
+        <small class="info-text"> Date:
+          {{ date }}
+        </small>
+
       </h3>
       <br>
       <em>To sort by multiple columns, hold down shift key and select columns.</em>
     </div>
 
-    <table id="stats-table">
+    <table class="table table-hover", id="stats-table">
 
       <thead>
-        <tr>
+        <tr class="info">
           <th>
             No
           </th>
@@ -41,50 +48,48 @@
           </th>
 
           <th>
-            Gender
+            Data
           </th>
 
-          <th>
-            Rescuetime Connected
-          </th>
         </tr>
       </thead>
 
       <tbody>
         {% for user in users %}
-          <tr>
-            <td>
-              {{ loop.index }}
+          <tr >
+
+            <td >
+              <h5>{{ loop.index }}</h5>
             </td>
 
             <td>
-              {{ user.email }}
+              <h5> {{ user.email }}</h5>
             </td>
 
             <td>
-              {{ user.firstname }}
+              <h5> {{ user.firstname }} </h5>
             </td>
 
             <td>
-              {{ user.lastname }}
+              <h5> {{ user.lastname }} </h5>
             </td>
 
             <td>
-              {{ user.gender }}
-            </td>
 
-            <td>
-              {% if user.rescuetime_access_token %}
-                <span class="text-primary">
-                  &#10004;
-                </span>
-              {% else %}
-                <span class="text-danger">
-                  &#x2717;
-                </span>
-              {% endif %}
+                <table class="table">
+                   <thead>
+                      <tr class="info">
+                        <th> Rank </th>  <th> Time (seconds) </th>  <th>Activity </th>  <th> Category </th>  <th>Productivity </th>
+                      </tr>
+                   </thead>
+                  {% for data in user.data %}
+                       <tr> <td>{{ data[0] }} </td>  <td>{{ data[1] }} </td> <td>{{ data[3] }} </td>  <td>{{ data[4] }} </td> <td>{{ data[5] }} </td></tr>
+                  {% endfor %}
+                </table>
+
             </td>
           </tr>
+
         {% endfor %}
       </tbody>
     </table>

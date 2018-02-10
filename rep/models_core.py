@@ -3,7 +3,7 @@ from utils import to_json
 
 import datetime
 import json
-import uuid
+import uuid, collections
 
 
 class CalendarConfig(db.Model):
@@ -1116,8 +1116,10 @@ class TechnionUser(db.Model):
 
         for user in users:
             #user_data = []
-            user_data = {}
+            user_data = collections.OrderedDict()
             user_data['email'] = user.email
+            user_data['firstname'] = user.firstname
+            user_data['lastname'] = user.lastname
             user_data['access_token'] = user.rescuetime_access_token
             all_users.append(user_data)
         return all_users

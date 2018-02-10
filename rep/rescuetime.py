@@ -135,9 +135,9 @@ class RescueTime(object):
             'access_token': access_token,
             'restrict_begin': date,
             'restrict_end': date,
-            'perspective': 'interval',
+            'perspective': 'rank',
             'restrict_kind': 'activity',
-            'interval': 'hour',
+            'interval': 'day',
             'format': 'json'
         }
         r = requests.get(activity_url, params=params)
