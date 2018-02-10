@@ -7,7 +7,8 @@ import httplib2
 import json
 import pytz
 import requests
-from datetime import datetime
+from datetime import date
+from datetime import datetime, timedelta
 
 from apiclient import discovery
 from flask import Response
@@ -1653,6 +1654,8 @@ def subliminal():
 # Dashboard for all user RescueTime stats
 @app.route('/dashboard/rescuetime')
 def dashboard_rescuetime():
+    date_yesterday = date.today() - timedelta(days=1)
+    print date_yesterday
     users =  TechnionUser.get_all_users_data()
 
     data = []
@@ -1660,11 +1663,12 @@ def dashboard_rescuetime():
         temp = {}
         temp['email'] = user['email']
         # TODO : for each user get Oauth Token and fetch daily data
-        temp['data'] = RescueTime.fetch_daily_activity(user['access_token'])
+        temp['data'] = RescueTime.fetch_daily_activity(user['access_token'], date_yesterday)
         data.append(temp)
 
-    #print data
+    print data
     ctx = {'users': data}
+
     return render_template('/dashboards/rescuetime-dashboard-v2.html', **ctx)
 
 
