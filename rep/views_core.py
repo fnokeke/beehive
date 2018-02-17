@@ -4,7 +4,7 @@ Handle all app views
 
 import csv
 import httplib2
-import json
+import json, os
 import pytz
 import requests
 from datetime import date
@@ -1662,7 +1662,7 @@ def dashboard_rescuetime():
     for user in users:
         # TODO : for each user get Oauth Token and fetch daily data
         # "row_headers":["Rank","Time Spent (seconds)","Number of People","Activity","Category","Productivity"],
-        json_data= json.loads(RescueTime.fetch_daily_activity(user['access_token'], date_yesterday))
+        json_data = json.loads(RescueTime.fetch_daily_activity_rank(user['access_token'], date_yesterday))
         json_data = json_data['rows']
         json_data = json_data[0:5]
         user['data'] = json_data
@@ -1671,7 +1671,30 @@ def dashboard_rescuetime():
 
     #print data
     ctx = {'users': data, 'date': date_yesterday}
-
+    update_database_rescuetime()
     return render_template('/dashboards/rescuetime-dashboard-v2.html', **ctx)
+
+
+# TODO: Call periodically from a task queue to update RescueTime data
+def update_database_rescuetime():
+    BASE_DIR = "../data/rescuetime/"
+    date_yesterday = date.today() - timedelta(days=1)
+    print date_yesterday
+    users = TechnionUser.get_all_users_data()
+
+    data = []
+    # Download JSON data and store in a file
+    for user in users:
+        directory = BASE_DIR + user['email']
+        file_path = directory + "/" + str(date_yesterday)
+
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        # "row_headers":["Rank","Time Spent (seconds)","Number of People","Activity","Category","Productivity"],
+        json_data = RescueTime.fetch_daily_activity_interval_minute(user['access_token'], date_yesterday)
+        file = open(file_path, "w+");
+        file.write(json_data)
+        file.close()
 
 
