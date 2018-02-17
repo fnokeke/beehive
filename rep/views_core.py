@@ -2,7 +2,7 @@
 Handle all app views
 """
 
-import csv
+import csv, time
 import httplib2
 import json, os
 import pytz
@@ -1655,12 +1655,10 @@ def subliminal():
 @app.route('/dashboard/rescuetime')
 def dashboard_rescuetime():
     date_yesterday = date.today() - timedelta(days=1)
-    print date_yesterday
     users =  TechnionUser.get_all_users_data()
 
     data = []
     for user in users:
-        # TODO : for each user get Oauth Token and fetch daily data
         # "row_headers":["Rank","Time Spent (seconds)","Number of People","Activity","Category","Productivity"],
         json_data = json.loads(RescueTime.fetch_daily_activity_rank(user['access_token'], date_yesterday))
         json_data = json_data['rows']
@@ -1670,12 +1668,14 @@ def dashboard_rescuetime():
         data.append(user)
 
     ctx = {'users': data, 'date': date_yesterday}
-    store_rescuetime_data()
+    # store_rescuetime_data will be added to taskqueue managed by the apscheduler
+    # store_rescuetime_data()
     return render_template('/dashboards/rescuetime-dashboard-v2.html', **ctx)
 
 
-# TODO: Call periodically from a task queue to update RescueTime data
+
 def store_rescuetime_data():
+    print "store_rescuetime_data:", time.strftime("%A, %d. %B %Y %I:%M:%S %p")
     BASE_DIR = "../data/rescuetime/"
     date_yesterday = date.today() - timedelta(days=1)
     users = TechnionUser.get_all_users_data()
@@ -1684,12 +1684,12 @@ def store_rescuetime_data():
     count_rows = RescuetimeData.query.filter_by(created_date=date_yesterday).count()
 
     if count_rows:
-        print "Data already in database for date:", date_yesterday
+        print "store_rescuetime_data: Data already available in database for date:", date_yesterday
         return
 
     # Download JSON data and store in a file
-    print "########################################################################"
-    print "Running RescueTime data collection procedure for date:", date_yesterday
+    print "###############################################################################################"
+    print "store_rescuetime_data: Running RescueTime data collection procedure for date:", date_yesterday
     data = []
     count = 0
     for user in users:
@@ -1722,6 +1722,6 @@ def store_rescuetime_data():
             data['productivity'] = row[5]
             status, response, _ = RescuetimeData.add(data)
 
-    print "Data saved for", count, "RescueTime users."
-    print "RescueTime Data collection completed!"
-    print "########################################################################"
+    print "store_rescuetime_data: Data saved for", count, "RescueTime users."
+    print "store_rescuetime_data: RescueTime Data collection completed!"
+    print "###############################################################################################"
