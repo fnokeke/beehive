@@ -1678,12 +1678,22 @@ def dashboard_rescuetime():
 def store_rescuetime_data():
     BASE_DIR = "../data/rescuetime/"
     date_yesterday = date.today() - timedelta(days=1)
-    print date_yesterday
     users = TechnionUser.get_all_users_data()
 
-    data = []
+    # Sanity check to avoid database data duplication
+    count_rows = RescuetimeData.query.filter_by(created_date=date_yesterday).count()
+
+    if count_rows:
+        print "Data already in database for date:", date_yesterday
+        return
+
     # Download JSON data and store in a file
+    print "########################################################################"
+    print "Running RescueTime data collection procedure for date:", date_yesterday
+    data = []
+    count = 0
     for user in users:
+        count = count + 1
         directory = BASE_DIR + user['email']
         file_path = directory + "/" + str(date_yesterday)
 
@@ -1712,4 +1722,6 @@ def store_rescuetime_data():
             data['productivity'] = row[5]
             status, response, _ = RescuetimeData.add(data)
 
-
+    print "Data saved for", count, "RescueTime users."
+    print "RescueTime Data collection completed!"
+    print "########################################################################"
