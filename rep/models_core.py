@@ -1139,6 +1139,48 @@ class TechnionUser(db.Model):
         return user
 
 
+class RescuetimeData(db.Model):
+    # Store RescueTime data
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120))
+    created_date = db.Column(db.DateTime)
+    date = db.Column(db.DateTime)
+    time_spent = db.Column(db.Integer)
+    num_people = db.Column(db.Integer)
+    activity = db.Column(db.String(120))
+    category = db.Column(db.String(120))
+    productivity = db.Column(db.Integer)
+
+    def __init__(self, profile):
+        self.email = profile.get('email')
+        self.created_date = profile.get('created_date')
+        self.date = profile.get('date')
+        self.time_spent = profile.get('time_spent')
+        self.num_people = profile.get('num_people')
+        self.activity = profile.get('activity')
+        self.category = profile.get('category')
+        self.productivity = profile.get('productivity')
+
+    def __repr__(self):
+        result = {'id': self.id,
+                  'email': self.email,
+                  'created_date': str(self.created_date),
+                  'date': str(self.date),
+                  'time_spent': self.time_spent,
+                  'num_people': self.num_people,
+                  'activity': self.activity,
+                  'category': self.category,
+                  'productivity': self.productivity}
+        return json.dumps(result)
+
+    @staticmethod
+    def add(data):
+        new_row = RescuetimeData(data)
+        db.session.add(new_row)
+        db.session.commit()
+        return (200, 'Successfully added data.', new_row)
+
+
 class VibrationConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(10), db.ForeignKey('experiment.code'))

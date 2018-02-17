@@ -25,7 +25,7 @@ from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationC
 from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkPrelimRecruit
 from rep.models import Experiment_v2, ProtocolPushNotif, Researcher, Enrollment, Participant, NewParticipant, TechnionUser
 from rep.models import MturkExclusive, NafEnroll, NafStats, ImageTextUpload
-from rep.models import RescuetimeConfig, ScreenUnlockConfig
+from rep.models import RescuetimeConfig, RescuetimeData, ScreenUnlockConfig
 from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_FacebookLog, TP_ScreenLog
 from rep.moves import Moves
 from rep.omh import OMHOauth
@@ -1669,14 +1669,13 @@ def dashboard_rescuetime():
         del user['access_token']
         data.append(user)
 
-    #print data
     ctx = {'users': data, 'date': date_yesterday}
-    update_database_rescuetime()
+    store_rescuetime_data()
     return render_template('/dashboards/rescuetime-dashboard-v2.html', **ctx)
 
 
 # TODO: Call periodically from a task queue to update RescueTime data
-def update_database_rescuetime():
+def store_rescuetime_data():
     BASE_DIR = "../data/rescuetime/"
     date_yesterday = date.today() - timedelta(days=1)
     print date_yesterday
@@ -1691,10 +1690,26 @@ def update_database_rescuetime():
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        # "row_headers":["Rank","Time Spent (seconds)","Number of People","Activity","Category","Productivity"],
-        json_data = RescueTime.fetch_daily_activity_interval_minute(user['access_token'], date_yesterday)
+        # "row_headers":["Rank","Time Spent (seconds)","Number of People","Activity","Category","Productivity"]
+        json_data = json.loads(RescueTime.fetch_daily_activity_interval_minute(user['access_token'], date_yesterday))
+        # Write to file
         file = open(file_path, "w+");
-        file.write(json_data)
+        file.write(str(json_data))
         file.close()
+
+        # Write to database
+        json_data = json.loads(RescueTime.fetch_daily_activity_interval_minute(user['access_token'], date_yesterday))
+        rows = json_data['rows']
+        data = {}
+        for row in rows:
+            data['email'] = user['email']
+            data['created_date'] = date_yesterday
+            data['date'] = row[0]
+            data['time_spent'] = row[1]
+            data['num_people'] = row[2]
+            data['activity'] = row[3]
+            data['category'] = row[4]
+            data['productivity'] = row[5]
+            status, response, _ = RescuetimeData.add(data)
 
 
