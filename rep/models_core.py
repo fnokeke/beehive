@@ -3,7 +3,7 @@ from utils import to_json
 
 import datetime
 import json
-import uuid
+import uuid, collections
 
 
 class CalendarConfig(db.Model):
@@ -918,8 +918,8 @@ class ScreenUnlockConfig(db.Model):
         return (200, 'Successfully added screen unlock setting.', unlock_setting)
 
 
-class NewParticipant(db.Model):
 
+class NewParticipant(db.Model):
     # google login info and credentials for accessing google calendar
     email = db.Column(db.String(120), primary_key=True, unique=True)
     firstname = db.Column(db.String(120))
@@ -1019,8 +1019,9 @@ class NewParticipant(db.Model):
         user = cls.query.get(email)
         return user
 
-class TechnionUser(db.Model):
 
+########################################################################################################################
+class TechnionUser(db.Model):
     # google login info and credentials for accessing google calendar
     email = db.Column(db.String(120), primary_key=True, unique=True)
     firstname = db.Column(db.String(120))
@@ -1106,6 +1107,24 @@ class TechnionUser(db.Model):
         return cls.query.all()
 
     @classmethod
+    def get_all_users_data(cls):
+        """
+        Return list of all users data from database.
+        """
+        users = cls.query.all()
+        all_users = []
+
+        for user in users:
+            #user_data = []
+            user_data = collections.OrderedDict()
+            user_data['email'] = user.email
+            user_data['firstname'] = user.firstname
+            user_data['lastname'] = user.lastname
+            user_data['access_token'] = user.rescuetime_access_token
+            all_users.append(user_data)
+        return all_users
+
+    @classmethod
     def from_profile(cls, profile):
         """
         Return new user or existing user from database using their profile information.
@@ -1118,6 +1137,49 @@ class TechnionUser(db.Model):
 
         user = cls.query.get(email)
         return user
+
+
+class RescuetimeData(db.Model):
+    # Store RescueTime data
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120))
+    created_date = db.Column(db.DateTime)
+    date = db.Column(db.DateTime)
+    time_spent = db.Column(db.Integer)
+    num_people = db.Column(db.Integer)
+    activity = db.Column(db.String(120))
+    category = db.Column(db.String(120))
+    productivity = db.Column(db.Integer)
+
+    def __init__(self, profile):
+        self.email = profile.get('email')
+        self.created_date = profile.get('created_date')
+        self.date = profile.get('date')
+        self.time_spent = profile.get('time_spent')
+        self.num_people = profile.get('num_people')
+        self.activity = profile.get('activity')
+        self.category = profile.get('category')
+        self.productivity = profile.get('productivity')
+
+    def __repr__(self):
+        result = {'id': self.id,
+                  'email': self.email,
+                  'created_date': str(self.created_date),
+                  'date': str(self.date),
+                  'time_spent': self.time_spent,
+                  'num_people': self.num_people,
+                  'activity': self.activity,
+                  'category': self.category,
+                  'productivity': self.productivity}
+        return json.dumps(result)
+
+    @staticmethod
+    def add(data):
+        new_row = RescuetimeData(data)
+        db.session.add(new_row)
+        db.session.commit()
+        return (200, 'Successfully added data.', new_row)
+
 
 class VibrationConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)

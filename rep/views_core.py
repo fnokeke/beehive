@@ -2,12 +2,13 @@
 Handle all app views
 """
 
-import csv
+import csv, time
 import httplib2
-import json
+import json, os
 import pytz
 import requests
-from datetime import datetime
+from datetime import date
+from datetime import datetime, timedelta
 
 from apiclient import discovery
 from flask import Response
@@ -24,7 +25,7 @@ from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationC
 from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkPrelimRecruit
 from rep.models import Experiment_v2, ProtocolPushNotif, Researcher, Enrollment, Participant, NewParticipant, TechnionUser
 from rep.models import MturkExclusive, NafEnroll, NafStats, ImageTextUpload
-from rep.models import RescuetimeConfig, ScreenUnlockConfig
+from rep.models import RescuetimeConfig, RescuetimeData, ScreenUnlockConfig
 from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_FacebookLog, TP_ScreenLog
 from rep.moves import Moves
 from rep.omh import OMHOauth
@@ -33,7 +34,7 @@ from rep.upload import Upload
 from rep.utils import requires_basic_auth
 from rep.utils import to_json, to_datetime
 
-##########################################################################################################
+########################################################################################################################
 app.debug = True
 
 
@@ -167,9 +168,9 @@ def get_next_condition(total_enrolled, ps_per_condition):
     return 1 + (total_enrolled % ps_per_condition)
 
 
-# //////////////////////////////////////
+########################################################################################################################
 # Beehive mobile user study connection
-# //////////////////////////////////////
+########################################################################################################################
 @app.route('/mobile/connect/study', methods=['POST'])
 def connect_study():
     data = json.loads(request.data) if request.data else request.form.to_dict()
@@ -253,9 +254,9 @@ def millis_to_dt(time_milli):
     return datetime.utcfromtimestamp(time_milli // 1000).replace(microsecond=time_milli % 1000 * 1000)
 
 
-# ////////////////////////////////////////////
+########################################################################################################################
 # mobile Beehive rescuetime && interventions
-# ////////////////////////////////////////////
+########################################################################################################################
 @app.route("/rescuetime/summary", methods=['POST'])
 def fetch_rt_summary():
     data = json.loads(request.data) if request.data else request.form.to_dict()
@@ -503,9 +504,9 @@ def fetch_experiment_by_code(code):
     return str(experiment)
 
 
-##########################################################################################################
+########################################################################################################################
 # Participant registration and enrollment APIs
-##########################################################################################################
+########################################################################################################################
 # Register a participant and enroll in an experiment
 # -------- NOT USED -------- #
 @app.route('/participant/register', methods=['POST'])
@@ -741,9 +742,9 @@ def participant_register():
     return Response(response=json.dumps(response), status=status, mimetype='application/json')
 
 
-##########################################################################################################
+########################################################################################################################
 # Experiments V2 APIs
-##########################################################################################################
+########################################################################################################################
 # Fetch experiments from v2 table
 @app.route('/fetch/experiments/v2', methods=['GET'])
 def fetch_experiments_v2():
@@ -975,9 +976,9 @@ def auth_moves():
     return redirect(url_for('home'))
 
 
-#######################################################
+########################################################################################################################
 # fetch different datastreams: Moves, PAM, RescueTime
-#######################################################
+########################################################################################################################
 @app.route("/data-moves/<date>")
 @login_required
 def get_moves_data(date):
@@ -1076,27 +1077,12 @@ def execute_calendar_command(calname, cmd):
     return response or 'Successfully completed!'
 
 
-#################################
-# MTURK
-#################################
 
 
-@app.route('/mturkregister')
-@requires_basic_auth
-def registermturk():
-    return render_template('mturk/register-mturk.html')
 
-
-@app.route('/mturk')
-def welcome_and_check():
-    return render_template('mturk/checkmturk.html')
-
-
-# ///////////////// Nicki - Aditya - Fabian ///////////////////
-# /////////////////////////////////////////////////////////////
-# /////////////////////////////////////////////////////////////
-# /////////////////////////////////////////////////////////////
-
+########################################################################################################################
+# ////////////////////////////////////////////// Nicki - Aditya - Fabian ///////////////////////////////////////////////
+########################################################################################################################
 
 @app.route('/naf')
 def naf_join():
@@ -1212,9 +1198,19 @@ def naf_register_mturk_workers():
     return response
 
 
-# /////////////////////////////////////////////////////////////
-# /////////////////////////////////////////////////////////////
-# /////////////////////////////////////////////////////////////
+
+########################################################################################################################
+# MTURK
+########################################################################################################################
+@app.route('/mturkregister')
+@requires_basic_auth
+def registermturk():
+    return render_template('mturk/register-mturk.html')
+
+
+@app.route('/mturk')
+def welcome_and_check():
+    return render_template('mturk/checkmturk.html')
 
 
 @app.route('/mturkdownload')
@@ -1569,7 +1565,9 @@ def split_into_text_image(text_image_id):
 
 
 
+########################################################################################################################
 # RescueTime
+########################################################################################################################
 @app.route("/auth-rt")
 @login_required
 def auth_rt():
@@ -1650,3 +1648,80 @@ def technion_dashboard():
 @app.route('/subliminal')
 def subliminal():
     return render_template('subliminal.html')
+
+
+# Note that ther is similar function defined above for the path ('/rescuetime-dashboard/<code>')
+# Dashboard for all user RescueTime stats
+@app.route('/dashboard/rescuetime')
+def dashboard_rescuetime():
+    date_yesterday = date.today() - timedelta(days=1)
+    users =  TechnionUser.get_all_users_data()
+
+    data = []
+    for user in users:
+        # "row_headers":["Rank","Time Spent (seconds)","Number of People","Activity","Category","Productivity"],
+        json_data = json.loads(RescueTime.fetch_daily_activity_rank(user['access_token'], date_yesterday))
+        json_data = json_data['rows']
+        json_data = json_data[0:5]
+        user['data'] = json_data
+        del user['access_token']
+        data.append(user)
+
+    ctx = {'users': data, 'date': date_yesterday}
+    # store_rescuetime_data will be added to taskqueue managed by the apscheduler
+    # store_rescuetime_data()
+    return render_template('/dashboards/rescuetime-dashboard-v2.html', **ctx)
+
+
+
+def store_rescuetime_data():
+    print "store_rescuetime_data:", time.strftime("%A, %d. %B %Y %I:%M:%S %p")
+    BASE_DIR = "../data/rescuetime/"
+    date_yesterday = date.today() - timedelta(days=1)
+    users = TechnionUser.get_all_users_data()
+
+    # Sanity check to avoid database data duplication
+    count_rows = RescuetimeData.query.filter_by(created_date=date_yesterday).count()
+
+    if count_rows:
+        print "store_rescuetime_data: Data already available in database for date:", date_yesterday
+        return
+
+    # Download JSON data and store in a file
+    print "###############################################################################################"
+    print "store_rescuetime_data: Running RescueTime data collection procedure for date:", date_yesterday
+    data = []
+    count = 0
+    for user in users:
+        count = count + 1
+        directory = BASE_DIR + user['email']
+        file_path = directory + "/" + str(date_yesterday)
+
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        # "row_headers":["Rank","Time Spent (seconds)","Number of People","Activity","Category","Productivity"]
+        json_data = json.loads(RescueTime.fetch_daily_activity_interval_minute(user['access_token'], date_yesterday))
+        # Write to file
+        file = open(file_path, "w+");
+        file.write(str(json_data))
+        file.close()
+
+        # Write to database
+        json_data = json.loads(RescueTime.fetch_daily_activity_interval_minute(user['access_token'], date_yesterday))
+        rows = json_data['rows']
+        data = {}
+        for row in rows:
+            data['email'] = user['email']
+            data['created_date'] = date_yesterday
+            data['date'] = row[0]
+            data['time_spent'] = row[1]
+            data['num_people'] = row[2]
+            data['activity'] = row[3]
+            data['category'] = row[4]
+            data['productivity'] = row[5]
+            status, response, _ = RescuetimeData.add(data)
+
+    print "store_rescuetime_data: Data saved for", count, "RescueTime users."
+    print "store_rescuetime_data: RescueTime Data collection completed!"
+    print "###############################################################################################"
