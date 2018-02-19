@@ -124,3 +124,46 @@ class RescueTime(object):
         }
         r = requests.get(activity_url, params=params)
         return r.text
+
+
+    # API: https://www.rescuetime.com/apidoc#analytic-api-reference
+    # perspective = rank: Organized around a calculated value
+    # resolution_time -  "month", "week", "day", "hour", "minute"
+    @staticmethod
+    def fetch_daily_activity_rank(access_token, date):
+        """ Can fetch daily activities from RescueTime server """
+        if not access_token: return '[]'
+        activity_url = 'https://www.rescuetime.com/api/oauth/data'
+        params = {
+            'access_token': access_token,
+            'restrict_begin': date,
+            'restrict_end': date,
+            'perspective': 'rank',
+            'restrict_kind': 'activity',
+            'interval': 'day',
+            'format': 'json'
+        }
+        r = requests.get(activity_url, params=params)
+        return r.text
+
+
+    # API: https://www.rescuetime.com/apidoc#analytic-api-reference
+    # perspective = interval: Organized around calendar time
+    # resolution_time -  "month", "week", "day", "hour", "minute"
+    @staticmethod
+    def fetch_daily_activity_interval_minute(access_token, date):
+        """ Can fetch daily activities from RescueTime server """
+        if not access_token: return '[]'
+        activity_url = 'https://www.rescuetime.com/api/oauth/data'
+        params = {
+            'access_token': access_token,
+            'restrict_begin': date,
+            'restrict_end': date,
+            'perspective': 'interval',
+            'restrict_kind': 'activity',
+            'interval': 'minute',
+            'resolution_time': 'minute',
+            'format': 'json'
+        }
+        r = requests.get(activity_url, params=params)
+        return r.text
