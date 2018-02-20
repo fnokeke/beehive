@@ -1678,13 +1678,22 @@ def store_rescuetime_data():
     print "store_rescuetime_data:", time.strftime("%A, %d. %B %Y %I:%M:%S %p")
     BASE_DIR = "../data/rescuetime/"
     date_yesterday = date.today() - timedelta(days=1)
-    users = TechnionUser.get_all_users_data()
 
-    # Sanity check to avoid database data duplication
-    count_rows = RescuetimeData.query.filter_by(created_date=date_yesterday).count()
+    try:
+        # Sanity check if TechnionUser exists
+        users = TechnionUser.get_all_users_data()
+    except:
+        print "store_rescuetime_data:", "FAILED - technion_user table not found!"
+        return
 
-    if count_rows:
-        print "store_rescuetime_data: Data already available in database for date:", date_yesterday
+    try:
+        # Sanity check to avoid database data duplication
+        count_rows = RescuetimeData.query.filter_by(created_date=date_yesterday).count()
+        if count_rows:
+            print "store_rescuetime_data: Data already available in database for date:", date_yesterday
+            return
+    except:
+        print "store_rescuetime_data:", "FAILED - rescuetime_data table not found!"
         return
 
     # Download JSON data and store in a file

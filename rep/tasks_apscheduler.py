@@ -1,9 +1,13 @@
 import time
 import atexit
+from datetime import date
+from datetime import datetime, timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from rep.views_core  import store_rescuetime_data
+from rep.models import db
+from rep.models import RescuetimeData
 
 
 def print_date_time():
@@ -12,9 +16,18 @@ def print_date_time():
 def schedule_rescuetime_task():
     # Run-once on flask init and then schedule task
     print "###############################################################################################"
+    try:
+        # Sanity check to avoid database data duplication
+        date_yesterday = date.today() - timedelta(days=1)
+        count_rows = RescuetimeData.query.filter_by(created_date=date_yesterday).count()
+    except:
+        print "schedule_rescuetime_task:", "rescuetime_data table not found!"
+        print "schedule_rescuetime_task:", "FAILED - could not schedule task!"
+        return
+
     store_rescuetime_data()
-    # Schedule every 8 hours to ensure fault tolerance
-    interval = 60 * 60 * 8
+    # Schedule every 6 hours to ensure fault tolerance
+    interval = 60 * 60 * 6
     print "###############################################################################################"
     print "                                     RescueTime Job Scheduled"
     print "###############################################################################################"
