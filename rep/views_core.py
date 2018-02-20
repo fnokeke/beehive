@@ -1652,7 +1652,7 @@ def subliminal():
 
 # Note that ther is similar function defined above for the path ('/rescuetime-dashboard/<code>')
 # Dashboard for all user RescueTime stats
-@app.route('/dashboard/rescuetime')
+@app.route('/rescuetime')
 def dashboard_rescuetime():
     date_yesterday = date.today() - timedelta(days=1)
     users =  TechnionUser.get_all_users_data()
