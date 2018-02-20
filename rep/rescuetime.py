@@ -151,9 +151,13 @@ class RescueTime(object):
     # perspective = interval: Organized around calendar time
     # resolution_time -  "month", "week", "day", "hour", "minute"
     @staticmethod
-    def fetch_daily_activity_interval_minute(access_token, date):
+    def fetch_daily_activity_interval_minute(access_token, date, format):
         """ Can fetch daily activities from RescueTime server """
         if not access_token: return '[]'
+        # check format
+        if (format !='csv') and (format != 'json'):
+            print "fetch_daily_activity_interval_minute: format error, ", format
+
         activity_url = 'https://www.rescuetime.com/api/oauth/data'
         params = {
             'access_token': access_token,
@@ -163,7 +167,7 @@ class RescueTime(object):
             'restrict_kind': 'activity',
             'interval': 'minute',
             'resolution_time': 'minute',
-            'format': 'json'
+            'format': format
         }
         r = requests.get(activity_url, params=params)
         return r.text

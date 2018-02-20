@@ -1659,11 +1659,17 @@ def dashboard_rescuetime():
 
     data = []
     for user in users:
-        # "row_headers":["Rank","Time Spent (seconds)","Number of People","Activity","Category","Productivity"],
-        json_data = json.loads(RescueTime.fetch_daily_activity_rank(user['access_token'], date_yesterday))
-        json_data = json_data['rows']
-        json_data = json_data[0:5]
-        user['data'] = json_data
+        try:
+            # "row_headers":["Rank","Time Spent (seconds)","Number of People","Activity","Category","Productivity"],
+            json_data = json.loads(RescueTime.fetch_daily_activity_rank(user['access_token'], date_yesterday))
+            json_data = json_data['rows']
+            json_data = json_data[0:5]
+            user['data'] = json_data
+        except:
+            no_data = ["", "", "", "", "", ""]
+            user['data'] = no_data
+            print "dashboard_rescuetime:", "SKIP - no data for user,", user['email']
+
         del user['access_token']
         data.append(user)
 
@@ -1711,13 +1717,15 @@ def store_rescuetime_data():
 
         # "row_headers":["Rank","Time Spent (seconds)","Number of People","Activity","Category","Productivity"]
         try:
-            json_data = json.loads(RescueTime.fetch_daily_activity_interval_minute(user['access_token'], date_yesterday))
+            csv_data = RescueTime.fetch_daily_activity_interval_minute(user['access_token'], date_yesterday, 'csv')
             # Write to file
             file = open(file_path, "w+");
-            file.write(str(json_data))
+            file.write(str(csv_data))
             file.close()
 
             # Write to database
+            json_data = json.loads(
+                RescueTime.fetch_daily_activity_interval_minute(user['access_token'], date_yesterday, 'json'))
             rows = json_data['rows']
             data = {}
             for row in rows:
