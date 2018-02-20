@@ -104,7 +104,7 @@ def home():
 @app.route("/logout")
 @login_required
 def logout():
-    redirect_link = 'researcher_view' if session['user_type'] == 'researcher' else 'technion_home'
+    redirect_link = 'researcher_view' if session['user_type'] == 'researcher' else 'rescuetime_home'
     logout_user()
     session.clear()
     return redirect(url_for(redirect_link))
@@ -1573,7 +1573,7 @@ def split_into_text_image(text_image_id):
 def auth_rt():
     if 'error' in request.args:
         flash('Sorry, authentication denied by user :(', 'danger')
-        return redirect(url_for('technion_home'))
+        return redirect(url_for('rescuetime_home'))
 
     rt = RescueOauth2()
 
@@ -1587,11 +1587,11 @@ def auth_rt():
     user.update_field('rescuetime_access_token', access_token)
     flash('Successfully connected RescueTime!', 'success')
 
-    return redirect(url_for('technion_home'))
+    return redirect(url_for('rescuetime_home'))
 
 
-@app.route('/login-technion-user')
-def login_technion_user():
+@app.route('/login-rescuetime-user')
+def login_rescuetime_user():
     flow = OAuth2WebServerFlow(
         client_id=app.config['GOOGLE_CLIENT_ID'],
         client_secret=app.config['GOOGLE_CLIENT_SECRET'],
@@ -1599,7 +1599,7 @@ def login_technion_user():
         access_type='offline',
         prompt='consent',
         redirect_uri=url_for(
-            'login_technion_user', _external=True))
+            'login_rescuetime_user', _external=True))
 
     auth_code = request.args.get('code')
     if not auth_code:
@@ -1619,13 +1619,13 @@ def login_technion_user():
 
     login_user(user)
     session['user_type'] = 'participant'
-    return redirect(url_for('technion_home'))
+    return redirect(url_for('rescuetime_home'))
 
 
-@app.route('/technion-home')
-def technion_home():
+@app.route('/rescuetime')
+def rescuetime_home():
     if not current_user.is_authenticated:
-        return render_template('technion/technion-index.html')
+        return render_template('rescuetime/rescuetime-index.html')
 
     if 'code' in request.args:
         code = request.args.get('code')
@@ -1636,13 +1636,13 @@ def technion_home():
         return redirect(url_for('auth_rt', error=error))
 
     ctx = {'participant': RescuetimeUser.query.get(current_user.email)}
-    return render_template('technion/technion-home.html', **ctx)
+    return render_template('rescuetime/rescuetime-home.html', **ctx)
 
 
 @app.route('/tdash')
 def technion_dashboard():
     ctx = {'technion_users': RescuetimeUser.query.all()}
-    return render_template('technion/technion-dashboard.html', **ctx)
+    return render_template('rescuetime/rescuetime-dashboard.html', **ctx)
 
 
 @app.route('/subliminal')
@@ -1652,10 +1652,10 @@ def subliminal():
 
 # Note that ther is similar function defined above for the path ('/rescuetime-dashboard/<code>')
 # Dashboard for all user RescueTime stats
-@app.route('/rescuetime')
+@app.route('/rescuetime/dash')
 def dashboard_rescuetime():
     date_yesterday = date.today() - timedelta(days=1)
-    users =  RescuetimeUser.get_all_users_data()
+    users = RescuetimeUser.get_all_users_data()
 
     data = []
     for user in users:
@@ -1670,7 +1670,8 @@ def dashboard_rescuetime():
     ctx = {'users': data, 'date': date_yesterday}
     # store_rescuetime_data will be added to taskqueue managed by the apscheduler
     # store_rescuetime_data()
-    return render_template('/dashboards/rescuetime-dashboard-v2.html', **ctx)
+    # return render_template('/dashboards/rescuetime-dashboard-v2.html', **ctx)
+    return render_template('/rescuetime/rescuetime-dashboard.html', **ctx)
 
 
 
