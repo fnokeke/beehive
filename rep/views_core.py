@@ -1659,13 +1659,16 @@ def dashboard_rescuetime():
 
     data = []
     for user in users:
-        # "row_headers":["Rank","Time Spent (seconds)","Number of People","Activity","Category","Productivity"],
-        json_data = json.loads(RescueTime.fetch_daily_activity_rank(user['access_token'], date_yesterday))
-        json_data = json_data['rows']
-        json_data = json_data[0:5]
-        user['data'] = json_data
-        del user['access_token']
-        data.append(user)
+        try:
+            # "row_headers":["Rank","Time Spent (seconds)","Number of People","Activity","Category","Productivity"],
+            json_data = json.loads(RescueTime.fetch_daily_activity_rank(user['access_token'], date_yesterday))
+            json_data = json_data['rows']
+            json_data = json_data[0:5]
+            user['data'] = json_data
+            del user['access_token']
+            data.append(user)
+        except:
+            print "dashboard_rescuetime:", "SKIP - no data for user,", user['email']
 
     ctx = {'users': data, 'date': date_yesterday}
     # store_rescuetime_data will be added to taskqueue managed by the apscheduler
