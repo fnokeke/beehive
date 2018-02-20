@@ -1676,7 +1676,7 @@ def dashboard_rescuetime():
 
 def store_rescuetime_data():
     print "store_rescuetime_data:", time.strftime("%A, %d. %B %Y %I:%M:%S %p")
-    BASE_DIR = "../data/rescuetime/"
+    BASE_DIR = "./rescuetime/"
     date_yesterday = date.today() - timedelta(days=1)
 
     try:

@@ -9,6 +9,7 @@ dump.rdb
 .cache/
 celerybeat-schedule
 uploads/
+rescuetime/
 node_modules/
 .imdone/
 migrations/
