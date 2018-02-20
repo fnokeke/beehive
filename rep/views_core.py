@@ -72,7 +72,7 @@ def researcher_view():
         error = request.args.get('error')
         return redirect(url_for('auth_rt', error=error))
 
-    if session['user_type'] == 'participant':
+    if session['user_type'] != 'researcher':
         return redirect(url_for('home'))
 
     return redirect(url_for('experiments'))
@@ -81,7 +81,6 @@ def researcher_view():
 @app.route('/home')
 @login_required
 def home():
-
     if session['user_type'] == 'researcher':
         return redirect(url_for('researcher_view'))
 
@@ -145,18 +144,14 @@ def settings():
 
 @login_manager.user_loader
 def user_loader(user_id):
-    return Researcher.get_user(user_id) if session['user_type'] == 'researcher' else Participant.get_user(user_id)
-
-
-#################################
-# Handle Errors
-#################################
-
-#
-# @app.errorhandler(500)
-# def internal_server_error(e):
-#     app.logger.error('Server Error: %s', (e))
-#     return SLMError.internal_server_error
+    if session['user_type'] == 'researcher':
+        return Researcher.get_user(user_id)
+    elif session['user_type'] == 'participant':
+        return Participant.get_user(user_id)
+    elif session['user_type'] == 'rescuetime_user':
+        return RescuetimeUser.get_user(user_id)
+    else:
+        raise ValueError('Unidentified user type used with user_loader')
 
 
 @app.errorhandler(404)
@@ -1618,7 +1613,7 @@ def login_rescuetime_user():
     user.update_field('google_credentials', credentials.to_json())
 
     login_user(user)
-    session['user_type'] = 'participant'
+    session['user_type'] = 'rescuetime_user'
     return redirect(url_for('rescuetime_home'))
 
 
@@ -1635,7 +1630,7 @@ def rescuetime_home():
         error = request.args.get('error')
         return redirect(url_for('auth_rt', error=error))
 
-    ctx = {'participant': RescuetimeUser.query.get(current_user.email)}
+    ctx = {'rtime_user': RescuetimeUser.query.get(current_user.email)}
     return render_template('/rtime/rtime-home.html', **ctx)
 
 

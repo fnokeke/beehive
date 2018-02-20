@@ -10,7 +10,7 @@ Rescuetime Study
 
 {% block user_type %}
 <em>
-  participant
+  rtime_user
 </em>
 
 {% endblock %}
@@ -20,14 +20,14 @@ Rescuetime Study
 
     <div class="page-header">
       <h3>Welcome,
-        {{participant.firstname}}
+        {{rtime_user.firstname}}
       </h3>
     </div>
 
 
     <div>
 
-      {% if not participant.rescuetime_access_token %}
+      {% if not rtime_user.rescuetime_access_token %}
         <button type="submit" id="auth-rt-btn" class="btn btn-primary btn-lg btn-block">Connect RescueTime
         </button><br>
 
