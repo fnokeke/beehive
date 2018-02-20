@@ -1710,26 +1710,28 @@ def store_rescuetime_data():
             os.makedirs(directory)
 
         # "row_headers":["Rank","Time Spent (seconds)","Number of People","Activity","Category","Productivity"]
-        json_data = json.loads(RescueTime.fetch_daily_activity_interval_minute(user['access_token'], date_yesterday))
-        # Write to file
-        file = open(file_path, "w+");
-        file.write(str(json_data))
-        file.close()
+        try:
+            json_data = json.loads(RescueTime.fetch_daily_activity_interval_minute(user['access_token'], date_yesterday))
+            # Write to file
+            file = open(file_path, "w+");
+            file.write(str(json_data))
+            file.close()
 
-        # Write to database
-        json_data = json.loads(RescueTime.fetch_daily_activity_interval_minute(user['access_token'], date_yesterday))
-        rows = json_data['rows']
-        data = {}
-        for row in rows:
-            data['email'] = user['email']
-            data['created_date'] = date_yesterday
-            data['date'] = row[0]
-            data['time_spent'] = row[1]
-            data['num_people'] = row[2]
-            data['activity'] = row[3]
-            data['category'] = row[4]
-            data['productivity'] = row[5]
-            status, response, _ = RescuetimeData.add(data)
+            # Write to database
+            rows = json_data['rows']
+            data = {}
+            for row in rows:
+                data['email'] = user['email']
+                data['created_date'] = date_yesterday
+                data['date'] = row[0]
+                data['time_spent'] = row[1]
+                data['num_people'] = row[2]
+                data['activity'] = row[3]
+                data['category'] = row[4]
+                data['productivity'] = row[5]
+                status, response, _ = RescuetimeData.add(data)
+        except:
+            print "store_rescuetime_data: JSON parse error for user", user['email']
 
     print "store_rescuetime_data: Data saved for", count, "RescueTime users."
     print "store_rescuetime_data: RescueTime Data collection completed!"
