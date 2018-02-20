@@ -1665,10 +1665,13 @@ def dashboard_rescuetime():
             json_data = json_data['rows']
             json_data = json_data[0:5]
             user['data'] = json_data
-            del user['access_token']
-            data.append(user)
         except:
+            no_data = ["", "", "", "", "", ""]
+            user['data'] = no_data
             print "dashboard_rescuetime:", "SKIP - no data for user,", user['email']
+
+        del user['access_token']
+        data.append(user)
 
     ctx = {'users': data, 'date': date_yesterday}
     # store_rescuetime_data will be added to taskqueue managed by the apscheduler
