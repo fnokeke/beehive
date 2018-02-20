@@ -1021,7 +1021,7 @@ class NewParticipant(db.Model):
 
 
 ########################################################################################################################
-class TechnionUser(db.Model):
+class RescuetimeUser(db.Model):
     # google login info and credentials for accessing google calendar
     email = db.Column(db.String(120), primary_key=True, unique=True)
     firstname = db.Column(db.String(120))
@@ -1067,7 +1067,7 @@ class TechnionUser(db.Model):
         """
         Set user field with give value and save to database.
         """
-        user = TechnionUser.query.get(self.email)
+        user = RescuetimeUser.query.get(self.email)
         setattr(user, key, value)  # same: user.key = value
         db.session.commit()
 
@@ -1075,7 +1075,7 @@ class TechnionUser(db.Model):
         """
         Set moves_id field
         """
-        if TechnionUser.query.filter_by(moves_id=moves_id).first():
+        if RescuetimeUser.query.filter_by(moves_id=moves_id).first():
             return 'Already Exists'
         self.update_field('moves_id', moves_id)
 

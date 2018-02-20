@@ -23,7 +23,7 @@ from rep import app, login_manager
 from rep import export
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkPrelimRecruit
-from rep.models import Experiment_v2, ProtocolPushNotif, Researcher, Enrollment, Participant, NewParticipant, TechnionUser
+from rep.models import Experiment_v2, ProtocolPushNotif, Researcher, Enrollment, Participant, NewParticipant, RescuetimeUser
 from rep.models import MturkExclusive, NafEnroll, NafStats, ImageTextUpload
 from rep.models import RescuetimeConfig, RescuetimeData, ScreenUnlockConfig
 from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_FacebookLog, TP_ScreenLog
@@ -1583,7 +1583,7 @@ def auth_rt():
 
     access_token = rt.fetch_access_token(code)
     # import ipdb; ipdb.set_trace()
-    user = TechnionUser.get_user(current_user.email)
+    user = RescuetimeUser.get_user(current_user.email)
     user.update_field('rescuetime_access_token', access_token)
     flash('Successfully connected RescueTime!', 'success')
 
@@ -1614,7 +1614,7 @@ def login_technion_user():
     service = discovery.build('oauth2', 'v2', http=http)
 
     profile = service.userinfo().get().execute()
-    user = TechnionUser.from_profile(profile)
+    user = RescuetimeUser.from_profile(profile)
     user.update_field('google_credentials', credentials.to_json())
 
     login_user(user)
@@ -1635,13 +1635,13 @@ def technion_home():
         error = request.args.get('error')
         return redirect(url_for('auth_rt', error=error))
 
-    ctx = {'participant': TechnionUser.query.get(current_user.email)}
+    ctx = {'participant': RescuetimeUser.query.get(current_user.email)}
     return render_template('technion/technion-home.html', **ctx)
 
 
 @app.route('/tdash')
 def technion_dashboard():
-    ctx = {'technion_users': TechnionUser.query.all()}
+    ctx = {'technion_users': RescuetimeUser.query.all()}
     return render_template('technion/technion-dashboard.html', **ctx)
 
 
@@ -1655,7 +1655,7 @@ def subliminal():
 @app.route('/rescuetime')
 def dashboard_rescuetime():
     date_yesterday = date.today() - timedelta(days=1)
-    users =  TechnionUser.get_all_users_data()
+    users =  RescuetimeUser.get_all_users_data()
 
     data = []
     for user in users:
@@ -1681,9 +1681,9 @@ def store_rescuetime_data():
 
     try:
         # Sanity check if TechnionUser exists
-        users = TechnionUser.get_all_users_data()
+        users = RescuetimeUser.get_all_users_data()
     except:
-        print "store_rescuetime_data:", "FAILED - technion_user table not found!"
+        print "store_rescuetime_data:", "FAILED - rescuetime_user table not found!"
         return
 
     try:
