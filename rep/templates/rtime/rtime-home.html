@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block brand_name %}
-Technion Study
+Rescuetime Study
 {% endblock %}
 
 {% block user_type %}
@@ -39,6 +39,12 @@ Technion Study
         </span>
 
       {% endif %}
+
+{#            {% if user.rescuetime_access_token %}#}
+{#                <span class="text-primary"> &#10004; </span>#}
+{#            {% else %}#}
+{#                <span class="text-danger"> &#x2717; </span>#}
+{#            {% endif %}#}
 
     </div>
 

@@ -1625,7 +1625,7 @@ def login_rescuetime_user():
 @app.route('/rescuetime')
 def rescuetime_home():
     if not current_user.is_authenticated:
-        return render_template('rescuetime/rescuetime-index.html')
+        return render_template('/rtime/rtime-index.html')
 
     if 'code' in request.args:
         code = request.args.get('code')
@@ -1636,13 +1636,13 @@ def rescuetime_home():
         return redirect(url_for('auth_rt', error=error))
 
     ctx = {'participant': RescuetimeUser.query.get(current_user.email)}
-    return render_template('rescuetime/rescuetime-home.html', **ctx)
+    return render_template('/rtime/rtime-home.html', **ctx)
 
 
 @app.route('/tdash')
 def technion_dashboard():
     ctx = {'technion_users': RescuetimeUser.query.all()}
-    return render_template('rescuetime/rescuetime-dashboard.html', **ctx)
+    return render_template('/rtime/rtime-dashboard.html', **ctx)
 
 
 @app.route('/subliminal')
@@ -1670,8 +1670,7 @@ def dashboard_rescuetime():
     ctx = {'users': data, 'date': date_yesterday}
     # store_rescuetime_data will be added to taskqueue managed by the apscheduler
     # store_rescuetime_data()
-    # return render_template('/dashboards/rescuetime-dashboard-v2.html', **ctx)
-    return render_template('/rescuetime/rescuetime-dashboard.html', **ctx)
+    return render_template('/rtime/rtime-dashboard.html', **ctx)
 
 
 
