@@ -123,6 +123,7 @@ def store_rescuetime_data():
     print "store_rescuetime_data: Running RescueTime data collection procedure for date:", date_yesterday
     data = []
     count = 0
+    saved = 0
     for user in users:
         count = count + 1
         directory = BASE_DIR + user['email']
@@ -154,9 +155,10 @@ def store_rescuetime_data():
                 data['category'] = row[4]
                 data['productivity'] = row[5]
                 status, response, _ = RescuetimeData.add(data)
+            saved = saved + 1
         except:
             print "store_rescuetime_data: JSON parse error for user", user['email']
 
-    print "store_rescuetime_data: Data saved for", count, "RescueTime users."
+    print "store_rescuetime_data: Data saved for",saved, "of", count, "RescueTime users."
     print "store_rescuetime_data: RescueTime Data collection completed!"
     print "###############################################################################################"
