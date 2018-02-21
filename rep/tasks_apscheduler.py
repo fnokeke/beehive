@@ -1,12 +1,12 @@
 import time
 import atexit
+
 from datetime import date
 from datetime import datetime, timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-from rep.views_core  import store_rescuetime_data
-from rep.models import db
+from rep.views_rescuetime  import store_rescuetime_data
 from rep.models import RescuetimeData
 
 
@@ -14,7 +14,6 @@ def print_date_time():
     print time.strftime("%A, %d. %B %Y %I:%M:%S %p")
 
 def schedule_rescuetime_task():
-    # Run-once on flask init and then schedule task
     print "###############################################################################################"
     try:
         # Sanity check to avoid database data duplication
