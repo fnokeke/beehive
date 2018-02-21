@@ -1,99 +1,96 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  Welcome
+    Welcome
 {% endblock %}
 
 {% block extras %}
-  <!--<link href="{{ url_for('static', filename='css/cover.css') }}" rel="stylesheet">-->
+    <!--<link href="{{ url_for('static', filename='css/cover.css') }}" rel="stylesheet">-->
 {% endblock %}
 
 {% block body %}
 
-  <!--<div class="background-image"></div>-->
+    <div class="section black-900 ">
+        <div class="container-fluid  text-center home-cover" style="padding: 200px 50px 200px 50px;">
+            <div class="container">
+                <h1 class="col-md-12 text-center">Behavior Change Framework</h1>
+                <p class="lead">
+                    <small>study human behaviors and deploy interventions in real-world settings using mobile devices.</small>
+                </p>
 
-  <!--<div class="center-content">-->
+                <div class="btn-group" role="group">
+                    <button
+                            type="button"
+                            class="btn btn-lg btn-info"
+                            alt="Researcher Sign In"
+                            onclick="window.location.href='/google_login_researcher'">Researcher Sign In
+                    </button>
+                </div>
 
-    <!--<div class="content">-->
+            </div>
 
-<div class="section black-900 ">
-  <div class="container-fluid  text-center home-cover" style="padding: 200px;">
-
-    <h1 class="larger-text">Behavior Change Framework</h1>
-    <p class="lead">
-      <small>deploy behavioral experiments that leverage data captured through ubiquitous technology.</small>
-    </p>
-
-    <div class="btn-group" role="group">
-      <button
-              type="button"
-              class="btn btn-lg btn-info"
-              alt="Researcher Sign In"
-              onclick="window.location.href='/google_login_researcher'">Researcher Sign In
-      </button>
+        </div>
     </div>
 
-  </div>
-</div>
-
     <br>
     <br>
 
-        <div class="section">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12 text-center">
+    <div class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
                     <h2 class="header-text">About</h2>
-                      <p class="lead"> <small> Beehive makes it easy for researchers to capture participant/patient reported outcomes using mobile devices. </small></p>
-                    </div>
+                    <p class="lead">
+                        <small> Beehive makes it easy for researchers to capture participant/patient reported outcomes
+                            using mobile devices.
+                        </small>
+                    </p>
                 </div>
             </div>
         </div>
+    </div>
 
     <br>
     <br>
     <hr>
     <br>
-        <div class="section section-presentation">
+    <div class="section section-presentation">
 
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="description lead">
-                            <h2 class="header-text">Researchers</h2>
-                          <small>
-                            <p>Customize Beehive interface to fit the specific needs for your research project using our web-based manager. Features:</p>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="description lead">
+                        <h2 class="header-text text-center">Researchers</h2>
+                        <small>
+                            <p>Customize Beehive interface to fit the specific needs for your research project using our
+                                web-based manager. Features:</p>
                             <ul>
-                                <li>add project participants</li>
-                                <li>create tasks/surveys using <a href="https://slm.smalldata.io/researcher">Beehive</a></li>
-                                <li>create <a href="http://researchkit.org/docs/docs/ActiveTasks/ActiveTasks.html">active tasks</a></li>
-                                <li>schedule when and how often tasks should appear</li>
-                                <li>send secure messages to individual participants</li>
-                                <li>send announcements to all participants</li>
-                                <li>create information screens</li>
-                                <li>create a custom theme</li>
+                                <li>create onboarding instructions.</li>
+                                <li>select mobile datastreams to capture</li>
+                                <li>design interventions tailored to each user</li>
+                                <li>monitor participants' progress through live dashboard</li>
+                                <li>download data for extensive offline analysis</li>
                             </ul>
-                            <p>Participant data is synchronized to your <a href="https://slm.smalldata.io/researcher">Beehive</a> project. Available to Cornell research teams now. Coming soon to other institutions.</p>
-                            </small>
-                        </div>
+                            <p>Currently available to Cornell Tech, UMich, and OSU research teams. Coming soon to other institutions.</p>
+                        </small>
                     </div>
+                </div>
 
-             <div class="col-md-6">
-                        <img src="/static/images/researcher_edit_task.png" style="width:120%;"/>
-             </div>
+                <div class="col-md-6">
+                    <img src="/static/images/researcher_edit_task.png" style="width:120%;"/>
+                </div>
 
             </div>
         </div>
 
-            <br>
-            <hr/>
+        <br>
+        <hr/>
 
 
-          <div class="section section-demo">
+        <div class="section section-demo">
             <div class="container lead">
                 <div class="row">
                     <div class="col-sm-4 col-sm-offset-1">
-                      <!-- <img src="/static/images/participant_2.png" alt="participant_2" style="width:90%;"/> -->
 
                         <div id="myCarousel" class="carousel slide" data-ride="carousel">
                             <!-- Indicators -->
@@ -103,72 +100,40 @@
                                 <li data-target="#myCarousel" data-slide-to="2"></li>
                             </ol>
 
-                            <!-- Wrapper for slides style="max-width:300px;" -->
                             <div class="carousel-inner">
 
                                 <div class="item active">
-                                    <img src="/static/images/app/framed1.png" alt="app1" >
+                                    <img src="/static/images/app/framed2.png" alt="app1">
                                 </div>
 
                                 <div class="item">
-                                    <img src="/static/images/app/framed2.png" alt="app2" >
+                                    <img src="/static/images/app/framed3.png" alt="app2">
                                 </div>
 
                                 <div class="item">
-                                    <img src="/static/images/app/framed3.png" alt="app3" >
+                                    <img src="/static/images/app/framed4.png" alt="app3">
                                 </div>
 
                             </div>
 
-                            <!-- Left and right controls -->
-                            <!--
-                            <a class="left carousel-control" href="#myCarousel" data-slide="prev">
-                                <span class="glyphicon glyphicon-chevron-left"></span>
-                                <span class="sr-only">Previous</span>
-                            </a>
-                            <a class="right carousel-control" href="#myCarousel" data-slide="next">
-                                <span class="glyphicon glyphicon-chevron-right"></span>
-                                <span class="sr-only">Next</span>
-                            </a>
-                            -->
                         </div>
                     </div>
-
-
-                    <!--
-                    <div id="description-carousel" class="carousel fade" data-ride="carousel">
-                      <div class="carousel-inner">
-                            <div class="item active">
-                                <img src="/static/images/participant_1.png" alt="participant_1">
-                            </div>
-                            <div class="item">
-                                <img src="/static/images/participant_2.png" alt="participant_2">
-                            </div>
-                            <div class="item">
-                                <img src="/static/images/participant_3.png" alt="participant_3">
-                            </div>
-                        </div>
-                        <ol class="carousel-indicators carousel-indicators-blue">
-                            <li data-target="#description-carousel" data-slide-to="0" class=""></li>
-                            <li data-target="#description-carousel" data-slide-to="1" class="active"></li>
-                            <li data-target="#description-carousel" data-slide-to="2" class=""></li>
-                        </ol>
-                    </div>
--                   -->
 
                     <div class="col-sm-6 col-sm-offset-1">
                         <br>
-                        <h2 class="header-text">Participants</h2>
-                      <small>
-                        <p>If you are participating in a research project that uses Beehive:</p>
-                        <ol>
-                            <li>Install the app</li>
-                            <li>Open the app and tap the Join Project button</li>
-                            <li>Scan the QR code that your project coordinator provided</li>
-                        </ol>
+                        <h2 class="header-text text-center">Participants</h2>
+                        <small>
+                            <p>Onboarding participants should:</p>
+                            <ol>
+                                <li>Install Beehive app(s)</li>
+                                <li>Enter experiment code</li>
+                                <li>Use their phones as they normally do</li>
+                            </ol>
                         </small>
-                        <a href="https://itunes.apple.com/us/app/mycap/id1209842552?ls=1&mt=8" class="btn btn-fill btn-info" data-button="info"><i class="fa fa-apple"></i> App Store</a>
-                        <a href="#" class="btn btn-fill btn-info disabled" data-button="info"><i class="fa fa-android"></i> Play Store</a>
+                        <a href="#"
+                           class="btn btn-fill btn-info" data-button="info"><i class="fa fa-apple"></i> App Store</a>
+                        <a href="#" class="btn btn-fill btn-info disabled" data-button="info"><i
+                                class="fa fa-android"></i> Play Store</a>
 
                     </div>
                 </div>
@@ -176,140 +141,89 @@
         </div>
 
 
-          <hr/>
+        <hr/>
 
-  <div class="section section-features">
+        <div class="section section-features">
             <div class="container">
                 <h2 class="header-text text-center">Features</h2>
                 <div class="row">
+
                     <div class="col-md-4">
                         <div class="card card-blue">
                             <div class="icon">
-                                <i class="pe-7s-server"></i>
+                                <i class="pe-7s-graph1"></i>
                             </div>
                             <div class="text">
-                                <h4>Security</h4>
-                                <p>Beehive protects participant data by requiring a 4-digit passcode to unlock the app. Data are stored in an encrypted database on the device.</p>
+                                <h4>Mobile Sensing</h4>
+                                <p>Using embeded sensors, uncover users' daily habits without interrupting them.</p>
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-4">
                         <div class="card card-blue">
                             <div class="icon">
                                 <i class="pe-7s-paper-plane"></i>
                             </div>
-                            <h4>Communication</h4>
-                            <p>Send announcements to all project participants or a message to an individual participant.</p>
+                            <h4>Digital Nudges</h4>
+                            <p>Send push notifications, phone vibrations, and more to participants.</p>
                         </div>
                     </div>
+
                     <div class="col-md-4">
                         <div class="card card-blue">
                             <div class="icon">
                                 <i class="pe-7s-date"></i>
                             </div>
                             <div class="text">
-                                <h4>Scheduling</h4>
-                                <p>Flexible scheduling for one-time tasks, repeating tasks, and permanent tasks.</p>
+                                <h4>User Contexts</h4>
+                                <p>Deploy interventions based on user locations, time, phone usage habits.</p>
                             </div>
                         </div>
                     </div>
+
                 </div>
-                <!--
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="card card-blue">
-                            <div class="icon">
-                                <i class="pe-7s-graph1"></i>
-                            </div>
-                            <h4>Results</h4>
-                            <p>Synchronized to the researcher's Research Suite project.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card card-blue">
-                            <div class="icon">
-                                <i class="pe-7s-look"></i>
-                            </div>
-                            <h4>Custom Themes</h4>
-                            <p>Create a custom look for your project. Choose images and a color scheme.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card card-blue">
-                            <div class="icon">
-                                <i class="pe-7s-folder"></i>
-                            </div>
-                            <h4>Multi-project Support</h4>
-                            <p>Participants can switch between projects if they are participating in multiple projects.</p>
-                        </div>
-                    </div>
-                </div>
-                -->
-                <div class="row">
-                    <div class="col-md-4">
 
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card card-blue">
-                            <div class="icon">
-                                <i class="pe-7s-graph1"></i>
-                            </div>
-                            <h4>Results</h4>
-                            <p>Synchronized to the researcher's Research Suite project.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-
-                    </div>
-                </div>
-            </div>
-        </div>
-
-          <br/>
-          <br/>
-
-          <div class="section section-gray section-clients">
-            <div class="container text-center">
-              <br/>
-                <h2 class="header-text lead">Technology</h2>
-                <p class="lead"> <small>Beehive leverages <a href="https://beehive.org/">BeeHive</a>, <a href="http://researchkit.org/">ResearchKit</a>, and <a href="http://researchstack.org/">ResearchStack</a> to capture participant/patient reported outcomes via mobile devices.
-                  Beehive is used to define tasks/instruments/surveys to be completed by participants. Beehive translates Beehive task metadata into a structure compatible with ResearchKit and ResearchStack.
-                  When a project participant completes a task, Beehive converts the results into a format compatible with Beehive before synchronizing back to the Beehive project.
-                </small></p>
-                <div class="row">
-                        <div class="col-md-3"><a href="http://researchkit.org/"><img src=""  /></a></div>
-                        <div class="col-md-3"><a href="http://researchkit.org/"><img src="/static/images/research_kit_logo.png"  style="width:90%;"/></a></div>
-
-                        <div class="col-md-3"><a href="http://researchstack.org/"><img src="/static/images/research_stack_logo.png" style="width:115%;"/></a></div>
-                        <div class="col-md-3"><a href="http://researchkit.org/"><img src=""  /></a></div>
-                </div>
-              <br/>
             </div>
         </div>
 
         <br/>
-          <footer class="footer">
+        <br/>
+
+        <div class="section section-gray section-clients">
+            <div class="container text-center">
+                <br/>
+                <h2 class="header-text lead">Technology</h2>
+                <p class="lead">
+                    <small>Beehive leverages the existing frameworks such as <a href="http://researchkit.org/">ResearchKit</a> and <a href="http://researchstack.org/">ResearchStack</a>
+                        to capture user behaviors.
+                        Using Beehive, researchers can design diverse experiments with different mobile interventions for groups of
+                        participants.
+                    </small>
+                </p>
+                <div class="row">
+                    <div class="col-md-3"><a href="http://researchkit.org/"><img src=""/></a></div>
+                    <div class="col-md-3"><a href="http://researchkit.org/"><img
+                            src="/static/images/research_kit_logo.png" style="width:50%;"/></a></div>
+
+                    <div class="col-md-3"><a href="http://researchstack.org/"><img
+                            src="/static/images/research_stack_logo.png" style="width:65%;"/></a></div>
+                    <div class="col-md-3"><a href="http://researchkit.org/"><img src=""/></a></div>
+                </div>
+                <br/>
+            </div>
+        </div>
+
+        <br/>
+        <footer class="footer">
             <div class="container">
                 <div class=" footer-style ">
                 </div>
-                <!--
-                <div class="social-area pull-right">
-                    <a class="btn btn-social btn-facebook btn-simple">
-                        <i class="fa fa-facebook-square"></i>
-                    </a>
-                    <a class="btn btn-social btn-twitter btn-simple">
-                        <i class="fa fa-twitter"></i>
-                    </a>
-                    <a class="btn btn-social btn-pinterest btn-simple">
-                        <i class="fa fa-pinterest"></i>
-                    </a>
-                </div>
-                -->
                 <div class="copyright text-center">
-                   <img src="/static/images/beehive.png" style="height: 30px;"/> Beehive
+                    <img src="/static/images/beehive.png" style="height: 30px;"/> Beehive
                     &copy; 2017 <a href="http://smalldata.io/"> Cornell Tech - Small Data Lab</a>
                 </div>
-              <br>
+                <br>
             </div>
         </footer>
     </div>
