@@ -236,7 +236,8 @@
 
             <div>
                 <span class="review-section-title">Basic Info</span>
-                <button type="button" onclick="load_slide1()" class="btn btn-info float-i-right">&nbsp; Edit &nbsp;</button>
+                <button type="button" onclick="load_slide1()" class="btn btn-info float-i-right">&nbsp; Edit &nbsp;
+                </button>
             </div>
             <br>
 
@@ -283,7 +284,8 @@
             <!--------------------------- Section 2 --------------------------->
             <div>
                 <span class="review-section-title">Data Streams</span>
-                <button type="button" onclick="load_slide2()" class="btn btn-info float-i-right">&nbsp; Edit &nbsp;</button>
+                <button type="button" onclick="load_slide2()" class="btn btn-info float-i-right">&nbsp; Edit &nbsp;
+                </button>
             </div>
             <br>
 
@@ -308,7 +310,8 @@
             <!--------------------------- Section 3 --------------------------->
             <div>
                 <span class="review-section-title">Protocols</span>
-                <button type="button" onclick="load_slide3()" class="btn btn-info float-i-right">&nbsp; Edit &nbsp;</button>
+                <button type="button" onclick="load_slide3()" class="btn btn-info float-i-right">&nbsp; Edit &nbsp;
+                </button>
             </div>
             <br>
 
@@ -349,7 +352,8 @@
         <div id="slide5" class="noshow">
             <br/>
             <br/>
-            <div class="text-center text-success"><h4> Data submitted successfully. Updating experiment list... </h4></div>
+            <div class="text-center text-success"><h4> Data submitted successfully. Updating experiment list... </h4>
+            </div>
             <br/>
         </div>
 
@@ -431,13 +435,15 @@
                             <div class="col-xs-10">
                                 <select class="form-control" id="protocol-method">
                                     <option value="none">None</option>
-                                    <option value="push_notification">Push Notification</option>
+                                    <option value="push_notification">Push notification</option>
+                                    <option value="vibration_by_phone_usage">Vibrate based on phone usage</option>
+                                    <option value="vibration_by_app_usage">Vibrate based on app usage</option>
                                 </select>
                             </div>
                         </div>
 
 
-                        <div id="notification-types" class="hidden">
+                        <div id="protocol-push-notif" class="hidden">
 
                             <div class="form-group row">
                                 <label class="col-xs-2 col-form-label">Title</label>
@@ -543,21 +549,151 @@
                             </div>
                         </div>
 
+                        <div id="protocol-vibration-phone-usage" class="hidden">
 
-                        <div id="protocol-date-time" class="hidden">
+                            <div id="phone-select-time-or-limit">
+
+                                <div class="form-group row">
+                                    <label class="col-xs-2 col-form-label">Time Mode</label>
+                                    <div class="col-xs-5">
+                                        <select class="form-control" id="phone-app-intv-options">
+                                            <option value="phone_option_time_limit">Daily Time Limit</option>
+                                            <option value="phone_option_start_end">Start Time to End Time</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div id="phone-vibrate-limit-based" class="">
+                                    <div id="div-vibration-phone-time-limit">
+                                        <div class="form-group row">
+                                            <label class="col-xs-2 col-form-label">Limit (minutes)</label>
+                                            <div class="col-xs-5">
+                                                <input class="form-control" type="number" placeholder="e.g. 30"
+                                                       id="vibration-phone-time-limit">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="phone-vibrate-time-based">
+                                    <div class="form-group row">
+                                        <label class="col-xs-2 col-form-label">Time</label>
+                                        <div class="col-xs-4">
+                                            <div class="input-group input-timerange">
+                                                <input class="form-control" type="time" name="protocol-phone-start-time"
+                                                       value="12:00:00"
+                                                       id="protocol-phone-start-time">
+                                                <div class="input-group-addon">to</div>
+                                                <input class="form-control" type="time" name="protocol-phone-end-time"
+                                                       value="15:00:00"
+                                                       id="protocol-phone-end-time">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                            {#                            <div class="form-group row">#}
+                            {#                                <label class="col-xs-2 col-form-label">Time</label>#}
+                            {#                                <div class="col-xs-10">#}
+                            {#                                    <div class="input-group input-timerange">#}
+                            {#                                        <input class="form-control" type="time" name="start-time" value="12:00:00"#}
+                            {#                                               id="protocol-phone-start-time">#}
+                            {#                                        <div class="input-group-addon">to</div>#}
+                            {#                                        <input class="form-control" type="time" name="end-time" value="15:00:00"#}
+                            {#                                               id="protocol-phone-end-time">#}
+                            {#                                    </div>#}
+                            {#                                </div>#}
+                            {#                            </div>#}
+
+                        </div>
+
+                        <div id="protocol-vibration-app-usage" class="hidden">
+
                             <div class="form-group row">
-                                <label class="col-xs-2 col-form-label">Time</label>
+                                <label class="col-xs-2 col-form-label">User Mode</label>
                                 <div class="col-xs-10">
-                                    <div class="input-group input-timerange">
-                                        <input class="form-control" type="time" name="start-time" value="12:00:00"
-                                               id="protocol-start-time">
-                                        <div class="input-group-addon">to</div>
-                                        <input class="form-control" type="time" name="end-time" value="15:00:00"
-                                               id="protocol-end-time">
+                                    <div class="material-switch">
+                                        <input id="vibration-user-custom-mode" name="vibrationUserCustomMode"
+                                               type="checkbox"/>
+                                        <label for="vibration-user-custom-mode" class="label-info"> </label>
+                                        &nbsp; &nbsp; (user will choose app, time limit, and intervention mode)
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="form-group row">
+                                <label class="col-xs-2 col-form-label">Intervention Mode</label>
+                                <div class="col-xs-5">
+                                    <select class="form-control" id="vibration-app-intv-options">
+                                        <option value="intv_popup">Pop-up</option>
+                                        <option value="intv_vibration">Vibration</option>
+                                        <option value="intv_statusbar">Status-bar feedback</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div id="user-non-custom-mode">
+                                <div class="form-group row">
+                                    <label class="col-xs-2 col-form-label">App ID</label>
+                                    <div class="col-xs-5">
+                                        <input class="form-control" type="text" placeholder="e.g. com.facebook.katana"
+                                               id="protocol-vibration-app-usageid">
+                                    </div>
+                                </div>
+
+                                <div id="app-select-time-or-limit">
+
+                                    <div class="form-group row">
+                                        <label class="col-xs-2 col-form-label">Time Mode</label>
+                                        <div class="col-xs-5">
+                                            <select class="form-control" id="vibration-app-intv-options">
+                                                <option value="app_option_time_limit">Daily Time Limit</option>
+                                                <option value="app_option_start_end">Start Time to End Time</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div id="app-vibrate-limit-based" class="">
+                                        <div id="div-vibration-app-time-limit">
+                                            <div class="form-group row">
+                                                <label class="col-xs-2 col-form-label">Limit (minutes)</label>
+                                                <div class="col-xs-5">
+                                                    <input class="form-control" type="number" placeholder="e.g. 30"
+                                                           id="vibration-app-time-limit">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="app-vibrate-time-based">
+                                        <div class="form-group row">
+                                            <label class="col-xs-2 col-form-label">Time</label>
+                                            <div class="col-xs-4">
+                                                <div class="input-group input-timerange">
+                                                    <input class="form-control" type="time"
+                                                           name="protocol-app-start-time"
+                                                           value="12:00:00"
+                                                           id="protocol-app-start-time">
+                                                    <div class="input-group-addon">to</div>
+                                                    <input class="form-control" type="time"
+                                                           name="protocol-app-end-time"
+                                                           value="15:00:00"
+                                                           id="protocol-app-end-time">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
                         </div>
+
 
                     </div>
 
