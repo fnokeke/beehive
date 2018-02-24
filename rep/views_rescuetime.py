@@ -91,7 +91,7 @@ def dashboard_rescuetime():
 
     ctx = {'users': data, 'date': date_yesterday}
     # store_rescuetime_data will be added to taskqueue managed by the apscheduler
-    # store_rescuetime_data()
+    store_rescuetime_data()
     return render_template('/rtime/rtime-dashboard.html', **ctx)
 
 
