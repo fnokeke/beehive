@@ -26,7 +26,7 @@ def schedule_rescuetime_task():
 
     store_rescuetime_data()
     # Schedule every 6 hours to ensure fault tolerance
-    interval = 60 * 60 * 6
+    interval = 60 #* 60 * 6
     print "###############################################################################################"
     print "                                     RescueTime Job Scheduled"
     print "###############################################################################################"
@@ -34,7 +34,7 @@ def schedule_rescuetime_task():
     scheduler.start()
     scheduler.remove_all_jobs()
     scheduler.add_job(
-        func=store_rescuetime_data,
+        func=print_date_time,
         trigger=IntervalTrigger(seconds=interval),
         id='rescuetime_job',
         name='store_rescuetime_data',
