@@ -21,7 +21,7 @@ from gcal import Calendar, EventFactory
 from rep import app, login_manager
 from rep import export
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
-from rep.models import Experiment, Intervention, MobileUser, Mturk, MturkPrelimRecruit
+from rep.models import Intervention, MobileUser, Mturk, MturkPrelimRecruit
 from rep.models import Experiment_v2, ProtocolPushNotif, Researcher, Enrollment, Participant, NewParticipant, RescuetimeUser
 from rep.models import MturkExclusive, NafEnroll, NafStats, ImageTextUpload
 from rep.models import RescuetimeConfig, ScreenUnlockConfig
@@ -169,7 +169,7 @@ def get_next_condition(total_enrolled, ps_per_condition):
 def connect_study():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     code = data['code']
-    experiment = Experiment.query.filter_by(code=code).first()
+    experiment = Experiment_v2.query.filter_by(code=code).first()
     if not experiment:
         return json.dumps({'response': jsonify_responses('', ''), 'user': {}, 'experiment': {}})
 
@@ -400,7 +400,7 @@ def fetch_interventions():
 
 @app.route('/participants-dashboard/<code>')
 def participant_dashboard(code):
-    experiment = Experiment.query.filter_by(code=code).first()
+    experiment = Experiment_v2.query.filter_by(code=code).first()
     intv_type = get_intv_type(experiment)
     ctx = {
         'enrolled_users': MobileUser.query.filter_by(code=code).all(),
@@ -413,28 +413,28 @@ def participant_dashboard(code):
 
 @app.route('/rescuetime-dashboard/<code>')
 def rescuetime_dashboard(code):
-    experiment = Experiment.query.filter_by(code=code).first()
+    experiment = Experiment_v2.query.filter_by(code=code).first()
     ctx = {'experiment': experiment, 'users_unfiltered': Participant.query.all()}
     return render_template('/dashboards/rescuetime-dashboard.html', **ctx)
 
 
 @app.route('/stats-dashboard/<code>')
 def stats_dashboard(code):
-    experiment = Experiment.query.filter_by(code=code).first()
+    experiment = Experiment_v2.query.filter_by(code=code).first()
     ctx = {'experiment': experiment}
     return render_template('/dashboards/stats-dashboard.html', **ctx)
 
 
 @app.route('/mturk-participants-dashboard/<code>')
 def mturk_participant_dashboard(code):
-    experiment = Experiment.query.filter_by(code=code).first()
+    experiment = Experiment_v2.query.filter_by(code=code).first()
     ctx = {'mturk_users': TP_Enrolled.query.all(), 'experiment': experiment}
     return render_template('/dashboards/mturk-participants-dashboard.html', **ctx)
 
 
 @app.route('/mturk-stats-dashboard/<code>')
 def mturk_stats_dashboard(code):
-    experiment = Experiment.query.filter_by(code=code).first()
+    experiment = Experiment_v2.query.filter_by(code=code).first()
     ctx = {'mturk_stats': TP_FBStats.query.order_by('created_at desc').limit(2000).all(), 'experiment': experiment}
     return render_template('/dashboards/mturk-stats-dashboard.html', **ctx)
 
@@ -452,40 +452,40 @@ def get_intv_type(experiment):
     return intv_type
 
 
-@app.route('/delete/experiment/<code>')
-def delete_experiment(code):
-    Experiment.delete_experiment(code)
-    flash('Returning to experiment page.', 'success')
-    return redirect(url_for('researcher_login'))
+# @app.route('/delete/experiment/<code>')
+# def delete_experiment(code):
+#     Experiment_v2.delete_experiment(code)
+#     flash('Returning to experiment page.', 'success')
+#     return redirect(url_for('researcher_login'))
+#
+#
+# @app.route('/update/experiment', methods=['POST'])
+# def update_experiment():
+#     data = json.loads(request.data) if request.data else request.form.to_dict()
+#     data['start'] = '{} 05:00:00 -0500'.format(data['start'])
+#     data['end'] = '{} 05:00:00 -0500'.format(data['end'])
+#     data['start'] = datetime.strptime(data['start'], '%Y-%m-%d %H:%M:%S -0500')
+#     data['end'] = datetime.strptime(data['end'], '%Y-%m-%d %H:%M:%S -0500')
+#     updated_exp = Experiment_v2.update_experiment(data)
+#     return str(updated_exp)
+#
 
-
-@app.route('/update/experiment', methods=['POST'])
-def update_experiment():
-    data = json.loads(request.data) if request.data else request.form.to_dict()
-    data['start'] = '{} 05:00:00 -0500'.format(data['start'])
-    data['end'] = '{} 05:00:00 -0500'.format(data['end'])
-    data['start'] = datetime.strptime(data['start'], '%Y-%m-%d %H:%M:%S -0500')
-    data['end'] = datetime.strptime(data['end'], '%Y-%m-%d %H:%M:%S -0500')
-    updated_exp = Experiment.update_experiment(data)
-    return str(updated_exp)
-
-
-@app.route('/update/group', methods=['POST'])
-def update_group():
-    update = {
-        'code': request.form.get('code'),
-        'no_of_condition': request.form.get('no_of_condition'),
-        'ps_per_condition': request.form.get('ps_per_condition')
-    }
-    updated_exp = Experiment.update_group(update)
-    return str(updated_exp)
+# @app.route('/update/group', methods=['POST'])
+# def update_group():
+#     update = {
+#         'code': request.form.get('code'),
+#         'no_of_condition': request.form.get('no_of_condition'),
+#         'ps_per_condition': request.form.get('ps_per_condition')
+#     }
+#     updated_exp = Experiment.update_group(update)
+#     return str(updated_exp)
 
 
 @app.route('/fetch/experiments', methods=['GET'])
 def fetch_experiments():
     results = []
 
-    for exp in Experiment.query.all():
+    for exp in Experiment_v2.query.all():
         exp_json = json.loads(str(exp))
         results.append(exp_json)
 
@@ -494,7 +494,7 @@ def fetch_experiments():
 
 @app.route('/fetch/experiment/<code>')
 def fetch_experiment_by_code(code):
-    experiment = Experiment.query.filter_by(code=code).first()
+    experiment = Experiment_v2.query.filter_by(code=code).first()
     return str(experiment)
 
 

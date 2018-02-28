@@ -79,129 +79,129 @@ class DailyReminderConfig(db.Model):
         return (200, 'Successfully added daily reminder.', new_reminder)
 
 
-class Experiment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(10), unique=True)
-    title = db.Column(db.String(120))
-    start = db.Column(db.Date, default=datetime.datetime.utcnow)
-    end = db.Column(db.Date, default=datetime.datetime.utcnow)
-    no_of_condition = db.Column(db.Integer, default=1)
-    ps_per_condition = db.Column(db.Integer, default=1)
-    is_notif_window_enabled = db.Column(db.Boolean, default=False)
-    is_mturk_study = db.Column(db.Boolean, default=False)
-    rescuetime = db.Column(db.Boolean, default=False)
-    calendar = db.Column(db.Boolean, default=False)
-    geofence = db.Column(db.Boolean, default=False)
-    text = db.Column(db.Boolean, default=False)
-    image = db.Column(db.Boolean, default=False)
-    reminder = db.Column(db.Boolean, default=False)
-    actuators = db.Column(db.Boolean, default=False)
-
-    interventions = db.relationship('Intervention', backref='experiment', lazy='select')
-    mobile_user = db.relationship('MobileUser', backref='experiment', lazy='select')
-    uploaded_intv = db.relationship('ImageTextUpload', backref='experiment', lazy='select')
-
-    calendar_config = db.relationship('CalendarConfig', backref='experiment', lazy='select')
-    daily_reminder_config = db.relationship('DailyReminderConfig', backref='experiment', lazy='select')
-    general_notification_config = db.relationship('GeneralNotificationConfig', backref='experiment', lazy='select')
-    rescuetime_config = db.relationship('RescuetimeConfig', backref='experiment', lazy='select')
-    screen_unlock_config = db.relationship('ScreenUnlockConfig', backref='experiment', lazy='select')
-    vibration_config = db.relationship('VibrationConfig', backref='experiment', lazy='select')
-
-    def __init__(self, info):
-        self.title = info.get('title')
-        self.start = info['start']
-        self.end = info['end']
-        self.code = info.get('code') if info.get('code') else Experiment.generate_unique_id()
-        self.no_of_condition = info.get('no_of_condition')
-        self.ps_per_condition = info.get('ps_per_condition')
-        self.is_notif_window_enabled = info.get('is_notif_window_enabled')
-        self.is_mturk_study = info.get('is_mturk_study')
-        self.rescuetime = info.get('rescuetime')
-        self.calendar = info.get('calendar')
-        self.geofence = info.get('geofence')
-        self.text = info.get('text')
-        self.image = info.get('image')
-        self.reminder = info.get('reminder')
-        self.actuators = info.get('actuators')
-
-    def __repr__(self):
-        result = {
-            'title': self.title,
-            'start': str(self.start),
-            'end': str(self.end),
-            'code': self.code,
-            'is_notif_window_enabled': self.is_notif_window_enabled,
-            'is_mturk_study': self.is_mturk_study,
-            'rescuetime': self.rescuetime,
-            'calendar': self.calendar,
-            'geofence': self.geofence,
-            'text': self.text,
-            'image': self.image,
-            'reminder': self.reminder,
-            'actuators': self.actuators,
-            'calendar_config': to_json(self.calendar_config),
-            'general_notification_config': to_json(self.general_notification_config),
-            'interventions': to_json(self.interventions),
-            'rescuetime_config': to_json(self.rescuetime_config),
-            'screen_unlock_config': to_json(self.screen_unlock_config),
-            'vibration_config': to_json(self.vibration_config),
-            'daily_reminder_config': to_json(self.daily_reminder_config),
-        }
-        return json.dumps(result)
-
-    @staticmethod
-    def generate_unique_id():
-        code = str(uuid.uuid4())[:6]
-        while Experiment.query.filter_by(code=code).first():
-            code = str(uuid.uuid4())[:6]
-        return code
-
-    @staticmethod
-    def add_experiment(info):
-        existing_experiment = Experiment.query.filter_by(title=info['title']).first()
-        if existing_experiment:
-            return (-1, 'Experiment already exits.', existing_experiment)
-
-        new_experiment = Experiment(info)
-        db.session.add(new_experiment)
-        db.session.commit()
-        new_experiment = Experiment.query.filter_by(title=info['title']).first()
-        return (200, 'Successfully added experiment', new_experiment)
-
-    @staticmethod
-    def delete_experiment(code):
-        Experiment.query.filter_by(code=code).delete()
-        Intervention.query.filter_by(code=code).delete()
-        db.session.commit()
-
-    @staticmethod
-    def update_experiment(update):
-        experiment = Experiment.query.filter_by(code=update['code']).first()
-        for key, value in update.iteritems():
-            setattr(experiment, key, value)
-
-        experiment.title = update.get('title')
-        experiment.code = update.get('code')
-        experiment.rescuetime = update.get('rescuetime')
-        experiment.calendar = update.get('calendar')
-        experiment.geofence = update.get('geofence')
-        experiment.text = update.get('text')
-        experiment.image = update.get('image')
-        experiment.reminder = update.get('reminder')
-        experiment.actuators = update.get('actuators')
-
-        db.session.commit()
-        return experiment
-
-    @staticmethod
-    def update_group(update):
-        experiment = Experiment.query.filter_by(code=update['code']).first()
-        experiment.no_of_condition = update.get('no_of_condition')
-        experiment.ps_per_condition = update.get('ps_per_condition')
-
-        db.session.commit()
-        return experiment
+# class Experiment(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     code = db.Column(db.String(10), unique=True)
+#     title = db.Column(db.String(120))
+#     start = db.Column(db.Date, default=datetime.datetime.utcnow)
+#     end = db.Column(db.Date, default=datetime.datetime.utcnow)
+#     no_of_condition = db.Column(db.Integer, default=1)
+#     ps_per_condition = db.Column(db.Integer, default=1)
+#     is_notif_window_enabled = db.Column(db.Boolean, default=False)
+#     is_mturk_study = db.Column(db.Boolean, default=False)
+#     rescuetime = db.Column(db.Boolean, default=False)
+#     calendar = db.Column(db.Boolean, default=False)
+#     geofence = db.Column(db.Boolean, default=False)
+#     text = db.Column(db.Boolean, default=False)
+#     image = db.Column(db.Boolean, default=False)
+#     reminder = db.Column(db.Boolean, default=False)
+#     actuators = db.Column(db.Boolean, default=False)
+#
+#     interventions = db.relationship('Intervention', backref='experiment', lazy='select')
+#     mobile_user = db.relationship('MobileUser', backref='experiment', lazy='select')
+#     uploaded_intv = db.relationship('ImageTextUpload', backref='experiment', lazy='select')
+#
+#     calendar_config = db.relationship('CalendarConfig', backref='experiment', lazy='select')
+#     daily_reminder_config = db.relationship('DailyReminderConfig', backref='experiment', lazy='select')
+#     general_notification_config = db.relationship('GeneralNotificationConfig', backref='experiment', lazy='select')
+#     rescuetime_config = db.relationship('RescuetimeConfig', backref='experiment', lazy='select')
+#     screen_unlock_config = db.relationship('ScreenUnlockConfig', backref='experiment', lazy='select')
+#     vibration_config = db.relationship('VibrationConfig', backref='experiment', lazy='select')
+#
+#     def __init__(self, info):
+#         self.title = info.get('title')
+#         self.start = info['start']
+#         self.end = info['end']
+#         self.code = info.get('code') if info.get('code') else Experiment.generate_unique_id()
+#         self.no_of_condition = info.get('no_of_condition')
+#         self.ps_per_condition = info.get('ps_per_condition')
+#         self.is_notif_window_enabled = info.get('is_notif_window_enabled')
+#         self.is_mturk_study = info.get('is_mturk_study')
+#         self.rescuetime = info.get('rescuetime')
+#         self.calendar = info.get('calendar')
+#         self.geofence = info.get('geofence')
+#         self.text = info.get('text')
+#         self.image = info.get('image')
+#         self.reminder = info.get('reminder')
+#         self.actuators = info.get('actuators')
+#
+#     def __repr__(self):
+#         result = {
+#             'title': self.title,
+#             'start': str(self.start),
+#             'end': str(self.end),
+#             'code': self.code,
+#             'is_notif_window_enabled': self.is_notif_window_enabled,
+#             'is_mturk_study': self.is_mturk_study,
+#             'rescuetime': self.rescuetime,
+#             'calendar': self.calendar,
+#             'geofence': self.geofence,
+#             'text': self.text,
+#             'image': self.image,
+#             'reminder': self.reminder,
+#             'actuators': self.actuators,
+#             'calendar_config': to_json(self.calendar_config),
+#             'general_notification_config': to_json(self.general_notification_config),
+#             'interventions': to_json(self.interventions),
+#             'rescuetime_config': to_json(self.rescuetime_config),
+#             'screen_unlock_config': to_json(self.screen_unlock_config),
+#             'vibration_config': to_json(self.vibration_config),
+#             'daily_reminder_config': to_json(self.daily_reminder_config),
+#         }
+#         return json.dumps(result)
+#
+#     @staticmethod
+#     def generate_unique_id():
+#         code = str(uuid.uuid4())[:6]
+#         while Experiment.query.filter_by(code=code).first():
+#             code = str(uuid.uuid4())[:6]
+#         return code
+#
+#     @staticmethod
+#     def add_experiment(info):
+#         existing_experiment = Experiment.query.filter_by(title=info['title']).first()
+#         if existing_experiment:
+#             return (-1, 'Experiment already exits.', existing_experiment)
+#
+#         new_experiment = Experiment(info)
+#         db.session.add(new_experiment)
+#         db.session.commit()
+#         new_experiment = Experiment.query.filter_by(title=info['title']).first()
+#         return (200, 'Successfully added experiment', new_experiment)
+#
+#     @staticmethod
+#     def delete_experiment(code):
+#         Experiment.query.filter_by(code=code).delete()
+#         Intervention.query.filter_by(code=code).delete()
+#         db.session.commit()
+#
+#     @staticmethod
+#     def update_experiment(update):
+#         experiment = Experiment.query.filter_by(code=update['code']).first()
+#         for key, value in update.iteritems():
+#             setattr(experiment, key, value)
+#
+#         experiment.title = update.get('title')
+#         experiment.code = update.get('code')
+#         experiment.rescuetime = update.get('rescuetime')
+#         experiment.calendar = update.get('calendar')
+#         experiment.geofence = update.get('geofence')
+#         experiment.text = update.get('text')
+#         experiment.image = update.get('image')
+#         experiment.reminder = update.get('reminder')
+#         experiment.actuators = update.get('actuators')
+#
+#         db.session.commit()
+#         return experiment
+#
+#     @staticmethod
+#     def update_group(update):
+#         experiment = Experiment.query.filter_by(code=update['code']).first()
+#         experiment.no_of_condition = update.get('no_of_condition')
+#         experiment.ps_per_condition = update.get('ps_per_condition')
+#
+#         db.session.commit()
+#         return experiment
 
 
 class GeneralNotificationConfig(db.Model):
