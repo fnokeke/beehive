@@ -498,85 +498,7 @@ def fetch_experiment_by_code(code):
     return str(experiment)
 
 
-########################################################################################################################
-# Participant registration and enrollment APIs
-########################################################################################################################
-# Register a participant and enroll in an experiment
-# -------- NOT USED -------- #
-@app.route('/participant/register', methods=['POST'])
-def participant_enroll():
-    data = json.loads(request.data) if request.data else request.form.to_dict()
-    # Check request validity
-    if not 'email' in data:
-        response_message = {'error': 'email is required'}
-        http_status = 400
-        return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
-
-    # Check request referrer
-    if not 'application' in data:
-        response_message = {'error': 'application is required'}
-        http_status = 400
-        return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
-
-    if data['application'] != 'swift' and data['application'] != 'objc':
-        response_message = {'error': 'application must be swift or objc'}
-        http_status = 400
-        return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
-
-    # Check if participant already registered
-    if NewParticipant.query.filter_by(email=data['email']).first() == None:
-        # Register new participant
-        # TO DO : Perform ooAuth redirection Add missing data
-        new_participant = {}
-        new_participant['email'] = data['email']
-        new_participant['google_oauth'] = 'TO DO'
-        new_participant['oauth_token'] = 'TO DO'
-        status, response, _ = NewParticipant.register(new_participant)
-        return Response(response=json.dumps(response), status=status, mimetype='application/json')
-    else:
-        # get participant ID
-        participant = NewParticipant.query.filter_by(email=data['email']).first()
-        response_message = {'message': 'Participant already registered'}
-        http_status = 200
-        return redirect('https://www.google.com')
-        # return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
-        # return redirect(url_for('experiments'))
-
-
 # TODO: track what adds '#' to emails from Google
-@app.route('/android_google_no_ohmage')
-def android_google_no_ohmage():
-    flow = OAuth2WebServerFlow(
-        client_id=app.config['GOOGLE_CLIENT_ID'],
-        client_secret=app.config['GOOGLE_CLIENT_SECRET'],
-        scope=app.config['GOOGLE_SCOPE_PARTICIPANT'],
-        access_type='offline',
-        prompt='consent',
-        redirect_uri=url_for(
-            'android_google_no_ohmage', _external=True))
-
-    auth_code = request.args.get('code')
-    if not auth_code:
-        auth_uri = flow.step1_get_authorize_url()
-        return redirect(auth_uri)
-
-    credentials = flow.step2_exchange(auth_code, http=httplib2.Http())
-    if credentials.access_token_expired:
-        credentials.refresh(httplib2.Http())
-
-    http = credentials.authorize(httplib2.Http())
-    service = discovery.build('oauth2', 'v2', http=http)
-
-    profile = service.userinfo().get().execute()
-    user = Participant.from_profile(profile)
-    user.update_field('google_credentials', credentials.to_json())
-    login_user(user)
-
-    android_app_deeplink = 'beehive://androidlogin'
-    redirect_url = "{}?{}?{}".format(android_app_deeplink, user.firstname, str(user))
-    return redirect(redirect_url)
-
-
 @app.route('/android_google_login_participant')
 def android_google_login_participant():
     flow = OAuth2WebServerFlow(
@@ -601,90 +523,12 @@ def android_google_login_participant():
     service = discovery.build('oauth2', 'v2', http=http)
 
     profile = service.userinfo().get().execute()
-
-    user = Participant.from_profile(profile)
-    user.update_field('google_credentials', credentials.to_json())
+    user = Participant.from_profile(profile, credentials.to_json())
     login_user(user)
-    session['user_type'] = 'participant'
 
-    session['ohmage_deeplink'] = ''
-    if current_user.is_authenticated():
-        session['ohmage_deeplink'] = 'beehive://androidlogin'
-        session['disable_navbar'] = True
-
-    return redirect(url_for('home'))
-
-
-@app.route('/ios_google_login_participant')
-def ios_google_login_participant():
-    flow = OAuth2WebServerFlow(
-        client_id=app.config['GOOGLE_CLIENT_ID'],
-        client_secret=app.config['GOOGLE_CLIENT_SECRET'],
-        scope=app.config['GOOGLE_SCOPE_PARTICIPANT'],
-        access_type='offline',
-        prompt='consent',
-        redirect_uri=url_for(
-            'ios_google_login_participant', _external=True))
-
-    auth_code = request.args.get('code')
-    if not auth_code:
-        auth_uri = flow.step1_get_authorize_url()
-        return redirect(auth_uri)
-
-    credentials = flow.step2_exchange(auth_code, http=httplib2.Http())
-    if credentials.access_token_expired:
-        credentials.refresh(httplib2.Http())
-
-    http = credentials.authorize(httplib2.Http())
-    service = discovery.build('oauth2', 'v2', http=http)
-
-    profile = service.userinfo().get().execute()
-
-    user = Participant.from_profile(profile)
-    user.update_field('google_credentials', credentials.to_json())
-    login_user(user)
-    session['user_type'] = 'participant'
-
-    session['ohmage_deeplink'] = ''
-    if current_user.is_authenticated():
-        session['ohmage_deeplink'] = 'beehive://ioslogin'
-
-    return redirect(url_for('home'))
-
-
-# Register a participant in an experiment
-@app.route('/google_login_participant')
-def google_login_participant():
-    flow = OAuth2WebServerFlow(
-        client_id=app.config['GOOGLE_CLIENT_ID'],
-        client_secret=app.config['GOOGLE_CLIENT_SECRET'],
-        scope=app.config['GOOGLE_SCOPE_PARTICIPANT'],
-        access_type='offline',
-        prompt='consent',
-        redirect_uri=url_for(
-            'google_login_participant', _external=True))
-
-    auth_code = request.args.get('code')
-    if not auth_code:
-        auth_uri = flow.step1_get_authorize_url()
-        return redirect(auth_uri)
-
-    credentials = flow.step2_exchange(auth_code, http=httplib2.Http())
-    if credentials.access_token_expired:
-        credentials.refresh(httplib2.Http())
-
-    http = credentials.authorize(httplib2.Http())
-    service = discovery.build('oauth2', 'v2', http=http)
-
-    profile = service.userinfo().get().execute()
-
-    user = Participant.from_profile(profile)
-    user.update_field('google_credentials', credentials.to_json())
-    login_user(user)
-    session['user_type'] = 'participant'
-
-    return redirect(url_for('home'))
-
+    android_app_deeplink = 'beehive://androidlogin'
+    redirect_url = "{}?{}?{}".format(android_app_deeplink, user.firstname, str(user))
+    return redirect(redirect_url)
 
 
 # Enroll a participant in an experiment
@@ -871,35 +715,6 @@ def fetch_uploaded_intv(code):
 @login_required
 def auth_omh():
     return redirect(OMHOauth.AUTH_CODE_URL)
-
-
-# TODO: update this callback so it shows omh not pam
-@app.route("/ohmage")
-@app.route("/oauth2callback-pam")
-def omh_oauth2callback():
-    code = request.args.get('code')
-
-    if not code:
-        flash('sorry, could not connect PAM', 'danger')
-    else:
-        omh_oauth = OMHOauth()
-        access_token, refresh_token, response = omh_oauth.get_tokens(code)
-        user = Participant.get_user(current_user.email)
-        user.update_field('omh_access_token', access_token)
-        user.update_field('omh_refresh_token', refresh_token)
-
-        if not (access_token and refresh_token):
-            flash('Sorry, connection failed. contact admin: {}'.format(response), 'danger')
-        else:
-            flash('Successfully connected to Ohmage!', 'success')
-
-    if current_user.is_authenticated():
-        redirect_url = '{}?email={}'.format(session['ohmage_deeplink'], current_user.email)
-    else:
-        redirect_url = 'http://smalldata.io/'
-
-    return redirect(redirect_url)
-
 
 # Google login for researchers
 @app.route('/google_login_researcher')

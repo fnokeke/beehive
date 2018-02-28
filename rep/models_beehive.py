@@ -204,18 +204,15 @@ class Participant(db.Model):
     firstname = db.Column(db.String(120))
     lastname = db.Column(db.String(120))
     gender = db.Column(db.String(10))
-    picture = db.Column(db.String(120))
     google_credentials = db.Column(db.String(2500), unique=True)
-    omh_access_token = db.Column(db.String(120))
-    omh_refresh_token = db.Column(db.String(120))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-    def __init__(self, profile):
-        self.email = profile.get('email', '')
-        self.firstname = profile.get('firstname', '')
-        self.lastname = profile.get('lastname', '')
-        self.gender = profile.get('gender', '')
-        self.picture = profile.get('picture', '')
+    def __init__(self, profile, google_credentials):
+        self.email = profile['email']
+        self.firstname = profile['firstname']
+        self.lastname = profile['lastname']
+        self.gender = profile['gender']
+        self.google_credentials = google_credentials
 
     def __repr__(self):
         return self.email
@@ -285,13 +282,13 @@ class Participant(db.Model):
         return cls.query.all()
 
     @classmethod
-    def from_profile(cls, profile):
+    def from_profile(cls, profile, google_credentials):
         """
         Return new user or existing user from database using their profile information.
         """
         email = profile.get('email')
         if not cls.query.get(email):
-            new_user = cls(profile)
+            new_user = cls(profile, google_credentials)
             db.session.add(new_user)
             db.session.commit()
 
@@ -491,7 +488,7 @@ class NotifEvent(db.Model):
 class InAppAnalytics(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), db.ForeignKey('participant.email'))
-    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
     event_time_millis = db.Column(db.BigInteger)
     event_desc = db.Column(db.String(50))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
