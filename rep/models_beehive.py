@@ -417,7 +417,7 @@ class ProtocolPushNotif(db.Model):
 class NotifEvent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), db.ForeignKey('participant.email'))
-    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
 
     alarm_millis = db.Column(db.BigInteger)
     ringer_mode = db.Column(db.String(10))

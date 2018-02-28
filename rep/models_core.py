@@ -1,5 +1,6 @@
 from db_init import db
 from utils import to_json
+from rep.models_beehive import Experiment_v2
 
 import datetime
 import json
@@ -11,7 +12,7 @@ class CalendarConfig(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     event_num_limit = db.Column(db.String(5))
     event_time_limit = db.Column(db.String(10))
-    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
 
     def __init__(self, info):
         self.event_num_limit = info.get('event_num_limit')
@@ -34,7 +35,7 @@ class CalendarConfig(db.Model):
             print '**********************'
             return (-1, 'No calendar params', -1)
 
-        existing_experiment = Experiment.query.filter_by(code=info['code']).first()
+        existing_experiment = Experiment_v2.query.filter_by(code=info['code']).first()
         if not existing_experiment:
             invalid_response = 'Invalid experiment code({})'.format(info['code'])
             return (-1, invalid_response, -1)
@@ -48,7 +49,7 @@ class CalendarConfig(db.Model):
 
 class DailyReminderConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     reminder_time = db.Column(db.String(10))
 
@@ -68,7 +69,7 @@ class DailyReminderConfig(db.Model):
         if not info.get('reminder_time'):
             return (-1, 'No reminder_time params', -1)
 
-        existing_experiment = Experiment.query.filter_by(code=info['code']).first()
+        existing_experiment = Experiment_v2.query.filter_by(code=info['code']).first()
         if not existing_experiment:
             invalid_response = 'Invalid experiment code({})'.format(info['code'])
             return (-1, invalid_response, -1)
@@ -206,7 +207,7 @@ class DailyReminderConfig(db.Model):
 
 class GeneralNotificationConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
     intv_id = db.relationship('Intervention', backref='general_notification_config', lazy='select')
 
     title = db.Column(db.String(50))
@@ -249,7 +250,7 @@ class ImageTextUpload(db.Model):
     image_name = db.Column(db.String(100))
     text = db.Column(db.String(1500))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
 
     def __init__(self, info):
         self.image_url = info['image_url']
@@ -279,7 +280,7 @@ class ImageTextUpload(db.Model):
 class Intervention(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     notif_id = db.Column(db.Integer, db.ForeignKey('general_notification_config.id'))
-    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     treatment = db.Column(db.String(2000))
     start = db.Column(db.DateTime, default=datetime.datetime.utcnow)
@@ -352,7 +353,7 @@ class Intervention(db.Model):
 
 
 class MobileUser(db.Model):
-    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
     firstname = db.Column(db.String(120))
     lastname = db.Column(db.String(120))
     gender = db.Column(db.String(10))
@@ -830,7 +831,7 @@ class NafStats(db.Model):
 
 class RescuetimeConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
     productive_duration = db.Column(db.String(50))
     distracted_duration = db.Column(db.String(50))
     productive_msg = db.Column(db.String(50))
@@ -859,7 +860,7 @@ class RescuetimeConfig(db.Model):
 
     @staticmethod
     def add(info):
-        existing_experiment = Experiment.query.filter_by(code=info['code']).first()
+        existing_experiment = Experiment_v2.query.filter_by(code=info['code']).first()
         if not existing_experiment:
             invalid_response = 'Invalid experiment code({})'.format(info['code'])
             return (-1, invalid_response, -1)
@@ -872,7 +873,7 @@ class RescuetimeConfig(db.Model):
 
 class ScreenUnlockConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
     time_limit = db.Column(db.Integer)
     unlocked_limit = db.Column(db.Integer)
     vibration_strength = db.Column(db.String(10))
@@ -907,7 +908,7 @@ class ScreenUnlockConfig(db.Model):
 
     @staticmethod
     def add(info):
-        existing_experiment = Experiment.query.filter_by(code=info['code']).first()
+        existing_experiment = Experiment_v2.query.filter_by(code=info['code']).first()
         if not existing_experiment:
             invalid_response = 'Invalid experiment code({})'.format(info['code'])
             return (-1, invalid_response, -1)
@@ -1183,7 +1184,7 @@ class RescuetimeData(db.Model):
 
 class VibrationConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
     app_id = db.Column(db.String(50))
     time_limit = db.Column(db.Integer)
     open_limit = db.Column(db.Integer)
@@ -1212,7 +1213,7 @@ class VibrationConfig(db.Model):
 
     @staticmethod
     def add(info):
-        existing_experiment = Experiment.query.filter_by(code=info['code']).first()
+        existing_experiment = Experiment_v2.query.filter_by(code=info['code']).first()
         if not existing_experiment:
             invalid_response = 'Invalid experiment code({})'.format(info['code'])
             return (-1, invalid_response, -1)
