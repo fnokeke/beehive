@@ -208,6 +208,8 @@ class Participant(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, profile, google_credentials):
+        print '********** now creating user ****************'
+        print google_credentials
         self.email = profile['email']
         self.firstname = profile['firstname']
         self.lastname = profile['lastname']
@@ -461,14 +463,14 @@ class NotifEvent(db.Model):
         rows = info['logs'].split(';')
 
         for row in rows:
-            if row == "":
+            if row == "" or info['email'] == "":
                 continue
 
-            username, code, alarm_millis, ringer_mode, title, content, app_id, was_dismissed, event_time_millis = \
+            email, code, alarm_millis, ringer_mode, title, content, app_id, was_dismissed, event_time_millis = \
                 row.split(",")
 
             entry = {
-                'email': username.strip('#'),  # temp fix because for some reason username has '#
+                'email': email.strip('#'),  # temp fix because for some reason username has '#
                 'code': code.strip(),
                 'alarm_millis': alarm_millis,
                 'ringer_mode': ringer_mode,
@@ -514,12 +516,12 @@ class InAppAnalytics(db.Model):
     def add_stats(info):
         rows = info['logs'].split(';')
         for row in rows:
-            if row == "":
+            if row == "" or info['email'] == "":
                 continue
 
             event_time_millis, event_desc = row.split(",")
             entry = {
-                'email': info['username'].strip('#'),
+                'email': info['email'].strip('#'),
                 'code': info['code'].strip(),
                 'event_time_millis': event_time_millis,
                 'event_desc': event_desc

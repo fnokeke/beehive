@@ -524,6 +524,7 @@ def android_google_login_participant():
 
     profile = service.userinfo().get().execute()
     user = Participant.from_profile(profile, credentials.to_json())
+    session['user_type'] = 'participant'
     login_user(user)
 
     android_app_deeplink = 'beehive://androidlogin'
