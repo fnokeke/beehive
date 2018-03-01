@@ -17,7 +17,7 @@ def schedule_rescuetime_task():
     print "###############################################################################################"
     try:
         # Sanity check to avoid database data duplication
-        date_yesterday = date.today() - timedelta(days=1)
+        date_yesterday = date.today() - timedelta(days=2)
         count_rows = RescuetimeData.query.filter_by(created_date=date_yesterday).count()
     except:
         print "schedule_rescuetime_task:", "rescuetime_data table not found!"

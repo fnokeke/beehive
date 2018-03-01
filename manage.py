@@ -13,8 +13,6 @@ manager.add_command('db', MigrateCommand)
 
 # Initialize task-queue before and run flask app
 if __name__ == '__main__':
-    print "manage.py"
-    schedule_rescuetime_task()
     manager.run()
 
 

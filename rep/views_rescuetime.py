@@ -98,10 +98,10 @@ def dashboard_rescuetime():
 def store_rescuetime_data():
     print "store_rescuetime_data:", time.strftime("%A, %d. %B %Y %I:%M:%S %p")
     BASE_DIR = "./rescuetime/"
-    date_yesterday = date.today() - timedelta(days=1)
+    date_yesterday = date.today() - timedelta(days=2)
 
     try:
-        # Sanity check if TechnionUser exists
+        # Sanity check if RescuetimeUser exists
         users = RescuetimeUser.get_all_users_data()
     except:
         print "store_rescuetime_data:", "FAILED - rescuetime_user table not found!"
