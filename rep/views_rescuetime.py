@@ -66,6 +66,38 @@ def rescuetime_home():
 
 
 
+
+
+
+
+# Dashboard RescueTime summary
+@app.route('/rescuetime/stats')
+def rescuetime_stats():
+    date_yesterday = date.today() - timedelta(days=1)
+    users = RescuetimeUser.get_all_users_data()
+
+    data = []
+    for user in users:
+        try:
+            # "row_headers":["Rank","Time Spent (seconds)","Number of People","Activity","Category","Productivity"],
+            json_data = json.loads(RescueTime.fetch_daily_activity_rank(user['access_token'], date_yesterday))
+            json_data = json_data['rows']
+            json_data = json_data[0:5]
+            user['data'] = json_data
+        except:
+            no_data = ["", "", "", "", "", ""]
+            user['data'] = no_data
+            print "dashboard_rescuetime:", "SKIP - no data for user,", user['email']
+
+        del user['access_token']
+        data.append(user)
+
+    ctx = {'users': data, 'date': date_yesterday}
+    # store_rescuetime_data will be added to taskqueue managed by the apscheduler
+    return render_template('/rtime/rtime-stats.html', **ctx)
+
+
+
 # Note that ther is similar function defined above for the path ('/rescuetime-dashboard/<code>')
 # Dashboard for all user RescueTime stats
 @app.route('/rescuetime/dash')
