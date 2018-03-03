@@ -7,10 +7,20 @@
 {% block contents %}
 
 
+
   <div class="container">
 
+    <button
+            type="button"
+            class="btn btn-link btn-lg"
+            onclick="window.location.href='/rescuetime/stats'">
+      <span class=" text-muted"> </span>
+      <span class="glyphicon glyphicon-calendar info-text"> </span>
+      <span class="info-text"> Show data submission stats </span>
+    </button>
+
     <div class="page-header">
-      <h3>RescueTime Admin Dashboard:
+      <h3>RescueTime Dashboard:
         <br>
         <small>Total:
           {{ users | length }}
@@ -21,16 +31,18 @@
         <small class="info-text"> Date:
           {{ date }}
         </small>
+        <br>
+
 
       </h3>
       <br>
       <em>To sort by multiple columns, hold down shift key and select columns.</em>
     </div>
 
-    <table class="table table-hover", id="stats-table">
+    <table class="table table-hover", id="dash-table">
 
       <thead>
-        <tr class="info">
+        <tr class="bg-primary">
           <th>
             No
           </th>

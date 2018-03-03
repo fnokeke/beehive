@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Dashboard Stats
+{% endblock %}
+
+{% block contents %}
+
+<div class="container">
+
+    <button
+            type="button"
+            class="btn btn-link btn-lg"
+            onclick="window.location.href='/rescuetime/dash'">
+        <span class=" text-muted"> </span>
+        <span class="glyphicon glyphicon-dashboard info-text">  </span>
+        <span class="info-text"> Show latest submission dashboard </span>
+    </button>
+
+    <div class="page-header">
+        <h3>RescueTime Statistics
+            <br>
+            <small>Total:
+                {{ users | length }} user(s)
+            </small>
+
+            <small>Days:
+                {{ dates | length }} days
+            </small>
+        </h3>
+        <br>
+
+        <em> Data for dates in range: {{dates[(dates | length) - 1]}} to {{dates[0]}} </em>
+    </div>
+
+    <div style="overflow-x:auto;">
+
+        <table class="table table-hover" id="stats-table">
+
+            <thead>
+            <tr class="bg-primary">
+                <th>
+                    No
+                </th>
+
+                <th>
+                    Email
+                </th>
+
+                <th>
+                    Firstname
+                </th>
+
+                <th>
+                    Lastname
+                </th>
+
+                {% for date in dates %}
+                <th>
+                    {{ date }}
+                </th>
+                {% endfor %}
+
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for user in users %}
+            <tr>
+                <td class="info">
+                    {{ loop.index }}
+                </td>
+
+                <td class="info">
+                    {{ user.email }}
+                </td>
+
+                <td class="info">
+                    {{ user.firstname }}
+                </td>
+
+                <td class="info">
+                    {{ user.lastname }}
+                </td>
+
+
+                {% for day in user.days %}
+                <td>
+                    {% if day %}
+                    <h4 class="text-success">
+                        &#9752;
+                    </h4>
+                    {% else %}
+                    <h4 class="text-danger">
+                        &#x2717;
+                    </h4>
+                    {% endif %}
+                </td>
+                {% endfor %}
+
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

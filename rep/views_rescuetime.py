@@ -66,11 +66,56 @@ def rescuetime_home():
 
 
 
+
+# Dashboard RescueTime summary
+@app.route('/rescuetime/stats')
+def rescuetime_stats():
+    num_days = 7;
+    date_yesterday = date.today() - timedelta(days=1)
+    users = RescuetimeUser.get_all_users_data()
+
+    # print "Current year: ", date_yesterday.strftime("%Y")
+    # print "Month of year: ", date_yesterday.strftime("%B")
+    # print "Week number of the year: ", date_yesterday.strftime("%W")
+    # print "Weekday of the week: ", date_yesterday.strftime("%w")
+    # print "Day of year: ", date_yesterday.strftime("%j")
+    # print "Day of the month : ", date_yesterday.strftime("%d")
+    # print "Day of week: ", date_yesterday.strftime("%A")
+
+    data = []
+    for user in users:
+        days = []
+        for num in range (2, num_days+2):
+            created_date = date.today() - timedelta(days=num)
+            try:
+                count_rows = RescuetimeData.query.filter_by(email=user['email'], created_date=created_date).count()
+                if(count_rows>0):
+                    days.append("true")
+                else:
+                    days.append("")
+            except:
+                days.append("")
+
+        user['days'] = days
+        del user['access_token']
+        data.append(user)
+
+    dates = []
+    for num in range(2, num_days+2):
+        created_date = date.today() - timedelta(days=num)
+        date_formatted = created_date.strftime("%B") + " "+  created_date.strftime("%d")
+        dates.append(date_formatted)
+    ctx = {'users': data, 'dates': dates}
+    # store_rescuetime_data will be added to taskqueue managed by the apscheduler
+    return render_template('/rtime/rtime-stats.html', **ctx)
+
+
+
 # Note that ther is similar function defined above for the path ('/rescuetime-dashboard/<code>')
 # Dashboard for all user RescueTime stats
 @app.route('/rescuetime/dash')
 def dashboard_rescuetime():
-    date_yesterday = date.today() - timedelta(days=1)
+    date_yesterday = date.today() - timedelta(days=2)
     users = RescuetimeUser.get_all_users_data()
 
     data = []
