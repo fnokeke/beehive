@@ -89,7 +89,6 @@ def rescuetime_stats():
             created_date = date.today() - timedelta(days=num)
             try:
                 count_rows = RescuetimeData.query.filter_by(email=user['email'], created_date=created_date).count()
-                print created_date, 'count_rows=', count_rows
                 if(count_rows>0):
                     days.append("true")
                 else:
