@@ -8,18 +8,32 @@
 
   <div class="container">
 
+    <button
+            type="button"
+            class="btn btn-link btn-lg"
+            onclick="window.location.href='/rescuetime/dash'">
+      <span class=" text-muted"> </span>
+      <span class="glyphicon info-text"> &#xe018;</span>
+      <span class="info-text"> Show latest submission dashboard </span>
+    </button>
+
     <div class="page-header">
       <h3>RescueTime Statistics
         <br>
         <small>Total:
           {{ users | length }}
           user(s)</small>
+
+        <small>Days:
+          {{ dates | length }}
+          days</small>
       </h3>
       <br>
-      <em>To sort by multiple columns, hold down shift key and select columns.</em>
+
+      <em> Data for dates in range: {{dates[(dates | length) - 1]}} to {{dates[0]}} </em>
     </div>
 
-    <table id="stats-table">
+    <table class="table table-hover" id="stats-table">
 
       <thead>
         <tr>
@@ -39,13 +53,12 @@
             Lastname
           </th>
 
+          {% for date in dates %}
           <th>
-            Gender
+            {{ date }}
           </th>
+          {% endfor %}
 
-          <th>
-            Rescuetime Connected
-          </th>
         </tr>
       </thead>
 
@@ -68,21 +81,21 @@
               {{ user.lastname }}
             </td>
 
-            <td>
-              {{ user.gender }}
-            </td>
 
+            {% for day in user.days %}
             <td>
-              {% if user.rescuetime_access_token %}
-                <span class="text-primary">
-                  &#10004;
-                </span>
+              {% if day %}
+                <h4 class="text-success">
+                  &#9752;
+                </h4>
               {% else %}
-                <span class="text-danger">
+                <h4 class="text-danger">
                   &#x2717;
-                </span>
+                </h4>
               {% endif %}
             </td>
+            {% endfor %}
+
           </tr>
         {% endfor %}
       </tbody>
