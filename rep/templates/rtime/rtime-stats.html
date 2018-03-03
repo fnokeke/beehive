@@ -23,14 +23,34 @@ Dashboard Stats
             <small>Total:
                 {{ users | length }} user(s)
             </small>
-
-            <small>Days:
-                {{ dates | length }} days
-            </small>
+            <br>
         </h3>
         <br>
 
-        <em> Data for dates in range: {{dates[(dates | length) - 1]}} to {{dates[0]}} </em>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label for="select-days">Select number of days:</label>
+                    <select class="form-control selectpicker" data-style="info" id="select-days">
+                        <option value=7>default</option>
+                        <option value=7>1 week</option>
+                        <option value=14>2 weeks</option>
+                        <option value=21>3 weeks</option>
+                        <option value=30>4 weeks</option>
+                        <option value=45>5 weeks</option>
+                    </select>
+                </div>
+            </div>
+             <div class="col-sm-8">
+             </div>
+        </div>
+
+         <em> Days:  </em>
+        <strong>
+                {{ dates | length }} days
+        </strong>
+        <br>
+        <em> Dates in range: <span class="text-info"> <strong>{{dates[(dates | length) - 1]}} - {{dates[0]}} </strong> </span></em>
     </div>
 
     <div style="overflow-x:auto;">
@@ -68,32 +88,32 @@ Dashboard Stats
             {% for user in users %}
             <tr>
                 <td class="info">
-                    {{ loop.index }}
+                    <h5>{{ loop.index }}</h5>
                 </td>
 
                 <td class="info">
-                    {{ user.email }}
+                     <h5>{{ user.email }}</h5>
                 </td>
 
                 <td class="info">
-                    {{ user.firstname }}
+                     <h5>{{ user.firstname }}</h5>
                 </td>
 
                 <td class="info">
-                    {{ user.lastname }}
+                     <h5>{{ user.lastname }}</h5>
                 </td>
 
 
                 {% for day in user.days %}
                 <td>
                     {% if day %}
-                    <h4 class="text-success">
+                    <h3 class="text-success">
                         &#9752;
-                    </h4>
+                    </h3>
                     {% else %}
-                    <h4 class="text-danger">
+                    <h3 class="text-danger">
                         &#x2717;
-                    </h4>
+                    </h3>
                     {% endif %}
                 </td>
                 {% endfor %}

@@ -70,7 +70,13 @@ def rescuetime_home():
 # Dashboard RescueTime summary
 @app.route('/rescuetime/stats')
 def rescuetime_stats():
-    num_days = 7;
+    days = request.args.get('days')
+
+    if days:
+        num_days = int(days)
+    else:
+        num_days = 7;
+
     date_yesterday = date.today() - timedelta(days=1)
     users = RescuetimeUser.get_all_users_data()
 
