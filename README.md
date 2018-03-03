@@ -108,8 +108,12 @@ You can follow these instructions if you plan to run periodic tasks. In this pro
 - `./run_gunicorn.sh` starts server with multiple workers.
 - Refresh your browser and you should be good to go!
 
+## Beehive Android + ResearchStack
+To create android apps that build on ResearchStack,[follow this guide.](https://github.com/fnokeke/NewBeehiveSurvey)
+
 ## Privacy
 To maintain and preserve user privacy, this project will eventually access third party datastreams using [Immersive Core](https://github.com/cornelltech/immersive-core).
+
 
 [Google Credentials]: [https://console.developers.google.com/apis/credentials?project=_]
 
