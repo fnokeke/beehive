@@ -3,8 +3,7 @@
  The framework relies on mobile sensing, digital nudges and user contexts (such as location traces, phone usage habit, and electronic calendar schedules).
  
  ## Relevant Publication
- OKEKE, F., SOBOLEV, M., ESTRIN, D. **Towards A Framework for Mobile Behavior Change Research**
- ***In Technology, Mind, and Society: APAScience,*** Washington DC, USA, April 2018.
+ OKEKE, F., SOBOLEV, M., ESTRIN, D. **Towards A Framework for Mobile Behavior Change Research** *In Technology, Mind, and Society: APAScience,* Washington DC, USA, April 2018.
  [https://doi.org/10.1145/3183654.3183706.](https://doi.org/10.1145/3183654.3183706)
 
 ## Application Flow 
