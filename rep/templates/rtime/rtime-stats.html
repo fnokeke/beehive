@@ -1,104 +1,107 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Dashboard Stats
+Dashboard Stats
 {% endblock %}
 
 {% block contents %}
 
-  <div class="container">
+<div class="container">
 
     <button
             type="button"
             class="btn btn-link btn-lg"
             onclick="window.location.href='/rescuetime/dash'">
-      <span class=" text-muted"> </span>
-      <span class="glyphicon info-text"> &#xe018;</span>
-      <span class="info-text"> Show latest submission dashboard </span>
+        <span class=" text-muted"> </span>
+        <span class="glyphicon glyphicon-dashboard info-text">  </span>
+        <span class="info-text"> Show latest submission dashboard </span>
     </button>
 
     <div class="page-header">
-      <h3>RescueTime Statistics
+        <h3>RescueTime Statistics
+            <br>
+            <small>Total:
+                {{ users | length }} user(s)
+            </small>
+
+            <small>Days:
+                {{ dates | length }} days
+            </small>
+        </h3>
         <br>
-        <small>Total:
-          {{ users | length }}
-          user(s)</small>
 
-        <small>Days:
-          {{ dates | length }}
-          days</small>
-      </h3>
-      <br>
-
-      <em> Data for dates in range: {{dates[(dates | length) - 1]}} to {{dates[0]}} </em>
+        <em> Data for dates in range: {{dates[(dates | length) - 1]}} to {{dates[0]}} </em>
     </div>
 
-    <table class="table table-hover" id="stats-table">
+    <div style="overflow-x:auto;">
 
-      <thead>
-        <tr>
-          <th>
-            No
-          </th>
+        <table class="table table-hover" id="stats-table">
 
-          <th>
-            Email
-          </th>
+            <thead>
+            <tr class="bg-primary">
+                <th>
+                    No
+                </th>
 
-          <th>
-            Firstname
-          </th>
+                <th>
+                    Email
+                </th>
 
-          <th>
-            Lastname
-          </th>
+                <th>
+                    Firstname
+                </th>
 
-          {% for date in dates %}
-          <th>
-            {{ date }}
-          </th>
-          {% endfor %}
+                <th>
+                    Lastname
+                </th>
 
-        </tr>
-      </thead>
+                {% for date in dates %}
+                <th>
+                    {{ date }}
+                </th>
+                {% endfor %}
 
-      <tbody>
-        {% for user in users %}
-          <tr>
-            <td>
-              {{ loop.index }}
-            </td>
+            </tr>
+            </thead>
 
-            <td>
-              {{ user.email }}
-            </td>
+            <tbody>
+            {% for user in users %}
+            <tr>
+                <td class="info">
+                    {{ loop.index }}
+                </td>
 
-            <td>
-              {{ user.firstname }}
-            </td>
+                <td class="info">
+                    {{ user.email }}
+                </td>
 
-            <td>
-              {{ user.lastname }}
-            </td>
+                <td class="info">
+                    {{ user.firstname }}
+                </td>
+
+                <td class="info">
+                    {{ user.lastname }}
+                </td>
 
 
-            {% for day in user.days %}
-            <td>
-              {% if day %}
-                <h4 class="text-success">
-                  &#9752;
-                </h4>
-              {% else %}
-                <h4 class="text-danger">
-                  &#x2717;
-                </h4>
-              {% endif %}
-            </td>
+                {% for day in user.days %}
+                <td>
+                    {% if day %}
+                    <h4 class="text-success">
+                        &#9752;
+                    </h4>
+                    {% else %}
+                    <h4 class="text-danger">
+                        &#x2717;
+                    </h4>
+                    {% endif %}
+                </td>
+                {% endfor %}
+
+            </tr>
             {% endfor %}
-
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}
