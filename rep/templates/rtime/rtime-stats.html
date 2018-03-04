@@ -51,7 +51,16 @@ Dashboard Stats
         </strong>
         <br>
         <em> Dates in range: <span class="text-info"> <strong>{{dates[(dates | length) - 1]}} - {{dates[0]}} </strong> </span></em>
+        <br>
+
+        <div style="float: right;">
+            {% if (dates | length) > 7 %}
+            <em class="text-info"> Scroll right to view older dates</em>
+            <span class="glyphicon glyphicon-arrow-right text-info">  </span>
+            {% endif %}
+        </div>
     </div>
+
 
     <div style="overflow-x:auto;">
 
