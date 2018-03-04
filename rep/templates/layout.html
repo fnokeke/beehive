@@ -11,18 +11,17 @@
                         <span class="icon-bar"></span>
                     </button>
                 {% endif %}
-                <a class="navbar-brand" href="#">
-                    {{ 'Beehive' | upper }}
-                    <small> - 1.5</small>
+                <a class="navbar-brand navbar-b-text" href="#">
+                    Beehive
                 </a>
             </div>
 
 
-            <div class="collapse navbar-collapse" id="myNavbar">
+            <div class="collapse navbar-collapse nav-link-text" id="myNavbar">
                 {% if not disable_navbar %}
 
                     {% block navbar_links %}
-                        <ul class="nav navbar-nav">
+                        <ul class="nav navbar-nav nav-link-text">
                             {% set links = ['experiments', 'settings'] if user_type == 'researcher' else ['home', 'settings'] %}
                             {% for ni in links %}
                                 <li {% if request.path==url_for(ni) %} class="active" {% endif %}>
@@ -39,7 +38,7 @@
                             {% endfor %}
                         </ul>
 
-                        <ul class="nav navbar-nav navbar-right">
+                        <ul class="nav navbar-nav navbar-right nav-link-text">
                             <li>
                                 <a href="{{ url_for('logout') }}">
                                     <span class="glyphicon glyphicon-log-out"></span>

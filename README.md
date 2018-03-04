@@ -1,13 +1,16 @@
-# Beehive Web v1.5
-A platform for researchers to conduct behavioral studies using user mobile phones and contexts (both individual and environmental such as location traces, phone usage habit, calendar schedules, among others).
+# Behavior Change Framework v2.0
+ A framework to study human behaviors and deploy behavioral interventions in real-world settings using mobile devices. 
+ The framework relies on mobile sensing, digital nudges and user contexts (such as location traces, phone usage habit, and electronic calendar schedules).
+ 
+ ## Relevant Publication
+ OKEKE, F., SOBOLEV, M., ESTRIN, D. **Towards A Framework for Mobile Behavior Change Research** *In Technology, Mind, and Society: APAScience,* Washington DC, USA, April 2018.
+ [https://doi.org/10.1145/3183654.3183706.](https://doi.org/10.1145/3183654.3183706)
 
-## Application Flow
-- Custom researcher login mode is used and should be changed. Researcher logs in to create experiment in `/researcher` and activates experiment datastreams using `researcher` and `password` as credentials. This can be changed in `rep/secret_keys.py`.
-- Participant joins experiment via mobile app (android/iOS);
-- Participant can also log in via web to see account details through `/participant`
-- Participant grants access to researcher experiment through mobile app or web view
-- Depending on activated experiment datastreams, participant may need to grant access to datastreams such as Google Calendar, Moves, RescueTime, Photographic Affect Meter (PAM).
-- Enjoy!
+## Application Flow 
+In its default state, the framework can be used to run research studies. Below is the application flow for conducting a study:
+- Researcher logs in and creates a new experiment.
+- Participant joins experiment via mobile app (android/iOS) and experiences study interventions (such as push notifications, phone vibrations, PAM).
+- Researcher monitors experiment progress through dashboards and can download user data for extensive offline analysis.
 
 ## Quick Setup
 - `mkvirtualenv bhenv` (virtualenv wrapper creates and activates virtualenv / if you don't have plugin, first create virtualenv then activate)
@@ -37,8 +40,9 @@ A platform for researchers to conduct behavioral studies using user mobile phone
 ## Services
 - Account Login using Google Oauth2 and Flask-Login.
 - Google Calendar Service for accessing user calendar.
-- [Moves API][Moves API].
 - [RescueTime API][RescueTime API].
+- [Moves API][Moves API].
+- More coming soon.
 
 ## Tips about setup
 ###### Virtual Environment
@@ -108,8 +112,12 @@ You can follow these instructions if you plan to run periodic tasks. In this pro
 - `./run_gunicorn.sh` starts server with multiple workers.
 - Refresh your browser and you should be good to go!
 
+## Behavior Framework + ResearchStack
+To create android apps that build on ResearchStack, [follow this guide.](https://github.com/fnokeke/NewBeehiveSurvey)
+
 ## Privacy
 To maintain and preserve user privacy, this project will eventually access third party datastreams using [Immersive Core](https://github.com/cornelltech/immersive-core).
+
 
 [Google Credentials]: [https://console.developers.google.com/apis/credentials?project=_]
 
