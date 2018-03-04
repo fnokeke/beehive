@@ -77,6 +77,10 @@ def rescuetime_stats():
     else:
         num_days = 7;
 
+    # Check value is in range
+    if num_days < 7 or num_days > 45:
+        num_days = 7;
+
     date_yesterday = date.today() - timedelta(days=1)
     users = RescuetimeUser.get_all_users_data()
 
