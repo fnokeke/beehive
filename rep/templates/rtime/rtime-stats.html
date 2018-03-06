@@ -32,12 +32,11 @@ Dashboard Stats
                 <div class="form-group">
                     <label for="select-days">Select number of days:</label>
                     <select class="form-control selectpicker" data-style="info" id="select-days">
-                        <option value=7>default</option>
+                        <option value=7></option>
                         <option value=7>1 week</option>
                         <option value=14>2 weeks</option>
                         <option value=21>3 weeks</option>
                         <option value=30>4 weeks</option>
-                        <option value=45>5 weeks</option>
                     </select>
                 </div>
             </div>
@@ -84,6 +83,9 @@ Dashboard Stats
                     Lastname
                 </th>
 
+                <th>
+                    stats
+                </th>
                 {% for date in dates %}
                 <th>
                     {{ date }}
@@ -95,34 +97,44 @@ Dashboard Stats
 
             <tbody>
             {% for user in users %}
-            <tr>
-                <td class="info">
-                    <h5>{{ loop.index }}</h5>
+            <tr align="bottom">
+                <td class="info align-middle" >
+                   <h5> <em>{{ loop.index }} </em> </h5>
+                </td>
+
+                <td class="info align-middle">
+                   <h5> <em> {{ user.email }} </em> </h5>
                 </td>
 
                 <td class="info">
-                     <h5>{{ user.email }}</h5>
+                    <h5> <em> {{ user.firstname }}  </em> </h5>
                 </td>
 
                 <td class="info">
-                     <h5>{{ user.firstname }}</h5>
+                    <h5> <em> {{ user.lastname }}  </em> </h5>
                 </td>
 
-                <td class="info">
-                     <h5>{{ user.lastname }}</h5>
-                </td>
 
+                {% if user.count != (dates | length) %}
+                    <td class="info text-danger">
+                        <h5> {{user.count}} / {{ (dates | length) }}</h5>
+                    </td>
+                {% else %}
+                    <td class="info text-primary">
+                        <h5 > {{user.count}} / {{ (dates | length) }}</h5>
+                    </td>
+                {% endif %}
 
                 {% for day in user.days %}
                 <td>
                     {% if day %}
-                    <h3 class="text-info">
+                    <h4 class="text-info">
                         <span class="glyphicon glyphicon glyphicon-ok-circle text-info">  </span>
-                    </h3>
+                    </h4>
                     {% else %}
-                    <h3 class="text-danger">
+                    <h4 class="text-danger">
                         <span class="glyphicon glyphicon-remove text-danger">  </span>
-                    </h3>
+                    </h4>
                     {% endif %}
                 </td>
                 {% endfor %}
