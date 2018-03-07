@@ -1,4 +1,5 @@
 import time
+import os, sys
 import atexit
 
 from datetime import date
@@ -14,6 +15,13 @@ def print_date_time():
     print time.strftime("%A, %d. %B %Y %I:%M:%S %p")
 
 def schedule_rescuetime_task():
+    if os.environ.get('BEEHIVE_SCHEDULER'):
+        print "schedule_rescuetime_task:", "Scheduler running!"
+        return
+    else:
+        os.environ['BEEHIVE_SCHEDULER'] = 'true'
+        print "schedule_rescuetime_task:", "Start scheduler!"
+
     print "###############################################################################################"
     try:
         # Sanity check to avoid database data duplication
@@ -41,3 +49,8 @@ def schedule_rescuetime_task():
         replace_existing=True)
     # Shut down the scheduler when exiting the app
     atexit.register(lambda: scheduler.shutdown())
+    atexit.register(lambda: scheduler_setenv())
+
+def scheduler_setenv():
+    os.environ['BEEHIVE_SCHEDULER'] = ''
+    print "scheduler_setenv: Stop scheduler!"
