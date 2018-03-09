@@ -23,15 +23,43 @@ Dashboard Stats
             <small>Total:
                 {{ users | length }} user(s)
             </small>
-
-            <small>Days:
-                {{ dates | length }} days
-            </small>
+            <br>
         </h3>
         <br>
 
-        <em> Data for dates in range: {{dates[(dates | length) - 1]}} to {{dates[0]}} </em>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label for="select-days">Select number of days:</label>
+                    <select class="form-control selectpicker" data-style="info" id="select-days">
+                        <option value=7></option>
+                        <option value=7>1 week</option>
+                        <option value=14>2 weeks</option>
+                        <option value=21>3 weeks</option>
+                        <option value=30>4 weeks</option>
+                    </select>
+                </div>
+            </div>
+             <div class="col-sm-8">
+             </div>
+        </div>
+
+         <em> Days:  </em>
+        <strong>
+                {{ dates | length }} days
+        </strong>
+        <br>
+        <em> Dates in range: <span class="text-info"> <strong>{{dates[(dates | length) - 1]}} - {{dates[0]}} </strong> </span></em>
+        <br>
+
+        <div style="float: right;">
+            {% if (dates | length) > 7 %}
+            <em class="text-info"> Scroll right to view older dates</em>
+            <span class="glyphicon glyphicon-arrow-right text-info">  </span>
+            {% endif %}
+        </div>
     </div>
+
 
     <div style="overflow-x:auto;">
 
@@ -55,6 +83,9 @@ Dashboard Stats
                     Lastname
                 </th>
 
+                <th>
+                    stats
+                </th>
                 {% for date in dates %}
                 <th>
                     {{ date }}
@@ -66,33 +97,43 @@ Dashboard Stats
 
             <tbody>
             {% for user in users %}
-            <tr>
-                <td class="info">
-                    {{ loop.index }}
+            <tr align="bottom">
+                <td class="info align-middle" >
+                   <h5> <em>{{ loop.index }} </em> </h5>
+                </td>
+
+                <td class="info align-middle">
+                   <h5> <em> {{ user.email }} </em> </h5>
                 </td>
 
                 <td class="info">
-                    {{ user.email }}
+                    <h5> <em> {{ user.firstname }}  </em> </h5>
                 </td>
 
                 <td class="info">
-                    {{ user.firstname }}
+                    <h5> <em> {{ user.lastname }}  </em> </h5>
                 </td>
 
-                <td class="info">
-                    {{ user.lastname }}
-                </td>
 
+                {% if user.count != (dates | length) %}
+                    <td class="info text-danger">
+                        <h5> {{user.count}} / {{ (dates | length) }}</h5>
+                    </td>
+                {% else %}
+                    <td class="info text-primary">
+                        <h5 > {{user.count}} / {{ (dates | length) }}</h5>
+                    </td>
+                {% endif %}
 
                 {% for day in user.days %}
                 <td>
                     {% if day %}
-                    <h4 class="text-success">
-                        &#9752;
+                    <h4 class="text-info">
+                        <span class="glyphicon glyphicon glyphicon-ok-circle text-info">  </span>
                     </h4>
                     {% else %}
                     <h4 class="text-danger">
-                        &#x2717;
+                        <span class="glyphicon glyphicon-remove text-danger">  </span>
                     </h4>
                     {% endif %}
                 </td>

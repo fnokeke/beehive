@@ -70,7 +70,17 @@ def rescuetime_home():
 # Dashboard RescueTime summary
 @app.route('/rescuetime/stats')
 def rescuetime_stats():
-    num_days = 7;
+    days = request.args.get('days')
+
+    if days:
+        num_days = int(days)
+    else:
+        num_days = 7;
+
+    # Check value is in range
+    if num_days < 7 or num_days > 45:
+        num_days = 7;
+
     date_yesterday = date.today() - timedelta(days=1)
     users = RescuetimeUser.get_all_users_data()
 
@@ -84,6 +94,7 @@ def rescuetime_stats():
 
     data = []
     for user in users:
+        count = 0
         days = []
         for num in range (2, num_days+2):
             created_date = date.today() - timedelta(days=num)
@@ -91,19 +102,22 @@ def rescuetime_stats():
                 count_rows = RescuetimeData.query.filter_by(email=user['email'], created_date=created_date).count()
                 if(count_rows>0):
                     days.append("true")
+                    count = count + 1;
                 else:
                     days.append("")
             except:
                 days.append("")
 
         user['days'] = days
+        user['count'] = count
         del user['access_token']
         data.append(user)
 
     dates = []
     for num in range(2, num_days+2):
         created_date = date.today() - timedelta(days=num)
-        date_formatted = created_date.strftime("%B") + " "+  created_date.strftime("%d")
+        month = created_date.strftime("%B")
+        date_formatted = month[:3] + " "+  created_date.strftime("%d")
         dates.append(date_formatted)
     ctx = {'users': data, 'dates': dates}
     # store_rescuetime_data will be added to taskqueue managed by the apscheduler
