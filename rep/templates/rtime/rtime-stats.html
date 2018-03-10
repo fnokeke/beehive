@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 
+
 {% block title %}
 Dashboard Stats
 {% endblock %}
@@ -17,49 +18,97 @@ Dashboard Stats
         <span class="info-text"> Show latest submission dashboard </span>
     </button>
 
-    <div class="page-header">
-        <h3>RescueTime Statistics
-            <br>
-            <small>Total:
-                {{ users | length }} user(s)
-            </small>
-            <br>
-        </h3>
-        <br>
+    <div class="row">
+        <div class="col-sm-6">
 
-        <div class="row">
-            <div class="col-sm-4">
-                <div class="form-group">
-                    <label for="select-days">Select number of days:</label>
-                    <select class="form-control selectpicker" data-style="info" id="select-days">
-                        <option value=7></option>
-                        <option value=7>1 week</option>
-                        <option value=14>2 weeks</option>
-                        <option value=21>3 weeks</option>
-                        <option value=30>4 weeks</option>
-                    </select>
+            <div class="">
+                <h3>RescueTime Statistics
+                    <br>
+                    <small>Total:
+                        {{ users | length }} user(s)
+                    </small>
+                    <br>
+                </h3>
+                <br>
+
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="select-days">Select number of days:</label>
+                            <select class="form-control selectpicker" data-style="info" id="select-days">
+                                <option value=7></option>
+                                <option value=7>1 week</option>
+                                <option value=14>2 weeks</option>
+                                <option value=21>3 weeks</option>
+                                <option value=30>4 weeks</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                    </div>
                 </div>
+
+                <em> Days: </em>
+                <strong>
+                    {{ dates | length }} days
+                </strong>
+                <br>
+                <em> Dates in range: <span
+                        class="text-info"> <strong>{{dates[(dates | length) - 1]}} - {{dates[0]}} </strong> </span></em>
+                <br>
+
+                <div>
+                    <em> Expected data submissions:  {{ available + unavailable }} </em>
+                    <br>
+                    <em> Data available:  {{ available }} </em>
+                    <br>
+                    <em> Data missing:  {{ unavailable }} </em>
+                </div>
+
+
             </div>
-             <div class="col-sm-8">
-             </div>
+
         </div>
+        <div class="col-sm-6">
+            <div id="piechart"></div>
+            <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+            <script type="text/javascript">
 
-         <em> Days:  </em>
-        <strong>
-                {{ dates | length }} days
-        </strong>
-        <br>
-        <em> Dates in range: <span class="text-info"> <strong>{{dates[(dates | length) - 1]}} - {{dates[0]}} </strong> </span></em>
-        <br>
+                    // Load google charts
+                    google.charts.load('current', {'packages':['corechart']});
+                    google.charts.setOnLoadCallback(drawChart);
 
-        <div style="float: right;">
-            {% if (dates | length) > 7 %}
-            <em class="text-info"> Scroll right to view older dates</em>
-            <span class="glyphicon glyphicon-arrow-right text-info">  </span>
-            {% endif %}
+                    // Draw the chart and set the chart values
+                    function drawChart() {
+                        available = {{ available|safe }}
+                        unavailable = {{ unavailable|safe }}
+                        var data = google.visualization.arrayToDataTable([
+                        ['Task', 'Hours per Day'],
+                        ['Data available', available],
+                        ['Data Missing', unavailable]
+                        ]);
+
+                        var title = 'Data collection statistics for ' + {{ (dates | length) }} + ' days';
+                        // Optional; add a title and set the width and height of the chart
+                        var options = {'title':title, 'width':550, 'height':400};
+
+                        // Display the chart inside the <div> element with id="piechart"
+                        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+                        chart.draw(data, options);
+                    }
+
+            </script>
+
         </div>
     </div>
 
+    <div style="">
+        {% if (dates | length) > 7 %}
+        <em class="text-info"> Scroll right to view older dates</em>
+        <span class="glyphicon glyphicon-arrow-right text-info">  </span>
+        {% endif %}
+    </div>
+    <hr/>
 
     <div style="overflow-x:auto;">
 
@@ -98,31 +147,31 @@ Dashboard Stats
             <tbody>
             {% for user in users %}
             <tr align="bottom">
-                <td class="info align-middle" >
-                   <h5> <em>{{ loop.index }} </em> </h5>
+                <td class="info align-middle">
+                    <h5><em>{{ loop.index }} </em></h5>
                 </td>
 
                 <td class="info align-middle">
-                   <h5> <em> {{ user.email }} </em> </h5>
+                    <h5><em> {{ user.email }} </em></h5>
                 </td>
 
                 <td class="info">
-                    <h5> <em> {{ user.firstname }}  </em> </h5>
+                    <h5><em> {{ user.firstname }} </em></h5>
                 </td>
 
                 <td class="info">
-                    <h5> <em> {{ user.lastname }}  </em> </h5>
+                    <h5><em> {{ user.lastname }} </em></h5>
                 </td>
 
 
                 {% if user.count != (dates | length) %}
-                    <td class="info text-danger">
-                        <h5> {{user.count}} / {{ (dates | length) }}</h5>
-                    </td>
+                <td class="info text-danger">
+                    <h5> {{user.count}} / {{ (dates | length) }}</h5>
+                </td>
                 {% else %}
-                    <td class="info text-primary">
-                        <h5 > {{user.count}} / {{ (dates | length) }}</h5>
-                    </td>
+                <td class="info text-primary">
+                    <h5> {{user.count}} / {{ (dates | length) }}</h5>
+                </td>
                 {% endif %}
 
                 {% for day in user.days %}
@@ -145,4 +194,12 @@ Dashboard Stats
         </table>
     </div>
 </div>
+
+
+<script type="text/javascript">
+
+</script>
+
 {% endblock %}
+
+
