@@ -93,6 +93,8 @@ def rescuetime_stats():
     # print "Day of week: ", date_yesterday.strftime("%A")
 
     data = []
+    actual = 0
+    expected = len(users) * num_days;
     for user in users:
         count = 0
         days = []
@@ -108,6 +110,7 @@ def rescuetime_stats():
             except:
                 days.append("")
 
+        actual = actual + count
         user['days'] = days
         user['count'] = count
         del user['access_token']
@@ -119,7 +122,8 @@ def rescuetime_stats():
         month = created_date.strftime("%B")
         date_formatted = month[:3] + " "+  created_date.strftime("%d")
         dates.append(date_formatted)
-    ctx = {'users': data, 'dates': dates}
+
+    ctx = {'users': data, 'dates': dates, 'available': actual, 'unavailable': (expected-actual)}
     # store_rescuetime_data will be added to taskqueue managed by the apscheduler
     return render_template('/rtime/rtime-stats.html', **ctx)
 
