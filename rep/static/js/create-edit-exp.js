@@ -424,6 +424,7 @@ function create_protocol_handler() {
     var notif_appid = $('#protocol-notif-appid').val();
 
     var protocol_method = $('#protocol-method').val();
+    console.log('protocol_method: ', protocol_method);
     if (protocol_method === 'none') {
         notif_type = 'none';
         notif_time = undefined;
@@ -445,10 +446,8 @@ function create_protocol_handler() {
         'probable_half_notify': $('#probable-half-notify').is(':checked')
     };
 
-    console.log('to add: ', protocol);
     protocols.push(protocol);
     protocols = JSON.stringify(protocols);
-    console.log('at this point: ', protocols);
     localStorage.setItem("protocols", protocols);
 
     // Update protocols view
@@ -534,7 +533,6 @@ function create_protocols_table_from_server() {
     // Create new protocols table
     var server_protocols = $('#slide3').data('protocols');
     if (server_protocols) {
-        console.log('result from server is: ', server_protocols);
         localStorage.setItem("protocols", JSON.stringify(server_protocols));
     }
     redraw_protocols_table();

@@ -366,6 +366,7 @@ class ProtocolPushNotif(db.Model):
     start_date = db.Column(db.Date)
     end_date = db.Column(db.Date)
     frequency = db.Column(db.String(10))
+    method = db.Column(db.String(20))
     notif_details = db.Column(db.String(1600))
     notif_appid = db.Column(db.String(300))
     notif_type = db.Column(db.String(20))
@@ -378,6 +379,7 @@ class ProtocolPushNotif(db.Model):
         self.start_date = data.get('start_date')
         self.end_date = data.get('end_date')
         self.frequency = data.get('frequency')
+        self.method = data.get('method')
         self.notif_details = data.get('notif_details')
         self.notif_appid = data.get('notif_appid')
         self.notif_type = data.get('notif_type')
@@ -393,6 +395,7 @@ class ProtocolPushNotif(db.Model):
             'start_date': str(self.start_date),
             'end_date': str(self.end_date),
             'frequency': str(self.frequency),
+            'method': str(self.method),
             'notif_details': str(self.notif_details),
             'notif_appid': str(self.notif_appid),
             'notif_type': str(self.notif_type),
