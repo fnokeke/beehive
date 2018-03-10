@@ -19,7 +19,7 @@ Dashboard Stats
     </button>
 
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-4">
 
             <div class="">
                 <h3>RescueTime Statistics
@@ -32,7 +32,7 @@ Dashboard Stats
                 <br>
 
                 <div class="row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-8">
                         <div class="form-group">
                             <label for="select-days">Select number of days:</label>
                             <select class="form-control selectpicker" data-style="info" id="select-days">
@@ -44,7 +44,7 @@ Dashboard Stats
                             </select>
                         </div>
                     </div>
-                    <div class="col-sm-8">
+                    <div class="col-sm-4">
                     </div>
                 </div>
 
@@ -69,7 +69,7 @@ Dashboard Stats
             </div>
 
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-4">
             <div id="piechart"></div>
             <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
             <script type="text/javascript">
@@ -83,7 +83,7 @@ Dashboard Stats
                         available = {{ available|safe }}
                         unavailable = {{ unavailable|safe }}
                         var data = google.visualization.arrayToDataTable([
-                        ['Task', 'Hours per Day'],
+                        ['Data', 'count'],
                         ['Data available', available],
                         ['Data Missing', unavailable]
                         ]);
