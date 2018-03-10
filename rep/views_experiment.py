@@ -1,7 +1,7 @@
 from rep import app
 from flask import render_template, request, Response
 from flask_login import current_user, login_required
-from rep.models import Experiment_v2
+from rep.models import Experiment_v2, ProtocolPushNotif
 
 from datetime import datetime
 
@@ -29,7 +29,8 @@ def experiment_options(code):
     ctx = {
         'user_type': 'researcher',
         'today_date': datetime.now().strftime('%Y-%m-%d'),
-        'experiment': Experiment_v2.query.filter_by(code=code).first()
+        'experiment': Experiment_v2.query.filter_by(code=code).first(),
+        'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all()
     }
     return render_template('create-edit-experiment.html', **ctx)
 

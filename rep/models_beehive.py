@@ -61,10 +61,12 @@ class Experiment_v2(db.Model):
 
     @staticmethod
     def add_experiment(exp):
+        msg = "New experiment was successfully created."
         existing_experiment = Experiment_v2.query.filter_by(title=exp['title']).first()
-        if existing_experiment:
-            # return  Response('Experiment with that name exists', status=400, mimetype='application/json')
-            return (400, 'Experiment with that title exists', existing_experiment)
+        if existing_experiment:  # recreate new experiment with updated details but same code
+            exp['code'] = existing_experiment.code
+            Experiment_v2.delete_experiment(existing_experiment.code)
+            msg = "Experiment was successfully updated."
 
         new_experiment = Experiment_v2(exp)
         db.session.add(new_experiment)
@@ -77,14 +79,16 @@ class Experiment_v2(db.Model):
             p['exp_code'] = new_experiment.code
             ProtocolPushNotif.add_protocol(p)
 
-        return (200, 'Successfully added experiment', new_experiment)
-        # return Response("{'Experiment successfully created'}", status=200, mimetype='application/json')
+        return 200, msg, new_experiment
 
     @staticmethod
     def delete_experiment(code):
-        Experiment_v2.query.filter_by(code=code).delete()
-        ProtocolPushNotif.query.filter_by(code=code).delete()
+        e = db.session.query(Experiment_v2).filter(Experiment_v2.code == code).first()
+        db.session.delete(e)
         db.session.commit()
+        # Experiment_v2.query.filter_by(code=code).delete()
+        # ProtocolPushNotif.query.filter_by(code=code).delete()
+        # db.session.commit()
 
     @staticmethod
     def update_experiment(update):
@@ -362,9 +366,9 @@ class ProtocolPushNotif(db.Model):
     start_date = db.Column(db.Date)
     end_date = db.Column(db.Date)
     frequency = db.Column(db.String(10))
-    notif_title = db.Column(db.String(15))
-    notif_content = db.Column(db.String(20))
-    notif_appid = db.Column(db.String(30))
+    method = db.Column(db.String(20))
+    notif_details = db.Column(db.String(1600))
+    notif_appid = db.Column(db.String(300))
     notif_type = db.Column(db.String(20))
     notif_time = db.Column(db.String(20))
     probable_half_notify = db.Column(db.Boolean, default=False)
@@ -375,8 +379,8 @@ class ProtocolPushNotif(db.Model):
         self.start_date = data.get('start_date')
         self.end_date = data.get('end_date')
         self.frequency = data.get('frequency')
-        self.notif_title = data.get('notif_title')
-        self.notif_content = data.get('notif_content')
+        self.method = data.get('method')
+        self.notif_details = data.get('notif_details')
         self.notif_appid = data.get('notif_appid')
         self.notif_type = data.get('notif_type')
         self.notif_time = data.get('notif_time')
@@ -391,8 +395,8 @@ class ProtocolPushNotif(db.Model):
             'start_date': str(self.start_date),
             'end_date': str(self.end_date),
             'frequency': str(self.frequency),
-            'notif_title': str(self.notif_title),
-            'notif_content': str(self.notif_content),
+            'method': str(self.method),
+            'notif_details': str(self.notif_details),
             'notif_appid': str(self.notif_appid),
             'notif_type': str(self.notif_type),
             'notif_time': str(self.notif_time),
@@ -410,10 +414,12 @@ class ProtocolPushNotif(db.Model):
 
     @staticmethod
     def delete_protocol(pid):
-        deleted_protocol = ProtocolPushNotif.query.filter_by(id=pid)
-        ProtocolPushNotif.query.filter_by(id=pid).delete()
+        # deleted_protocol = ProtocolPushNotif.query.filter_by(id=pid)
+        # ProtocolPushNotif.query.filter_by(id=pid).delete()
+        p = db.session.query(ProtocolPushNotif).filter(ProtocolPushNotif.id == pid).first()
+        db.session.delete(p)
         db.session.commit()
-        return 200, 'Successfully deleted protocol.', deleted_protocol
+        return 200, 'Successfully deleted protocol.', p
 
 
 class NotifEvent(db.Model):

@@ -62,7 +62,7 @@
 
     <div class="container">
 
-        <div class="page-header">
+        <div id="newDivId" class="page-header" data-isnew={{ experiment == undefined }}>
             <h3>
                 {{ "Edit Experiment" if experiment else "New Experiment" }}
             </h3>
@@ -98,18 +98,6 @@
             <hr class="style5">
             <br>
             <div class="form-group row">
-                <label class="col-xs-2 col-form-label">Experiment Label</label>
-                <div class="col-xs-8">
-                    <input class="form-control"
-                           type="text"
-                           id="exp-label"
-                           value="{{ experiment.label if experiment else '' }}"
-                           placeholder="visible to only you"
-                    />
-                </div>
-            </div>
-
-            <div class="form-group row">
                 <label class="col-xs-2 col-form-label">Experiment Title</label>
                 <div class="col-xs-8">
                     <input
@@ -118,6 +106,18 @@
                             id="exp-title"
                             value="{{ experiment.title if experiment else '' }}"
                             placeholder="experiment title will be visible to participants"/>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-xs-2 col-form-label">Experiment Label</label>
+                <div class="col-xs-8">
+                    <input class="form-control"
+                           type="text"
+                           id="exp-label"
+                           value="{{ experiment.label if experiment else '' }}"
+                           placeholder="visible to only you"
+                    />
                 </div>
             </div>
 
@@ -228,10 +228,9 @@
         </div>
 
         <!--##################### slide3 #####################-->
-        <div id="slide3" class="noshow">
+        <div id="slide3" class="noshow" data-protocols="{{ protocols }}" data-experiment="{{ experiment }}">
             <h3>Protocols</h3>
             <hr class="style5">
-            <br>
 
             <div class="col-xs-4">
                 <button type="button"
@@ -242,7 +241,19 @@
                     <span class="glyphicon glyphicon-plus-sign"></span>
                     Add Protocol
                 </button>
+
             </div>
+
+            {% if experiment and protocols %}
+                <button type="button"
+                        class="btn btn-danger float-i-right"
+                        onclick="delete_all_protocols()"
+                        data-target="#add-protocol-modal">
+                    <span class="glyphicon glyphicon-trash"></span>
+                    Delete All
+                </button>
+            {% endif %}
+
             <hr>
 
             <div id="display-protocols">
@@ -285,17 +296,17 @@
             <br>
 
             <div class="form-group row">
-                <label class="col-xs-2 col-form-label">Label</label>
+                <label class="col-xs-2 col-form-label">Title</label>
                 <div class="col-xs-8">
-                    <input maxlength="120" type="text" id="review-label" class="form-control classname" value="Demo"
+                    <input maxlength="120" type="text" id="review-title" class="form-control classname" value="Demo"
                            readonly/>
                 </div>
             </div>
 
             <div class="form-group row">
-                <label class="col-xs-2 col-form-label">Title</label>
+                <label class="col-xs-2 col-form-label">Label</label>
                 <div class="col-xs-8">
-                    <input maxlength="120" type="text" id="review-title" class="form-control classname" value="Demo"
+                    <input maxlength="120" type="text" id="review-label" class="form-control classname" value="Demo"
                            readonly/>
                 </div>
             </div>
@@ -489,31 +500,48 @@
                         <div id="protocol-push-notif" class="hidden">
 
                             <div class="form-group row">
-                                <label class="col-xs-2 col-form-label">Title</label>
+                                <label class="col-xs-2 col-form-label">Title/Content</label>
                                 <div class="col-xs-10">
-                                    <input maxlength="15" class="form-control" type="text"
-                                           placeholder="title of notification (max: 15 characters)"
-                                           id="protocol-notif-title">
+                                    {#                                  allows up to 30 pairs (each 50 chars) then 100 char space #}
+                                    <textarea maxlength="1600" name="protocol-notif-details" id="protocol-notif-details"
+                                              class="form-control"
+                                              cols="20" rows="3" placeholder="e.g. title, content"></textarea>
+                                    <span>
+                                        <em class="small">one title,content pair per line</em>
+                                    </span>
                                 </div>
                             </div>
 
-                            <div class="form-group row">
-                                <label class="col-xs-2 col-form-label">Content</label>
-                                <div class="col-xs-10">
-                                    <input maxlength="20" class="form-control" type="text"
-                                           placeholder="content of notification (max: 20 characters)"
-                                           id="protocol-notif-content">
-                                </div>
-                            </div>
+                            {#                            <div class="form-group row">#}
+                            {#                                <label class="col-xs-2 col-form-label">Title</label>#}
+                            {#                                <div class="col-xs-10">#}
+                            {#                                    <input maxlength="15" class="form-control" type="text"#}
+                            {#                                           placeholder="title of notification (max: 15 characters)"#}
+                            {#                                           id="protocol-notif-title">#}
+                            {#                                </div>#}
+                            {#                            </div>#}
+                            {##}
+                            {#                            <div class="form-group row">#}
+                            {#                                <label class="col-xs-2 col-form-label">Content</label>#}
+                            {#                                <div class="col-xs-10">#}
+                            {#                                    <input maxlength="20" class="form-control" type="text"#}
+                            {#                                           placeholder="content of notification (max: 20 characters)"#}
+                            {#                                           id="protocol-notif-content">#}
+                            {#                                </div>#}
+                            {#                            </div>#}
 
                             <div class="form-group row">
                                 <label class="col-xs-2 col-form-label">App ID</label>
-                                <div class="col-xs-5">
-                                    <input class="form-control" type="text" placeholder="e.g. com.facebook.katana"
-                                           id="protocol-notif-appid">
+                                <div class="col-xs-10">
+                                    {#                                    allows up to 5 app id (each 30 chars) #}
+                                    <textarea maxlength="150" name="protocol-notif-id" id="protocol-notif-appid"
+                                              class="form-control"
+                                              cols="20" rows="3" placeholder="e.g. com.facebook.katana"></textarea>
+                                    <span>
+                                        <em class="small"> one app id per line </em>
+                                    </span>
                                 </div>
                             </div>
-
 
                             <div class="form-group row">
                                 <label class="col-xs-2 col-form-label">Notification type</label>
