@@ -1,20 +1,26 @@
-from rep import app
-from flask import render_template
-
 import json
 import time
 import os
 import httplib2
+import sendgrid
 
+
+from rep import app
+from flask import render_template
 from flask import redirect, url_for, session, render_template, request
 from flask_login import login_user, current_user
 
+from popcornnotify import notify
 from apiclient import discovery
 from datetime import date, timedelta
 from rep.models import RescuetimeUser, RescuetimeData
 from rep.rescuetime import RescueTime
 from oauth2client.client import OAuth2WebServerFlow
+from sendgrid.helpers.mail import *
+from secret_keys import SENDGRID_API_KEY
 
+MISSING_DAYS_LIMIT = 3
+MISSING_PARTCIPANTS_LIMIT = 5
 
 @app.route('/login-rescuetime-user')
 def login_rescuetime_user():
@@ -223,9 +229,8 @@ def store_rescuetime_data():
             print "store_rescuetime_data: JSON parse error for user", user['email']
 
         # Check each user's data history for last n days
-        missing_num_days = 3
         days_missing = 0
-        for num in range (2, missing_num_days+2):
+        for num in range (2, MISSING_DAYS_LIMIT+2):
             created_date = date.today() - timedelta(days=num)
             try:
                 count_rows = RescuetimeData.query.filter_by(email=user['email'], created_date=created_date).count()
@@ -234,10 +239,42 @@ def store_rescuetime_data():
             except:
                 print "store_rescuetime_data: days_missing exception for", user['email']
         # store days missing if it is greater than 2
-        if days_missing > 2:
+        if days_missing >= MISSING_DAYS_LIMIT:
             days_missing_dict[user['email']] = days_missing
 
-    print "store_rescuetime_data: Data missing stats for ",missing_num_days, ":", days_missing_dict
+
+    # Trigger email if data missing for more than 5 participants or data not saved for missing_num_days
+    msg = ""
+    missing = count - saved
+    if missing >= MISSING_PARTCIPANTS_LIMIT:
+        msg =  msg + str(missing) + " participant(s) data unavailable for " + str(date_yesterday) + "."
+    if len(days_missing_dict) > 0:
+        # for key, value in days_missing_dict.iteritems():
+        #     email = email + value
+        data_missing_date = date_yesterday - timedelta(days=MISSING_DAYS_LIMIT-1)
+        msg = msg + str(len(days_missing_dict)) + " participant(s) data is unavailable for atleast " + str(MISSING_DAYS_LIMIT) \
+              + " days from " + str(data_missing_date) + " to " + str(date_yesterday) + "."
+
+    sendgrid_send_data_missing_email(msg)
+    print "store_rescuetime_data: Data missing stats for ",MISSING_DAYS_LIMIT, "or more days :", days_missing_dict
     print "store_rescuetime_data: Data saved for",saved, "of", count, "RescueTime users."
     print "store_rescuetime_data: RescueTime Data collection completed!"
     print "###############################################################################################"
+
+
+
+# Sendgrid email client
+def sendgrid_send_data_missing_email(data):
+    sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
+    from_email = sendgrid.Email("beehive@smalldata.io")
+    to_email = sendgrid.Email("nk595@cornell.edu")
+    subject = "Beehive: Rescuetime data missing notification"
+    content = Content("text/plain", "Hi," + "\n Beehive has detected some rescuetime data issues. " \
+                                    + data + "\n\n Please login to the rescuetime dashboard to see details. " \
+                                    "\n Dashboard: https://slm.smalldata.io/rescuetime/stats?days=7")
+
+    mail = Mail(from_email, subject, to_email, content)
+    response = sg.client.mail.send.post(request_body=mail.get())
+    print "store_rescuetime_data: sendgrid email response code,",response.status_code
+    # print response.body
+    # print response.headers
