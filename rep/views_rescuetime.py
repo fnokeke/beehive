@@ -186,6 +186,7 @@ def store_rescuetime_data():
     data = []
     count = 0
     saved = 0
+    days_missing_dict = {}
     for user in users:
         count = count + 1
         directory = BASE_DIR + user['email']
@@ -221,6 +222,22 @@ def store_rescuetime_data():
         except:
             print "store_rescuetime_data: JSON parse error for user", user['email']
 
+        # Check each user's data history for last n days
+        missing_num_days = 3
+        days_missing = 0
+        for num in range (2, missing_num_days+2):
+            created_date = date.today() - timedelta(days=num)
+            try:
+                count_rows = RescuetimeData.query.filter_by(email=user['email'], created_date=created_date).count()
+                if(count_rows<=0):
+                    days_missing = days_missing + 1
+            except:
+                print "store_rescuetime_data: days_missing exception for", user['email']
+        # store days missing if it is greater than 2
+        if days_missing > 2:
+            days_missing_dict[user['email']] = days_missing
+
+    print "store_rescuetime_data: Data missing stats for ",missing_num_days, ":", days_missing_dict
     print "store_rescuetime_data: Data saved for",saved, "of", count, "RescueTime users."
     print "store_rescuetime_data: RescueTime Data collection completed!"
     print "###############################################################################################"
