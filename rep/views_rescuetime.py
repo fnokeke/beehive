@@ -21,6 +21,7 @@ from secret_keys import SENDGRID_API_KEY
 
 MISSING_DAYS_LIMIT = 3
 MISSING_PARTCIPANTS_LIMIT = 5
+RESCUETIME_EMAIL_LIST = ["nk595@cornell.edu", "fnokeke@gmail.com", "sobolevmic@gmail.com" ]
 
 @app.route('/login-rescuetime-user')
 def login_rescuetime_user():
@@ -255,7 +256,8 @@ def store_rescuetime_data():
         msg = msg + str(len(days_missing_dict)) + " participant(s) data is unavailable for atleast " + str(MISSING_DAYS_LIMIT) \
               + " days from " + str(data_missing_date) + " to " + str(date_yesterday) + "."
 
-    sendgrid_send_data_missing_email(msg)
+    for recipient_email in RESCUETIME_EMAIL_LIST:
+        sendgrid_send_data_missing_email(msg, recipient_email)
     print "store_rescuetime_data: Data missing stats for ",MISSING_DAYS_LIMIT, "or more days :", days_missing_dict
     print "store_rescuetime_data: Data saved for",saved, "of", count, "RescueTime users."
     print "store_rescuetime_data: RescueTime Data collection completed!"
@@ -264,14 +266,16 @@ def store_rescuetime_data():
 
 
 # Sendgrid email client
-def sendgrid_send_data_missing_email(data):
+def sendgrid_send_data_missing_email(data, recipient):
     sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
     from_email = sendgrid.Email("beehive@smalldata.io")
-    to_email = sendgrid.Email("nk595@cornell.edu")
+    to_email = sendgrid.Email(recipient)
     subject = "Beehive: Rescuetime data missing notification"
-    content = Content("text/plain", "Hi," + "\n Beehive has detected some rescuetime data issues. " \
-                                    + data + "\n\n Please login to the rescuetime dashboard to see details. " \
-                                    "\n Dashboard: https://slm.smalldata.io/rescuetime/stats?days=7")
+    logo_path = './static/images/beehive.png'
+    content = Content("text/html", "<p>Hi,</p>" + "<p>Beehive has detected some rescuetime data issues. " \
+                                    + data + " Please login to the rescuetime dashboard to see details. </p>" \
+                                    " <p> Dashboard: https://slm.smalldata.io/rescuetime/stats?days=7" + "</p>" \
+                                    "<br> <p> The Beehive team </p>")
 
     mail = Mail(from_email, subject, to_email, content)
     response = sg.client.mail.send.post(request_body=mail.get())
