@@ -1182,6 +1182,39 @@ class RescuetimeData(db.Model):
         return (200, 'Successfully added data.', new_row)
 
 
+
+class RescuetimeAdmin(db.Model):
+    # Store RescueTime data
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True)
+    notification = db.Column(db.Boolean, default=False)
+    is_active = db.Column(db.Boolean, default=True)
+    created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, profile):
+        self.email = profile.get('email')
+        self.notification = profile.get('notification')
+        self.is_active = profile.get('is_active')
+        self.created_date = profile.get('created_date')
+
+    def __repr__(self):
+        result = {'id': self.id,
+                  'email': self.email,
+                  'notification': self.notification,
+                  'is_active' : self.is_active,
+                  'created_date': str(self.created_date)}
+        return json.dumps(result)
+
+    @staticmethod
+    def add(data):
+        new_row = RescuetimeAdmin(data)
+        db.session.add(new_row)
+        db.session.commit()
+        return (200, 'Successfully added data.', new_row)
+
+
+
+
 class VibrationConfig(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))

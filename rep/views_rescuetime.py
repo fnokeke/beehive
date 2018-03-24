@@ -8,12 +8,12 @@ import sendgrid
 from rep import app
 from flask import render_template
 from flask import redirect, url_for, session, render_template, request
-from flask_login import login_user, current_user
+from flask_login import login_user, logout_user, current_user, login_required
 
 from popcornnotify import notify
 from apiclient import discovery
 from datetime import date, timedelta
-from rep.models import RescuetimeUser, RescuetimeData
+from rep.models import RescuetimeUser, RescuetimeData, Researcher
 from rep.rescuetime import RescueTime
 from oauth2client.client import OAuth2WebServerFlow
 from sendgrid.helpers.mail import *
@@ -21,7 +21,7 @@ from secret_keys import SENDGRID_API_KEY
 
 MISSING_DAYS_LIMIT = 3
 MISSING_PARTCIPANTS_LIMIT = 5
-RESCUETIME_EMAIL_LIST = ["nk595@cornell.edu", "fnokeke@gmail.com"]
+RESCUETIME_EMAIL_LIST = ["nk595@cornell.edus", "fnokeke@gmail.com"]
 
 @app.route('/login-rescuetime-user')
 def login_rescuetime_user():
@@ -75,6 +75,7 @@ def rescuetime_home():
 
 
 # Dashboard RescueTime summary
+@login_required
 @app.route('/rescuetime/stats')
 def rescuetime_stats():
     days = request.args.get('days')
@@ -138,8 +139,47 @@ def rescuetime_stats():
 
 # Note that ther is similar function defined above for the path ('/rescuetime-dashboard/<code>')
 # Dashboard for all user RescueTime stats
+@login_required
 @app.route('/rescuetime/dash')
 def dashboard_rescuetime():
+    # Step 1: authenticate user
+    if current_user.is_authenticated:
+        print "dashboard_rescuetime: User authenticated"
+    else:
+        flow = OAuth2WebServerFlow(
+            client_id=app.config['GOOGLE_CLIENT_ID'],
+            client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+            scope=app.config['GOOGLE_SCOPE_RESEARCHER'],
+            access_type='offline',
+            prompt='consent',
+            redirect_uri=url_for(
+                'google_login_researcher', _external=True))
+
+        auth_code = request.args.get('code')
+        if not auth_code:
+            auth_uri = flow.step1_get_authorize_url()
+            return redirect(auth_uri)
+
+        credentials = flow.step2_exchange(auth_code, http=httplib2.Http())
+        if credentials.access_token_expired:
+            credentials.refresh(httplib2.Http())
+
+        http = credentials.authorize(httplib2.Http())
+        service = discovery.build('oauth2', 'v2', http=http)
+
+        profile = service.userinfo().get().execute()
+        user = Researcher.from_profile(profile)
+        user.update_field('google_credentials', credentials.to_json())
+
+        login_user(user)
+        session['user_type'] = 'researcher'
+
+    ###################################################################################################################
+    # Step 2: Check if user is rescuetime admin
+
+    if not is_rescuetime_admin():
+        return render_template('403-forbidden.html'), 403
+
     date_yesterday = date.today() - timedelta(days=2)
     users = RescuetimeUser.get_all_users_data()
 
@@ -265,6 +305,16 @@ def store_rescuetime_data():
 
 
 
+# force login to access rescueTime dashboard
+def is_rescuetime_admin():
+    if current_user.is_authenticated:
+        print "is_rescuetime_admin: Already authenticated!"
+        print current_user.email
+        if current_user.email in RESCUETIME_EMAIL_LIST:
+            return True
+    return False
+
+
 # Sendgrid email client
 def sendgrid_send_data_missing_email(data, recipient):
     sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
@@ -282,3 +332,4 @@ def sendgrid_send_data_missing_email(data, recipient):
     print "store_rescuetime_data: sendgrid email response code,",response.status_code
     # print response.body
     # print response.headers
+
