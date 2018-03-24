@@ -13,7 +13,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from popcornnotify import notify
 from apiclient import discovery
 from datetime import date, timedelta
-from rep.models import RescuetimeUser, RescuetimeData, Researcher
+from rep.models import RescuetimeUser, RescuetimeData, RescuetimeAdmin, Researcher
 from rep.rescuetime import RescueTime
 from oauth2client.client import OAuth2WebServerFlow
 from sendgrid.helpers.mail import *
@@ -21,7 +21,7 @@ from secret_keys import SENDGRID_API_KEY
 
 MISSING_DAYS_LIMIT = 3
 MISSING_PARTCIPANTS_LIMIT = 5
-RESCUETIME_EMAIL_LIST = ["nk595@cornell.edus", "fnokeke@gmail.com"]
+RESCUETIME_EMAIL_LIST = ["nk595@cornell.edu", "fnokeke@gmail.com"]
 
 @app.route('/login-rescuetime-user')
 def login_rescuetime_user():
@@ -78,6 +78,42 @@ def rescuetime_home():
 @login_required
 @app.route('/rescuetime/stats')
 def rescuetime_stats():
+    # Step 1: authenticate user
+    if not current_user.is_authenticated:
+        flow = OAuth2WebServerFlow(
+            client_id=app.config['GOOGLE_CLIENT_ID'],
+            client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+            scope=app.config['GOOGLE_SCOPE_RESEARCHER'],
+            access_type='offline',
+            prompt='consent',
+            redirect_uri=url_for(
+                'google_login_researcher', _external=True))
+
+        auth_code = request.args.get('code')
+        if not auth_code:
+            auth_uri = flow.step1_get_authorize_url()
+            return redirect(auth_uri)
+
+        credentials = flow.step2_exchange(auth_code, http=httplib2.Http())
+        if credentials.access_token_expired:
+            credentials.refresh(httplib2.Http())
+
+        http = credentials.authorize(httplib2.Http())
+        service = discovery.build('oauth2', 'v2', http=http)
+
+        profile = service.userinfo().get().execute()
+        user = Researcher.from_profile(profile)
+        user.update_field('google_credentials', credentials.to_json())
+
+        login_user(user)
+        session['user_type'] = 'researcher'
+
+    # Step 2: Check if user is rescueTime admin
+    if not is_rescuetime_admin():
+        return render_template('403-forbidden.html'), 403
+
+    ###################################################################################################################
+
     days = request.args.get('days')
 
     if days:
@@ -143,9 +179,7 @@ def rescuetime_stats():
 @app.route('/rescuetime/dash')
 def dashboard_rescuetime():
     # Step 1: authenticate user
-    if current_user.is_authenticated:
-        print "dashboard_rescuetime: User authenticated"
-    else:
+    if not current_user.is_authenticated:
         flow = OAuth2WebServerFlow(
             client_id=app.config['GOOGLE_CLIENT_ID'],
             client_secret=app.config['GOOGLE_CLIENT_SECRET'],
@@ -174,11 +208,12 @@ def dashboard_rescuetime():
         login_user(user)
         session['user_type'] = 'researcher'
 
-    ###################################################################################################################
-    # Step 2: Check if user is rescuetime admin
 
+    # Step 2: Check if user is rescueTime admin
     if not is_rescuetime_admin():
         return render_template('403-forbidden.html'), 403
+
+    ###################################################################################################################
 
     date_yesterday = date.today() - timedelta(days=2)
     users = RescuetimeUser.get_all_users_data()
@@ -296,8 +331,10 @@ def store_rescuetime_data():
         msg = msg + str(len(days_missing_dict)) + " participant(s) data is unavailable for atleast " + str(MISSING_DAYS_LIMIT) \
               + " days from " + str(data_missing_date) + " to " + str(date_yesterday) + "."
 
-    for recipient_email in RESCUETIME_EMAIL_LIST:
-        sendgrid_send_data_missing_email(msg, recipient_email)
+    admins = RescuetimeAdmin.query.filter_by(notification=True)
+    for admin in admins:
+        sendgrid_send_data_missing_email(msg, admin.email)
+
     print "store_rescuetime_data: Data missing stats for ",MISSING_DAYS_LIMIT, "or more days :", days_missing_dict
     print "store_rescuetime_data: Data saved for",saved, "of", count, "RescueTime users."
     print "store_rescuetime_data: RescueTime Data collection completed!"
@@ -308,9 +345,9 @@ def store_rescuetime_data():
 # force login to access rescueTime dashboard
 def is_rescuetime_admin():
     if current_user.is_authenticated:
-        print "is_rescuetime_admin: Already authenticated!"
-        print current_user.email
-        if current_user.email in RESCUETIME_EMAIL_LIST:
+        # check user in admin table
+        count_rows = RescuetimeAdmin.query.filter_by(email=current_user.email).count()
+        if count_rows >= 1:
             return True
     return False
 
