@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Welcome
+{% endblock %}
+
+{% block extras %}
+  <link href="{{ url_for('static', filename='css/cover.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+
+  <div class="background-image"></div>
+
+  <div class="center-content">
+
+    <div class="content">
+
+      <h1 class="larger-text">Gcal Study</h1>
+      <p class="lead">
+        <small>Google calender study</small>
+
+      </p>
+
+      <div class="btn-group" role="group">
+        <button
+          type="button"
+          class="btn btn-lg btn-primary"
+          name="login-btn"
+          id="login-btn"
+          alt="Participant Google Sign In"
+          onclick="window.location.href='/login-gcal-user'">Google Sign In</button>
+      </div>
+
+    </div>
+
+  </div>
+{% endblock %}

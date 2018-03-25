@@ -1,0 +1,53 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+  {{current_user.firstname + ' | Home'}}
+{% endblock %}
+
+{% block brand_name %}
+Rescuetime Study
+{% endblock %}
+
+{% block user_type %}
+<em>
+  rtime_user
+</em>
+
+{% endblock %}
+{% block contents %}
+
+  <div class="container">
+
+    <div class="page-header">
+      <h3>Welcome,
+        {{gcal_user.firstname}}
+      </h3>
+    </div>
+
+
+    <div>
+
+      {% if not gcal_user.connected %}
+        <!--<button type="submit" id="auth-rt-btn" class="btn btn-primary btn-lg btn-block">Authorize Google Calender-->
+        <!--</button><br>-->
+        <span class='text-primary'>
+          <em>
+            Google calender is not connected to Beehive.
+          </em>
+        </span>
+
+      {% else %}
+        <span class='text-success'>
+          <em>
+            Google calender is connected to Beehive.
+          </em>
+        </span>
+
+      {% endif %}
+
+
+    </div>
+
+  </div>
+
+{% endblock %}
