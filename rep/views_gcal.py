@@ -1,5 +1,5 @@
 import json
-import os, time
+import os, time, datetime
 import httplib2, requests
 
 from rep import app
@@ -13,6 +13,7 @@ from rep.models import  Researcher, GcalUser
 
 from oauth2client.client import OAuth2WebServerFlow
 from sendgrid.helpers.mail import *
+from gcal import CalendarService, Calendar
 
 
 @app.route('/login-gcal-user')
@@ -48,7 +49,11 @@ def login_gcal_user():
     login_user(user)
     session['user_type'] = 'gcal_user'
 
-    # Download calender
+    # Download and save calender
+    gcal_service = discovery.build('calendar', 'v3', http=http)
+    events = get_calender_events(gcal_service)
+    user.update_field('connected', True)
+
     return redirect(url_for('gcal_home'))
 
 
@@ -73,3 +78,18 @@ def gcal_home():
     ctx = {'gcal_user': GcalUser.query.get(current_user.email)}
     return render_template('/gcal/gcal-home.html', **ctx)
 
+
+def get_calender_events(service):
+    now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+    print('Getting the upcoming 10 events')
+    eventsResult = service.events().list(
+        calendarId='primary', timeMin=now, maxResults=10, singleEvents=True,
+        orderBy='startTime').execute()
+    events = eventsResult.get('items', [])
+
+    if not events:
+        print('No upcoming events found.')
+    for event in events:
+        start = event['start'].get('dateTime', event['start'].get('date'))
+        print(start, event['summary'])
+    return events
