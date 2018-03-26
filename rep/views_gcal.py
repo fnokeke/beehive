@@ -20,7 +20,7 @@ def login_gcal_user():
     flow = OAuth2WebServerFlow(
         client_id=app.config['GOOGLE_CLIENT_ID'],
         client_secret=app.config['GOOGLE_CLIENT_SECRET'],
-        scope=app.config['GOOGLE_SCOPE_PARTICIPANT'],
+        scope=app.config['GOOGLE_SCOPE_CALENDER_READ'],
         access_type='offline',
         prompt='consent',
         redirect_uri=url_for(
@@ -32,6 +32,7 @@ def login_gcal_user():
         auth_uri = flow.step1_get_authorize_url()
         return redirect(auth_uri)
 
+    # Google auth success
     print " login-gcal-user: auth_code success"
     credentials = flow.step2_exchange(auth_code, http=httplib2.Http())
     if credentials.access_token_expired:
@@ -46,6 +47,8 @@ def login_gcal_user():
 
     login_user(user)
     session['user_type'] = 'gcal_user'
+
+    # Download calender
     return redirect(url_for('gcal_home'))
 
 

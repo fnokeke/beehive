@@ -15,10 +15,12 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 ###################
 # google config
 ###################
+# https://developers.google.com/calendar/auth
 GOOGLE_CLIENT_ID = secret_keys.GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET = secret_keys.GOOGLE_CLIENT_SECRET
 BASE_SCOPE = 'https://www.googleapis.com/auth'
 GOOGLE_SCOPE = '{}/userinfo.email {}/calendar.readonly {}/calendar'.format(BASE_SCOPE, BASE_SCOPE, BASE_SCOPE)
+GOOGLE_SCOPE_CALENDER_READ = '{}/userinfo.email {}/calendar.readonly'.format(BASE_SCOPE, BASE_SCOPE)
 GOOGLE_SCOPE_RESEARCHER = '{}/userinfo.email'.format(BASE_SCOPE)
 GOOGLE_SCOPE_PARTICIPANT = '{}/userinfo.email'.format(BASE_SCOPE)
 

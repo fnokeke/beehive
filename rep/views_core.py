@@ -23,7 +23,7 @@ from rep import export
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import Intervention, MobileUser, Mturk, MturkPrelimRecruit
 from rep.models import Experiment_v2, ProtocolPushNotif, Researcher, Enrollment, Participant, NewParticipant, RescuetimeUser
-from rep.models import MturkExclusive, NafEnroll, NafStats, ImageTextUpload
+from rep.models import MturkExclusive, NafEnroll, NafStats, ImageTextUpload, GcalUser
 from rep.models import RescuetimeConfig, ScreenUnlockConfig
 from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_FacebookLog, TP_ScreenLog
 from rep.moves import Moves
@@ -149,6 +149,8 @@ def user_loader(user_id):
         return Participant.get_user(user_id)
     elif session['user_type'] == 'rescuetime_user':
         return RescuetimeUser.get_user(user_id)
+    elif session['user_type'] == 'gcal_user':
+        return GcalUser.get_user(user_id)
     else:
         raise ValueError('Unidentified user type used with user_loader')
 
