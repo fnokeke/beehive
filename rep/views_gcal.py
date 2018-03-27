@@ -1,4 +1,4 @@
-import json
+import json, pytz
 import os, time, datetime
 import httplib2, requests
 
@@ -8,7 +8,7 @@ from flask import redirect, url_for, session, render_template, request
 from flask_login import login_user, logout_user, current_user, login_required
 
 from apiclient import discovery
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from rep.models import  Researcher, GcalUser
 
 from oauth2client.client import OAuth2WebServerFlow
@@ -51,7 +51,11 @@ def login_gcal_user():
 
     # Download and save calender
     gcal_service = discovery.build('calendar', 'v3', http=http)
-    events = get_calender_events(gcal_service)
+    # events = get_calender_events(gcal_service)
+    mdate = datetime.now(pytz.timezone('America/New_York'))
+    start = mdate - timedelta(days=1)
+    end = mdate + timedelta(days=3)
+    events = get_calender_events_in_range(gcal_service, start, end)
     user.update_field('connected', True)
 
     return redirect(url_for('gcal_home'))
@@ -79,6 +83,28 @@ def gcal_home():
     return render_template('/gcal/gcal-home.html', **ctx)
 
 
+# Function to download calender events in a date range
+def get_calender_events_in_range(service, start, end):
+    # now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+    # mdate = datetime.now(pytz.timezone('America/New_York'))
+
+    start_time = start.strftime('%Y-%m-%dT%H:%M:%Sz')
+    end_time = end.strftime('%Y-%m-%dT%H:%M:%Sz')
+
+    eventsResult = service.events().list(
+        calendarId='primary', timeMin=start_time, timeMax=end_time, orderBy='startTime', singleEvents=True).execute()
+
+    events = eventsResult.get('items', [])
+
+    if not events:
+        print('No upcoming events found.')
+    for event in events:
+        start = event['start'].get('dateTime', event['start'].get('date'))
+        print(start, event['summary'])
+    return events
+
+
+# Function to download 10 calender events
 def get_calender_events(service):
     now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
     print('Getting the upcoming 10 events')
