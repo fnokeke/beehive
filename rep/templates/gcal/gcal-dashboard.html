@@ -1,0 +1,121 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Gcal Admin Dashboard
+{% endblock %}
+
+{% block contents %}
+
+
+  <div class="container">
+    <!--<button-->
+            <!--type="button"-->
+            <!--class="btn btn-link btn-lg"-->
+            <!--onclick="window.location.href='/rescuetime/stats'">-->
+      <!--<span class=" text-muted"> </span>-->
+      <!--<span class="glyphicon glyphicon-calendar info-text"> </span>-->
+      <!--<span class="info-text"> Show data submission stats </span>-->
+    <!--</button>-->
+
+    <div class="page-header">
+      <h3>Gcal Dashboard:
+        <br>
+        <small>Total:
+          {{ users | length }}
+          user(s)
+        </small>
+        <br>
+      </h3>
+    </div>
+
+
+    <div class="form-group row">
+      <label class="col-xs-2 col-form-label">Select Dates</label>
+      <div class="col-xs-8">
+        <div class="input-group input-daterange">
+          <input
+                  type="text"
+                  id="gcal-start-date"
+                  class="form-control"
+                  placeholder="start date"
+                  data-date-start-date="+1d"
+                  data-date-today-highlight=true
+                  data-date-format='yyyy-mm-dd'>
+
+          <div class="input-group-addon">to</div>
+          <input
+                  type="text"
+                  id="gcal-end-date"
+                  class="form-control"
+                  placeholder="end date"
+                  data-date-start-date="+1d"
+                  data-date-today-highlight=true
+                  data-date-format='yyyy-mm-dd'>
+        </div>
+      </div>
+    </div>
+
+    <br>
+    <div class="row text-center">
+      <div class="col-sm-4"></div>
+      <div class="col-sm-4">
+     <button type="button" class="btn btn-info btn-lg btn-block" id="download-gcal-btn">Download Calender Events</button>
+      </div>
+      <div class="col-sm-4"></div>
+    </div>
+    <br>
+    <br>
+
+    <em>To sort by multiple columns, hold down shift key and select columns.</em>
+    <table class="table  table-hover", id="dash-table">
+
+      <thead>
+        <tr class="bg-primary">
+          <th>
+            No
+          </th>
+
+          <th>
+            Email
+          </th>
+
+          <th>
+            Firstname
+          </th>
+
+          <th>
+            Lastname
+          </th>
+
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for user in users %}
+          <tr >
+
+            <td >
+              <h5>{{ loop.index }}</h5>
+            </td>
+
+            <td>
+              <h5> {{ user.email }}</h5>
+            </td>
+
+            <td>
+              <h5> {{ user.firstname }} </h5>
+            </td>
+
+            <td>
+              <h5> {{ user.lastname }} </h5>
+            </td>
+
+          </tr>
+
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+
+{% endblock %}

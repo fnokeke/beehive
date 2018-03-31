@@ -16,6 +16,27 @@ from sendgrid.helpers.mail import *
 from gcal import CalendarService, Calendar
 
 
+@app.route('/gcal/dash')
+def gcal_dashboard():
+    gcal_users = GcalUser.get_all_users_data()
+    print "gcal_users:", gcal_users
+    data = []
+    ctx = {'users': gcal_users, 'data': data}
+    return render_template('/gcal/gcal-dashboard.html', **ctx)
+
+
+@app.route('/gcal/download/<start>/<end>')
+def gcal_download(start, end):
+    print "<start>:", start
+    print "<end>:", end
+
+    gcal_users = GcalUser.get_all_users_data()
+    print "gcal_users:", gcal_users
+    data = []
+    ctx = {'users': gcal_users, 'data': data}
+    return render_template('/gcal/gcal-dashboard.html', **ctx)
+
+
 @app.route('/login-gcal-user')
 def login_gcal_user():
     flow = OAuth2WebServerFlow(
