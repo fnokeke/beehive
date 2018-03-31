@@ -10,6 +10,7 @@ dump.rdb
 celerybeat-schedule
 uploads/
 rescuetime/
+gcal/
 node_modules/
 .imdone/
 migrations/

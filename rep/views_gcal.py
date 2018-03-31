@@ -3,7 +3,7 @@ import os, time, datetime
 import httplib2, requests
 
 from rep import app
-from flask import render_template, flash
+from flask import render_template, flash, send_file, make_response
 from flask import redirect, url_for, session, render_template, request
 from flask_login import login_user, logout_user, current_user, login_required
 
@@ -25,7 +25,7 @@ def gcal_dashboard():
     return render_template('/gcal/gcal-dashboard.html', **ctx)
 
 
-@app.route('/gcal/download/<start>/<end>')
+@app.route('/gcal/download/<start>/<end>/')
 def gcal_download(start, end):
     print "<start>:", start
     print "<end>:", end
@@ -33,8 +33,34 @@ def gcal_download(start, end):
     gcal_users = GcalUser.get_all_users_data()
     print "gcal_users:", gcal_users
     data = []
-    ctx = {'users': gcal_users, 'data': data}
-    return render_template('/gcal/gcal-dashboard.html', **ctx)
+
+    BASE_DIR = "./gcal/"
+    filename = "gcal-events.txt"
+    if not os.path.exists(BASE_DIR):
+        os.makedirs(BASE_DIR)
+
+    file_path = BASE_DIR + filename
+
+    file = open(file_path, "w+");
+    file.write(str("Test"))
+    file.close()
+
+    full_file_path = os.path.join(app.root_path, 'gcal', 'gcal-events.txt')
+    print "full_file_path: ", full_file_path
+
+    try:
+        #return send_file("test", as_attachment=True, attachment_filename='beehive-gcal.txt')
+        csv = str({'test': 'me'})
+        response = make_response(csv)
+        cd = 'attachment; filename=beehive-gcal.json'
+        response.headers['Content-Disposition'] = cd
+        response.mimetype = 'text/json'
+        return response
+
+    except Exception as e:
+        ctx = {'users': gcal_users, 'data': data}
+        return render_template('/gcal/gcal-dashboard.html', **ctx)
+
 
 
 @app.route('/login-gcal-user')
