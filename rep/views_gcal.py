@@ -97,13 +97,12 @@ def login_gcal_user():
     session['user_type'] = 'gcal_user'
 
     # Download and save calender
-    gcal_service = discovery.build('calendar', 'v3', http=http)
-    # events = get_calender_events(gcal_service)
-    mdate = datetime.now(pytz.timezone('America/New_York'))
-    start = mdate - timedelta(days=1)
-    end = mdate + timedelta(days=3)
-    events = get_calender_events_in_range(gcal_service, start, end)
-    user.update_field('connected', True)
+    # gcal_service = discovery.build('calendar', 'v3', http=http)
+    # mdate = datetime.now(pytz.timezone('America/New_York'))
+    # start = mdate - timedelta(days=1)
+    # end = mdate + timedelta(days=3)
+    # events = get_calender_events_in_range(gcal_service, start, end)
+    # user.update_field('connected', True)
 
     return redirect(url_for('gcal_home'))
 
