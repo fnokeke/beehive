@@ -102,10 +102,26 @@ def home():
 @app.route("/logout")
 @login_required
 def logout():
-    redirect_link = 'researcher_view' if session['user_type'] == 'researcher' else 'rescuetime_home'
+    redirect_view =  redirect_url = ''
+    if session['user_type'] == 'researcher':
+        redirect_view = 'researcher_view'
+    elif session['user_type'] == 'participant':
+        redirect_url = 'http://smalldata.io/'
+    elif session['user_type'] == 'rescuetime_user':
+        redirect_url = 'http://smalldata.io/'
+    elif session['user_type'] == 'gcal_user':
+        redirect_url = 'http://smalldata.io/'
+    else:
+        redirect_view = 'researcher_view'
+
     logout_user()
     session.clear()
-    return redirect(url_for(redirect_link))
+    if redirect_view:
+        print "redirect_view: ", redirect_view
+        return redirect(url_for(redirect_view))
+    else:
+        print "redirect_url: ", redirect_url
+        return redirect(redirect_url)
 
 
 @app.route('/researcher_analysis/<key>/<study_begin>/<int_begin>/<int_end>/<study_end>')
