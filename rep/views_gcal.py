@@ -1,7 +1,6 @@
 import json, pytz
 import os, time, datetime
-import httplib2, requests
-
+import httplib2
 from rep import app
 from flask import render_template, flash, send_file, make_response
 from flask import redirect, url_for, session, render_template, request
@@ -12,6 +11,7 @@ from datetime import date, datetime, timedelta
 from rep.models import  Researcher, GcalUser
 
 from oauth2client.client import OAuth2WebServerFlow
+from oauth2client import client
 from sendgrid.helpers.mail import *
 from gcal import CalendarService, Calendar
 
@@ -29,10 +29,30 @@ def gcal_dashboard():
 def gcal_download(start, end):
     print "<start>:", start
     print "<end>:", end
+    start = start.replace('-',' ') + ' ' + '00'+ ' ' + '00' + ' ' + '00'
+    end = end.replace('-', ' ') + ' ' + '23' + ' ' + '59' + ' ' + '59'
+    start_date = datetime.strptime(start, '%Y %m %d %H %M %S')
+    end_date = datetime.strptime(end, '%Y %m %d %H %M %S')
 
-    gcal_users = GcalUser.get_all_users_data()
-    print "gcal_users:", gcal_users
+    print "<start_date>:", start_date
+    print "<end_date>:", end_date
     data = []
+    gcal_users = GcalUser.get_all_users_credentials()
+    for user in gcal_users:
+        # Download and save calender
+        google_credentials = client.OAuth2Credentials.from_json(user['google_credentials'])
+        http = httplib2.Http()
+
+        if google_credentials.access_token_expired:
+            google_credentials.refresh(http)
+
+        http_auth = google_credentials.authorize(http)
+        gcal_service = discovery.build('calendar', 'v3', http=http_auth)
+        events = get_calender_events_in_range(gcal_service, start_date, end_date)
+        print "+++++++++++  USER = ", user['email'] , ' \n\n\n'
+        print events
+        data.append(events)
+        print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \n\n\n "
 
     BASE_DIR = "./gcal/"
     filename = "gcal-events.txt"
@@ -42,7 +62,7 @@ def gcal_download(start, end):
     file_path = BASE_DIR + filename
 
     file = open(file_path, "w+");
-    file.write(str("Test"))
+    file.write(json.dumps(data))
     file.close()
 
     full_file_path = os.path.join(app.root_path, 'gcal', 'gcal-events.txt')
@@ -50,8 +70,8 @@ def gcal_download(start, end):
 
     try:
         #return send_file("test", as_attachment=True, attachment_filename='beehive-gcal.txt')
-        csv = str({'test': 'me'})
-        response = make_response(csv)
+        json_data = json.dumps(data)
+        response = make_response(json_data)
         cd = 'attachment; filename=beehive-gcal.json'
         response.headers['Content-Disposition'] = cd
         response.mimetype = 'text/json'
@@ -102,8 +122,8 @@ def login_gcal_user():
     # start = mdate - timedelta(days=1)
     # end = mdate + timedelta(days=3)
     # events = get_calender_events_in_range(gcal_service, start, end)
-    # user.update_field('connected', True)
 
+    user.update_field('connected', True)
     return redirect(url_for('gcal_home'))
 
 
@@ -163,5 +183,5 @@ def get_calender_events(service):
         print('No upcoming events found.')
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
-        print(start, event['summary'])
+        print 'get_calender_events:', start, event['summary']
     return events

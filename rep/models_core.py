@@ -1128,6 +1128,24 @@ class GcalUser(db.Model):
         return all_users
 
     @classmethod
+    def get_all_users_credentials(cls):
+        """
+        Return list of all users data from database.
+        """
+        users = cls.query.all()
+        all_users = []
+
+        for user in users:
+            # user_data = []
+            user_data = collections.OrderedDict()
+            user_data['email'] = user.email
+            user_data['firstname'] = user.firstname
+            user_data['lastname'] = user.lastname
+            user_data['google_credentials'] = user.google_credentials
+            all_users.append(user_data)
+        return all_users
+
+    @classmethod
     def from_profile(cls, profile):
         """
         Return new user or existing user from database using their profile information.
