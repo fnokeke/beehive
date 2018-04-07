@@ -29,10 +29,19 @@ def gcal_dashboard():
 def gcal_download(start, end):
     print "<start>:", start
     print "<end>:", end
+    download_name = start + '-  to-' + end
     start = start.replace('-',' ') + ' ' + '00'+ ' ' + '00' + ' ' + '00'
     end = end.replace('-', ' ') + ' ' + '23' + ' ' + '59' + ' ' + '59'
-    start_date = datetime.strptime(start, '%Y %m %d %H %M %S')
-    end_date = datetime.strptime(end, '%Y %m %d %H %M %S')
+
+    try:
+        start_date = datetime.strptime(start, '%Y %m %d %H %M %S')
+        end_date = datetime.strptime(end, '%Y %m %d %H %M %S')
+    except:
+        print "gcal_download: Date parsing exception!"
+        mdate = datetime.now(pytz.timezone('America/New_York'))
+        start_date = mdate
+        end_date = mdate + timedelta(days=3)
+
 
     print "<start_date>:", start_date
     print "<end_date>:", end_date
@@ -51,7 +60,10 @@ def gcal_download(start, end):
         events = get_calender_events_in_range(gcal_service, start_date, end_date)
         print "+++++++++++  USER = ", user['email'] , ' \n\n\n'
         print events
-        data.append(events)
+        res = {}
+        res['email'] = user['email']
+        res['events'] = events
+        data.append(res)
         print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \n\n\n "
 
     BASE_DIR = "./gcal/"
@@ -72,7 +84,7 @@ def gcal_download(start, end):
         #return send_file("test", as_attachment=True, attachment_filename='beehive-gcal.txt')
         json_data = json.dumps(data)
         response = make_response(json_data)
-        cd = 'attachment; filename=beehive-gcal.json'
+        cd = 'attachment; filename=beehive-gcal-' + download_name + '.json'
         response.headers['Content-Disposition'] = cd
         response.mimetype = 'text/json'
         return response
@@ -162,12 +174,19 @@ def get_calender_events_in_range(service, start, end):
 
     events = eventsResult.get('items', [])
 
+    events_list = [];
     if not events:
         print('No upcoming events found.')
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
-        print(start, event['summary'])
-    return events
+        end = event['end'].get('dateTime', event['end'].get('date'))
+        print(start, event['summary'], end)
+        res = {}
+        res['summary'] = event['summary'];
+        res['start'] = start;
+        res['end'] = end;
+        events_list.append(res)
+    return events_list
 
 
 # Function to download 10 calender events
