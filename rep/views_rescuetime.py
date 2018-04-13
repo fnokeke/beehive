@@ -87,7 +87,7 @@ def rescuetime_stats():
             access_type='offline',
             prompt='consent',
             redirect_uri=url_for(
-                'google_login_researcher', _external=True))
+                'rescuetime_stats', _external=True))
 
         auth_code = request.args.get('code')
         if not auth_code:
@@ -187,7 +187,7 @@ def dashboard_rescuetime():
             access_type='offline',
             prompt='consent',
             redirect_uri=url_for(
-                'google_login_researcher', _external=True))
+                'rescuetime_stats', _external=True))
 
         auth_code = request.args.get('code')
         if not auth_code:
