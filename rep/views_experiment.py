@@ -5,6 +5,9 @@ from rep.models import Experiment_v2, ProtocolPushNotif
 
 from datetime import datetime
 
+import requests
+import json
+import secret_keys
 
 @app.route('/experiments/create')
 def create_experiment():
@@ -32,7 +35,15 @@ def experiment_options(code):
         'experiment': Experiment_v2.query.filter_by(code=code).first(),
         'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all()
     }
+    update_firebase_topic(code)
     return render_template('create-edit-experiment.html', **ctx)
+
+
+def update_firebase_topic(code):
+    url = 'https://fcm.googleapis.com/fcm/send'
+    headers = {'Authorization': secret_keys.FIREBASE_KEY, 'content-type': 'application/json'}
+    data = json.dumps({'to': code, 'data': {'type': 'serverSync'}})
+    requests.post(url, headers=headers, data=data)
 
 
 # Endpoint to add new experiment to the database v2
