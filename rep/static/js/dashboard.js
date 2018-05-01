@@ -5,6 +5,10 @@ $(document).ready(function() {
     "pageLength": page_length
   });
 
+  $('#experiment-app-analytics-table').DataTable({
+    "pageLength": page_length
+  });
+
   $('#enrolled-participants-table').DataTable({
     "pageLength": page_length
   });

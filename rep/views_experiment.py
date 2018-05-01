@@ -4,6 +4,7 @@ from flask import render_template, request, Response, redirect
 from flask import url_for, flash, send_file, make_response
 from flask_login import current_user, login_required
 from rep.models import Experiment_v2, Enrollment, Participant, ProtocolPushNotif
+from rep.models import InAppAnalytics
 
 from datetime import datetime
 
@@ -96,3 +97,16 @@ def experiment_participants_download(code):
 
     except Exception as e:
         return redirect(url_for('experiment_participants', code=code))
+
+
+# Endpoint to display App analytics for an experiment
+@app.route('/app-analytics/experiment/<code>')
+def experiment_app_analytics(code):
+    ctx = {
+        'user_type': 'researcher',
+        'today_date': datetime.now().strftime('%Y-%m-%d'),
+        'experiment': Experiment_v2.query.filter_by(code=code).first(),
+        'events': InAppAnalytics.query.filter_by(code=code).all(),
+        'dashboard_page': True
+    }
+    return render_template('experiment/experiment-app-analytics.html', **ctx)
