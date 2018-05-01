@@ -13,7 +13,7 @@ def create_experiment():
     ctx = {
         'today_date': datetime.now().strftime('%Y-%m-%d')
     }
-    return render_template('create-edit-experiment.html', **ctx)
+    return render_template('experiment/create-edit-experiment.html', **ctx)
 
 
 @app.route('/experiments')
@@ -55,9 +55,9 @@ def add_experiment_v2():
 # Endpoint to display participants in an experiment
 @app.route('/participants/experiment/<code>')
 def experiment_participants(code):
-    participants = Participant.query.join(Enrollment, Participant.email == Enrollment.participant_id). \
-        add_columns(Participant.firstname, Participant.lastname, Participant.gender, Participant.created_at).filter(
-        Enrollment.exp_code == code).all()
+    participants = Participant.query.join(Enrollment, Participant.email == Enrollment.participant_id)\
+        .add_columns(Participant.email, Participant.firstname, Participant.lastname, Participant.gender, Participant.created_at)\
+        .filter(Enrollment.exp_code == code).all()
 
     ctx = {
         'user_type': 'researcher',
@@ -72,16 +72,16 @@ def experiment_participants(code):
 # Endpoint to download participants in an experiment
 @app.route('/download/participants/experiment/<code>')
 def experiment_participants_download(code):
-    participants = Participant.query.join(Enrollment, Participant.email == Enrollment.participant_id). \
-        add_columns(Participant.firstname, Participant.lastname, Participant.gender, Participant.created_at).filter(
-        Enrollment.exp_code == code).all()
+    participants = Participant.query.join(Enrollment, Participant.email == Enrollment.participant_id)\
+        .add_columns(Participant.email, Participant.firstname, Participant.lastname, Participant.gender, Participant.created_at)\
+        .filter(Enrollment.exp_code == code).all()
     csv_data = "NO," + "EMAIL," + "FIRSTNAME," + "LASTNAME," + "GENDER," + "ENROLLMENT DATE"
 
     count = 1
     for participant in participants:
         # Download and save calender
         csv_data = csv_data + "\n"
-        row = str(count) +  "," + str(participant[0]) + "," + str(participant.firstname) + "," + \
+        row = str(count) +  "," + str(participant.email) + "," + str(participant.firstname) + "," + \
               str(participant.lastname) + "," + str(participant.gender) + "," + str(participant.created_at)
         csv_data = csv_data + row
         count = count + 1
