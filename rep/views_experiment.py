@@ -32,7 +32,8 @@ def experiment_options(code):
         'user_type': 'researcher',
         'today_date': datetime.now().strftime('%Y-%m-%d'),
         'experiment': Experiment_v2.query.filter_by(code=code).first(),
-        'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all()
+        'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all(),
+        'experiment_page': True
     }
     return render_template('experiment/create-edit-experiment.html', **ctx)
 
@@ -62,7 +63,8 @@ def experiment_participants(code):
         'user_type': 'researcher',
         'today_date': datetime.now().strftime('%Y-%m-%d'),
         'experiment': Experiment_v2.query.filter_by(code=code).first(),
-        'participants': participants
+        'participants': participants,
+        'dashboard_page': True
     }
     return render_template('experiment/experiment-participants.html', **ctx)
 
