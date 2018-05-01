@@ -80,7 +80,7 @@ def experiment_participants_download(code):
 
     count = 1
     for participant in participants:
-        # Download and save calender
+        # Convert to CSV format
         csv_data = csv_data + "\n"
         row = str(count) +  "," + str(participant.email) + "," + str(participant.firstname) + "," + \
               str(participant.lastname) + "," + str(participant.gender) + "," + str(participant.created_at)
@@ -110,3 +110,31 @@ def experiment_app_analytics(code):
         'dashboard_page': True
     }
     return render_template('experiment/experiment-app-analytics.html', **ctx)
+
+
+
+# Endpoint to download app analytics for an experiment
+@app.route('/download/app-analytics/experiment/<code>')
+def experiment_app_analytics_download(code):
+    events = InAppAnalytics.query.filter_by(code=code).all()
+    csv_data = "NO," + "EMAIL," + "EVENT TIME (millis)," + "EVENT DESCRIPTION,"  + "EVENT DATE"
+
+    count = 1
+    for event in events:
+        # Convert to CSV format
+        csv_data = csv_data + "\n"
+        row = str(count) +  "," + str(event.email) + "," + str(event.event_time_millis) + "," + \
+              str(event.event_desc) + "," + str(event.created_at)
+        csv_data = csv_data + row
+        count = count + 1
+
+    download_name = code + "-app-analytics.csv"
+    try:
+        response = make_response(csv_data)
+        cd = 'attachment; filename=beehive-' + download_name
+        response.headers['Content-Disposition'] = cd
+        response.mimetype = 'text/csv'
+        return response
+
+    except Exception as e:
+        return redirect(url_for('experiment_app_analytics', code=code))
