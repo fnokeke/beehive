@@ -50,11 +50,11 @@
                     {% for participant in  participants %}
                         <tr>
                             <td class="col-md-1">{{ loop.index }}</td>
-                            <td class="col-md-1"> {{ participant.email }} </td>
-                            <td class="col-md-1"> {{ participant.firstname }}  </td>
-                            <td class="col-md-1"> {{ participant.lastname }} </td>
-                            <td class="col-md-1"> {{ participant.gender }} </td>
-                            <td class="col-md-1"> {{ participant.created_at }} </td>
+                            <td class="col-md-1"> {{ participant[0] }} </td>
+                            <td class="col-md-1"> {{ participant[1] }}  </td>
+                            <td class="col-md-1"> {{ participant[2] }} </td>
+                            <td class="col-md-1"> {{ participant[3]  }} </td>
+                            <td class="col-md-1"> {{ participant[4]  }} </td>
                         </tr>
                     {% endfor %}
                     </tbody>

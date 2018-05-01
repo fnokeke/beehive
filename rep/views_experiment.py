@@ -3,7 +3,7 @@ from rep import app
 from flask import render_template, request, Response, redirect
 from flask import url_for, flash, send_file, make_response
 from flask_login import current_user, login_required
-from rep.models import Experiment_v2, Participant, ProtocolPushNotif
+from rep.models import Experiment_v2, Enrollment, Participant, ProtocolPushNotif
 
 from datetime import datetime
 
@@ -54,29 +54,32 @@ def add_experiment_v2():
 # Endpoint to display participants in an experiment
 @app.route('/participants/experiment/<code>')
 def experiment_participants(code):
-    print "code:", code
-    participants = Participant.query.filter_by(code=code)
+    participants = Participant.query.join(Enrollment, Participant.email == Enrollment.participant_id). \
+        add_columns(Participant.firstname, Participant.lastname, Participant.gender, Participant.created_at).filter(
+        Enrollment.exp_code == code).all()
+
     ctx = {
         'user_type': 'researcher',
         'today_date': datetime.now().strftime('%Y-%m-%d'),
         'experiment': Experiment_v2.query.filter_by(code=code).first(),
-        'participants': Participant.query.filter_by(code=code).all()
+        'participants': participants
     }
-    print "participants:", participants
     return render_template('experiment/experiment-participants.html', **ctx)
 
 
 # Endpoint to download participants in an experiment
 @app.route('/download/participants/experiment/<code>')
 def experiment_participants_download(code):
-    participants = Participant.query.filter_by(code=code).all()
+    participants = Participant.query.join(Enrollment, Participant.email == Enrollment.participant_id). \
+        add_columns(Participant.firstname, Participant.lastname, Participant.gender, Participant.created_at).filter(
+        Enrollment.exp_code == code).all()
     csv_data = "NO," + "EMAIL," + "FIRSTNAME," + "LASTNAME," + "GENDER," + "ENROLLMENT DATE"
 
     count = 1
     for participant in participants:
         # Download and save calender
         csv_data = csv_data + "\n"
-        row = str(count) +  "," + str(participant.email) + "," + str(participant.firstname) + "," + \
+        row = str(count) +  "," + str(participant[0]) + "," + str(participant.firstname) + "," + \
               str(participant.lastname) + "," + str(participant.gender) + "," + str(participant.created_at)
         csv_data = csv_data + row
         count = count + 1
