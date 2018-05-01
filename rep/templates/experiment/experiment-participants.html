@@ -7,51 +7,52 @@
 {% block contents %}
     <div class="container">
         <div class="page-header">
-            <h3>Participants  <small class="text-info"> ( experiment code: {{ experiment.code }} ) </small></h3>
+            <h3>Participants </h3>
         </div>
 
         <div>
-
+           <p class="text-info"> Code: {{ experiment.code }}  </p>
+            <p class="text-info"> Title: {{ experiment.title }}  </p>
             <button
                     type="button"
                     class="btn btn-primary"
-                    onclick="window.location.href='{{ url_for('create_experiment') }}';">
-                <span class="glyphicon glyphicon-plus"></span>
+                    onclick="window.location.href='/download/participants/experiment/{{  experiment.code  }}';">
+                <span class="glyphicon glyphicon-cloud-download"></span>
                 Download participant data
             </button>
 
-            <br>
-            <br>
+            <br/>
+            <br/>
 
-            {% if experiments | length > 1 %}
+            {% if participants| length < 1 %}
+            <br/> <br/>
+            <hr/>
+            <br/>
+            <h4 class=" text-center text-info"> No Participants enrolled in this experiment. </h4>
+            <br/>
+            <hr/>
             {% else %}
                 <table class="table table-striped">
                     <thead>
                     <tr>
                         <th class="col-md-1"> NO</th>
-                        <th> TITLE</th>
-                        <th> CODE</th>
-                        <th> START DATE</th>
-                        <th> END DATE</th>
-{#                        <th> DELETE</th>#}
+                        <th> EMAIL</th>
+                        <th> FIRSTNAME</th>
+                        <th> LASTNAME</th>
+                        <th> GENDER</th>
+                        <th> ENROLLMENT DATE</th>
                     </tr>
                     </thead>
 
                     <tbody>
-                    {% for exp in  experiments %}
+                    {% for participant in  participants %}
                         <tr>
-                        <td class="col-md-1">{{ loop.index }}</td>
-                            <td class="col-md-4">
-                                <a href="/experiment/{{ exp.code }}">
-                                    {{ exp.title }}
-                                </a>
-                            </td>
-                            <td class="col-md-1"> {{ exp.code }} </td>
-                            <td class="col-md-1"> {{ exp.start_date | onlyfancydate }} </td>
-                            <td class="col-md-1"> {{ exp.end_date | onlyfancydate }} </td>
-{#                            <td class="col-md-2"><button class="btn btn-danger btn-sm" onclick="{{ exp.id }}">#}
-{#                                <span class="glyphicon glyphicon-remove"></span>#}
-                            </button> </td>
+                            <td class="col-md-1">{{ loop.index }}</td>
+                            <td class="col-md-1"> {{ participant.email }} </td>
+                            <td class="col-md-1"> {{ participant.firstname }}  </td>
+                            <td class="col-md-1"> {{ participant.lastname }} </td>
+                            <td class="col-md-1"> {{ participant.gender }} </td>
+                            <td class="col-md-1"> {{ participant.created_at }} </td>
                         </tr>
                     {% endfor %}
                     </tbody>
