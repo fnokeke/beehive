@@ -21,7 +21,7 @@ def experiments():
         'user_type': 'researcher',
         'experiments': Experiment_v2.query.filter_by(owner=current_user.email).all()
     }
-    return render_template('experiments/researcher_experiments.html', **ctx)
+    return render_template('experiment/researcher_experiments.html', **ctx)
 
 
 @app.route('/experiment/<code>')
@@ -32,7 +32,7 @@ def experiment_options(code):
         'experiment': Experiment_v2.query.filter_by(code=code).first(),
         'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all()
     }
-    return render_template('experiments/create-edit-experiment.html', **ctx)
+    return render_template('experiment/create-edit-experiment.html', **ctx)
 
 
 # Endpoint to add new experiment to the database v2
