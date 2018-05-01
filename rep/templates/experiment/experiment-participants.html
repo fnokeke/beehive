@@ -7,7 +7,7 @@
 {% block contents %}
     <div class="container">
         <div class="page-header">
-            <h3>Participants </h3>
+            <h3><span class="glyphicon glyphicon-user"></span> Participants </h3>
         </div>
 
         <div>
@@ -17,7 +17,7 @@
             </p>
             <button
                     type="button"
-                    class="btn btn-primary"
+                    class="btn btn-primary "
                     onclick="window.location.href='/download/participants/experiment/{{  experiment.code  }}';">
                 <span class="glyphicon glyphicon-cloud-download"></span>
                 Download participant data
@@ -34,15 +34,15 @@
             <br/>
             <hr/>
             {% else %}
-                <table class="table table-striped">
+                <table class="table table-hover" id="experiment-participants-table">
                     <thead>
-                    <tr>
-                        <th class="col-md-1"> NO</th>
-                        <th> EMAIL</th>
-                        <th> FIRSTNAME</th>
-                        <th> LASTNAME</th>
-                        <th> GENDER</th>
-                        <th> ENROLLMENT DATE</th>
+                    <tr class="bg-primary">
+                        <th> NO </th>
+                        <th> EMAIL </th>
+                        <th> FIRSTNAME </th>
+                        <th> LASTNAME </th>
+                        <th> GENDER </th>
+                        <th> ENROLLMENT DATE </th>
                     </tr>
                     </thead>
 

@@ -1,6 +1,10 @@
 $(document).ready(function() {
   var page_length = 10;
 
+  $('#experiment-participants-table').DataTable({
+    "pageLength": page_length
+  });
+
   $('#enrolled-participants-table').DataTable({
     "pageLength": page_length
   });
