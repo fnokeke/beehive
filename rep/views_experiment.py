@@ -47,3 +47,15 @@ def add_experiment_v2():
         return response
     else:
         return Response(response, status=status, mimetype='application/json')
+
+
+# Endpoint to display participants in an experiment
+@app.route('/participants/experiment/<code>')
+def experiment_participants(code):
+    ctx = {
+        'user_type': 'researcher',
+        'today_date': datetime.now().strftime('%Y-%m-%d'),
+        'experiment': Experiment_v2.query.filter_by(code=code).first(),
+        'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all()
+    }
+    return render_template('experiment/experiment-participants.html', **ctx)

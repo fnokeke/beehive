@@ -32,21 +32,37 @@
                             Dashboards <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu nav-link-text">
-                            <li><a href="#">
+                            <li><a href="/participants/experiment/{{ experiment.code }}" >
                                 <span class="glyphicon glyphicon-user"></span>
                                 Participants
                                 </a>
                             </li>
                             <li><a href="#">
-                                <span class="glyphicon glyphicon-bell"></span>
-                                Notifications
-                                </a>
-                            </li>
-                            <li><a href="#">
                                 <span class="glyphicon glyphicon-phone"></span>
-                                Mobile Analytics
+                                App Analytics
                                 </a>
                             </li>
+                            {% if protocols|length > 0 %}
+                            <li><a href="#">
+                                <span class="glyphicon glyphicon-bell"></span>
+                                Protocols
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% if experiment and experiment.app_usage  %}
+                            <li><a href="#">
+                                <span class="glyphicon glyphicon-stats"></span>
+                                App usage
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% if experiment and experiment.screen_events %}
+                            <li><a href="#">
+                                <span class="glyphicon glyphicon-fullscreen"></span>
+                                Screen events
+                                </a>
+                            </li>
+                            {% endif %}
                             <li role="separator" class="divider"></li>
                             <li><a href="#">
                                 <span class="glyphicon glyphicon-cloud-download"></span>
@@ -73,7 +89,7 @@
                             </li>
                             <li><a href="#">
                                 <span class="glyphicon glyphicon-cloud-download"></span>
-                                Download Notifications Data
+                                Download Protocols Data
                                 </a>
                             </li>
                             <li><a href="#">
