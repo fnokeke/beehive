@@ -4,7 +4,7 @@ from flask import render_template, request, Response, redirect
 from flask import url_for, flash, send_file, make_response
 from flask_login import current_user, login_required
 from rep.models import Experiment_v2, Enrollment, Participant, ProtocolPushNotif
-from rep.models import InAppAnalytics
+from rep.models import InAppAnalytics, TP_FgAppLog, TP_ScreenLog
 
 from datetime import datetime
 
@@ -184,3 +184,60 @@ def experiment_protocols_download(code):
 
     except Exception as e:
         return redirect(url_for('experiment_protocols', code=code))
+
+
+# Endpoint to display App usage for an experiment
+@app.route('/app-usage/experiment/<code>')
+def experiment_app_usage(code):
+    ctx = {
+        'user_type': 'researcher',
+        'today_date': datetime.now().strftime('%Y-%m-%d'),
+        'experiment': Experiment_v2.query.filter_by(code=code).first(),
+        'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all(),
+        'app_usage': TP_FgAppLog.query.filter_by(code=code).all(),
+        'dashboard_page': True
+    }
+    return render_template('experiment/experiment-app-usage.html', **ctx)
+
+
+
+# Endpoint to download protocols for an experiment
+@app.route('/download/app-usage/experiment/<code>')
+def experiment_app_usage_download(code):
+    app_usage = TP_FgAppLog.query.filter_by(code=code).all()
+    csv_data = "NO," + "WORKER ID," + "APP ID," + "TIME (seconds)," + "TIME (millis)," + "DATE"
+
+    count = 1
+    for app in app_usage:
+        # Convert to CSV format
+        csv_data = csv_data + "\n"
+        row = str(count) +  "," + str(app.worker_id) + "," + str(app.app_id) + "," + str(app.time_seconds) \
+              + "," + str(app.time_millis) + "," + str(app.created_at)
+
+        csv_data = csv_data + row
+        count = count + 1
+
+    download_name = code + "-app-usage.csv"
+    try:
+        response = make_response(csv_data)
+        cd = 'attachment; filename=beehive-' + download_name
+        response.headers['Content-Disposition'] = cd
+        response.mimetype = 'text/csv'
+        return response
+
+    except Exception as e:
+        return redirect(url_for('experiment_app_usage', code=code))
+
+
+# Endpoint to display App usage for an experiment
+@app.route('/screen-events/experiment/<code>')
+def experiment_screen_events(code):
+    ctx = {
+        'user_type': 'researcher',
+        'today_date': datetime.now().strftime('%Y-%m-%d'),
+        'experiment': Experiment_v2.query.filter_by(code=code).first(),
+        'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all(),
+        'app_usage': TP_ScreenLog.query.filter_by(code=code).all(),
+        'dashboard_page': True
+    }
+    return render_template('experiment/experiment-screen-events.html', **ctx)

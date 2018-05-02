@@ -297,6 +297,7 @@ class TP_FgAppLog(db.Model):
     app_id = db.Column(db.String(30))
     time_seconds = db.Column(db.String(20))
     time_millis = db.Column(db.BigInteger)
+    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
 
     def __init__(self, info):
         self.worker_id = info['worker_id']
@@ -338,6 +339,7 @@ class TP_ScreenLog(db.Model):
     worker_id = db.Column(db.String(50))
     event = db.Column(db.String(30))
     time_millis = db.Column(db.BigInteger)
+    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
 
     def __init__(self, info):
         self.worker_id = info['worker_id']
