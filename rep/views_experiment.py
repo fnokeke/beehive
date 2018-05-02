@@ -153,3 +153,34 @@ def experiment_protocols(code):
         'dashboard_page': True
     }
     return render_template('experiment/experiment-protocols.html', **ctx)
+
+
+# Endpoint to download protocols for an experiment
+@app.route('/download/protocols/experiment/<code>')
+def experiment_protocols_download(code):
+    protocols = ProtocolPushNotif.query.filter_by(exp_code=code).all()
+    csv_data = "NO," + "LABEL," + "START DATE," + "END DATE," + "FREQUENCY," + "METHOD," + "DETAILS," \
+               + "APP ID," + "TYPE," + "TIME," + "HALF NOTIFY,"
+
+    count = 1
+    for protocol in protocols:
+        # Convert to CSV format
+        csv_data = csv_data + "\n"
+        row = str(count) +  "," + str(protocol.label) + "," + str(protocol.start_date) + "," + str(protocol.end_date) \
+              + "," + str(protocol.frequency) + "," + str(protocol.method) + "," + str(protocol.notif_details) \
+              + "," + str(protocol.notif_appid) + "," + str(protocol.notif_type) + "," + str(protocol.notif_time) \
+              + "," + str(protocol.probable_half_notify)
+
+        csv_data = csv_data + row
+        count = count + 1
+
+    download_name = code + "-protocols.csv"
+    try:
+        response = make_response(csv_data)
+        cd = 'attachment; filename=beehive-' + download_name
+        response.headers['Content-Disposition'] = cd
+        response.mimetype = 'text/csv'
+        return response
+
+    except Exception as e:
+        return redirect(url_for('experiment_protocols', code=code))
