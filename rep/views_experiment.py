@@ -64,6 +64,7 @@ def experiment_participants(code):
         'user_type': 'researcher',
         'today_date': datetime.now().strftime('%Y-%m-%d'),
         'experiment': Experiment_v2.query.filter_by(code=code).first(),
+        'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all(),
         'participants': participants,
         'dashboard_page': True
     }
@@ -106,6 +107,7 @@ def experiment_app_analytics(code):
         'user_type': 'researcher',
         'today_date': datetime.now().strftime('%Y-%m-%d'),
         'experiment': Experiment_v2.query.filter_by(code=code).first(),
+        'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all(),
         'events': InAppAnalytics.query.filter_by(code=code).all(),
         'dashboard_page': True
     }
