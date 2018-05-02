@@ -229,7 +229,7 @@ def experiment_app_usage_download(code):
         return redirect(url_for('experiment_app_usage', code=code))
 
 
-# Endpoint to display App usage for an experiment
+# Endpoint to display Screen events for an experiment
 @app.route('/screen-events/experiment/<code>')
 def experiment_screen_events(code):
     ctx = {
@@ -237,7 +237,35 @@ def experiment_screen_events(code):
         'today_date': datetime.now().strftime('%Y-%m-%d'),
         'experiment': Experiment_v2.query.filter_by(code=code).first(),
         'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all(),
-        'app_usage': TP_ScreenLog.query.filter_by(code=code).all(),
+        'screen_events': TP_ScreenLog.query.filter_by(code=code).all(),
         'dashboard_page': True
     }
     return render_template('experiment/experiment-screen-events.html', **ctx)
+
+
+# Endpoint to download protocols for an experiment
+@app.route('/download/screen-events/experiment/<code>')
+def experiment_screen_event_download(code):
+    screen_event = TP_ScreenLog.query.filter_by(code=code).all()
+    csv_data = "NO," + "WORKER ID," + "EVENT," + "TIME (millis)," + "DATE"
+
+    count = 1
+    for event in screen_event:
+        # Convert to CSV format
+        csv_data = csv_data + "\n"
+        row = str(count) +  "," + str(event.worker_id) +  "," + str(event.event) + "," \
+              + str(event.time_millis) + "," + str(event.created_at)
+
+        csv_data = csv_data + row
+        count = count + 1
+
+    download_name = code + "-screen-events.csv"
+    try:
+        response = make_response(csv_data)
+        cd = 'attachment; filename=beehive-' + download_name
+        response.headers['Content-Disposition'] = cd
+        response.mimetype = 'text/csv'
+        return response
+
+    except Exception as e:
+        return redirect(url_for('experiment_screen_events', code=code))
