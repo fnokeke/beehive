@@ -140,3 +140,16 @@ def experiment_app_analytics_download(code):
 
     except Exception as e:
         return redirect(url_for('experiment_app_analytics', code=code))
+
+
+# Endpoint to display protocols for an experiment
+@app.route('/protocols/experiment/<code>')
+def experiment_protocols(code):
+    ctx = {
+        'user_type': 'researcher',
+        'today_date': datetime.now().strftime('%Y-%m-%d'),
+        'experiment': Experiment_v2.query.filter_by(code=code).first(),
+        'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all(),
+        'dashboard_page': True
+    }
+    return render_template('experiment/experiment-protocols.html', **ctx)
