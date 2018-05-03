@@ -1,6 +1,14 @@
 $(document).ready(function() {
   var page_length = 10;
 
+  $('#experiment-participants-tab1-table').DataTable({
+    "pageLength": page_length
+  });
+
+  $('#experiment-participants-tab2-table').DataTable({
+    "pageLength": page_length
+  });
+
   $('#experiment-participants-table').DataTable({
     "pageLength": page_length
   });
@@ -16,7 +24,6 @@ $(document).ready(function() {
    $('#experiment-app-usage-table').DataTable({
     "pageLength": page_length
   });
-
 
   $('#experiment-screen-events-table').DataTable({
     "pageLength": page_length

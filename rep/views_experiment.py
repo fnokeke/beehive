@@ -66,6 +66,7 @@ def experiment_participants(code):
         'experiment': Experiment_v2.query.filter_by(code=code).first(),
         'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all(),
         'participants': participants,
+        'rescuetime_participants': [1,2],
         'dashboard_page': True
     }
     return render_template('experiment/experiment-participants.html', **ctx)
