@@ -1,0 +1,68 @@
+
+
+
+{% include 'experiment/experiment-navbar.html' %}
+
+
+{% block contents %}
+    <div class="container">
+        <div class="page-header">
+            <h3><span class="glyphicon glyphicon-user"></span> Participants </h3>
+        </div>
+
+        <div>
+            <p class="text-info"> Code: <strong> {{ experiment.code }} </strong>
+                &nbsp; &nbsp; | &nbsp; &nbsp;
+                Title: <strong> {{ experiment.title }} </strong>
+            </p>
+            <button
+                    type="button"
+                    class="btn btn-primary "
+                    onclick="window.location.href='/download/participants/experiment/{{  experiment.code  }}';">
+                <span class="glyphicon glyphicon-cloud-download"></span>
+                Download participant data
+            </button>
+
+            <br/>
+            <br/>
+
+            {% if participants| length < 1 %}
+            <br/> <br/>
+            <hr/>
+            <br/>
+            <h4 class=" text-center text-info"> No Participants enrolled in this experiment. </h4>
+            <br/>
+            <hr/>
+            {% else %}
+                <table class="table table-hover" id="experiment-participants-table">
+                    <thead>
+                    <tr class="bg-primary">
+                        <th> NO </th>
+                        <th> EMAIL </th>
+                        <th> FIRSTNAME </th>
+                        <th> LASTNAME </th>
+                        <th> GENDER </th>
+                        <th> ENROLLMENT DATE </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for participant in  participants %}
+                        <tr>
+                            <td class="col-md-1">{{ loop.index }}</td>
+                            <td class="col-md-1"> {{ participant.email }} </td>
+                            <td class="col-md-1"> {{ participant.firstname }}  </td>
+                            <td class="col-md-1"> {{ participant.lastname }} </td>
+                            <td class="col-md-1"> {{ participant.gender  }} </td>
+                            <td class="col-md-1"> {{ participant.created_at }} </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+{% endblock %}

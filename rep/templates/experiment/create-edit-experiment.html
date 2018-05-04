@@ -29,24 +29,46 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                            aria-expanded="false">
                             <span class="glyphicon glyphicon-stats"></span>
-                            Dashboards <span class="caret"></span></a>
+                            Dashboards <span class="caret"></span>
+                        </a>
                         <ul class="dropdown-menu nav-link-text">
-                            <li><a href="#">
+                            <li><a href="/participants/experiment/{{ experiment.code }}" >
                                 <span class="glyphicon glyphicon-user"></span>
                                 Participants
-                            </a></li>
+                                </a>
+                            </li>
+                            <li><a href="/app-analytics/experiment/{{ experiment.code }}">
+                                <span class="glyphicon glyphicon-phone"></span>
+                                App Analytics
+                                </a>
+                            </li>
+                            {% if protocols|length > 0 %}
                             <li><a href="#">
                                 <span class="glyphicon glyphicon-bell"></span>
-                                Notifications
-                            </a></li>
+                                Protocols
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% if experiment and experiment.app_usage  %}
                             <li><a href="#">
-                                <span class="glyphicon glyphicon-phone"></span>
-                                Mobile Analytics
-                            </a></li>
+                                <span class="glyphicon glyphicon-equalizer"></span>
+                                App usage
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% if experiment and experiment.screen_events %}
+                            <li><a href="#">
+                                <span class="glyphicon glyphicon-modal-window"></span>
+                                Screen events
+                                </a>
+                            </li>
+                            {% endif %}
                             <li role="separator" class="divider"></li>
                             <li><a href="#">
                                 <span class="glyphicon glyphicon-cloud-download"></span>
-                                Download All Data</a></li>
+                                Download All Data
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 </ul>

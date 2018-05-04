@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+{% block navbar_links %}
+
+    <ul class="nav navbar-nav nav-link-text">
+        <li>
+            <a href="{{ url_for('experiments') }}">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+                Go Back
+            </a>
+        </li>
+
+        {% if experiment %}
+            {% if experiment_page %}
+            <li class="active" >
+            {% else %}
+            <li>
+            {% endif %}
+                <a href="/experiment/{{ experiment.code }}">
+                    <span class="glyphicon glyphicon-hourglass"></span>
+                    Experiment [{{ experiment.code }}]
+                </a>
+            </li>
+
+            <li>
+                <ul class="nav navbar-nav navbar-right">
+                        {% if dashboard_page %}
+                    <li class="dropdown active">
+                        {% else %}
+                    <li class="dropdown" >
+                        {% endif %}
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">
+                            <span class="glyphicon glyphicon-stats"></span>
+                            Dashboards <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu nav-link-text">
+                            <li><a href="/participants/experiment/{{ experiment.code }}" >
+                                <span class="glyphicon glyphicon-user"></span>
+                                Participants
+                                </a>
+                            </li>
+                            <li><a href="/app-analytics/experiment/{{ experiment.code }}" >
+                                <span class="glyphicon glyphicon-phone"></span>
+                                App Analytics
+                                </a>
+                            </li>
+                            {% if protocols|length > 0 %}
+                            <li><a href="#">
+                                <span class="glyphicon glyphicon-bell"></span>
+                                Protocols
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% if experiment and experiment.app_usage  %}
+                            <li><a href="#">
+                                <span class="glyphicon glyphicon-equalizer"></span>
+                                App usage
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% if experiment and experiment.screen_events %}
+                            <li><a href="#">
+                                <span class="glyphicon glyphicon-modal-window"></span>
+                                Screen events
+                                </a>
+                            </li>
+                            {% endif %}
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#">
+                                <span class="glyphicon glyphicon-cloud-download"></span>
+                                Download All Data
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        {% endif %}
+
+    </ul>
+
+    <ul class="nav navbar-nav navbar-right nav-link-text">
+        <li>
+            <a href="{{ url_for('logout') }}">
+                <span class="glyphicon glyphicon-log-out"></span>
+                Sign out {{ user_type }} - {{ current_user.email }}
+            </a>
+        </li>
+    </ul>
+
+{% endblock %}
