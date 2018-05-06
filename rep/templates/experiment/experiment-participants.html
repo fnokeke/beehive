@@ -44,7 +44,7 @@
                                     <button
                                             type="button"
                                             class="btn btn-primary "
-                                            onclick="window.location.href='/download/participants/experiment/{{  experiment.code  }}';">
+                                            onclick="window.location.href='/download/rescuetime-participants/experiment/{{  experiment.code  }}';">
                                         <span class="glyphicon glyphicon-cloud-download"></span>
                                         Download RescueTime participant data
                                     </button>
@@ -52,11 +52,11 @@
                                     <br/>
                                     <br/>
 
-                                    {% if participants| length < 1 %}
+                                    {% if rescuetime_participants | length < 1 %}
                                     <br/> <br/>
                                     <hr/>
                                     <br/>
-                                    <h4 class=" text-center text-info"> No Participants enrolled in this
+                                    <h4 class=" text-center text-info"> No Participants enrolled in Rescuetime for this
                                         experiment. </h4>
                                     <br/>
                                     <hr/>
@@ -74,7 +74,7 @@
                                         </thead>
 
                                         <tbody>
-                                        {% for participant in participants %}
+                                        {% for participant in rescuetime_participants %}
                                         <tr>
                                             <td class="col-md-1">{{ loop.index }}</td>
                                             <td class="col-md-1"> {{ participant.email }}</td>

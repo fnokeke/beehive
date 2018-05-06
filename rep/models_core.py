@@ -1173,6 +1173,7 @@ class RescuetimeUser(db.Model):
     google_credentials = db.Column(db.String(2500), unique=True)
     rescuetime_access_token = db.Column(db.String(120))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
 
     def __init__(self, profile):
         self.email = profile.get('email', '')
@@ -1292,6 +1293,7 @@ class RescuetimeData(db.Model):
     activity = db.Column(db.String(120))
     category = db.Column(db.String(120))
     productivity = db.Column(db.Integer)
+    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
 
     def __init__(self, profile):
         self.email = profile.get('email')
