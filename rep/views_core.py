@@ -1133,67 +1133,6 @@ def firebase_sync():
     return json.dumps(r.json())
 
 
-@app.route('/mobile/turkprime/enroll', methods=['POST'])
-def mobile_worker_id():
-    data = json.loads(request.data) if request.data else request.form.to_dict()
-    status, response, worker = TP_Enrolled.add_user(data)
-    if status == -1:
-        return json.dumps({'status': -1, 'response': response, 'worker_id': -1, 'survey_link': ''})
-
-    VALID_CODES = ["mturk", "tech", "hci", "uncdf"]
-    if not data['study_code'] in VALID_CODES:
-        return json.dumps({'status': -1,
-                           'response': "Invalid study code. Check it and try again.",
-                           'worker_id': -1,
-                           'survey_link': ''})
-
-    TP_Admin.add_user(data)
-    user_response = response + '\nYour HIT Code: {}\nClick to complete survey:'.format(worker.worker_code)
-
-    survey_link = 'http://bit.ly/surveyOne'
-    if data['study_code'] == 'tech':
-        survey_link = 'http://bit.ly/surveyTech'
-
-    server_response = {'status': 200,
-                       'response': user_response,
-                       'worker_id': worker.worker_id,
-                       'survey_link': survey_link}
-    return json.dumps(server_response)
-
-
-@app.route('/mobile/turkprime/fb-stats', methods=['POST'])
-def mobile_worker_fb_stats():
-    data = json.loads(request.data) if request.data else request.form.to_dict()
-    _, response, stats = TP_FBStats.add_stats(data)
-    server_response = {'response': response, 'worker_id': data['worker_id'], 'summary': to_json(stats)}
-    server_response = append_admin_fb_response(server_response)
-    return json.dumps(server_response, default=str)
-
-
-@app.route('/mobile/turkprime/facebook-logs', methods=['POST'])
-def mobile_facebook_logs():
-    data = json.loads(request.data) if request.data else request.form.to_dict()
-    _, response, __ = TP_FacebookLog.add_stats(data)
-    server_response = {'response': response, 'worker_id': data['worker_id']}
-    server_response = append_admin_fb_response(server_response)
-    return json.dumps(server_response, default=str)
-
-
-@app.route('/mobile/turkprime/app-logs', methods=['POST'])
-def mobile_fg_app_log():
-    data = json.loads(request.data) if request.data else request.form.to_dict()
-    _, response, __ = TP_FgAppLog.add_stats(data)
-    server_response = {'response': response, 'worker_id': data['worker_id']}
-    return json.dumps(server_response, default=str)
-
-
-@app.route('/mobile/turkprime/screen-event-logs', methods=['POST'])
-def mobile_screen_event_log():
-    data = json.loads(request.data) if request.data else request.form.to_dict()
-    _, response, __ = TP_ScreenLog.add_stats(data)
-    server_response = {'response': response, 'worker_id': data['worker_id']}
-    return json.dumps(server_response, default=str)
-
 
 @app.route('/server-fb-stats', methods=['POST'])
 def server_data():
@@ -1252,31 +1191,6 @@ def get_ordered_entry(db_stats_entry):
     ordered['current_firebase_token'] = entry['current_firebase_token']
 
     return ordered
-
-
-@app.route('/mobile/turkprime/all/fb-stats')
-def get_all_fb_stats():
-    stats = TP_FBStats.query.all()
-    return json.dumps({'stats': stats})
-
-
-def rm_null(val):
-    return "" if (val == "None" or val == None) else val
-
-
-def append_admin_fb_response(data):
-    worker = TP_Admin.query.filter_by(worker_id=data['worker_id']).first()
-    if worker:
-        data['admin_experiment_group'] = rm_null(worker.admin_experiment_group)
-        data['admin_fb_max_mins'] = rm_null(worker.admin_fb_max_mins)
-        data['admin_fb_max_opens'] = rm_null(worker.admin_fb_max_opens)
-        data['admin_treatment_start'] = rm_null(worker.admin_treatment_start)
-        data['admin_followup_start'] = rm_null(worker.admin_followup_start)
-        data['admin_logging_stop'] = rm_null(worker.admin_logging_stop)
-        data['admin_daily_reset_hour'] = rm_null(TP_DailyResetHour.get_last_updated_hour())
-        data['admin_static_ratio_100'] = 50
-        data['admin_adaptive_ratio_100'] = 80
-    return data
 
 
 @app.route('/mobile/mturk/prelim-recruit', methods=['POST'])

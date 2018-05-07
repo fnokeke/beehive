@@ -333,6 +333,58 @@ class TP_FgAppLog(db.Model):
         return (200, 'Successfully added fgAppLog stats!', "")
 
 
+class MobileNotifLogs(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    worker_id = db.Column(db.String(50))
+    time_millis = db.Column(db.BigInteger)
+    app_id = db.Column(db.String(30))
+    posted_millis = db.Column(db.BigInteger)
+    action = db.Column(db.String(10))
+    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
+
+    def __init__(self, info):
+        self.worker_id = info['worker_id']
+        self.time_millis = info['time_millis']
+        self.app_id = info['app_id']
+        self.posted_millis = info['posted_millis']
+        self.action = info['action']
+        self.code = info['code']
+
+    def __repr__(self):
+        result = {
+            'id': str(self.id),
+            'created_at': str(self.created_at),
+            'worker_id': self.worker_id,
+            'time_millis': self.time_millis,
+            'posted_millis': self.posted_millis,
+            'action': self.action,
+            'code': self.code
+        }
+        return json.dumps(result)
+
+    @staticmethod
+    def add_stats(info):
+        worker_id = info['worker_id']
+        logs = info['logs']
+        rows = logs.split(';')
+
+        for row in rows:
+            if row != "":
+                time_millis, app_id, posted_millis, action = row.split(",")
+                new_stats = MobileNotifLogs({
+                    'worker_id': worker_id,
+                    'time_millis': time_millis,
+                    'app_id': app_id,
+                    'posted_millis': posted_millis,
+                    'action': action
+                })
+                db.session.add(new_stats)
+
+        db.session.commit()
+        return 200, 'Successfully added phone notif logs!', ""
+
+
 class TP_ScreenLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
@@ -371,3 +423,6 @@ class TP_ScreenLog(db.Model):
 
         db.session.commit()
         return (200, 'Successfully added screenLog stats!', "")
+
+# TODO: remove experiment_v2 and use just experiment
+# TODO: remove TP_name and use Mobile_name
