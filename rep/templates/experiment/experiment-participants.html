@@ -1,0 +1,208 @@
+
+
+
+{% include 'experiment/experiment-navbar.html' %}
+
+
+{% block contents %}
+    <div class="container">
+        <div class="page-header">
+            <h3><span class="glyphicon glyphicon-user"></span> Participants </h3>
+        </div>
+
+        <p class="text-info"> Code: <strong> {{ experiment.code }} </strong>
+            &nbsp; &nbsp; | &nbsp; &nbsp;
+            Title: <strong> {{ experiment.title }} </strong>
+        </p>
+        <hr/>
+
+
+        {% if rescuetime_participants | length > 1 %}
+        <!-- Multiple participant table -->
+            <div class="row">
+                <div class="col">
+                    <div class="tab" role="tabpanel">
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation" class="active">
+                                <a href="#Section1" aria-controls="home" role="tab" data-toggle="tab">
+                                     <h5><span class="glyphicon glyphicon-user"></span> RescueTime Participants </h5>
+                                </a>
+                            </li>
+                            <li role="presentation">
+                                <a href="#Section2" aria-controls="profile" role="tab" data-toggle="tab">
+                                     <h5><span class="glyphicon glyphicon-user"></span> Other Participants </h5>
+                                </a>
+                            </li>
+                        </ul>
+                        <!-- Tab panes -->
+                        <div class="tab-content tabs">
+                            <div role="tabpanel" class="tab-pane fade in active" id="Section1">
+                                <!--<h4 class="text-info">RescueTime Participants</h4>-->
+                                <p> &nbsp;</p>
+                                <div>
+                                    <button
+                                            type="button"
+                                            class="btn btn-primary "
+                                            onclick="window.location.href='/download/rescuetime-participants/experiment/{{  experiment.code  }}';">
+                                        <span class="glyphicon glyphicon-cloud-download"></span>
+                                        Download RescueTime participant data
+                                    </button>
+
+                                    <br/>
+                                    <br/>
+
+                                    {% if rescuetime_participants | length < 1 %}
+                                    <br/> <br/>
+                                    <hr/>
+                                    <br/>
+                                    <h4 class=" text-center text-info"> No Participants enrolled in Rescuetime for this
+                                        experiment. </h4>
+                                    <br/>
+                                    <hr/>
+                                    {% else %}
+                                    <table class="table table-hover" id="experiment-participants-tab1-table">
+                                        <thead>
+                                        <tr class="bg-primary">
+                                            <th> NO</th>
+                                            <th> EMAIL</th>
+                                            <th> FIRSTNAME</th>
+                                            <th> LASTNAME</th>
+                                            <th> GENDER</th>
+                                            <th> ENROLLMENT DATE</th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+                                        {% for participant in rescuetime_participants %}
+                                        <tr>
+                                            <td class="col-md-1">{{ loop.index }}</td>
+                                            <td class="col-md-1"> {{ participant.email }}</td>
+                                            <td class="col-md-1"> {{ participant.firstname }}</td>
+                                            <td class="col-md-1"> {{ participant.lastname }}</td>
+                                            <td class="col-md-1"> {{ participant.gender }}</td>
+                                            <td class="col-md-1"> {{ participant.created_at }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    {% endif %}
+                                </div>
+
+
+                            </div>
+                            <div role="tabpanel" class="tab-pane fade" id="Section2">
+                                <!--<h4 class="text-info">Other Participants</h4>-->
+                                <p> &nbsp;</p>
+
+                                <div>
+                                    <button
+                                            type="button"
+                                            class="btn btn-primary "
+                                            onclick="window.location.href='/download/participants/experiment/{{  experiment.code  }}';">
+                                        <span class="glyphicon glyphicon-cloud-download"></span>
+                                        Download other participants data
+                                    </button>
+
+                                    <br/>
+                                    <br/>
+
+                                    {% if participants| length < 1 %}
+                                    <br/> <br/>
+                                    <hr/>
+                                    <br/>
+                                    <h4 class=" text-center text-info"> No Participants enrolled in this
+                                        experiment. </h4>
+                                    <br/>
+                                    <hr/>
+                                    {% else %}
+                                    <table class="table table-hover" id="experiment-participants-tab2-table">
+                                        <thead>
+                                        <tr class="bg-primary">
+                                            <th> NO</th>
+                                            <th> EMAIL</th>
+                                            <th> FIRSTNAME</th>
+                                            <th> LASTNAME</th>
+                                            <th> GENDER</th>
+                                            <th> ENROLLMENT DATE</th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+                                        {% for participant in participants %}
+                                        <tr>
+                                            <td class="col-md-1">{{ loop.index }}</td>
+                                            <td class="col-md-1"> {{ participant.email }}</td>
+                                            <td class="col-md-1"> {{ participant.firstname }}</td>
+                                            <td class="col-md-1"> {{ participant.lastname }}</td>
+                                            <td class="col-md-1"> {{ participant.gender }}</td>
+                                            <td class="col-md-1"> {{ participant.created_at }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    {% endif %}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+
+        <!-- Single participant table -->
+        <div>
+            <button
+                    type="button"
+                    class="btn btn-primary "
+                    onclick="window.location.href='/download/participants/experiment/{{  experiment.code  }}';">
+                <span class="glyphicon glyphicon-cloud-download"></span>
+                Download participant data
+            </button>
+
+            <br/>
+            <br/>
+
+            {% if participants| length < 1 %}
+            <br/> <br/>
+            <hr/>
+            <br/>
+            <h4 class=" text-center text-info"> No Participants enrolled in this experiment. </h4>
+            <br/>
+            <hr/>
+            {% else %}
+                <table class="table table-hover" id="experiment-participants-table">
+                    <thead>
+                    <tr class="bg-primary">
+                        <th> NO </th>
+                        <th> EMAIL </th>
+                        <th> FIRSTNAME </th>
+                        <th> LASTNAME </th>
+                        <th> GENDER </th>
+                        <th> ENROLLMENT DATE </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for participant in  participants %}
+                        <tr>
+                            <td class="col-md-1">{{ loop.index }}</td>
+                            <td class="col-md-1"> {{ participant.email }} </td>
+                            <td class="col-md-1"> {{ participant.firstname }}  </td>
+                            <td class="col-md-1"> {{ participant.lastname }} </td>
+                            <td class="col-md-1"> {{ participant.gender  }} </td>
+                            <td class="col-md-1"> {{ participant.created_at }} </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+
+    </div>
+
+ {% endif %}
+
+{% endblock %}

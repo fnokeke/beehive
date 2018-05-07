@@ -1,0 +1,69 @@
+
+
+
+{% include 'experiment/experiment-navbar.html' %}
+
+
+{% block contents %}
+    <div class="container">
+        <div class="page-header">
+            <h3> <span class="glyphicon glyphicon-phone"> </span> App Analytics </h3>
+        </div>
+
+        <div>
+            <p class="text-info"> Code: <strong> {{ experiment.code }} </strong>
+                &nbsp; &nbsp; | &nbsp; &nbsp;
+                Title: <strong> {{ experiment.title }} </strong>
+            </p>
+
+            <hr/>
+
+            <button
+                    type="button"
+                    class="btn btn-primary "
+                    onclick="window.location.href='/download/app-analytics/experiment/{{  experiment.code  }}';">
+                <span class="glyphicon glyphicon-cloud-download"></span>
+                Download app analytics data
+            </button>
+
+            <br/>
+            <br/>
+
+            {% if events | length < 1 %}
+            <br/> <br/>
+            <hr/>
+            <br/>
+            <h4 class=" text-center text-info"> App analytics not available for this experiment. </h4>
+            <br/>
+            <hr/>
+            {% else %}
+                <table class="table table-hover" id="experiment-app-analytics-table">
+                    <thead>
+                    <tr class="bg-primary">
+                        <th> NO </th>
+                        <th> EMAIL </th>
+                        <th> EVENT TIME (millis) </th>
+                        <th> EVENT DESCRIPTION </th>
+                        <th> EVENT DATE </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for event in events %}
+                        <tr>
+                            <td class="col-md-1">{{ loop.index }}</td>
+                            <td class="col-md-1"> {{ event.email }} </td>
+                            <td class="col-md-1"> {{ event.event_time_millis }}  </td>
+                            <td class="col-md-1"> {{ event.event_desc }} </td>
+                            <td class="col-md-1"> {{ event.created_at }} </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+{% endblock %}

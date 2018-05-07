@@ -1,6 +1,35 @@
 $(document).ready(function() {
   var page_length = 10;
 
+  $('#experiment-participants-tab1-table').DataTable({
+    "pageLength": page_length
+  });
+
+  $('#experiment-participants-tab2-table').DataTable({
+    "pageLength": page_length
+  });
+
+  $('#experiment-participants-table').DataTable({
+    "pageLength": page_length
+  });
+
+  $('#experiment-app-analytics-table').DataTable({
+    "pageLength": page_length
+  });
+
+  $('#experiment-protocols-table').DataTable({
+    "pageLength": page_length
+  });
+
+   $('#experiment-app-usage-table').DataTable({
+    "pageLength": page_length
+  });
+
+  $('#experiment-screen-events-table').DataTable({
+    "pageLength": page_length
+  });
+
+
   $('#enrolled-participants-table').DataTable({
     "pageLength": page_length
   });

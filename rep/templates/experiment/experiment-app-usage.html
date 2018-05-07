@@ -1,0 +1,71 @@
+
+
+
+{% include 'experiment/experiment-navbar.html' %}
+
+
+{% block contents %}
+    <div class="container">
+        <div class="page-header">
+            <h3> <span class="glyphicon glyphicon-equalizer"> </span> App usage </h3>
+        </div>
+
+        <div>
+            <p class="text-info"> Code: <strong> {{ experiment.code }} </strong>
+                &nbsp; &nbsp; | &nbsp; &nbsp;
+                Title: <strong> {{ experiment.title }} </strong>
+            </p>
+
+            <hr/>
+
+            <button
+                    type="button"
+                    class="btn btn-primary "
+                    onclick="window.location.href='/download/app-usage/experiment/{{  experiment.code  }}';">
+                <span class="glyphicon glyphicon-cloud-download"></span>
+                Download app usage data
+            </button>
+
+            <br/>
+            <br/>
+
+            {% if app_usage | length < 1 %}
+            <br/> <br/>
+            <hr/>
+            <br/>
+            <h4 class=" text-center text-info"> App usage data not available for this experiment. </h4>
+            <br/>
+            <hr/>
+            {% else %}
+                <table class="table table-hover" id="experiment-app-usage-table">
+                    <thead>
+                    <tr class="bg-primary">
+                        <th> NO </th>
+                        <th> WORKER ID </th>
+                        <th> APP ID </th>
+                        <th> TIME (seconds) </th>
+                        <th> TIME (millis) </th>
+                        <th> DATE </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for app in app_usage %}
+                        <tr>
+                            <td class="col-md-1">{{ loop.index }}</td>
+                            <td class="col-md-1"> {{ app.worker_id }} </td>
+                            <td class="col-md-1"> {{ app.app_id }}  </td>
+                            <td class="col-md-1"> {{ app.time_seconds }} </td>
+                            <td class="col-md-1"> {{ app.time_millis }} </td>
+                            <td class="col-md-1"> {{ app.created_at }} </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+{% endblock %}

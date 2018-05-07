@@ -517,7 +517,7 @@ def fetch_experiment_by_code(code):
 
 
 # TODO: track what adds '#' to emails from Google
-@app.route('/androidf_google_login_participant')
+@app.route('/android_google_login_participant')
 def android_google_login_participant():
     flow = OAuth2WebServerFlow(
         client_id=app.config['GOOGLE_CLIENT_ID'],
