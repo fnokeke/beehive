@@ -32,42 +32,42 @@
                             Dashboards <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu nav-link-text">
-                            <li><a href="/participants/experiment/{{ experiment.code }}" >
+                            <li><a href="/participants/experiment/{{ experiment.code }}">
                                 <span class="glyphicon glyphicon-user"></span>
                                 Participants
-                                </a>
+                            </a>
                             </li>
                             <li><a href="/app-analytics/experiment/{{ experiment.code }}">
                                 <span class="glyphicon glyphicon-phone"></span>
                                 App Analytics
-                                </a>
+                            </a>
                             </li>
                             {% if protocols|length > 0 %}
-                            <li><a href="/protocols/experiment/{{ experiment.code }}">
-                                <span class="glyphicon glyphicon-bell"></span>
-                                Protocols
+                                <li><a href="/protocols/experiment/{{ experiment.code }}">
+                                    <span class="glyphicon glyphicon-bell"></span>
+                                    Protocols
                                 </a>
-                            </li>
+                                </li>
                             {% endif %}
-                            {% if experiment and experiment.app_usage  %}
-                            <li><a href="/app-usage/experiment/{{ experiment.code }}">
-                                <span class="glyphicon glyphicon-equalizer"></span>
-                                App usage
+                            {% if experiment and experiment.app_usage %}
+                                <li><a href="/app-usage/experiment/{{ experiment.code }}">
+                                    <span class="glyphicon glyphicon-equalizer"></span>
+                                    App usage
                                 </a>
-                            </li>
+                                </li>
                             {% endif %}
                             {% if experiment and experiment.screen_events %}
-                            <li><a href="/screen-events/experiment/{{ experiment.code }}">
-                                <span class="glyphicon glyphicon-modal-window"></span>
-                                Screen events
+                                <li><a href="/screen-events/experiment/{{ experiment.code }}">
+                                    <span class="glyphicon glyphicon-modal-window"></span>
+                                    Screen events
                                 </a>
-                            </li>
+                                </li>
                             {% endif %}
                             <li role="separator" class="divider"></li>
                             <li><a href="#">
                                 <span class="glyphicon glyphicon-cloud-download"></span>
                                 Download All Data
-                                </a>
+                            </a>
                             </li>
                         </ul>
                     </li>
@@ -205,6 +205,57 @@
             <hr class="style5">
             <br>
             <div class="form-group row">
+                <label class="col-md-2 col-form-label">RescueTime</label>
+                <div class="col-xs-10">
+                    <input
+                            type="checkbox"
+                            {{ 'checked' if experiment and experiment.rescuetime else '' }}
+                            id="exp-rescuetime"
+                            data-toggle="toggle"
+                            data-on="Yes"
+                            data-off="No"
+                            data-onstyle="primary"
+                            data-offstyle="danger"
+                    >
+                </div>
+            </div>
+
+            <br>
+            <div class="form-group row">
+                <label class="col-xs-2 col-form-label">Google Calendar</label>
+                <div class="col-xs-10">
+                    <input
+                            type="checkbox"
+                            {{ 'checked' if experiment and experiment.calendar else '' }}
+                            id="exp-calendar"
+                            data-toggle="toggle"
+                            data-on="Yes"
+                            data-off="No"
+                            data-onstyle="primary"
+                            data-offstyle="danger"
+                    >
+                </div>
+            </div>
+            <br>
+
+            <div class="form-group row">
+                <label class="col-xs-2 col-form-label">Phone Notifications</label>
+                <div class="col-xs-10">
+                    <input
+                            type="checkbox"
+                            id="exp-phone-notif"
+                            {{ 'checked' if experiment and experiment.phone_notif else '' }}
+                            data-toggle="toggle"
+                            data-on="Yes"
+                            data-off="No"
+                            data-onstyle="primary"
+                            data-offstyle="danger"
+                    >
+                </div>
+            </div>
+            <br>
+
+            <div class="form-group row">
                 <label class="col-xs-2 col-form-label">Screen events</label>
                 <div class="col-xs-10">
                     <input
@@ -219,6 +270,7 @@
                     >
                 </div>
             </div>
+            <br>
 
             <div class="form-group row">
                 <label class="col-xs-2 col-form-label">App usage</label>
@@ -511,6 +563,7 @@
                             <div class="col-xs-10">
                                 <select class="form-control" id="protocol-method">
                                     <option value="none">None</option>
+                                    <option value="push_survey">Push survey</option>
                                     <option value="push_notification">Push notification</option>
                                     <option value="vibration_by_phone_usage">Vibrate based on phone usage</option>
                                     <option value="vibration_by_app_usage">Vibrate based on app usage</option>
@@ -518,6 +571,101 @@
                             </div>
                         </div>
 
+                        <div id="protocol-push-survey" class="hidden">
+
+                            <div class="form-group row">
+                                <label class="col-xs-2 col-form-label">Question/Type</label>
+                                <div class="col-xs-10">
+                                    {#                                  allows up to 30 pairs (each 50 chars) then 100 char space #}
+                                    <textarea maxlength="1600" name="protocol-survey-details"
+                                              id="protocol-survey-details"
+                                              class="form-control"
+                                              cols="20" rows="3" placeholder="e.g. Your age? $1$"></textarea>
+                                    <span>
+                                        <em class="small">One question/type pair per line. </em>
+                                        <br>
+                                        <em class="small">Question types: 1-number, 2-text, 3-multichoice.</em>
+
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-xs-2 col-form-label">Notification type</label>
+                                <div class="col-xs-5">
+                                    <select class="form-control" id="protocol-survey-options-type">
+                                        <option value="fixed">Fixed time</option>
+                                        <option value="user_window">User window</option>
+                                        <option value="sleep_wake">Sleep/Wake</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="div-notif-fixed">
+                                <div class="form-group row">
+                                    <label class="col-xs-2 col-form-label">Time</label>
+                                    <div class="col-xs-5">
+                                        <input class="form-control" type="time" name="protocol-survey-fixed-exact-time"
+                                               value="12:00:00"
+                                               id="protocol-survey-fixed-exact-time">
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div id="div-survey-user-window" class="hidden">
+                                <div class="form-group row">
+                                    <label class="col-xs-2 col-form-label">Time</label>
+                                    <div class="col-xs-5">
+                                        <select class="form-control" id="survey-user-time-options">
+                                            <option value="1_hour">1 hour</option>
+                                            <option value="2_hour">2 hours</option>
+                                            <option value="3_hour">3 hours</option>
+                                            <option value="4_hour">4 hours</option>
+                                            <option value="5_hour">5 hours</option>
+                                            <option value="6_hour">6 hours</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="div-survey-sleep-awake" class="hidden">
+                                <div class="form-group row">
+                                    <label class="col-xs-2 col-form-label">Time</label>
+                                    <div class="col-xs-5">
+                                        <select class="form-control" id="survey-sleep-time-options">
+                                            <option value="1_hour">1 hour</option>
+                                            <option value="2_hour">2 hours</option>
+                                            <option value="3_hour">3 hours</option>
+                                            <option value="4_hour">4 hours</option>
+                                            <option value="5_hour">5 hours</option>
+                                            <option value="6_hour">6 hours</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-xs-2 col-form-label">Sleep/Awake</label>
+                                    <div class="col-xs-5">
+                                        <select class="form-control" id="protocol-survey-sleep-awake">
+                                            <option value="before_sleep">Before sleep</option>
+                                            <option value="after_wakeup">After waking-up</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-xs-2 col-form-label">Half notify</label>
+                                <div class="col-xs-10">
+                                    <div class="material-switch">
+                                        <input id="probable-survey-half-notify" name="someSwitchOption001"
+                                               type="checkbox"/>
+                                        <label for="probable-survey-half-notify" class="label-info"> </label>
+                                        &nbsp; &nbsp; (push survey only 50% of the time)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <div id="protocol-push-notif" class="hidden">
 

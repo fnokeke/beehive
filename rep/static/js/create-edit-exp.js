@@ -212,21 +212,31 @@ $('#protocol-method').on('change', function () {
     console.log('value:', $(this).val());
     if ($(this).val() === "none") {
         $("#protocol-push-notif").addClass("hidden");
+        $("#protocol-push-survey").addClass("hidden");
         $("#protocol-vibration-phone-usage").addClass("hidden");
         $("#protocol-vibration-app-usage").addClass("hidden");
     }
     else if ($(this).val() === "push_notification") {
         $("#protocol-push-notif").removeClass("hidden");
+        $("#protocol-push-survey").addClass("hidden");
+        $("#protocol-vibration-phone-usage").addClass("hidden");
+        $("#protocol-vibration-app-usage").addClass("hidden");
+    }
+    else if ($(this).val() === "push_survey") {
+        $("#protocol-push-survey").removeClass("hidden");
+        $("#protocol-push-notif").addClass("hidden");
         $("#protocol-vibration-phone-usage").addClass("hidden");
         $("#protocol-vibration-app-usage").addClass("hidden");
     }
     else if ($(this).val() === "vibration_by_phone_usage") {
         $("#protocol-vibration-phone-usage").removeClass("hidden");
+        $("#protocol-push-survey").addClass("hidden");
         $("#protocol-push-notif").addClass("hidden");
         $("#protocol-vibration-app-usage").addClass("hidden");
     }
     else if ($(this).val() === "vibration_by_app_usage") {
         $("#protocol-vibration-app-usage").removeClass("hidden");
+        $("#protocol-push-survey").addClass("hidden");
         $("#protocol-push-notif").addClass("hidden");
         $("#protocol-vibration-phone-usage").addClass("hidden");
     }
