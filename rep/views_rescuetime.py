@@ -21,7 +21,6 @@ from secret_keys import SENDGRID_API_KEY
 
 MISSING_DAYS_LIMIT = 3
 MISSING_PARTCIPANTS_LIMIT = 5
-RESCUETIME_EMAIL_LIST = ["nk595@cornell.edu", "fnokeke@gmail.com"]
 
 @app.route('/login-rescuetime-user')
 def login_rescuetime_user():
