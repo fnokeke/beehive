@@ -5,7 +5,7 @@ from flask import url_for, flash, send_file, make_response
 from flask_login import current_user, login_required
 from rep.models import Experiment_v2, Enrollment, Participant, ProtocolPushNotif
 from rep.models import InAppAnalytics, TP_FgAppLog, TP_ScreenLog, RescuetimeUser
-
+from io import BytesIO
 from datetime import datetime
 
 import time, os
@@ -336,7 +336,7 @@ def experiment_all_data_download(code):
 
     directory = "./temp/"
     file_name =  "/experiment-" + str(code) +"-data"
-    zip_file_name = directory + file_name + ".zip"
+    zip_file_name = "temp/" + file_name + ".zip"
     data_files_path = directory + "/experiment-" + str(code) +"-data/"
     file_path = directory + "/experiment-" + str(code) +"-data/" + "logs.txt"
 
@@ -362,17 +362,41 @@ def experiment_all_data_download(code):
 
     zipped.close()
 
-    download_name = code + "-app-usage.csv"
+    # memory_file = BytesIO()
+    # with zipfile.ZipFile(memory_file, 'w') as zf:
+    #     for dirname, subdirs, files in os.walk(data_files_path):
+    #         for filename in files:
+    #             print "Zipping file: ", filename
+    #             data = zipfile.ZipInfo(filename)
+    #             data.date_time = time.localtime(time.time())[:6]
+    #             absname = os.path.abspath(os.path.join(dirname, filename))
+    #             arcname = absname[len(abs_path) + 1:]
+    #             data.compress_type = zipfile.ZIP_DEFLATED
+    #             zf.writestr(data, arcname)
+    # memory_file.seek(0)
+    # return send_file(memory_file, attachment_filename='capsule.zip', as_attachment=True)
+
+    download_name =  "experiment-" + str(code) +"-data.zip"
+
+    # try:
+    #     response = make_response(data_files_path)
+    #     cd = 'attachment; filename=' + download_name
+    #     response.headers['Content-Disposition'] = cd
+    #     response.mimetype = 'application/zip'
+    #     return response
 
     try:
-        response = make_response(csv_data)
-        cd = 'attachment; filename=beehive-' + download_name
-        response.headers['Content-Disposition'] = cd
-        response.mimetype = 'text/csv'
-        return response
+        # return Response(data_files_path,
+        #                 mimetype='application/zip',
+        #                 headers={'Content-Disposition': 'attachment;filename=zones.zip'})
+
+        dir_path = os.path.dirname(os.path.realpath(directory))
+        absname = os.path.abspath(os.path.join(dir_path, zip_file_name))
+        print  "dir_path:", absname
+        return send_file(absname, attachment_filename='nish-capsule.zip', as_attachment=True)
 
     except Exception as e:
-        return redirect(url_for('experiment_app_usage', code=code))
+        return redirect(url_for('experiments'))
 
 
 # Security: check permission before download
