@@ -318,6 +318,9 @@ def experiment_screen_event_download(code):
 # Endpoint to download protocols for an experiment
 @app.route('/download/all-data/experiment/<code>')
 def experiment_all_data_download(code):
+    if not user_is_owner_of_experiment(code):
+        return render_template('403-forbidden.html'), 403
+
     app_usage = TP_FgAppLog.query.filter_by(code=code).all()
     csv_data = "NO," + "WORKER ID," + "APP ID," + "TIME (seconds)," + "TIME (millis)," + "DATE"
 
@@ -370,3 +373,16 @@ def experiment_all_data_download(code):
 
     except Exception as e:
         return redirect(url_for('experiment_app_usage', code=code))
+
+
+# Security: check permission before download
+def user_is_owner_of_experiment(code):
+    experiment_owner = Experiment_v2.query.filter_by(owner=current_user.email, code=code).all()
+    print "experiment_owner:", experiment_owner
+    print "len(experiment_owner) = ", len(experiment_owner)
+
+    if len(experiment_owner) <= 0:
+        return False
+    else:
+        return True
+
