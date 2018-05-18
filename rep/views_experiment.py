@@ -8,9 +8,11 @@ from rep.models import InAppAnalytics, TP_FgAppLog, TP_ScreenLog, RescuetimeUser
 
 from datetime import datetime
 
+import time, os
 import requests
 import json
 import secret_keys
+import zipfile
 
 @app.route('/experiments/create')
 def create_experiment():
@@ -309,3 +311,62 @@ def experiment_screen_event_download(code):
 
     except Exception as e:
         return redirect(url_for('experiment_screen_events', code=code))
+
+
+
+
+# Endpoint to download protocols for an experiment
+@app.route('/download/all-data/experiment/<code>')
+def experiment_all_data_download(code):
+    app_usage = TP_FgAppLog.query.filter_by(code=code).all()
+    csv_data = "NO," + "WORKER ID," + "APP ID," + "TIME (seconds)," + "TIME (millis)," + "DATE"
+
+    count = 1
+    for app in app_usage:
+        # Convert to CSV format
+        csv_data = csv_data + "\n"
+        row = str(count) +  "," + str(app.worker_id) + "," + str(app.app_id) + "," + str(app.time_seconds) \
+              + "," + str(app.time_millis) + "," + str(app.created_at)
+
+        csv_data = csv_data + row
+        count = count + 1
+
+    directory = "./temp/"
+    file_name =  "/experiment-" + str(code) +"-data"
+    zip_file_name = directory + file_name + ".zip"
+    data_files_path = directory + "/experiment-" + str(code) +"-data/"
+    file_path = directory + "/experiment-" + str(code) +"-data/" + "logs.txt"
+
+    if not os.path.exists(data_files_path):
+        os.makedirs(data_files_path)
+
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    file = open(file_path, "w+");
+    file.write(str(csv_data))
+    file.close()
+
+    abs_path = os.path.abspath(directory)
+    zipped = zipfile.ZipFile(zip_file_name, "w", zipfile.ZIP_DEFLATED)
+    for dirname, subdirs, files in os.walk(data_files_path):
+        for filename in files:
+            absname = os.path.abspath(os.path.join(dirname, filename))
+            arcname = absname[len(abs_path) + 1:]
+            print 'zipping %s as %s' % (os.path.join(dirname, filename),
+                                        arcname)
+            zipped.write(absname, arcname)
+
+    zipped.close()
+
+    download_name = code + "-app-usage.csv"
+
+    try:
+        response = make_response(csv_data)
+        cd = 'attachment; filename=beehive-' + download_name
+        response.headers['Content-Disposition'] = cd
+        response.mimetype = 'text/csv'
+        return response
+
+    except Exception as e:
+        return redirect(url_for('experiment_app_usage', code=code))
