@@ -12,7 +12,7 @@ import time, os
 import requests
 import json
 import secret_keys
-import zipfile
+import zipfile, shutil
 
 @app.route('/experiments/create')
 def create_experiment():
@@ -334,17 +334,24 @@ def experiment_all_data_download(code):
         csv_data = csv_data + row
         count = count + 1
 
-    directory = "./temp/"
-    file_name =  "/experiment-" + str(code) +"-data"
+    directory = "./temp"
+    file_name =  "experiment-" + str(code) +"-data"
     zip_file_name = "temp/" + file_name + ".zip"
     data_files_path = directory + "/experiment-" + str(code) +"-data/"
+
+    # clean directory
+    try:
+        dir_path = os.path.dirname(os.path.realpath(directory))
+        absname = os.path.abspath(os.path.join(dir_path, "temp"))
+        shutil.rmtree(absname)
+    except OSError:
+        pass
+
+    # Generate all data files
     file_path = directory + "/experiment-" + str(code) +"-data/" + "logs.txt"
 
     if not os.path.exists(data_files_path):
         os.makedirs(data_files_path)
-
-    if not os.path.exists(directory):
-        os.makedirs(directory)
 
     file = open(file_path, "w+");
     file.write(str(csv_data))
@@ -362,6 +369,7 @@ def experiment_all_data_download(code):
 
     zipped.close()
 
+    # In Memory file compression (not used)
     # memory_file = BytesIO()
     # with zipfile.ZipFile(memory_file, 'w') as zf:
     #     for dirname, subdirs, files in os.walk(data_files_path):
@@ -376,27 +384,17 @@ def experiment_all_data_download(code):
     # memory_file.seek(0)
     # return send_file(memory_file, attachment_filename='capsule.zip', as_attachment=True)
 
-    download_name =  "experiment-" + str(code) +"-data.zip"
-
-    # try:
-    #     response = make_response(data_files_path)
-    #     cd = 'attachment; filename=' + download_name
-    #     response.headers['Content-Disposition'] = cd
-    #     response.mimetype = 'application/zip'
-    #     return response
+    download_name = "experiment-" + str(code) +"-data.zip"
 
     try:
-        # return Response(data_files_path,
-        #                 mimetype='application/zip',
-        #                 headers={'Content-Disposition': 'attachment;filename=zones.zip'})
-
         dir_path = os.path.dirname(os.path.realpath(directory))
         absname = os.path.abspath(os.path.join(dir_path, zip_file_name))
         print  "dir_path:", absname
-        return send_file(absname, attachment_filename='nish-capsule.zip', as_attachment=True)
+        return send_file(absname, attachment_filename=download_name, as_attachment=True)
 
     except Exception as e:
         return redirect(url_for('experiments'))
+
 
 
 # Security: check permission before download
