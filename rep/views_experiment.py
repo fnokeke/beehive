@@ -14,6 +14,8 @@ import json
 import secret_keys
 import zipfile, shutil
 
+TEMP_DIR = "./temp"
+
 @app.route('/experiments/create')
 def create_experiment():
     ctx = {
@@ -321,43 +323,47 @@ def experiment_all_data_download(code):
     if not user_is_owner_of_experiment(code):
         return render_template('403-forbidden.html'), 403
 
-    app_usage = TP_FgAppLog.query.filter_by(code=code).all()
-    csv_data = "NO," + "WORKER ID," + "APP ID," + "TIME (seconds)," + "TIME (millis)," + "DATE"
-
-    count = 1
-    for app in app_usage:
-        # Convert to CSV format
-        csv_data = csv_data + "\n"
-        row = str(count) +  "," + str(app.worker_id) + "," + str(app.app_id) + "," + str(app.time_seconds) \
-              + "," + str(app.time_millis) + "," + str(app.created_at)
-
-        csv_data = csv_data + row
-        count = count + 1
-
-    directory = "./temp"
     file_name =  "experiment-" + str(code) +"-data"
     zip_file_name = "temp/" + file_name + ".zip"
-    data_files_path = directory + "/experiment-" + str(code) +"-data/"
+    data_files_path = TEMP_DIR + "/experiment-" + str(code) +"-data/"
 
     # clean directory
     try:
-        dir_path = os.path.dirname(os.path.realpath(directory))
+        dir_path = os.path.dirname(os.path.realpath(TEMP_DIR))
         absname = os.path.abspath(os.path.join(dir_path, "temp"))
         shutil.rmtree(absname)
     except OSError:
         pass
 
-    # Generate all data files
-    file_path = directory + "/experiment-" + str(code) +"-data/" + "logs.txt"
-
+    # Generate temp dir
     if not os.path.exists(data_files_path):
         os.makedirs(data_files_path)
 
-    file = open(file_path, "w+");
-    file.write(str(csv_data))
-    file.close()
+    ####################################################################################################################
+    # Generate data files
+    ####################################################################################################################
+    # Generate participants file
+    generate_participants_csv(code)
 
-    abs_path = os.path.abspath(directory)
+    # Generate RescueTime participants file
+    generate_rescuetime_participants_csv(code)
+
+    # Generate app-analytics participants file
+    generate_app_analytics_csv(code)
+
+    # Generate protocols file
+    generate_protocols_csv(code)
+
+    # Generate app-usage participants file
+    generate_app_usage_csv(code)
+
+    # Generate screen events participants file
+    generate_screen_events_csv(code)
+
+    ####################################################################################################################
+    # compress data files
+    ####################################################################################################################
+    abs_path = os.path.abspath(TEMP_DIR)
     zipped = zipfile.ZipFile(zip_file_name, "w", zipfile.ZIP_DEFLATED)
     for dirname, subdirs, files in os.walk(data_files_path):
         for filename in files:
@@ -387,7 +393,7 @@ def experiment_all_data_download(code):
     download_name = "experiment-" + str(code) +"-data.zip"
 
     try:
-        dir_path = os.path.dirname(os.path.realpath(directory))
+        dir_path = os.path.dirname(os.path.realpath(TEMP_DIR))
         absname = os.path.abspath(os.path.join(dir_path, zip_file_name))
         print  "dir_path:", absname
         return send_file(absname, attachment_filename=download_name, as_attachment=True)
@@ -395,6 +401,136 @@ def experiment_all_data_download(code):
     except Exception as e:
         return redirect(url_for('experiments'))
 
+
+def generate_participants_csv(code):
+    csv_file_path = TEMP_DIR + "/experiment-" + str(code) +"-data/" + code + "-participants.csv"
+    participants = Participant.query.join(Enrollment, Participant.email == Enrollment.participant_id) \
+        .add_columns(Participant.email, Participant.firstname, Participant.lastname, Participant.gender,
+                     Participant.created_at) \
+        .filter(Enrollment.exp_code == code).all()
+    csv_data = "NO," + "EMAIL," + "FIRSTNAME," + "LASTNAME," + "GENDER," + "ENROLLMENT DATE"
+    count = 1
+    for participant in participants:
+        # Convert to CSV format
+        csv_data = csv_data + "\n"
+        row = str(count) + "," + str(participant.email) + "," + str(participant.firstname) + "," + \
+              str(participant.lastname) + "," + str(participant.gender) + "," + str(participant.created_at)
+        csv_data = csv_data + row
+        count = count + 1
+    file = open(csv_file_path, "w+");
+    file.write(str(csv_data))
+    file.close()
+
+
+def generate_rescuetime_participants_csv(code):
+    csv_file_path = TEMP_DIR + "/experiment-" + str(code) + "-data/" + code + "-rescuetime-participants.csv"
+    participants = RescuetimeUser.query.filter_by(code=code).all()
+    csv_data = "NO," + "EMAIL," + "FIRSTNAME," + "LASTNAME," + "GENDER," + "ENROLLMENT DATE"
+
+    if len(participants) <= 0:
+        return
+
+    count = 1
+    for participant in participants:
+        # Convert to CSV format
+        csv_data = csv_data + "\n"
+        row = str(count) + "," + str(participant.email) + "," + str(participant.firstname) + "," + \
+                str(participant.lastname) + "," + str(participant.gender) + "," + str(participant.created_at)
+        csv_data = csv_data + row
+        count = count + 1
+    file = open(csv_file_path, "w+");
+    file.write(str(csv_data))
+    file.close()
+
+
+def generate_app_analytics_csv(code):
+    csv_file_path = TEMP_DIR + "/experiment-" + str(code) + "-data/" + code + "-app-analytics.csv"
+    events = InAppAnalytics.query.filter_by(code=code).all()
+    csv_data = "NO," + "EMAIL," + "EVENT TIME (millis)," + "EVENT DESCRIPTION,"  + "EVENT DATE"
+
+    if len(events) <= 0:
+        return
+
+    count = 1
+    for event in events:
+        # Convert to CSV format
+        csv_data = csv_data + "\n"
+        row = str(count) +  "," + str(event.email) + "," + str(event.event_time_millis) + "," + \
+              str(event.event_desc) + "," + str(event.created_at)
+        csv_data = csv_data + row
+        count = count + 1
+    file = open(csv_file_path, "w+");
+    file.write(str(csv_data))
+    file.close()
+
+
+def generate_protocols_csv(code):
+    csv_file_path = TEMP_DIR + "/experiment-" + str(code) + "-data/" + code + "-protocols.csv"
+    protocols = ProtocolPushNotif.query.filter_by(exp_code=code).all()
+    csv_data = "NO," + "LABEL," + "START DATE," + "END DATE," + "FREQUENCY," + "METHOD," + "DETAILS," \
+               + "APP ID," + "TYPE," + "TIME," + "HALF NOTIFY,"
+
+    if len(protocols) <= 0:
+        return
+
+    count = 1
+    for protocol in protocols:
+        # Convert to CSV format
+        csv_data = csv_data + "\n"
+        row = str(count) + "," + str(protocol.label) + "," + str(protocol.start_date) + "," + str(protocol.end_date) \
+              + "," + str(protocol.frequency) + "," + str(protocol.method) + "," + str(protocol.notif_details) \
+              + "," + str(protocol.notif_appid) + "," + str(protocol.notif_type) + "," + str(protocol.notif_time) \
+              + "," + str(protocol.probable_half_notify)
+
+        csv_data = csv_data + row
+        count = count + 1
+    file = open(csv_file_path, "w+");
+    file.write(str(csv_data))
+    file.close()
+
+
+def generate_app_usage_csv(code):
+    csv_file_path = TEMP_DIR + "/experiment-" + str(code) + "-data/" + code + "-app-usage.csv"
+    app_usage = TP_FgAppLog.query.filter_by(code=code).all()
+    csv_data = "NO," + "WORKER ID," + "APP ID," + "TIME (seconds)," + "TIME (millis)," + "DATE"
+
+    if len(app_usage) <=0:
+        return
+
+    count = 1
+    for app in app_usage:
+        # Convert to CSV format
+        csv_data = csv_data + "\n"
+        row = str(count) +  "," + str(app.worker_id) + "," + str(app.app_id) + "," + str(app.time_seconds) \
+              + "," + str(app.time_millis) + "," + str(app.created_at)
+
+        csv_data = csv_data + row
+        count = count + 1
+    file = open(csv_file_path, "w+");
+    file.write(str(csv_data))
+    file.close()
+
+
+def generate_screen_events_csv(code):
+    csv_file_path = TEMP_DIR + "/experiment-" + str(code) + "-data/" + code + "-screen-events.csv"
+    screen_events = TP_ScreenLog.query.filter_by(code=code).all()
+    csv_data = "NO," + "WORKER ID," + "EVENT," + "TIME (millis)," + "DATE"
+
+    if len(screen_events) <=0:
+        return
+
+    count = 1
+    for event in screen_events:
+        # Convert to CSV format
+        csv_data = csv_data + "\n"
+        row = str(count) +  "," + str(event.worker_id) + "," + str(event.event) + "," \
+              + str(event.time_millis) + "," + str(event.created_at)
+
+        csv_data = csv_data + row
+        count = count + 1
+    file = open(csv_file_path, "w+");
+    file.write(str(csv_data))
+    file.close()
 
 
 # Security: check permission before download
