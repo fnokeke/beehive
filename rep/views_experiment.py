@@ -92,7 +92,7 @@ def experiment_participants(code):
 def experiment_participants_download(code):
     if not user_is_owner_of_experiment(code):
         return render_template('403-forbidden.html'), 403
-    
+
     participants = Participant.query.join(Enrollment, Participant.email == Enrollment.participant_id)\
         .add_columns(Participant.email, Participant.firstname, Participant.lastname, Participant.gender, Participant.created_at)\
         .filter(Enrollment.exp_code == code).all()
@@ -552,12 +552,16 @@ def generate_screen_events_csv(code):
 
 # Security: check permission before download
 def user_is_owner_of_experiment(code):
-    experiment_owner = Experiment_v2.query.filter_by(owner=current_user.email, code=code).all()
-    print "experiment_owner:", experiment_owner
-    print "len(experiment_owner) = ", len(experiment_owner)
+    try:
+        experiment_owner = Experiment_v2.query.filter_by(owner=current_user.email, code=code).all()
+        print "experiment_owner:", experiment_owner
+        print "len(experiment_owner) = ", len(experiment_owner)
 
-    if len(experiment_owner) <= 0:
+        if len(experiment_owner) <= 0:
+            return False
+        else:
+            return True
+
+    except Exception as e:
+        print "user_is_owner_of_experiment: Security exception for - ",current_user.email
         return False
-    else:
-        return True
-
