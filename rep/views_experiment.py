@@ -90,6 +90,9 @@ def experiment_participants(code):
 # Endpoint to download participants in an experiment
 @app.route('/download/participants/experiment/<code>')
 def experiment_participants_download(code):
+    if not user_is_owner_of_experiment(code):
+        return render_template('403-forbidden.html'), 403
+    
     participants = Participant.query.join(Enrollment, Participant.email == Enrollment.participant_id)\
         .add_columns(Participant.email, Participant.firstname, Participant.lastname, Participant.gender, Participant.created_at)\
         .filter(Enrollment.exp_code == code).all()
@@ -119,6 +122,9 @@ def experiment_participants_download(code):
 # Endpoint to download rescuetime participants in an experiment
 @app.route('/download/rescuetime-participants/experiment/<code>')
 def experiment_rescuetime_participants_download(code):
+    if not user_is_owner_of_experiment(code):
+        return render_template('403-forbidden.html'), 403
+
     participants = RescuetimeUser.query.filter_by(code=code).all()
     csv_data = "NO," + "EMAIL," + "FIRSTNAME," + "LASTNAME," + "GENDER," + "ENROLLMENT DATE"
 
@@ -162,6 +168,8 @@ def experiment_app_analytics(code):
 # Endpoint to download app analytics for an experiment
 @app.route('/download/app-analytics/experiment/<code>')
 def experiment_app_analytics_download(code):
+    if not user_is_owner_of_experiment(code):
+        return render_template('403-forbidden.html'), 403
     events = InAppAnalytics.query.filter_by(code=code).all()
     csv_data = "NO," + "EMAIL," + "EVENT TIME (millis)," + "EVENT DESCRIPTION,"  + "EVENT DATE"
 
@@ -202,6 +210,9 @@ def experiment_protocols(code):
 # Endpoint to download protocols for an experiment
 @app.route('/download/protocols/experiment/<code>')
 def experiment_protocols_download(code):
+    if not user_is_owner_of_experiment(code):
+        return render_template('403-forbidden.html'), 403
+
     protocols = ProtocolPushNotif.query.filter_by(exp_code=code).all()
     csv_data = "NO," + "LABEL," + "START DATE," + "END DATE," + "FREQUENCY," + "METHOD," + "DETAILS," \
                + "APP ID," + "TYPE," + "TIME," + "HALF NOTIFY,"
@@ -248,6 +259,9 @@ def experiment_app_usage(code):
 # Endpoint to download protocols for an experiment
 @app.route('/download/app-usage/experiment/<code>')
 def experiment_app_usage_download(code):
+    if not user_is_owner_of_experiment(code):
+        return render_template('403-forbidden.html'), 403
+
     app_usage = TP_FgAppLog.query.filter_by(code=code).all()
     csv_data = "NO," + "WORKER ID," + "APP ID," + "TIME (seconds)," + "TIME (millis)," + "DATE"
 
@@ -290,6 +304,9 @@ def experiment_screen_events(code):
 # Endpoint to download protocols for an experiment
 @app.route('/download/screen-events/experiment/<code>')
 def experiment_screen_event_download(code):
+    if not user_is_owner_of_experiment(code):
+        return render_template('403-forbidden.html'), 403
+
     screen_event = TP_ScreenLog.query.filter_by(code=code).all()
     csv_data = "NO," + "WORKER ID," + "EVENT," + "TIME (millis)," + "DATE"
 
