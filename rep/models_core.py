@@ -1020,6 +1020,7 @@ class NewParticipant(db.Model):
         user = cls.query.get(email)
         return user
 
+
 ########################################################################################################################
 # Gcal user
 ########################################################################################################################
@@ -1031,9 +1032,9 @@ class GcalUser(db.Model):
     gender = db.Column(db.String(10))
     picture = db.Column(db.String(120))
     google_credentials = db.Column(db.String(2500), unique=True)
-    # rescuetime_access_token = db.Column(db.String(120))
     connected = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
 
     def __init__(self, profile):
         self.email = profile.get('email', '')
@@ -1158,6 +1159,25 @@ class GcalUser(db.Model):
 
         user = cls.query.get(email)
         return user
+
+    @classmethod
+    def update_code(cls, profile):
+        response = 'Code successfully submitted.'
+
+        is_valid = Experiment_v2.query.filter_by(code=profile['code']).first() is not None
+        if not is_valid:
+            response = 'Invalid code. Try again.'
+
+        user = cls.query.get(profile['email'])
+        if not user:
+            response = 'GCal user does not exist. Sign out and try again.'
+
+        if is_valid and user:
+            user.code = profile['code']
+            db.session.commit()
+
+        return response
+
 
 
 ########################################################################################################################

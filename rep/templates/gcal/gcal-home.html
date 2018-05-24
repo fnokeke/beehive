@@ -5,12 +5,12 @@
 {% endblock %}
 
 {% block brand_name %}
-Rescuetime Study
+GCal + Beehive
 {% endblock %}
 
 {% block user_type %}
 <em>
-  rtime_user
+  gcal_user
 </em>
 
 {% endblock %}
@@ -28,8 +28,6 @@ Rescuetime Study
     <div>
 
       {% if not gcal_user.connected %}
-        <!--<button type="submit" id="auth-rt-btn" class="btn btn-primary btn-lg btn-block">Authorize Google Calender-->
-        <!--</button><br>-->
         <span class='text-danger'>
           <em>
             Google calender is not connected to Beehive.
@@ -37,6 +35,25 @@ Rescuetime Study
         </span>
 
       {% else %}
+          <label for="gcal-code">Enter your experiment code:</label>
+          <input
+                  type="text"
+                  id="id-gcal-code"
+                  class="form-control"
+                  value = "{{ gcal_user.code or ''}}"
+                  placeholder="enter code here">
+          <br>
+          <button type="submit" id="btn-save-gcal-code" class="btn btn-primary">Submit</button>
+          <br>
+          <input
+                  style="display: none"
+                  type="text"
+                  id="email_from_hidden_element"
+                  value="{{ current_user.email }}"/>
+          <div> <span id="gcal-code-status"></span> <div>
+          <br>
+          <br>
+
         <span class='text-success'>
           <em>
             Google calender is connected to Beehive.

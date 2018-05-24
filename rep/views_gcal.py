@@ -8,7 +8,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 
 from apiclient import discovery
 from datetime import date, datetime, timedelta
-from rep.models import  Researcher, GcalUser
+from rep.models import  Researcher, GcalUser, Experiment_v2
 
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client import client
@@ -204,3 +204,11 @@ def get_calender_events(service):
         start = event['start'].get('dateTime', event['start'].get('date'))
         print 'get_calender_events:', start, event['summary']
     return events
+
+
+@app.route("/submit/gcalcode", methods=['POST'])
+def submit_gcal_code():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    response = GcalUser.update_code(data)
+    result = {'is_valid': "success" in response, 'response': response, 'code': data['code']}
+    return json.dumps(result)
