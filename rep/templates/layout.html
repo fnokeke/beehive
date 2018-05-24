@@ -22,7 +22,7 @@
 
                     {% block navbar_links %}
                         <ul class="nav navbar-nav nav-link-text">
-                            {% set links = ['experiments', 'settings'] if user_type == 'researcher' else ['home', 'settings'] %}
+                            {% set links = ['experiments', 'settings'] if user_type == 'researcher' %}
                             {% for ni in links %}
                                 <li {% if request.path==url_for(ni) %} class="active" {% endif %}>
                                     <a href="{{ url_for(ni) }}">
