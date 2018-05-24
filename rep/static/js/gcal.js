@@ -13,7 +13,7 @@ $('#download-gcal-btn').click(function () {
 });
 
 $('#btn-save-gcal-code').click(function () {
-    var email = $('#email_from_hidden_element').val();
+    var email = $('#gcal_email_from_hidden_element').val();
     var gcalCode = $('#id-gcal-code').val();
     var status = '#gcal-code-status';
 

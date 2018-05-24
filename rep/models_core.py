@@ -1301,6 +1301,24 @@ class RescuetimeUser(db.Model):
         user = cls.query.get(email)
         return user
 
+    @classmethod
+    def update_code(cls, profile):
+        response = 'Code successfully submitted.'
+
+        is_valid = Experiment_v2.query.filter_by(code=profile['code']).first() is not None
+        if not is_valid:
+            response = 'Invalid code. Try again.'
+
+        user = cls.query.get(profile['email'])
+        if not user:
+            response = 'RescueTime user does not exist. Sign out and try again.'
+
+        if is_valid and user:
+            user.code = profile['code']
+            db.session.commit()
+
+        return response
+
 
 class RescuetimeData(db.Model):
     # Store RescueTime data

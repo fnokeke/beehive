@@ -35,7 +35,11 @@ GCal + Beehive
         </span>
 
       {% else %}
-          <label for="gcal-code">Enter your experiment code:</label>
+          {% if gcal_user.code %}
+              <label for="gcal-code">Update your experiment code:</label>
+          {% else %}
+              <label for="gcal-code">You need to enter your experiment code:</label>
+          {%  endif %}
           <input
                   type="text"
                   id="id-gcal-code"
@@ -48,7 +52,7 @@ GCal + Beehive
           <input
                   style="display: none"
                   type="text"
-                  id="email_from_hidden_element"
+                  id="gcal_email_from_hidden_element"
                   value="{{ current_user.email }}"/>
           <div> <span id="gcal-code-status"></span> <div>
           <br>

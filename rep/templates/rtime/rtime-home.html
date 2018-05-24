@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block brand_name %}
-Rescuetime Study
+Rescuetime + Beehive
 {% endblock %}
 
 {% block user_type %}
@@ -32,6 +32,30 @@ Rescuetime Study
         </button><br>
 
       {% else %}
+
+          {% if rtime_user.code %}
+              <label for="rtime-code">Update your experiment code:</label>
+           {% else %}
+              <label for="rtime-code">You need to enter your experiment code:</label>
+           {%  endif %}
+          <input
+                  type="text"
+                  id="id-rtime-code"
+                  class="form-control"
+                  value = "{{ rtime_user.code or ''}}"
+                  placeholder="enter code here">
+          <br>
+          <button type="submit" id="btn-save-rtime-code" class="btn btn-primary">Submit</button>
+          <br>
+          <input
+                  style="display: none"
+                  type="text"
+                  id="rtime_email_from_hidden_element"
+                  value="{{ current_user.email }}"/>
+          <div> <span id="rtime-code-status"></span> <div>
+          <br>
+          <br>
+
         <span class='text-primary'>
           <em>
             Rescuetime is connected.
@@ -39,12 +63,6 @@ Rescuetime Study
         </span>
 
       {% endif %}
-
-{#            {% if user.rescuetime_access_token %}#}
-{#                <span class="text-primary"> &#10004; </span>#}
-{#            {% else %}#}
-{#                <span class="text-danger"> &#x2717; </span>#}
-{#            {% endif %}#}
 
     </div>
 

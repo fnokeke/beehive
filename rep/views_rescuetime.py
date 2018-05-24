@@ -367,6 +367,11 @@ def sendgrid_send_data_missing_email(data, recipient):
     mail = Mail(from_email, subject, to_email, content)
     response = sg.client.mail.send.post(request_body=mail.get())
     print "store_rescuetime_data: sendgrid email response code,",response.status_code
-    # print response.body
-    # print response.headers
 
+
+@app.route("/submit/rtime-code", methods=['POST'])
+def submit_rtime_code():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    response = RescuetimeUser.update_code(data)
+    result = {'is_valid': "success" in response, 'response': response, 'code': data['code']}
+    return json.dumps(result)
