@@ -511,6 +511,7 @@
                     </div>
 
                     <div class="modal-body">
+
                         <div class="form-group row">
                             <label class="col-xs-2 col-form-label">Label</label>
                             <div class="col-xs-10">
@@ -563,12 +564,17 @@
                             <div class="col-xs-10">
                                 <select class="form-control" id="protocol-method">
                                     <option value="none">None</option>
+                                    <option value="pam">PAM</option>
                                     <option value="push_survey">Push survey</option>
                                     <option value="push_notification">Push notification</option>
                                     <option value="vibration_by_phone_usage">Vibrate based on phone usage</option>
                                     <option value="vibration_by_app_usage">Vibrate based on app usage</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <div id="protocol-pam" class="hidden">
+                            <input type="text" id="protocol-pam-details" value="pam" hidden />
                         </div>
 
                         <div id="protocol-push-survey" class="hidden">
@@ -589,82 +595,6 @@
                                     </span>
                                 </div>
                             </div>
-
-                            <div class="form-group row">
-                                <label class="col-xs-2 col-form-label">Notification type</label>
-                                <div class="col-xs-5">
-                                    <select class="form-control" id="protocol-survey-options-type">
-                                        <option value="fixed">Fixed time</option>
-                                        <option value="user_window">User window</option>
-                                        <option value="sleep_wake">Sleep/Wake</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div id="div-notif-fixed">
-                                <div class="form-group row">
-                                    <label class="col-xs-2 col-form-label">Time</label>
-                                    <div class="col-xs-5">
-                                        <input class="form-control" type="time" name="protocol-survey-fixed-exact-time"
-                                               value="12:00:00"
-                                               id="protocol-survey-fixed-exact-time">
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <div id="div-survey-user-window" class="hidden">
-                                <div class="form-group row">
-                                    <label class="col-xs-2 col-form-label">Time</label>
-                                    <div class="col-xs-5">
-                                        <select class="form-control" id="survey-user-time-options">
-                                            <option value="1_hour">1 hour</option>
-                                            <option value="2_hour">2 hours</option>
-                                            <option value="3_hour">3 hours</option>
-                                            <option value="4_hour">4 hours</option>
-                                            <option value="5_hour">5 hours</option>
-                                            <option value="6_hour">6 hours</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="div-survey-sleep-awake" class="hidden">
-                                <div class="form-group row">
-                                    <label class="col-xs-2 col-form-label">Time</label>
-                                    <div class="col-xs-5">
-                                        <select class="form-control" id="survey-sleep-time-options">
-                                            <option value="1_hour">1 hour</option>
-                                            <option value="2_hour">2 hours</option>
-                                            <option value="3_hour">3 hours</option>
-                                            <option value="4_hour">4 hours</option>
-                                            <option value="5_hour">5 hours</option>
-                                            <option value="6_hour">6 hours</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-xs-2 col-form-label">Sleep/Awake</label>
-                                    <div class="col-xs-5">
-                                        <select class="form-control" id="protocol-survey-sleep-awake">
-                                            <option value="before_sleep">Before sleep</option>
-                                            <option value="after_wakeup">After waking-up</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label class="col-xs-2 col-form-label">Half notify</label>
-                                <div class="col-xs-10">
-                                    <div class="material-switch">
-                                        <input id="probable-survey-half-notify" name="someSwitchOption001"
-                                               type="checkbox"/>
-                                        <label for="probable-survey-half-notify" class="label-info"> </label>
-                                        &nbsp; &nbsp; (push survey only 50% of the time)
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         <div id="protocol-push-notif" class="hidden">
@@ -682,24 +612,6 @@
                                 </div>
                             </div>
 
-                            {#                            <div class="form-group row">#}
-                            {#                                <label class="col-xs-2 col-form-label">Title</label>#}
-                            {#                                <div class="col-xs-10">#}
-                            {#                                    <input maxlength="15" class="form-control" type="text"#}
-                            {#                                           placeholder="title of notification (max: 15 characters)"#}
-                            {#                                           id="protocol-notif-title">#}
-                            {#                                </div>#}
-                            {#                            </div>#}
-                            {##}
-                            {#                            <div class="form-group row">#}
-                            {#                                <label class="col-xs-2 col-form-label">Content</label>#}
-                            {#                                <div class="col-xs-10">#}
-                            {#                                    <input maxlength="20" class="form-control" type="text"#}
-                            {#                                           placeholder="content of notification (max: 20 characters)"#}
-                            {#                                           id="protocol-notif-content">#}
-                            {#                                </div>#}
-                            {#                            </div>#}
-
                             <div class="form-group row">
                                 <label class="col-xs-2 col-form-label">App ID</label>
                                 <div class="col-xs-10">
@@ -713,82 +625,9 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
-                                <label class="col-xs-2 col-form-label">Notification type</label>
-                                <div class="col-xs-5">
-                                    <select class="form-control" id="protocol-options-notif-type">
-                                        <option value="fixed">Fixed time</option>
-                                        <option value="user_window">User window</option>
-                                        <option value="sleep_wake">Sleep/Wake</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div id="div-notif-fixed">
-                                <div class="form-group row">
-                                    <label class="col-xs-2 col-form-label">Time</label>
-                                    <div class="col-xs-5">
-                                        <input class="form-control" type="time" name="protocol-fixed-exact-time"
-                                               value="12:00:00"
-                                               id="protocol-fixed-exact-time">
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <div id="div-notif-user-window" class="hidden">
-                                <div class="form-group row">
-                                    <label class="col-xs-2 col-form-label">Time</label>
-                                    <div class="col-xs-5">
-                                        <select class="form-control" id="notification-user-time-options">
-                                            <option value="1_hour">1 hour</option>
-                                            <option value="2_hour">2 hours</option>
-                                            <option value="3_hour">3 hours</option>
-                                            <option value="4_hour">4 hours</option>
-                                            <option value="5_hour">5 hours</option>
-                                            <option value="6_hour">6 hours</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="div-notif-sleep-awake" class="hidden">
-                                <div class="form-group row">
-                                    <label class="col-xs-2 col-form-label">Time</label>
-                                    <div class="col-xs-5">
-                                        <select class="form-control" id="notification-sleep-time-options">
-                                            <option value="1_hour">1 hour</option>
-                                            <option value="2_hour">2 hours</option>
-                                            <option value="3_hour">3 hours</option>
-                                            <option value="4_hour">4 hours</option>
-                                            <option value="5_hour">5 hours</option>
-                                            <option value="6_hour">6 hours</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label class="col-xs-2 col-form-label">Sleep/Awake</label>
-                                    <div class="col-xs-5">
-                                        <select class="form-control" id="protocol-notif-sleep-awake">
-                                            <option value="before_sleep">Before sleep</option>
-                                            <option value="after_wakeup">After waking-up</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label class="col-xs-2 col-form-label">Half notify</label>
-                                <div class="col-xs-10">
-                                    <div class="material-switch">
-                                        <input id="probable-half-notify" name="someSwitchOption001"
-                                               type="checkbox"/>
-                                        <label for="probable-half-notify" class="label-info"> </label>
-                                        &nbsp; &nbsp; (push notification only 50% of the time)
-                                    </div>
-                                </div>
-                            </div>
                         </div>
+
+                        {%  include "partials/protocol-time-config.html" %}
 
                         <div id="protocol-vibration-phone-usage" class="hidden">
 

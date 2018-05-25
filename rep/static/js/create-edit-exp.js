@@ -153,52 +153,8 @@ function load_slide4() {
         $('#review-screen-event-btn').show();
     }
 
-    // Review protocols
-    protocols = localStorage.getItem("protocols");
-
-
-    if (protocols && (JSON.parse(protocols).length > 0)) {
-        protocols = JSON.parse(protocols);
-        var view;
-        view = '<table id="protocol-list-table" class="table table-striped table-bordered"><tr>' +
-            '<th class="center-text"> Label </th>' +
-            '<th class="center-text"> Frequency </th>' +
-            '<th class="center-text"> Method </th>' +
-            '<th class="center-text"> Start Date </th>' +
-            '<th class="center-text"> End Date </th>' +
-            '<th class="center-text"> Notification </th>' +
-            '<th class="center-text"> Half Notify </th>' +
-            '</tr><tbody>';
-
-        // Add each experiment details to the table
-        var notif, protocol, row;
-        for (var i = protocols.length - 1; i >= 0; i--) {
-            protocol = protocols[i];
-            notif = 'n/a';
-            if (protocol.method === 'push_notification') {
-                // notif = protocol.notif_title + ' / ' + protocol.notif_content + ' / ' + protocol.notif_appid;
-                notif = beautify_protocol(protocol);
-            }
-            row = '<tr>' +
-                '<td class="center-text">' + protocol.label + '</td>' +
-                '<td class="center-text">' + protocol.frequency + '</td>' +
-                '<td class="center-text">' + protocol.method + '</td>' +
-                '<td class="center-text">' + formatDate(protocol.start_date) + '</td>' +
-                '<td class="center-text">' + formatDate(protocol.end_date) + '</td>' +
-                '<td class="center-text">' + notif + '</td>' +
-                '<td class="center-text">' + protocol.probable_half_notify + '</td>' +
-                '</tr>';
-            view += row;
-        }
-        view += '</tbody></table>';
-
-    } else {
-        view = '<div class="text-center text-primary"> ' +
-            '<h5> No protocols created.</h5>' +
-            '</div>'
-    }
-
-    $('#review-protocols-list-view').html(view);
+    // Review protocols - show protocols to be added
+    redraw_protocols_table('#review-protocols-list-view');
     show_slide(4);
 }
 
@@ -211,30 +167,48 @@ function load_slide4() {
 $('#protocol-method').on('change', function () {
     console.log('value:', $(this).val());
     if ($(this).val() === "none") {
+        $("#div-partial-time-config").addClass("hidden");
+        $("#protocol-pam").addClass("hidden");
         $("#protocol-push-notif").addClass("hidden");
         $("#protocol-push-survey").addClass("hidden");
         $("#protocol-vibration-phone-usage").addClass("hidden");
         $("#protocol-vibration-app-usage").addClass("hidden");
     }
     else if ($(this).val() === "push_notification") {
+        $("#div-partial-time-config").removeClass("hidden");
+        $("#protocol-pam").addClass("hidden");
         $("#protocol-push-notif").removeClass("hidden");
         $("#protocol-push-survey").addClass("hidden");
         $("#protocol-vibration-phone-usage").addClass("hidden");
         $("#protocol-vibration-app-usage").addClass("hidden");
     }
+    else if ($(this).val() === "pam") {
+        $("#div-partial-time-config").removeClass("hidden");
+        $("#protocol-pam").removeClass("hidden");
+        $("#protocol-push-survey").addClass("hidden");
+        $("#protocol-push-notif").addClass("hidden");
+        $("#protocol-vibration-phone-usage").addClass("hidden");
+        $("#protocol-vibration-app-usage").addClass("hidden");
+    }
     else if ($(this).val() === "push_survey") {
+        $("#div-partial-time-config").removeClass("hidden");
+        $("#protocol-pam").addClass("hidden");
         $("#protocol-push-survey").removeClass("hidden");
         $("#protocol-push-notif").addClass("hidden");
         $("#protocol-vibration-phone-usage").addClass("hidden");
         $("#protocol-vibration-app-usage").addClass("hidden");
     }
     else if ($(this).val() === "vibration_by_phone_usage") {
+        $("#div-partial-time-config").addClass("hidden");
+        $("#protocol-pam").addClass("hidden");
         $("#protocol-vibration-phone-usage").removeClass("hidden");
         $("#protocol-push-survey").addClass("hidden");
         $("#protocol-push-notif").addClass("hidden");
         $("#protocol-vibration-app-usage").addClass("hidden");
     }
     else if ($(this).val() === "vibration_by_app_usage") {
+        $("#div-partial-time-config").addClass("hidden");
+        $("#protocol-pam").addClass("hidden");
         $("#protocol-vibration-app-usage").removeClass("hidden");
         $("#protocol-push-survey").addClass("hidden");
         $("#protocol-push-notif").addClass("hidden");
@@ -270,18 +244,6 @@ $('#notification-fixed-random').click(function () {
         $("#notification-fixed-time").prop("disabled", false);
     }
 });
-
-
-// Function to handle notification-user-random checkbox
-// $('#probable-half-notify').click(function () {
-//     console.log($(this).is(':checked'));
-//     if ($(this).is(':checked')) {
-//         $("#notification-user-time-options").prop("disabled", true);
-//     } else {
-//         $("#notification-user-time-options").prop("disabled", false);
-//     }
-// });
-
 
 //////////////////////////////////////////////////////////
 /*######## Function to create in experiment in database ########*/
@@ -385,8 +347,9 @@ function delete_protocol_handler(id) {
 }
 
 /*######## Function to handle add new protocol ########*/
-function create_protocol_handler() {
+
 // TO DO: Handle create protocol by adding to local storage
+function create_protocol_handler() {
     $('#add-protocol-modal').modal('hide');
 
     // Sorry! No Web Storage support..
@@ -430,26 +393,28 @@ function create_protocol_handler() {
         notif_time = sleep_time
     }
 
-    var notif_details = $('#protocol-notif-details').val();
     var notif_appid = $('#protocol-notif-appid').val();
-
+    var details;
     var protocol_method = $('#protocol-method').val();
-    console.log('protocol_method: ', protocol_method);
     if (protocol_method === 'none') {
         notif_type = 'none';
-        notif_time = undefined;
-        notif_details = undefined;
-        notif_appid = undefined;
+        details = '';
+    } else if (protocol_method === 'pam') {
+        details = 'pam';
+    } else if (protocol_method === 'push_survey') {
+        details = $('#protocol-survey-details').val();
+    } else if (protocol_method === 'push_notification') {
+        details = $('#protocol-notif-details').val();
     }
 
     var protocol = {
-        'id': id, //fixme: need to make sure the id is unique esp if adding to existing protocols table
+        'id': id,
         'label': $('#protocol-label').val(),
         'start_date': $('#protocol-start-date').val(),
         'end_date': $('#protocol-end-date').val(),
         'frequency': $('#protocol-frequency').val(),
         'method': protocol_method,
-        'notif_details': notif_details,
+        'notif_details': details,
         'notif_appid': notif_appid,
         'notif_type': notif_type,
         'notif_time': notif_time,
@@ -476,13 +441,14 @@ function update_protocols_view() {
 }
 
 function beautify_protocol(protocol) {
+    console.log('beautify: ', protocol);
     var details = protocol.notif_details.replace(/\n/gi, " / ");
     var ids = protocol.notif_appid.replace(/\n/gi, " / ");
     return details + '<br> ~~~~~ <br>' + ids;
 }
 
-function redraw_protocols_table() {
-    var protocolsViewId = '#protocols-list-view';
+function redraw_protocols_table(viewId) {
+    var protocolsViewId = viewId || '#protocols-list-view';
     var protocols = localStorage.getItem("protocols");
     var view = '<div class="text-center text-primary"> ' +
         '<h5> No protocols created. Click on the add protocol button to create a new protocol. </h5>' +
@@ -494,10 +460,10 @@ function redraw_protocols_table() {
         view = '<table id="protocol-list-table" class="table table-striped table-bordered"><tr>' +
             '<th class="center-text"> Label </th>' +
             '<th class="center-text"> Frequency </th>' +
-            '<th class="center-text"> Method </th>' +
             '<th class="center-text"> Start Date </th>' +
             '<th class="center-text"> End Date </th>' +
-            '<th class="center-text"> Notification </th>' +
+            '<th class="center-text"> Method </th>' +
+            '<th class="center-text"> Details </th>' +
             '<th class="center-text"> Half Notify </th>';
 
         if (isNewStudy) {
@@ -506,22 +472,21 @@ function redraw_protocols_table() {
 
         view += '</tr><tbody>';
 
-        // Add each experiment details to the table
-        var notif, protocol, row;
+        // immediately preview protocol to be added
+        var details, protocol, row;
         for (var i = protocols.length - 1; i >= 0; i--) {
             protocol = protocols[i];
-            notif = 'n/a';
-            //TODO: refactor this repeating code
-            if (protocol.method === 'push_notification') {
-                notif = beautify_protocol(protocol);
+            details = protocol.notif_details;
+            if (protocol.method === 'push_notification' || protocol.method === 'push_survey') {
+                details = beautify_protocol(protocol);
             }
             row = '<tr>' +
                 '<td class="center-text">' + protocol.label + '</td>' +
                 '<td class="center-text">' + protocol.frequency + '</td>' +
-                '<td class="center-text">' + protocol.method + '</td>' +
                 '<td class="center-text">' + formatDate(protocol.start_date) + '</td>' +
                 '<td class="center-text">' + formatDate(protocol.end_date) + '</td>' +
-                '<td class="center-text">' + notif + '</td>' +
+                '<td class="center-text">' + protocol.method + '</td>' +
+                '<td class="center-text">' + details + '</td>' +
                 '<td class="center-text">' + protocol.probable_half_notify + '</td>';
 
             if (isNewStudy) {
@@ -550,9 +515,9 @@ function create_protocols_table_from_server() {
 
 /*######## Format Date ########*/
 function formatDate(rawDate) {
-    var date = new Date(rawDate);
-    date = date.toString().slice(0, 15);
-    return date;
+    var parts = rawDate.split('-');
+    var date = new Date(parts[0], parts[1] - 1, parts[2]);
+    return date.toString().slice(0, 15);
 }
 
 

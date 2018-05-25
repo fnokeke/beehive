@@ -1,0 +1,78 @@
+<div id="div-partial-time-config" class="hidden">
+
+    <div id="div-notif-type" class="form-group row">
+        <label class="col-xs-2 col-form-label">Notification type</label>
+        <div class="col-xs-5">
+            <select class="form-control" id="protocol-options-notif-type">
+                <option value="fixed">Fixed time</option>
+                <option value="user_window">User window</option>
+                <option value="sleep_wake">Sleep/Wake</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="div-notif-fixed">
+        <div class="form-group row">
+            <label class="col-xs-2 col-form-label">Time</label>
+            <div class="col-xs-5">
+                <input class="form-control" type="time" name="protocol-fixed-exact-time"
+                       value="12:00:00"
+                       id="protocol-fixed-exact-time">
+            </div>
+        </div>
+
+    </div>
+
+    <div id="div-notif-user-window" class="hidden">
+        <div class="form-group row">
+            <label class="col-xs-2 col-form-label">Time</label>
+            <div class="col-xs-5">
+                <select class="form-control" id="notification-user-time-options">
+                    <option value="1_hour">1 hour</option>
+                    <option value="2_hour">2 hours</option>
+                    <option value="3_hour">3 hours</option>
+                    <option value="4_hour">4 hours</option>
+                    <option value="5_hour">5 hours</option>
+                    <option value="6_hour">6 hours</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="div-notif-sleep-awake" class="hidden">
+        <div class="form-group row">
+            <label class="col-xs-2 col-form-label">Time</label>
+            <div class="col-xs-5">
+                <select class="form-control" id="notification-sleep-time-options">
+                    <option value="1_hour">1 hour</option>
+                    <option value="2_hour">2 hours</option>
+                    <option value="3_hour">3 hours</option>
+                    <option value="4_hour">4 hours</option>
+                    <option value="5_hour">5 hours</option>
+                    <option value="6_hour">6 hours</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-xs-2 col-form-label">Sleep/Awake</label>
+            <div class="col-xs-5">
+                <select class="form-control" id="protocol-notif-sleep-awake">
+                    <option value="before_sleep">Before sleep</option>
+                    <option value="after_wakeup">After waking-up</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="div-notif-half-notif" class="form-group row">
+        <label class="col-xs-2 col-form-label">Half notify</label>
+        <div class="col-xs-10">
+            <div class="material-switch">
+                <input id="probable-half-notify" name="someSwitchOption001"
+                       type="checkbox"/>
+                <label for="probable-half-notify" class="label-info"> </label>
+                &nbsp; &nbsp; (perform only 50% of the time)
+            </div>
+        </div>
+    </div>
+</div>
