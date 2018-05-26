@@ -220,7 +220,6 @@ class Participant(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, profile, google_credentials):
-        print '********** now creating user ****************'
         print google_credentials
         self.email = profile['email']
         self.firstname = profile['firstname']
@@ -236,7 +235,7 @@ class Participant(db.Model):
 
     def is_authenticated(self):
         """
-        Returns `True`. NewParticipant is always authenticated.
+        Returns `True`. Participant is always authenticated.
         """
         return True
 
@@ -545,6 +544,76 @@ class InAppAnalytics(db.Model):
 
         db.session.commit()
         return 200, 'Successfully added InAppAnalytics Event!', ""
+
+
+class MobileUser(db.Model):
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    email = db.Column(db.String(120), primary_key=True, unique=True)
+    last_installed_ms = db.Column(db.String(30))
+    pretty_last_installed = db.Column(db.String(30))
+    app_version_name = db.Column(db.String(10))
+    app_version_code = db.Column(db.String(10))
+    phone_model = db.Column(db.String(30))
+    android_version = db.Column(db.String(10))
+    device_country = db.Column(db.String(10))
+    device_id = db.Column(db.String(30))
+
+    def __init__(self, info):
+        self.code = info['code']
+        self.email = info['email']
+        self.last_installed_ms = info['last_installed_ms']
+        self.pretty_last_installed = info['pretty_last_installed']
+        self.app_version_name = info['app_version_name']
+        self.app_version_code = info['app_version_code']
+        self.phone_model = info['phone_model']
+        self.android_version = info['android_version']
+        self.device_country = info['device_country']
+        self.device_id = info['device_id']
+
+    def __repr__(self):
+        result = {
+            'email': self.email,
+            'code': self.code,
+            'last_installed_ms': self.last_installed_ms,
+            'pretty_last_installed': self.pretty_last_installed,
+            'app_version_name': self.app_version_name,
+            'app_version_code': self.app_version_code,
+            'phone_model': self.phone_model,
+            'device_id': self.device_id,
+            'device_country': self.device_country,
+            'android_version': self.android_version}
+        return json.dumps(result)
+
+    @classmethod
+    def register(cls, data):
+        code = data['code']
+        experiment = Experiment.query.filter_by(code=code).first()
+        if not experiment:
+            return 400, "Experiment doesn't exist"
+
+        # already in experiment so no need to change anything
+        user_in_experiment = MobileUser.query.filter_by(email=data['email'], code=code).first()
+        if user_in_experiment:
+            return 200, "Already registered. Welcome back!"
+
+        # enrolling as first timer in an experiment
+        new_user = MobileUser(data)
+        db.session.add(new_user)
+        db.session.commit()
+        return 200, "Successfully registered!"
+
+    @staticmethod
+    def add_user(info):
+        existing_user = MobileUser.query.filter_by(email=info['email']).first()
+        if existing_user:
+            return (-1, 'Welcome back ' + existing_user.email, existing_user)
+
+        new_user = MobileUser(info)
+        db.session.add(new_user)
+        db.session.commit()
+
+        return (200, 'Successfully enrolled in experiment.', new_user)
+
 
 # TODO: have only one experiment table
 # TODO: move to same place: Beehive Researcher, Participant, NotifEvent

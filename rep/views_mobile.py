@@ -1,7 +1,9 @@
 from rep import app
 from flask import request, Response
 
-from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_FacebookLog, TP_ScreenLog
+from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_FacebookLog, TP_ScreenLog, \
+    MobileUser
+from rep.models import Participant
 from rep.models import MobileNotifLogs
 
 import json
@@ -9,6 +11,13 @@ import json
 from rep.models import Experiment, Protocol
 from rep.models_beehive import NotifEvent, InAppAnalytics
 from rep.utils import to_json
+
+
+@app.route('/mobile/register', methods=['POST'])
+def mobile_register_user():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    status, response = MobileUser.register(data)
+    return Response(status=status, response=json.dumps({'response': response}), mimetype='application/json')
 
 
 @app.route('/mobile/fetchstudy', methods=["POST"])
