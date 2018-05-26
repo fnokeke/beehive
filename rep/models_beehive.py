@@ -436,6 +436,7 @@ class NotifEvent(db.Model):
 
     alarm_millis = db.Column(db.BigInteger)
     ringer_mode = db.Column(db.String(10))
+    method = db.Column(db.String(20))
     title = db.Column(db.String(50))
     content = db.Column(db.String(50))
     app_id = db.Column(db.String(30))
@@ -449,6 +450,7 @@ class NotifEvent(db.Model):
         self.code = info['code']
         self.alarm_millis = info['alarm_millis']
         self.ringer_mode = info['ringer_mode']
+        self.method = info['method']
         self.title = info['title']
         self.content = info['content']
         self.app_id = info['app_id']
@@ -462,6 +464,7 @@ class NotifEvent(db.Model):
             'code': self.code,
             'alarm_millis': self.alarm_millis,
             'ringer_mode': self.ringer_mode,
+            'method': self.method,
             'title': self.title,
             'content': self.content,
             'app_id': self.app_id,
@@ -479,7 +482,7 @@ class NotifEvent(db.Model):
             if row == "" or info['email'] == "":
                 continue
 
-            email, code, alarm_millis, ringer_mode, title, content, app_id, was_dismissed, event_time_millis = \
+            email, code, alarm_millis, ringer_mode, method, title, content, app_id, was_dismissed, event_time_millis = \
                 row.split(",")
 
             entry = {
@@ -487,6 +490,7 @@ class NotifEvent(db.Model):
                 'code': code.strip(),
                 'alarm_millis': alarm_millis,
                 'ringer_mode': ringer_mode,
+                'method': method,
                 'title': title,
                 'content': content,
                 'app_id': app_id,
