@@ -270,6 +270,9 @@ function create_experiment_handler() {
     var description = $('#exp-description').val();
     var start_date = $('#exp-start-date').val();
     var end_date = $('#exp-end-date').val();
+    var rescuetime = $('#exp-rescuetime').is(':checked');
+    var calendar = $('#exp-calendar').is(':checked');
+    var phone_notif = $('#exp-phone-notif').is(':checked');
     var screen_events = $('#exp-screen-events').is(':checked');
     var app_usage = $('#exp-app-usage').is(':checked');
 
@@ -285,13 +288,16 @@ function create_experiment_handler() {
         return;
     }
 
-    var url = '/add/experiment/v2';
+    var url = '/add/experiment';
     var data = {
         'label': label,
         'title': title,
         'description': description,
         'start_date': $('#exp-start-date').val(),
         'end_date': $('#exp-end-date').val(),
+        'rescuetime': rescuetime,
+        'calendar': calendar,
+        'phone_notif': phone_notif,
         'screen_events': screen_events,
         'app_usage': app_usage,
         'protocols': localStorage.protocols || '[]',

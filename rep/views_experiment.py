@@ -63,8 +63,7 @@ def update_firebase_topic(code):
     requests.post(url, headers=headers, data=data)
 
 
-# Endpoint to add new experiment to the database v2
-@app.route('/add/experiment/v2', methods=['POST'])
+@app.route('/add/experiment', methods=['POST'])
 def add_experiment():
     experiment = request.form.to_dict()
     status, response, _ = Experiment.add_experiment(experiment)

@@ -70,7 +70,7 @@ class Experiment(db.Model):
     @staticmethod
     def add_experiment(exp):
         msg = "New experiment was successfully created."
-        existing_experiment = Experiment.query.filter_by(title=exp['title']).first()
+        existing_experiment = Experiment.query.filter_by(owner=exp['owner'], label=exp['label']).first()
         if existing_experiment:  # recreate new experiment with updated details but same code
             exp['code'] = existing_experiment.code
             Experiment.delete_experiment(existing_experiment.code)
@@ -79,7 +79,7 @@ class Experiment(db.Model):
         new_experiment = Experiment(exp)
         db.session.add(new_experiment)
         db.session.commit()
-        new_experiment = Experiment.query.filter_by(title=exp['title']).first()
+        # new_experiment = Experiment.query.filter_by(owner=exp['owner'], label=exp['label']).first()
 
         # Add protocols  to protocols table
         protocols = json.loads(exp['protocols'])
