@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    {{ "Edit Experiment" if experiment else "New Experiment" }}
+    {{ "Edit Study " if experiment else "New Study" }}
 {% endblock %}
 
 
@@ -19,7 +19,7 @@
             <li class="active">
                 <a href="#">
                     <span class="glyphicon glyphicon-hourglass"></span>
-                    Experiment [{{ experiment.code }}]
+                    Study | {{ experiment.code }}
                 </a>
             </li>
 
@@ -86,8 +86,23 @@
 
         <div id="newDivId" class="page-header" data-isnew={{ experiment == undefined }}>
             <h3>
-                {{ "Edit Experiment" if experiment else "New Experiment" }}
+                {{ "Edit Study" if experiment else "New Study" }}
+
+            <button type="button"
+                    class="btn btn-danger float-i-right"
+                    onclick='delete_study("{{ experiment.code }}")'>
+                <span class="glyphicon glyphicon-trash"></span>
+                Delete Study
+            </button>
+
+
             </h3>
+
+            <script>
+
+
+            </script>
+
         </div>
 
         <div class="row">
@@ -120,31 +135,31 @@
             <hr class="style5">
             <br>
             <div class="form-group row">
-                <label class="col-xs-2 col-form-label">Experiment Title</label>
+                <label class="col-xs-2 col-form-label">Study Title</label>
                 <div class="col-xs-8">
                     <input
                             class="form-control"
                             type="text"
                             id="exp-title"
                             value="{{ experiment.title if experiment else '' }}"
-                            placeholder="experiment title will be visible to participants"/>
+                            placeholder="study title will be visible to participants"/>
                 </div>
             </div>
 
             <div class="form-group row">
-                <label class="col-xs-2 col-form-label">Experiment Label</label>
+                <label class="col-xs-2 col-form-label">Study Label</label>
                 <div class="col-xs-8">
                     <input class="form-control"
                            type="text"
                            id="exp-label"
                            value="{{ experiment.label if experiment else '' }}"
-                           placeholder="visible to only you"
+                           placeholder="unique label that is visible to only you"
                     />
                 </div>
             </div>
 
             <div class="form-group row">
-                <label class="col-xs-2 col-form-label">Experiment Description</label>
+                <label class="col-xs-2 col-form-label">Study Description</label>
                 <div class="col-xs-8">
                     <input class="form-control"
                            type="text"
@@ -205,7 +220,7 @@
             <hr class="style5">
             <br>
             <div class="form-group row">
-                <label class="col-md-2 col-form-label">RescueTime</label>
+                <label class="col-xs-2 col-form-label">RescueTime</label>
                 <div class="col-xs-10">
                     <input
                             type="checkbox"
@@ -417,11 +432,25 @@
             </div>
             <br>
 
+            <div class="form-group row" id="review-rescuetime-btn">
+                <label class="col-xs-2 col-form-label">RescueTime</label>
+                <button type="button" class="btn btn-primary">&nbsp; ON &nbsp;</button>
+            </div>
+
+            <div class="form-group row" id="review-calendar-btn">
+                <label class="col-xs-2 col-form-label">Google Calendar</label>
+                <button type="button" class="btn btn-primary">&nbsp; ON &nbsp;</button>
+            </div>
+
+            <div class="form-group row" id="review-phone-notif-btn">
+                <label class="col-xs-2 col-form-label">Phone Notifications</label>
+                <button type="button" class="btn btn-primary">&nbsp; ON &nbsp;</button>
+            </div>
+
             <div class="form-group row" id="review-screen-events-btn">
                 <label class="col-xs-2 col-form-label">Screen Events</label>
                 <button type="button" class="btn btn-primary">&nbsp; ON &nbsp;</button>
             </div>
-
 
             <div class="form-group row" id="review-app-usage-btn">
                 <label class="col-xs-2 col-form-label">App usage</label>

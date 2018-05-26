@@ -22,7 +22,7 @@ from rep import app, login_manager
 from rep import export
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import Intervention, MobileUser, Mturk, MturkPrelimRecruit
-from rep.models import Experiment_v2, ProtocolPushNotif, Researcher, Enrollment, Participant, NewParticipant, RescuetimeUser
+from rep.models import Experiment, Protocol, Researcher, Enrollment, Participant, NewParticipant, RescuetimeUser
 from rep.models import MturkExclusive, NafEnroll, NafStats, ImageTextUpload, GcalUser
 from rep.models import RescuetimeConfig, ScreenUnlockConfig
 from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_FacebookLog, TP_ScreenLog
@@ -180,7 +180,7 @@ def get_next_condition(total_enrolled, ps_per_condition):
 def connect_study():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     code = data['code']
-    experiment = Experiment_v2.query.filter_by(code=code).first()
+    experiment = Experiment.query.filter_by(code=code).first()
     if not experiment:
         return json.dumps({'response': jsonify_responses('', ''), 'user': {}, 'experiment': {}})
 
@@ -411,7 +411,7 @@ def fetch_interventions():
 
 @app.route('/participants-dashboard/<code>')
 def participant_dashboard(code):
-    experiment = Experiment_v2.query.filter_by(code=code).first()
+    experiment = Experiment.query.filter_by(code=code).first()
     intv_type = get_intv_type(experiment)
     ctx = {
         'enrolled_users': MobileUser.query.filter_by(code=code).all(),
@@ -424,28 +424,28 @@ def participant_dashboard(code):
 
 @app.route('/rescuetime-dashboard/<code>')
 def rescuetime_dashboard(code):
-    experiment = Experiment_v2.query.filter_by(code=code).first()
+    experiment = Experiment.query.filter_by(code=code).first()
     ctx = {'experiment': experiment, 'users_unfiltered': Participant.query.all()}
     return render_template('/dashboards/rescuetime-dashboard.html', **ctx)
 
 
 @app.route('/stats-dashboard/<code>')
 def stats_dashboard(code):
-    experiment = Experiment_v2.query.filter_by(code=code).first()
+    experiment = Experiment.query.filter_by(code=code).first()
     ctx = {'experiment': experiment}
     return render_template('/dashboards/stats-dashboard.html', **ctx)
 
 
 @app.route('/mturk-participants-dashboard/<code>')
 def mturk_participant_dashboard(code):
-    experiment = Experiment_v2.query.filter_by(code=code).first()
+    experiment = Experiment.query.filter_by(code=code).first()
     ctx = {'mturk_users': TP_Enrolled.query.all(), 'experiment': experiment}
     return render_template('/dashboards/mturk-participants-dashboard.html', **ctx)
 
 
 @app.route('/mturk-stats-dashboard/<code>')
 def mturk_stats_dashboard(code):
-    experiment = Experiment_v2.query.filter_by(code=code).first()
+    experiment = Experiment.query.filter_by(code=code).first()
     ctx = {'mturk_stats': TP_FBStats.query.order_by('created_at desc').limit(2000).all(), 'experiment': experiment}
     return render_template('/dashboards/mturk-stats-dashboard.html', **ctx)
 
@@ -462,14 +462,6 @@ def get_intv_type(experiment):
         intv_type = 'text_image'
     return intv_type
 
-
-# @app.route('/delete/experiment/<code>')
-# def delete_experiment(code):
-#     Experiment_v2.delete_experiment(code)
-#     flash('Returning to experiment page.', 'success')
-#     return redirect(url_for('researcher_login'))
-#
-#
 # @app.route('/update/experiment', methods=['POST'])
 # def update_experiment():
 #     data = json.loads(request.data) if request.data else request.form.to_dict()
@@ -477,7 +469,7 @@ def get_intv_type(experiment):
 #     data['end'] = '{} 05:00:00 -0500'.format(data['end'])
 #     data['start'] = datetime.strptime(data['start'], '%Y-%m-%d %H:%M:%S -0500')
 #     data['end'] = datetime.strptime(data['end'], '%Y-%m-%d %H:%M:%S -0500')
-#     updated_exp = Experiment_v2.update_experiment(data)
+#     updated_exp = Experiment.update_experiment(data)
 #     return str(updated_exp)
 #
 
@@ -496,7 +488,7 @@ def get_intv_type(experiment):
 def fetch_experiments():
     results = []
 
-    for exp in Experiment_v2.query.all():
+    for exp in Experiment.query.all():
         exp_json = json.loads(str(exp))
         results.append(exp_json)
 
@@ -505,7 +497,7 @@ def fetch_experiments():
 
 @app.route('/fetch/experiment/<code>')
 def fetch_experiment_by_code(code):
-    experiment = Experiment_v2.query.filter_by(code=code).first()
+    experiment = Experiment.query.filter_by(code=code).first()
     return str(experiment)
 
 
@@ -559,7 +551,7 @@ def participant_register():
         return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
 
     # Check if experiment code is valid
-    if Experiment_v2.query.filter_by(code=data['code']).first() == None:
+    if Experiment.query.filter_by(code=data['code']).first() == None:
         response_message = {'error': 'Invalid experiment code'}
         http_status = 400
         return Response(response=json.dumps(response_message), status=http_status, mimetype='application/json')
@@ -600,7 +592,7 @@ def participant_register():
 def fetch_experiments_v2():
     results = []
 
-    for exp in Experiment_v2.query.all():
+    for exp in Experiment.query.all():
         exp_json = json.loads(str(exp))
         results.append(exp_json)
 
@@ -609,10 +601,10 @@ def fetch_experiments_v2():
 
 @app.route('/fetch/experiment/v2/<code>')
 def fetch_experiment_by_code_v2(code):
-    experiment = Experiment_v2.query.filter_by(code=code).first()
+    experiment = Experiment.query.filter_by(code=code).first()
     print 'Experiment: ', str(experiment)
-    protocols = ProtocolPushNotif.query.filter_by(exp_code=code).all()
-    print 'protocol count ', ProtocolPushNotif.query.filter_by(exp_code=code).count()
+    protocols = Protocol.query.filter_by(exp_code=code).all()
+    print 'protocol count ', Protocol.query.filter_by(exp_code=code).count()
     print 'protocols: ', str(protocols)
     print
     experiment = json.loads(str(experiment))

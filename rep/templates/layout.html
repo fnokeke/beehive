@@ -12,7 +12,7 @@
                     </button>
                 {% endif %}
                 <a class="navbar-brand navbar-b-text" href="#">
-                    Beehive
+                    ResearchX<sup>i</sup>
                 </a>
             </div>
 
@@ -33,7 +33,12 @@
                                         {% elif ni=='home' %}
                                             <span class="glyphicon glyphicon-home"></span>
                                         {% endif %}
-                                        {{ ni | capitalize }} </a>
+                                        {% if ni == 'experiments' %}
+                                            Lab
+                                        {% else %}
+                                            {{ ni | capitalize }}
+                                        {% endif %}
+                                    </a>
                                 </li>
                             {% endfor %}
                         </ul>

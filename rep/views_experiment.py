@@ -3,7 +3,7 @@ from rep import app
 from flask import render_template, request, Response, redirect
 from flask import url_for, flash, send_file, make_response
 from flask_login import current_user, login_required
-from rep.models import Experiment_v2, Enrollment, Participant, ProtocolPushNotif
+from rep.models import Experiment, Enrollment, Participant, Protocol
 from rep.models import InAppAnalytics, TP_FgAppLog, TP_ScreenLog, RescuetimeUser
 from io import BytesIO
 from datetime import datetime
@@ -24,12 +24,21 @@ def create_experiment():
     return render_template('experiment/create-edit-experiment.html', **ctx)
 
 
+@app.route('/delete/experiment/<code>')
+def delete_experiment(code):
+    Experiment.delete_experiment(code)
+    flash('Successfully deleted research study.', 'success')
+    return redirect(url_for('researcher_view'))
+
+
+
+
 @app.route('/experiments')
 @login_required
 def experiments():
     ctx = {
         'user_type': 'researcher',
-        'experiments': Experiment_v2.query.filter_by(owner=current_user.email).all()
+        'experiments': Experiment.query.filter_by(owner=current_user.email).all()
     }
     return render_template('experiment/researcher_experiments.html', **ctx)
 
@@ -39,8 +48,8 @@ def experiment_options(code):
     ctx = {
         'user_type': 'researcher',
         'today_date': datetime.now().strftime('%Y-%m-%d'),
-        'experiment': Experiment_v2.query.filter_by(code=code).first(),
-        'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all(),
+        'experiment': Experiment.query.filter_by(code=code).first(),
+        'protocols': Protocol.query.filter_by(exp_code=code).all(),
         'experiment_page': True
     }
     update_firebase_topic(code)
@@ -56,9 +65,9 @@ def update_firebase_topic(code):
 
 # Endpoint to add new experiment to the database v2
 @app.route('/add/experiment/v2', methods=['POST'])
-def add_experiment_v2():
+def add_experiment():
     experiment = request.form.to_dict()
-    status, response, _ = Experiment_v2.add_experiment(experiment)
+    status, response, _ = Experiment.add_experiment(experiment)
 
     print 'experiment to add: '
     print experiment
@@ -78,8 +87,8 @@ def experiment_participants(code):
     ctx = {
         'user_type': 'researcher',
         'today_date': datetime.now().strftime('%Y-%m-%d'),
-        'experiment': Experiment_v2.query.filter_by(code=code).first(),
-        'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all(),
+        'experiment': Experiment.query.filter_by(code=code).first(),
+        'protocols': Protocol.query.filter_by(exp_code=code).all(),
         'participants': participants,
         'rescuetime_participants': RescuetimeUser.query.filter_by(code=code).all(),
         'dashboard_page': True
@@ -156,8 +165,8 @@ def experiment_app_analytics(code):
     ctx = {
         'user_type': 'researcher',
         'today_date': datetime.now().strftime('%Y-%m-%d'),
-        'experiment': Experiment_v2.query.filter_by(code=code).first(),
-        'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all(),
+        'experiment': Experiment.query.filter_by(code=code).first(),
+        'protocols': Protocol.query.filter_by(exp_code=code).all(),
         'events': InAppAnalytics.query.filter_by(code=code).all(),
         'dashboard_page': True
     }
@@ -200,8 +209,8 @@ def experiment_protocols(code):
     ctx = {
         'user_type': 'researcher',
         'today_date': datetime.now().strftime('%Y-%m-%d'),
-        'experiment': Experiment_v2.query.filter_by(code=code).first(),
-        'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all(),
+        'experiment': Experiment.query.filter_by(code=code).first(),
+        'protocols': Protocol.query.filter_by(exp_code=code).all(),
         'dashboard_page': True
     }
     return render_template('experiment/experiment-protocols.html', **ctx)
@@ -213,7 +222,7 @@ def experiment_protocols_download(code):
     if not user_is_owner_of_experiment(code):
         return render_template('403-forbidden.html'), 403
 
-    protocols = ProtocolPushNotif.query.filter_by(exp_code=code).all()
+    protocols = Protocol.query.filter_by(exp_code=code).all()
     csv_data = "NO," + "LABEL," + "START DATE," + "END DATE," + "FREQUENCY," + "METHOD," + "DETAILS," \
                + "APP ID," + "TYPE," + "TIME," + "HALF NOTIFY,"
 
@@ -247,8 +256,8 @@ def experiment_app_usage(code):
     ctx = {
         'user_type': 'researcher',
         'today_date': datetime.now().strftime('%Y-%m-%d'),
-        'experiment': Experiment_v2.query.filter_by(code=code).first(),
-        'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all(),
+        'experiment': Experiment.query.filter_by(code=code).first(),
+        'protocols': Protocol.query.filter_by(exp_code=code).all(),
         'app_usage': TP_FgAppLog.query.filter_by(code=code).all(),
         'dashboard_page': True
     }
@@ -293,8 +302,8 @@ def experiment_screen_events(code):
     ctx = {
         'user_type': 'researcher',
         'today_date': datetime.now().strftime('%Y-%m-%d'),
-        'experiment': Experiment_v2.query.filter_by(code=code).first(),
-        'protocols': ProtocolPushNotif.query.filter_by(exp_code=code).all(),
+        'experiment': Experiment.query.filter_by(code=code).first(),
+        'protocols': Protocol.query.filter_by(exp_code=code).all(),
         'screen_events': TP_ScreenLog.query.filter_by(code=code).all(),
         'dashboard_page': True
     }
@@ -483,7 +492,7 @@ def generate_app_analytics_csv(code):
 
 def generate_protocols_csv(code):
     csv_file_path = TEMP_DIR + "/experiment-" + str(code) + "-data/" + code + "-protocols.csv"
-    protocols = ProtocolPushNotif.query.filter_by(exp_code=code).all()
+    protocols = Protocol.query.filter_by(exp_code=code).all()
     csv_data = "NO," + "LABEL," + "START DATE," + "END DATE," + "FREQUENCY," + "METHOD," + "DETAILS," \
                + "APP ID," + "TYPE," + "TIME," + "HALF NOTIFY,"
 
@@ -553,7 +562,7 @@ def generate_screen_events_csv(code):
 # Security: check permission before download
 def user_is_owner_of_experiment(code):
     try:
-        experiment_owner = Experiment_v2.query.filter_by(owner=current_user.email, code=code).all()
+        experiment_owner = Experiment.query.filter_by(owner=current_user.email, code=code).all()
         print "experiment_owner:", experiment_owner
         print "len(experiment_owner) = ", len(experiment_owner)
 

@@ -297,7 +297,7 @@ class TP_FgAppLog(db.Model):
     app_id = db.Column(db.String(30))
     time_seconds = db.Column(db.String(20))
     time_millis = db.Column(db.BigInteger)
-    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
 
     def __init__(self, info):
         self.worker_id = info['worker_id']
@@ -337,7 +337,7 @@ class MobileNotifLogs(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     worker_id = db.Column(db.String(50))
-    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
     time_millis = db.Column(db.BigInteger)
     app_id = db.Column(db.String(30))
     posted_millis = db.Column(db.BigInteger)
@@ -390,7 +390,7 @@ class TP_ScreenLog(db.Model):
     worker_id = db.Column(db.String(50))
     event = db.Column(db.String(30))
     time_millis = db.Column(db.BigInteger)
-    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
 
     def __init__(self, info):
         self.worker_id = info['worker_id']
@@ -423,5 +423,5 @@ class TP_ScreenLog(db.Model):
         db.session.commit()
         return (200, 'Successfully added screenLog stats!', "")
 
-# TODO: remove experiment_v2 and use just experiment
+# TODO: remove experiment and use just experiment
 # TODO: remove TP_name and use Mobile_name

@@ -108,8 +108,11 @@ function load_slide4() {
         'label': $('#exp-label').val(),
         'title': $('#exp-title').val(),
         'description': $('#exp-description').val(),
-        'start_date': $('#exp-end-date').val(),
+        'start_date': $('#exp-start-date').val(),
         'end_date': $('#exp-end-date').val(),
+        'rescuetime': $('#exp-rescuetime').is(':checked'),
+        'calendar': $('#exp-calendar').is(':checked'),
+        'phone_notif': $('#exp-phone-notif').is(':checked'),
         'screen_events': $('#exp-screen-events').is(':checked'),
         'app_usage': $('#exp-app-usage').is(':checked'),
         'protocols': {}
@@ -122,35 +125,42 @@ function load_slide4() {
     $('#review-start-date').val(experiment.start_date);
     $('#review-end-date').val(experiment.end_date);
 
-
     // Review data streams
-    var count = 0;
-    $('#review-screen-events-btn').hide();
-    $('#review-app-usage-btn').hide();
+    if (experiment.rescuetime) {
+        $('#review-rescuetime-btn').show();
+    } else {
+        $('#review-rescuetime-btn').hide();
+    }
 
-    experiment.screenEvents = $('#exp-screen-events').is(':checked');
-    if (experiment.screenEvents) {
-        count = count + 1;
+    if (experiment.calendar) {
+        $('#review-calendar-btn').show();
+    } else {
+        $('#review-calendar-btn').hide();
+    }
+
+    if (experiment.phone_notif) {
+        $('#review-phone-notif-btn').show();
+    } else {
+        $('#review-phone-notif-btn').hide();
+    }
+
+    if (experiment.screen_events) {
         $('#review-screen-events-btn').show();
+    } else {
+        $('#review-screen-events-btn').hide();
     }
 
-    experiment.appUsage = $('#exp-app-usage').is(':checked');
-    if (experiment.appUsage) {
-        count = count + 1;
+    if (experiment.app_usage) {
         $('#review-app-usage-btn').show();
+    } else {
+        $('#review-app-usage-btn').hide();
     }
 
-    $('#review-data-streams-msg').html('');
-    if (count == 0) {
+    var data_streams_msg = "#review-data-streams-msg";
+    $(data_streams_msg).html('');
+    if (!(experiment.rescuetime || experiment.calendar || experiment.phone_notif || experiment.screen_events || experiment.app_usage)) {
         var msg = '<div class="text-center text-primary"> <h5> No Data stream added. </h5></div>';
-        $('#review-data-streams-msg').html(msg);
-    }
-
-    $('#review-screen-events').val(experiment.screenEvents);
-
-    $('#review-screen-event-btn').hide();
-    if (experiment.screenEvents === "on") {
-        $('#review-screen-event-btn').show();
+        $(data_streams_msg).html(msg);
     }
 
     // Review protocols - show protocols to be added
@@ -442,9 +452,11 @@ function update_protocols_view() {
 
 function beautify_protocol(protocol) {
     console.log('beautify: ', protocol);
-    var details = protocol.notif_details.replace(/\n/gi, " / ");
-    var ids = protocol.notif_appid.replace(/\n/gi, " / ");
-    return details + '<br> ~~~~~ <br>' + ids;
+    var details = protocol.notif_details.replace(/\n/gi, " / ") + '<br> ~~~~~ <br>';
+    if (protocol.method === 'push_notification') {
+        details += protocol.notif_appid.replace(/\n/gi, " / ");
+    }
+    return details;
 }
 
 function redraw_protocols_table(viewId) {
@@ -518,6 +530,13 @@ function formatDate(rawDate) {
     var parts = rawDate.split('-');
     var date = new Date(parts[0], parts[1] - 1, parts[2]);
     return date.toString().slice(0, 15);
+}
+
+
+function delete_study(code) {
+    if (confirm("Are you sure you want to delete this experiment (" + code + ")? This action cannot be reversed.")) {
+        window.location.href = '/delete/experiment/{0}'.format(code);
+    }
 }
 
 

@@ -8,7 +8,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 
 from apiclient import discovery
 from datetime import date, datetime, timedelta
-from rep.models import  Researcher, GcalUser, Experiment_v2
+from rep.models import  Researcher, GcalUser, Experiment
 
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client import client

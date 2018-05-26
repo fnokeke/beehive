@@ -9,7 +9,7 @@ import uuid
 # Database model for experiments
 
 
-class Experiment_v2(db.Model):
+class Experiment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(10), unique=True)
     label = db.Column(db.String(120))
@@ -17,25 +17,30 @@ class Experiment_v2(db.Model):
     description = db.Column(db.String(250))
     start_date = db.Column(db.Date)
     end_date = db.Column(db.Date)
+    rescuetime = db.Column(db.Boolean, default=False)
+    calendar = db.Column(db.Boolean, default=False)
+    phone_notif = db.Column(db.Boolean, default=False)
     screen_events = db.Column(db.Boolean, default=False)
     app_usage = db.Column(db.Boolean, default=False)
-    protocols = db.relationship('ProtocolPushNotif', backref='experiment_v2', lazy='select')
+    protocols = db.relationship('Protocol', backref='experiment', lazy='select')
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     owner = db.Column(db.String(120), db.ForeignKey('researcher.email'))
 
     def __init__(self, info):
-        self.code = info.get('code') if info.get('code') else Experiment_v2.generate_unique_id()
+        self.code = info.get('code') if info.get('code') else Experiment.generate_unique_id()
         self.label = info.get('label')
         self.title = info.get('title')
         self.description = info.get('description')
         self.start_date = info['start_date']
         self.end_date = info['end_date']
+        self.rescuetime = info.get('rescuetime')
+        self.calendar = info.get('calendar')
+        self.phone_notif = info.get('phone_notif')
         self.screen_events = info.get('screen_events')
         self.app_usage = info.get('app_usage')
         self.owner = info['owner']
 
         print 'info[start_date] = ', info['start_date']
-        print 'self.start_date = ', self.start_date
 
     def __repr__(self):
         result = {
@@ -46,6 +51,9 @@ class Experiment_v2(db.Model):
             'description': self.description,
             'start_date': str(self.start_date),
             'end_date': str(self.end_date),
+            'rescuetime': self.rescuetime,
+            'calendar': self.calendar,
+            'phone_notif': self.phone_notif,
             'screen_events': self.screen_events,
             'app_usage': self.app_usage,
             'created_date': str(self.created_date)
@@ -55,44 +63,44 @@ class Experiment_v2(db.Model):
     @staticmethod
     def generate_unique_id():
         code = str(uuid.uuid4())[:6]
-        while Experiment_v2.query.filter_by(code=code).first():
+        while Experiment.query.filter_by(code=code).first():
             code = str(uuid.uuid4())[:6]
         return code
 
     @staticmethod
     def add_experiment(exp):
         msg = "New experiment was successfully created."
-        existing_experiment = Experiment_v2.query.filter_by(title=exp['title']).first()
+        existing_experiment = Experiment.query.filter_by(title=exp['title']).first()
         if existing_experiment:  # recreate new experiment with updated details but same code
             exp['code'] = existing_experiment.code
-            Experiment_v2.delete_experiment(existing_experiment.code)
+            Experiment.delete_experiment(existing_experiment.code)
             msg = "Experiment was successfully updated."
 
-        new_experiment = Experiment_v2(exp)
+        new_experiment = Experiment(exp)
         db.session.add(new_experiment)
         db.session.commit()
-        new_experiment = Experiment_v2.query.filter_by(title=exp['title']).first()
+        new_experiment = Experiment.query.filter_by(title=exp['title']).first()
 
         # Add protocols  to protocols table
         protocols = json.loads(exp['protocols'])
         for p in protocols:
             p['exp_code'] = new_experiment.code
-            ProtocolPushNotif.add_protocol(p)
+            Protocol.add_protocol(p)
 
         return 200, msg, new_experiment
 
     @staticmethod
     def delete_experiment(code):
-        e = db.session.query(Experiment_v2).filter(Experiment_v2.code == code).first()
+        e = db.session.query(Experiment).filter(Experiment.code == code).first()
         db.session.delete(e)
         db.session.commit()
-        # Experiment_v2.query.filter_by(code=code).delete()
-        # ProtocolPushNotif.query.filter_by(code=code).delete()
+        # Experiment.query.filter_by(code=code).delete()
+        # Protocol.query.filter_by(code=code).delete()
         # db.session.commit()
 
     @staticmethod
     def update_experiment(update):
-        experiment = Experiment_v2.query.filter_by(code=update['code']).first()
+        experiment = Experiment.query.filter_by(code=update['code']).first()
         for key, value in update.iteritems():
             setattr(experiment, key, value)
 
@@ -108,7 +116,7 @@ class Experiment_v2(db.Model):
 
     @staticmethod
     def update_group(update):
-        experiment = Experiment_v2.query.filter_by(code=update['code']).first()
+        experiment = Experiment.query.filter_by(code=update['code']).first()
         return experiment
 
 
@@ -307,7 +315,7 @@ class Participant(db.Model):
 class Enrollment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     participant_id = db.Column(db.String(120), db.ForeignKey('participant.email'))
-    exp_code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
+    exp_code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
     enrolled_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, data):
@@ -334,7 +342,7 @@ class Enrollment(db.Model):
             response_message = {'message': 'Participant already enrolled in ' + data['exp_code']}
             http_response_code = 200
             resp = {}
-            experiment = Experiment_v2.query.filter_by(code=data['exp_code']).first()
+            experiment = Experiment.query.filter_by(code=data['exp_code']).first()
             resp['experiment'] = json.loads(str(experiment))
             protocols = Protocol.query.filter_by(exp_code=data['exp_code']).all()
             resp['protocols'] = json.loads(str(protocols))
@@ -347,7 +355,7 @@ class Enrollment(db.Model):
         if Enrollment.query.filter_by(exp_code=data['exp_code'], participant_id=data['participant_id']) is not None:
             http_response_code = 200
             resp = {}
-            experiment = Experiment_v2.query.filter_by(code=data['exp_code']).first()
+            experiment = Experiment.query.filter_by(code=data['exp_code']).first()
             resp['experiment'] = json.loads(str(experiment))
             protocols = Protocol.query.filter_by(exp_code=data['exp_code']).all()
             resp['protocols'] = json.loads(str(protocols))
@@ -358,10 +366,10 @@ class Enrollment(db.Model):
         return (http_response_code, response_message, result)
 
 
-class ProtocolPushNotif(db.Model):
+class Protocol(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     label = db.Column(db.String(50))
-    exp_code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
+    exp_code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     start_date = db.Column(db.Date)
     end_date = db.Column(db.Date)
@@ -406,17 +414,17 @@ class ProtocolPushNotif(db.Model):
 
     @staticmethod
     def add_protocol(data):
-        new_protocol = ProtocolPushNotif(data)
+        new_protocol = Protocol(data)
         db.session.add(new_protocol)
         db.session.commit()
-        latest_protocol = ProtocolPushNotif.query.order_by('created_at desc').first()
+        latest_protocol = Protocol.query.order_by('created_at desc').first()
         return 200, 'Successfully added intervention', latest_protocol
 
     @staticmethod
     def delete_protocol(pid):
-        # deleted_protocol = ProtocolPushNotif.query.filter_by(id=pid)
-        # ProtocolPushNotif.query.filter_by(id=pid).delete()
-        p = db.session.query(ProtocolPushNotif).filter(ProtocolPushNotif.id == pid).first()
+        # deleted_protocol = Protocol.query.filter_by(id=pid)
+        # Protocol.query.filter_by(id=pid).delete()
+        p = db.session.query(Protocol).filter(Protocol.id == pid).first()
         db.session.delete(p)
         db.session.commit()
         return 200, 'Successfully deleted protocol.', p
@@ -425,7 +433,7 @@ class ProtocolPushNotif(db.Model):
 class NotifEvent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), db.ForeignKey('participant.email'))
-    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
 
     alarm_millis = db.Column(db.BigInteger)
     ringer_mode = db.Column(db.String(10))
@@ -496,7 +504,7 @@ class NotifEvent(db.Model):
 class InAppAnalytics(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), db.ForeignKey('participant.email'))
-    code = db.Column(db.String(10), db.ForeignKey('experiment_v2.code'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
     event_time_millis = db.Column(db.BigInteger)
     event_desc = db.Column(db.String(50))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)

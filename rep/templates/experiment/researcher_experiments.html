@@ -8,7 +8,7 @@
 
     <div class="container">
         <div class="page-header">
-            <h3>Ongoing Experiments</h3>
+            <h3>Ongoing Study</h3>
         </div>
 
         <div id="experiment-table-list">
@@ -18,7 +18,7 @@
                     class="btn btn-primary"
                     onclick="window.location.href='{{ url_for('create_experiment') }}';">
                 <span class="glyphicon glyphicon-plus"></span>
-                Add Experiment
+                Add Study
             </button>
 
             <br>
@@ -30,7 +30,7 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th class="col-md-1"> NO</th>
+                        <th class="col-sm-1"> NO</th>
                         <th> TITLE</th>
                         <th> CODE</th>
                         <th> START DATE</th>
@@ -42,15 +42,15 @@
                     <tbody>
                     {% for exp in  experiments %}
                         <tr>
-                        <td class="col-md-1">{{ loop.index }}</td>
-                            <td class="col-md-4">
+                        <td class="col-sm-1">{{ loop.index }}</td>
+                            <td class="col-sm-4">
                                 <a href="/experiment/{{ exp.code }}">
                                     {{ exp.title }}
                                 </a>
                             </td>
-                            <td class="col-md-1"> {{ exp.code }} </td>
-                            <td class="col-md-1"> {{ exp.start_date | onlyfancydate }} </td>
-                            <td class="col-md-1"> {{ exp.end_date | onlyfancydate }} </td>
+                            <td class="col-sm-2"> {{ exp.code }} </td>
+                            <td class="col-sm-2"> {{ exp.start_date | onlyfancydate }} </td>
+                            <td class="col-sm-2"> {{ exp.end_date | onlyfancydate }} </td>
 {#                            <td class="col-md-2"><button class="btn btn-danger btn-sm" onclick="{{ exp.id }}">#}
 {#                                <span class="glyphicon glyphicon-remove"></span>#}
                             </button> </td>

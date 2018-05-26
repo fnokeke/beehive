@@ -6,7 +6,7 @@ from rep.models import MobileNotifLogs
 
 import json
 
-from rep.models import Experiment_v2, ProtocolPushNotif
+from rep.models import Experiment, Protocol
 from rep.models_beehive import NotifEvent, InAppAnalytics
 from rep.utils import to_json
 
@@ -15,8 +15,8 @@ from rep.utils import to_json
 def fetch_study():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     code = data.get('code')
-    experiment = Experiment_v2.query.filter_by(code=code).first()
-    protocols = ProtocolPushNotif.query.filter_by(exp_code=code).all()  # FIXME: consistent using exp_code or code for models
+    experiment = Experiment.query.filter_by(code=code).first()
+    protocols = Protocol.query.filter_by(exp_code=code).all()  # FIXME: consistent using exp_code or code for models
     response = {
         'experiment': json.loads(str(experiment)) if experiment else None,
         'protocols': [to_json(p) for p in protocols] if protocols else [],
