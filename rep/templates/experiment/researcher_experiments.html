@@ -30,7 +30,7 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th class="col-sm-1"> NO</th>
+                        <th class="col-xs-1"> NO</th>
                         <th> CODE</th>
                         <th> STUDY LABEL</th>
                         <th> DATASTREAMS</th>
@@ -43,14 +43,16 @@
                     <tbody>
                     {% for exp in  experiments %}
                         <tr>
-                            <td class="col-sm-1">{{ loop.index }}</td>
-                            <td class="col-sm-1"> {{ exp.code }} </td>
-                            <td class="col-sm-2">
+                            <td class="col-xs-1">
+                                <span class="col-xs-2"> {{ loop.index }} </span>
+                            </td>
+                            <td class="col-xs-2"> {{ exp.code }} </td>
+                            <td class="col-xs-2">
                                 <a href="/experiment/{{ exp.code }}">
                                     {{ exp.label }}
                                 </a>
                             </td>
-                            <td class="col-sm-2">
+                            <td class="col-xs-2">
                                 {% if exp.rescuetime %}
                                     ~Rescuetime<br>
                                 {% endif %}
@@ -73,8 +75,8 @@
                                 {% endif %}
 
                             </td>
-                            <td class="col-sm-2"> {{ exp.start_date | onlyfancydate }} </td>
-                            <td class="col-sm-2"> {{ exp.end_date | onlyfancydate }} </td>
+                            <td class="col-xs-2"> {{ exp.start_date | onlyfancydate }} </td>
+                            <td class="col-xs-2"> {{ exp.end_date | onlyfancydate }} </td>
                             {#                            <td class="col-md-2"><button class="btn btn-danger btn-sm" onclick="{{ exp.id }}">#}
                             {#                                <span class="glyphicon glyphicon-remove"></span>#}
                             </button> </td>
