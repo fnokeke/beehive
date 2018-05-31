@@ -19,6 +19,7 @@ from oauth2client.client import OAuth2WebServerFlow
 from sendgrid.helpers.mail import *
 from secret_keys import SENDGRID_API_KEY
 
+
 MISSING_DAYS_LIMIT = 3
 MISSING_PARTCIPANTS_LIMIT = 5
 

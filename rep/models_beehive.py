@@ -6,6 +6,7 @@ import datetime
 import json
 import uuid
 
+
 # Database model for experiments
 
 
@@ -122,7 +123,7 @@ class Experiment(db.Model):
 
 class Researcher(db.Model):
     # google login info and credentials for accessing google calendar
-    email = db.Column(db.String(120), primary_key=True, unique=True)
+    email = db.Column(db.String(50), primary_key=True, unique=True)
     firstname = db.Column(db.String(120))
     lastname = db.Column(db.String(120))
     gender = db.Column(db.String(10))
@@ -212,7 +213,7 @@ class Researcher(db.Model):
 
 # Database model to store participant information
 class Participant(db.Model):
-    email = db.Column(db.String(120), primary_key=True, unique=True)
+    email = db.Column(db.String(50), primary_key=True, unique=True)
     firstname = db.Column(db.String(120))
     lastname = db.Column(db.String(120))
     gender = db.Column(db.String(10))
@@ -367,7 +368,7 @@ class Enrollment(db.Model):
 
 class Protocol(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    label = db.Column(db.String(50))
+    label = db.Column(db.String(120))
     exp_code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     start_date = db.Column(db.Date)
@@ -431,13 +432,13 @@ class Protocol(db.Model):
 
 class NotifEvent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), db.ForeignKey('participant.email'))
+    email = db.Column(db.String(50), db.ForeignKey('participant.email'))
     code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
 
     alarm_millis = db.Column(db.BigInteger)
     ringer_mode = db.Column(db.String(10))
     method = db.Column(db.String(20))
-    title = db.Column(db.String(50))
+    title = db.Column(db.String(120))
     content = db.Column(db.String(50))
     app_id = db.Column(db.String(30))
 
@@ -506,7 +507,7 @@ class NotifEvent(db.Model):
 
 class InAppAnalytics(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), db.ForeignKey('participant.email'))
+    email = db.Column(db.String(50), db.ForeignKey('participant.email'))
     code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
     event_time_millis = db.Column(db.BigInteger)
     event_desc = db.Column(db.String(50))
@@ -552,7 +553,7 @@ class InAppAnalytics(db.Model):
 
 class MobileUser(db.Model):
     code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
-    email = db.Column(db.String(120), primary_key=True, unique=True)
+    email = db.Column(db.String(50), primary_key=True, unique=True)
     last_installed_ms = db.Column(db.String(30))
     pretty_last_installed = db.Column(db.String(30))
     app_version_name = db.Column(db.String(10))
@@ -618,6 +619,112 @@ class MobileUser(db.Model):
 
         return (200, 'Successfully enrolled in experiment.', new_user)
 
+
+# 2018-4-31T3:58:14 (timestamp), 0 (affect_arousal), 4(affect_valence), 3(positive_affect), 12(mood), delighted(negative_affect) 8,
+class PAM(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(50), primary_key=True, unique=True)
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    timestamp_z = db.Column(db.String(20))
+    affect_arousal = db.Column(db.Integer)
+    affect_valence = db.Column(db.Integer)
+    positive_affect = db.Column(db.Integer)
+    mood = db.Column(db.String(15))
+    negative_affect = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, info):
+        self.email = info['email']
+        self.code = info['code']
+        self.timestamp_z = info['timestamp_z']
+        self.affect_arousal = info['affect_arousal']
+        self.affect_valence = info['affect_valence']
+        self.positive_affect = info['positive_affect']
+        self.mood = info['mood']
+        self.negative_affect = info['negative_affect']
+
+    def __repr__(self):
+        result = {
+            'email': self.email,
+            'code': self.code,
+            'timestamp_z': self.timestamp_z,
+            'affect_arousal': self.affect_arousal,
+            'affect_valence': self.affect_valence,
+            'positive_affect': self.positive_affect,
+            'mood': self.mood,
+            'negative_affect': self.negative_affect,
+            'created_at': str(self.created_at)
+        }
+        return json.dumps(result)
+
+    @staticmethod
+    def add_stats(info):
+        rows = info['logs'].split(';')
+        for row in rows:
+            if row == "" or info['email'] == "":
+                continue
+
+            timestamp_z, affect_arousal, affect_valence, positive_affect, mood, negative_affect = row.split(",")
+            entry = {
+                'email': info['email'].strip('#'),
+                'code': info['code'].strip(),
+                'timestamp_z': timestamp_z,
+                'affect_arousal': affect_arousal,
+                'affect_valence': affect_valence,
+                'positive_affect': positive_affect,
+                'mood': mood,
+                'negative_affect': negative_affect
+            }
+            new_stat = PAM(entry)
+            db.session.add(new_stat)
+
+        db.session.commit()
+        return 200, 'Successfully added PAM log!', ""
+
+
+class MobileSurvey(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(50), primary_key=True, unique=True)
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    header = db.Column(db.String(200))
+    response = db.Column(db.String(200))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, info):
+        self.email = info['email']
+        self.code = info['code']
+        self.header = info['header']
+        self.response = info['response']
+
+    def __repr__(self):
+        result = {
+            'email': self.email,
+            'code': self.code,
+            'header': self.header,
+            'response': self.response,
+            'created_at': str(self.created_at)
+        }
+        return json.dumps(result)
+
+    @staticmethod
+    def add_stats(info):
+        rows = info['logs'].split(';')
+        for row in rows:
+            if row == "" or info['email'] == "":
+                continue
+
+            header, response = row.split(",")
+            entry = {
+                'email': info['email'].strip('#'),
+                'code': info['code'].strip(),
+                'header': header,
+                'response': response
+            }
+            new_stat = MobileSurvey(entry)
+            db.session.add(new_stat)
+
+        db.session.commit()
+        return 200, 'Successfully added survey log!', ""
 
 # TODO: have only one experiment table
 # TODO: move to same place: Beehive Researcher, Participant, NotifEvent

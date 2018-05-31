@@ -731,7 +731,7 @@ class ScreenUnlockConfig(db.Model):
 ########################################################################################################################
 class GcalUser(db.Model):
     # google login info and credentials for accessing google calendar
-    email = db.Column(db.String(120), primary_key=True, unique=True)
+    email = db.Column(db.String(50), primary_key=True, unique=True)
     firstname = db.Column(db.String(120))
     lastname = db.Column(db.String(120))
     gender = db.Column(db.String(10))
@@ -890,7 +890,7 @@ class GcalUser(db.Model):
 ########################################################################################################################
 class RescuetimeUser(db.Model):
     # google login info and credentials for accessing google calendar
-    email = db.Column(db.String(120), primary_key=True, unique=True)
+    email = db.Column(db.String(50), primary_key=True, unique=True)
     firstname = db.Column(db.String(120))
     lastname = db.Column(db.String(120))
     gender = db.Column(db.String(10))
@@ -1028,7 +1028,7 @@ class RescuetimeUser(db.Model):
 class RescuetimeData(db.Model):
     # Store RescueTime data
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120))
+    email = db.Column(db.String(50))
     created_date = db.Column(db.DateTime)
     date = db.Column(db.DateTime)
     time_spent = db.Column(db.Integer)
@@ -1072,7 +1072,7 @@ class RescuetimeData(db.Model):
 class RescuetimeAdmin(db.Model):
     # Store RescueTime data
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True)
+    email = db.Column(db.String(50), unique=True)
     notification = db.Column(db.Boolean, default=False)
     is_active = db.Column(db.Boolean, default=True)
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)

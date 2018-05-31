@@ -2,7 +2,7 @@ from rep import app
 from flask import request, Response
 
 from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_FacebookLog, TP_ScreenLog, \
-    MobileUser
+    MobileUser, PAM, MobileSurvey
 from rep.models import Participant
 from rep.models import MobileNotifLogs
 
@@ -150,3 +150,17 @@ def append_admin_fb_response(data):
 
 def rm_null(val):
     return "" if (val == "None" or not val) else val
+
+
+@app.route('/mobile/pam-logs', methods=['POST'])
+def mobile_pam_log():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    _, response, __ = PAM.add_stats(data)
+    return json.dumps({'response': response, 'email': data['email']})
+
+
+@app.route('/mobile/survey-logs', methods=['POST'])
+def mobile_survey_log():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    _, response, __ = MobileSurvey.add_stats(data)
+    return json.dumps({'response': response, 'email': data['email']})
