@@ -422,8 +422,6 @@ class Protocol(db.Model):
 
     @staticmethod
     def delete_protocol(pid):
-        # deleted_protocol = Protocol.query.filter_by(id=pid)
-        # Protocol.query.filter_by(id=pid).delete()
         p = db.session.query(Protocol).filter(Protocol.id == pid).first()
         db.session.delete(p)
         db.session.commit()
@@ -477,7 +475,7 @@ class NotifEvent(db.Model):
 
     @staticmethod
     def add_stats(info):
-        rows = info['logs'].split(';')
+        rows = info['logs'].split('\n')
 
         for row in rows:
             if row == "" or info['email'] == "":
@@ -532,7 +530,7 @@ class InAppAnalytics(db.Model):
 
     @staticmethod
     def add_stats(info):
-        rows = info['logs'].split(';')
+        rows = info['logs'].split('\n')
         for row in rows:
             if row == "" or info['email'] == "":
                 continue
@@ -552,8 +550,9 @@ class InAppAnalytics(db.Model):
 
 
 class MobileUser(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
-    email = db.Column(db.String(50), primary_key=True, unique=True)
+    email = db.Column(db.String(50), db.ForeignKey('participant.email'))
     last_installed_ms = db.Column(db.String(30))
     pretty_last_installed = db.Column(db.String(30))
     app_version_name = db.Column(db.String(10))
@@ -620,17 +619,17 @@ class MobileUser(db.Model):
         return (200, 'Successfully enrolled in experiment.', new_user)
 
 
-# 2018-4-31T3:58:14 (timestamp), 0 (affect_arousal), 4(affect_valence), 3(positive_affect), 12(mood), delighted(negative_affect) 8,
 class PAM(db.Model):
+    __tablename__ = "pam"
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(50), primary_key=True, unique=True)
+    email = db.Column(db.String(50), db.ForeignKey('participant.email'))
     code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
-    timestamp_z = db.Column(db.String(20))
-    affect_arousal = db.Column(db.Integer)
-    affect_valence = db.Column(db.Integer)
-    positive_affect = db.Column(db.Integer)
-    mood = db.Column(db.String(15))
-    negative_affect = db.Column(db.Integer)
+    timestamp_z = db.Column(db.String)
+    affect_arousal = db.Column(db.String)
+    affect_valence = db.Column(db.String)
+    positive_affect = db.Column(db.String)
+    mood = db.Column(db.String)
+    negative_affect = db.Column(db.String)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, info):
@@ -659,32 +658,39 @@ class PAM(db.Model):
 
     @staticmethod
     def add_stats(info):
-        rows = info['logs'].split(';')
-        for row in rows:
-            if row == "" or info['email'] == "":
-                continue
-
-            timestamp_z, affect_arousal, affect_valence, positive_affect, mood, negative_affect = row.split(",")
-            entry = {
-                'email': info['email'].strip('#'),
-                'code': info['code'].strip(),
-                'timestamp_z': timestamp_z,
-                'affect_arousal': affect_arousal,
-                'affect_valence': affect_valence,
-                'positive_affect': positive_affect,
-                'mood': mood,
-                'negative_affect': negative_affect
-            }
-            new_stat = PAM(entry)
-            db.session.add(new_stat)
-
-        db.session.commit()
+        rows = info['logs'].split('\n')
+        if len(rows) > 0:
+            headers = rows[0].split(',')
+            for row in rows[1:]:
+                if row == "":
+                    print "No data in row"
+                    continue
+                print
+                print
+                print '**************************'
+                print headers
+                print row
+                print '**************************'
+                values = row.split(',')
+                entry = {
+                    'email': info['email'].strip('#'),
+                    'code': info['code'].strip(),
+                    'timestamp_z': '' if 'timestamp' not in headers else values[headers.index('timestamp')],
+                    'affect_arousal': '' if 'affect_arousal' not in headers else values[headers.index('affect_arousal')],
+                    'affect_valence': '' if 'affect_valence' not in headers else values[headers.index('affect_valence')],
+                    'positive_affect': '' if 'positive_affect' not in headers else values[headers.index('positive_affect')],
+                    'mood': '' if 'mood' not in headers else values[headers.index('mood')],
+                    'negative_affect': '' if 'negative_affect' not in headers else values[headers.index('negative_affect')]
+                }
+                new_stat = PAM(entry)
+                db.session.add(new_stat)
+                db.session.commit()
         return 200, 'Successfully added PAM log!', ""
 
 
 class MobileSurvey(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(50), primary_key=True, unique=True)
+    email = db.Column(db.String(50), db.ForeignKey('participant.email'))
     code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
     header = db.Column(db.String(200))
     response = db.Column(db.String(200))
@@ -708,23 +714,19 @@ class MobileSurvey(db.Model):
 
     @staticmethod
     def add_stats(info):
-        rows = info['logs'].split(';')
-        for row in rows:
-            if row == "" or info['email'] == "":
-                continue
-
-            header, response = row.split(",")
+        rows = info['logs'].split('\n')
+        if len(rows) > 0:
             entry = {
                 'email': info['email'].strip('#'),
                 'code': info['code'].strip(),
-                'header': header,
-                'response': response
+                'header': rows[0],
+                'response': ';'.join(rows[1:])
             }
             new_stat = MobileSurvey(entry)
             db.session.add(new_stat)
+            db.session.commit()
 
-        db.session.commit()
-        return 200, 'Successfully added survey log!', ""
+        return 200, 'Successfully added survey log!', len(rows)
 
 # TODO: have only one experiment table
 # TODO: move to same place: Beehive Researcher, Participant, NotifEvent
