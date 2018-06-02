@@ -715,12 +715,19 @@ class MobileSurvey(db.Model):
     @staticmethod
     def add_stats(info):
         rows = info['logs'].split('\n')
-        if len(rows) > 0:
+        if rows == "":
+            print
+            print '***************No survey data.***************'
+            print
+
+        header = rows[0]
+        response = ';'.join(rows[1:])
+        if len(rows) > 0 and header != "" and response != "":
             entry = {
                 'email': info['email'].strip('#'),
                 'code': info['code'].strip(),
-                'header': rows[0],
-                'response': ';'.join(rows[1:])
+                'header': header,
+                'response': response
             }
             new_stat = MobileSurvey(entry)
             db.session.add(new_stat)
