@@ -6,6 +6,7 @@ import datetime
 import json
 import uuid
 
+
 # Database model for experiments
 
 
@@ -122,7 +123,7 @@ class Experiment(db.Model):
 
 class Researcher(db.Model):
     # google login info and credentials for accessing google calendar
-    email = db.Column(db.String(120), primary_key=True, unique=True)
+    email = db.Column(db.String(50), primary_key=True, unique=True)
     firstname = db.Column(db.String(120))
     lastname = db.Column(db.String(120))
     gender = db.Column(db.String(10))
@@ -212,7 +213,7 @@ class Researcher(db.Model):
 
 # Database model to store participant information
 class Participant(db.Model):
-    email = db.Column(db.String(120), primary_key=True, unique=True)
+    email = db.Column(db.String(50), primary_key=True, unique=True)
     firstname = db.Column(db.String(120))
     lastname = db.Column(db.String(120))
     gender = db.Column(db.String(10))
@@ -220,7 +221,6 @@ class Participant(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, profile, google_credentials):
-        print '********** now creating user ****************'
         print google_credentials
         self.email = profile['email']
         self.firstname = profile['firstname']
@@ -236,7 +236,7 @@ class Participant(db.Model):
 
     def is_authenticated(self):
         """
-        Returns `True`. NewParticipant is always authenticated.
+        Returns `True`. Participant is always authenticated.
         """
         return True
 
@@ -368,7 +368,7 @@ class Enrollment(db.Model):
 
 class Protocol(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    label = db.Column(db.String(50))
+    label = db.Column(db.String(120))
     exp_code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     start_date = db.Column(db.Date)
@@ -422,8 +422,6 @@ class Protocol(db.Model):
 
     @staticmethod
     def delete_protocol(pid):
-        # deleted_protocol = Protocol.query.filter_by(id=pid)
-        # Protocol.query.filter_by(id=pid).delete()
         p = db.session.query(Protocol).filter(Protocol.id == pid).first()
         db.session.delete(p)
         db.session.commit()
@@ -432,12 +430,13 @@ class Protocol(db.Model):
 
 class NotifEvent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), db.ForeignKey('participant.email'))
+    email = db.Column(db.String(50), db.ForeignKey('participant.email'))
     code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
 
     alarm_millis = db.Column(db.BigInteger)
     ringer_mode = db.Column(db.String(10))
-    title = db.Column(db.String(50))
+    method = db.Column(db.String(20))
+    title = db.Column(db.String(120))
     content = db.Column(db.String(50))
     app_id = db.Column(db.String(30))
 
@@ -450,6 +449,7 @@ class NotifEvent(db.Model):
         self.code = info['code']
         self.alarm_millis = info['alarm_millis']
         self.ringer_mode = info['ringer_mode']
+        self.method = info['method']
         self.title = info['title']
         self.content = info['content']
         self.app_id = info['app_id']
@@ -463,6 +463,7 @@ class NotifEvent(db.Model):
             'code': self.code,
             'alarm_millis': self.alarm_millis,
             'ringer_mode': self.ringer_mode,
+            'method': self.method,
             'title': self.title,
             'content': self.content,
             'app_id': self.app_id,
@@ -474,13 +475,13 @@ class NotifEvent(db.Model):
 
     @staticmethod
     def add_stats(info):
-        rows = info['logs'].split(';')
+        rows = info['logs'].split('\n')
 
         for row in rows:
             if row == "" or info['email'] == "":
                 continue
 
-            email, code, alarm_millis, ringer_mode, title, content, app_id, was_dismissed, event_time_millis = \
+            email, code, alarm_millis, ringer_mode, method, title, content, app_id, was_dismissed, event_time_millis = \
                 row.split(",")
 
             entry = {
@@ -488,6 +489,7 @@ class NotifEvent(db.Model):
                 'code': code.strip(),
                 'alarm_millis': alarm_millis,
                 'ringer_mode': ringer_mode,
+                'method': method,
                 'title': title,
                 'content': content,
                 'app_id': app_id,
@@ -503,7 +505,7 @@ class NotifEvent(db.Model):
 
 class InAppAnalytics(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), db.ForeignKey('participant.email'))
+    email = db.Column(db.String(50), db.ForeignKey('participant.email'))
     code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
     event_time_millis = db.Column(db.BigInteger)
     event_desc = db.Column(db.String(50))
@@ -528,7 +530,7 @@ class InAppAnalytics(db.Model):
 
     @staticmethod
     def add_stats(info):
-        rows = info['logs'].split(';')
+        rows = info['logs'].split('\n')
         for row in rows:
             if row == "" or info['email'] == "":
                 continue
@@ -545,6 +547,193 @@ class InAppAnalytics(db.Model):
 
         db.session.commit()
         return 200, 'Successfully added InAppAnalytics Event!', ""
+
+
+class MobileUser(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    email = db.Column(db.String(50), db.ForeignKey('participant.email'))
+    last_installed_ms = db.Column(db.String(30))
+    pretty_last_installed = db.Column(db.String(30))
+    app_version_name = db.Column(db.String(10))
+    app_version_code = db.Column(db.String(10))
+    phone_model = db.Column(db.String(30))
+    android_version = db.Column(db.String(10))
+    device_country = db.Column(db.String(10))
+    device_id = db.Column(db.String(30))
+
+    def __init__(self, info):
+        self.code = info['code']
+        self.email = info['email']
+        self.last_installed_ms = info['last_installed_ms']
+        self.pretty_last_installed = info['pretty_last_installed']
+        self.app_version_name = info['app_version_name']
+        self.app_version_code = info['app_version_code']
+        self.phone_model = info['phone_model']
+        self.android_version = info['android_version']
+        self.device_country = info['device_country']
+        self.device_id = info['device_id']
+
+    def __repr__(self):
+        result = {
+            'email': self.email,
+            'code': self.code,
+            'last_installed_ms': self.last_installed_ms,
+            'pretty_last_installed': self.pretty_last_installed,
+            'app_version_name': self.app_version_name,
+            'app_version_code': self.app_version_code,
+            'phone_model': self.phone_model,
+            'device_id': self.device_id,
+            'device_country': self.device_country,
+            'android_version': self.android_version}
+        return json.dumps(result)
+
+    @classmethod
+    def register(cls, data):
+        code = data['code']
+        experiment = Experiment.query.filter_by(code=code).first()
+        if not experiment:
+            return 400, "Experiment doesn't exist"
+
+        # already in experiment so no need to change anything
+        user_in_experiment = MobileUser.query.filter_by(email=data['email'], code=code).first()
+        if user_in_experiment:
+            return 200, "Already registered. Welcome back!"
+
+        # enrolling as first timer in an experiment
+        new_user = MobileUser(data)
+        db.session.add(new_user)
+        db.session.commit()
+        return 200, "Successfully registered!"
+
+    @staticmethod
+    def add_user(info):
+        existing_user = MobileUser.query.filter_by(email=info['email']).first()
+        if existing_user:
+            return (-1, 'Welcome back ' + existing_user.email, existing_user)
+
+        new_user = MobileUser(info)
+        db.session.add(new_user)
+        db.session.commit()
+
+        return (200, 'Successfully enrolled in experiment.', new_user)
+
+
+class PAM(db.Model):
+    __tablename__ = "pam"
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(50), db.ForeignKey('participant.email'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    timestamp_z = db.Column(db.String)
+    affect_arousal = db.Column(db.String)
+    affect_valence = db.Column(db.String)
+    positive_affect = db.Column(db.String)
+    mood = db.Column(db.String)
+    negative_affect = db.Column(db.String)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, info):
+        self.email = info['email']
+        self.code = info['code']
+        self.timestamp_z = info['timestamp_z']
+        self.affect_arousal = info['affect_arousal']
+        self.affect_valence = info['affect_valence']
+        self.positive_affect = info['positive_affect']
+        self.mood = info['mood']
+        self.negative_affect = info['negative_affect']
+
+    def __repr__(self):
+        result = {
+            'email': self.email,
+            'code': self.code,
+            'timestamp_z': self.timestamp_z,
+            'affect_arousal': self.affect_arousal,
+            'affect_valence': self.affect_valence,
+            'positive_affect': self.positive_affect,
+            'mood': self.mood,
+            'negative_affect': self.negative_affect,
+            'created_at': str(self.created_at)
+        }
+        return json.dumps(result)
+
+    @staticmethod
+    def add_stats(info):
+        rows = info['logs'].split('\n')
+        if len(rows) > 0:
+            headers = rows[0].split(',')
+            for row in rows[1:]:
+                if row == "":
+                    print "No data in row"
+                    continue
+                print
+                print
+                print '**************************'
+                print headers
+                print row
+                print '**************************'
+                values = row.split(',')
+                entry = {
+                    'email': info['email'].strip('#'),
+                    'code': info['code'].strip(),
+                    'timestamp_z': '' if 'timestamp' not in headers else values[headers.index('timestamp')],
+                    'affect_arousal': '' if 'affect_arousal' not in headers else values[headers.index('affect_arousal')],
+                    'affect_valence': '' if 'affect_valence' not in headers else values[headers.index('affect_valence')],
+                    'positive_affect': '' if 'positive_affect' not in headers else values[headers.index('positive_affect')],
+                    'mood': '' if 'mood' not in headers else values[headers.index('mood')],
+                    'negative_affect': '' if 'negative_affect' not in headers else values[headers.index('negative_affect')]
+                }
+                new_stat = PAM(entry)
+                db.session.add(new_stat)
+                db.session.commit()
+        return 200, 'Successfully added PAM log!', ""
+
+
+class MobileSurvey(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(50), db.ForeignKey('participant.email'))
+    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
+    header = db.Column(db.String(200))
+    response = db.Column(db.String(200))
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, info):
+        self.email = info['email']
+        self.code = info['code']
+        self.header = info['header']
+        self.response = info['response']
+
+    def __repr__(self):
+        result = {
+            'email': self.email,
+            'code': self.code,
+            'header': self.header,
+            'response': self.response,
+            'created_at': str(self.created_at)
+        }
+        return json.dumps(result)
+
+    @staticmethod
+    def add_stats(info):
+        rows = info['logs'].split('\n')
+        if rows == "":
+            print
+            print '***************No survey data.***************'
+            print
+
+        header = rows[0]
+        response = ';'.join(rows[1:])
+        if len(rows) > 0 and header != "" and response != "":
+            entry = {
+                'email': info['email'].strip('#'),
+                'code': info['code'].strip(),
+                'header': header,
+                'response': response
+            }
+            new_stat = MobileSurvey(entry)
+            db.session.add(new_stat)
+            db.session.commit()
+
+        return 200, 'Successfully added survey log!', len(rows)
 
 # TODO: have only one experiment table
 # TODO: move to same place: Beehive Researcher, Participant, NotifEvent

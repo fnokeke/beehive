@@ -227,74 +227,6 @@ class Intervention(db.Model):
         db.session.commit()
 
 
-class MobileUser(db.Model):
-    code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
-    firstname = db.Column(db.String(120))
-    lastname = db.Column(db.String(120))
-    gender = db.Column(db.String(10))
-    condition = db.Column(db.Integer)
-    email = db.Column(db.String(120), primary_key=True, unique=True)
-    last_installed_ms = db.Column(db.String(30))
-    pretty_last_installed = db.Column(db.String(30))
-    app_version_name = db.Column(db.String(10))
-    app_version_code = db.Column(db.String(10))
-    phone_model = db.Column(db.String(30))
-    android_version = db.Column(db.String(10))
-    device_country = db.Column(db.String(10))
-    device_id = db.Column(db.String(30))
-
-    def __init__(self, info):
-        self.firstname = info['firstname']
-        self.lastname = info['lastname']
-        self.email = info['email']
-        self.gender = info['gender']
-        self.code = info['code']
-        self.condition = info['condition']
-        self.last_installed_ms = info['last_installed_ms']
-        self.pretty_last_installed = info['pretty_last_installed']
-        self.app_version_name = info['app_version_name']
-        self.app_version_code = info['app_version_code']
-        self.phone_model = info['phone_model']
-        self.android_version = info['android_version']
-        self.device_country = info['device_country']
-        self.device_id = info['device_id']
-
-    def __repr__(self):
-        result = {'firstname': self.firstname,
-                  'lastname': self.lastname,
-                  'email': self.email,
-                  'gender': self.gender,
-                  'code': self.code,
-                  'condition': self.condition,
-                  'last_installed_ms': self.last_installed_ms,
-                  'pretty_last_installed': self.pretty_last_installed,
-                  'app_version_name': self.app_version_name,
-                  'app_version_code': self.app_version_code,
-                  'phone_model': self.phone_model,
-                  'device_id': self.device_id,
-                  'device_country': self.device_country,
-                  'android_version': self.android_version}
-        return json.dumps(result)
-
-    def update_experiment_info(self, code, condition):
-        self.code = code
-        self.condition = condition
-        db.session.commit()
-        return (200, 'Successfully switched experiment.', self)
-
-    @staticmethod
-    def add_user(info):
-        existing_user = MobileUser.query.filter_by(email=info['email']).first()
-        if existing_user:
-            return (-1, 'Welcome back ' + existing_user.firstname, existing_user)
-
-        new_user = MobileUser(info)
-        db.session.add(new_user)
-        db.session.commit()
-
-        return (200, 'Successfully enrolled in experiment.', new_user)
-
-
 class Mturk(db.Model):
     worker_id = db.Column(db.String(120), primary_key=True, unique=True)
     moves_id = db.Column(db.String(120), unique=True)
@@ -794,114 +726,12 @@ class ScreenUnlockConfig(db.Model):
         return (200, 'Successfully added screen unlock setting.', unlock_setting)
 
 
-
-class NewParticipant(db.Model):
-    # google login info and credentials for accessing google calendar
-    email = db.Column(db.String(120), primary_key=True, unique=True)
-    firstname = db.Column(db.String(120))
-    lastname = db.Column(db.String(120))
-    gender = db.Column(db.String(10))
-    picture = db.Column(db.String(120))
-    google_credentials = db.Column(db.String(2500), unique=True)
-
-    omh_access_token = db.Column(db.String(120))
-    omh_refresh_token = db.Column(db.String(120))
-
-    def __init__(self, profile):
-        self.email = profile.get('email', '')
-        self.firstname = profile.get('given_name', '')
-        self.lastname = profile.get('family_name', '')
-        self.gender = profile.get('gender', '')
-        self.picture = profile.get('picture', '')
-
-    def __repr__(self):
-        return self.email
-
-    def is_active(self):
-        return True
-
-    def is_authenticated(self):
-        """
-        Returns `True`. NewParticipant is always authenticated.
-        """
-        return True
-
-    def is_anonymous(self):
-        """
-        Returns `False`. There are no Anonymous here.
-        """
-        return False
-
-    def get_id(self):
-        """
-        Take `id` attribute and convert it to `unicode`.
-        """
-        return unicode(self.email)
-
-    def update_field(self, key, value):
-        """
-        Set user field with give value and save to database.
-        """
-        user = NewParticipant.query.get(self.email)
-        setattr(user, key, value)  # same: user.key = value
-        db.session.commit()
-
-    def update_moves_id(self, moves_id):
-        """
-        Set moves_id field
-        """
-        if NewParticipant.query.filter_by(moves_id=moves_id).first():
-            return 'Already Exists'
-        self.update_field('moves_id', moves_id)
-
-    def is_authorized(self, label):
-        """
-        Return True if datastream label has been authenticated else False.
-        """
-        if label == 'moves':
-            return self.moves_id and self.moves_access_token and self.moves_refresh_token
-        elif label == 'gcal':
-            return self.google_credentials
-        elif label == 'pam':
-            return self.pam_access_token and self.pam_refresh_token
-        else:
-            raise NotImplementedError("Auth failed for label: %s." % label)
-
-    @classmethod
-    def get_user(cls, email):
-        """
-        Return user object from database using primary_key(email).
-        """
-        return cls.query.get(email)
-
-    @classmethod
-    def get_all_users(cls):
-        """
-        Return list of all users from database.
-        """
-        return cls.query.all()
-
-    @classmethod
-    def from_profile(cls, profile):
-        """
-        Return new user or existing user from database using their profile information.
-        """
-        email = profile.get('email')
-        if not cls.query.get(email):
-            new_user = cls(profile)
-            db.session.add(new_user)
-            db.session.commit()
-
-        user = cls.query.get(email)
-        return user
-
-
 ########################################################################################################################
 # Gcal user
 ########################################################################################################################
 class GcalUser(db.Model):
     # google login info and credentials for accessing google calendar
-    email = db.Column(db.String(120), primary_key=True, unique=True)
+    email = db.Column(db.String(50), primary_key=True, unique=True)
     firstname = db.Column(db.String(120))
     lastname = db.Column(db.String(120))
     gender = db.Column(db.String(10))
@@ -1060,7 +890,7 @@ class GcalUser(db.Model):
 ########################################################################################################################
 class RescuetimeUser(db.Model):
     # google login info and credentials for accessing google calendar
-    email = db.Column(db.String(120), primary_key=True, unique=True)
+    email = db.Column(db.String(50), primary_key=True, unique=True)
     firstname = db.Column(db.String(120))
     lastname = db.Column(db.String(120))
     gender = db.Column(db.String(10))
@@ -1198,7 +1028,7 @@ class RescuetimeUser(db.Model):
 class RescuetimeData(db.Model):
     # Store RescueTime data
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120))
+    email = db.Column(db.String(50))
     created_date = db.Column(db.DateTime)
     date = db.Column(db.DateTime)
     time_spent = db.Column(db.Integer)
@@ -1242,7 +1072,7 @@ class RescuetimeData(db.Model):
 class RescuetimeAdmin(db.Model):
     # Store RescueTime data
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True)
+    email = db.Column(db.String(50), unique=True)
     notification = db.Column(db.Boolean, default=False)
     is_active = db.Column(db.Boolean, default=True)
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)

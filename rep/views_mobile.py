@@ -1,7 +1,9 @@
 from rep import app
 from flask import request, Response
 
-from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_FacebookLog, TP_ScreenLog
+from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_FacebookLog, TP_ScreenLog, \
+    MobileUser, PAM, MobileSurvey
+from rep.models import Participant
 from rep.models import MobileNotifLogs
 
 import json
@@ -9,6 +11,13 @@ import json
 from rep.models import Experiment, Protocol
 from rep.models_beehive import NotifEvent, InAppAnalytics
 from rep.utils import to_json
+
+
+@app.route('/mobile/register', methods=['POST'])
+def mobile_register_user():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    status, response = MobileUser.register(data)
+    return Response(status=status, response=json.dumps({'response': response}), mimetype='application/json')
 
 
 @app.route('/mobile/fetchstudy', methods=["POST"])
@@ -55,15 +64,9 @@ def mobile_worker_id():
     if status == -1:
         return json.dumps({'status': -1, 'response': response, 'worker_id': -1, 'survey_link': ''})
 
-    valid_codes = ["mturk", "tech", "hci", "uncdf"]
-    if not data['study_code'] in valid_codes:
-        return json.dumps({'status': -1,
-                           'response': "Invalid study code. Check it and try again.",
-                           'worker_id': -1,
-                           'survey_link': ''})
-
     TP_Admin.add_user(data)
-    user_response = response + '\nYour HIT Code: {}\nClick to complete survey:'.format(worker.worker_code)
+    user_response = response + '\nYour Study Code: {}'.format(worker.worker_code)
+    # user_response = response + '\nYour HIT Code: {}\nClick to complete survey:'.format(worker.worker_code)
 
     survey_link = 'http://bit.ly/surveyOne'
     if data['study_code'] == 'tech':
@@ -141,3 +144,17 @@ def append_admin_fb_response(data):
 
 def rm_null(val):
     return "" if (val == "None" or not val) else val
+
+
+@app.route('/mobile/pam-logs', methods=['POST'])
+def mobile_pam_log():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    _, response, __ = PAM.add_stats(data)
+    return json.dumps({'response': response, 'email': data['email']})
+
+
+@app.route('/mobile/survey-logs', methods=['POST'])
+def mobile_survey_log():
+    data = json.loads(request.data) if request.data else request.form.to_dict()
+    _, response, __ = MobileSurvey.add_stats(data)
+    return json.dumps({'response': response, 'email': data['email']})

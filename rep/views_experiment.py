@@ -3,7 +3,7 @@ from rep import app
 from flask import render_template, request, Response, redirect
 from flask import url_for, flash, send_file, make_response
 from flask_login import current_user, login_required
-from rep.models import Experiment, Enrollment, Participant, Protocol
+from rep.models import Experiment, Enrollment, Participant, Protocol, MobileUser
 from rep.models import InAppAnalytics, TP_FgAppLog, TP_ScreenLog, RescuetimeUser
 from io import BytesIO
 from datetime import datetime
@@ -79,16 +79,16 @@ def add_experiment():
 # Endpoint to display participants in an experiment
 @app.route('/participants/experiment/<code>')
 def experiment_participants(code):
-    participants = Participant.query.join(Enrollment, Participant.email == Enrollment.participant_id)\
-        .add_columns(Participant.email, Participant.firstname, Participant.lastname, Participant.gender, Participant.created_at)\
-        .filter(Enrollment.exp_code == code).all()
+    # participants = Participant.query.join(Enrollment, Participant.email == Enrollment.participant_id)\
+    #     .add_columns(Participant.email, Participant.firstname, Participant.lastname, Participant.gender, Participant.created_at)\
+    #     .filter(Enrollment.exp_code == code).all()
 
     ctx = {
         'user_type': 'researcher',
         'today_date': datetime.now().strftime('%Y-%m-%d'),
         'experiment': Experiment.query.filter_by(code=code).first(),
         'protocols': Protocol.query.filter_by(exp_code=code).all(),
-        'participants': participants,
+        'participants': MobileUser.query.filter_by(code=code).all(),
         'rescuetime_participants': RescuetimeUser.query.filter_by(code=code).all(),
         'dashboard_page': True
     }

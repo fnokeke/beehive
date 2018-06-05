@@ -22,7 +22,7 @@ from rep import app, login_manager
 from rep import export
 from rep.models import CalendarConfig, DailyReminderConfig, GeneralNotificationConfig, VibrationConfig
 from rep.models import Intervention, MobileUser, Mturk, MturkPrelimRecruit
-from rep.models import Experiment, Protocol, Researcher, Enrollment, Participant, NewParticipant, RescuetimeUser
+from rep.models import Experiment, Protocol, Researcher, Enrollment, Participant, RescuetimeUser
 from rep.models import MturkExclusive, NafEnroll, NafStats, ImageTextUpload, GcalUser
 from rep.models import RescuetimeConfig, ScreenUnlockConfig
 from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_FacebookLog, TP_ScreenLog
@@ -176,40 +176,40 @@ def get_next_condition(total_enrolled, ps_per_condition):
 ########################################################################################################################
 # Beehive mobile user study connection
 ########################################################################################################################
-@app.route('/mobile/connect/study', methods=['POST'])
-def connect_study():
-    data = json.loads(request.data) if request.data else request.form.to_dict()
-    code = data['code']
-    experiment = Experiment.query.filter_by(code=code).first()
-    if not experiment:
-        return json.dumps({'response': jsonify_responses('', ''), 'user': {}, 'experiment': {}})
+# @app.route('/mobile/connect/study', methods=['POST'])
+# def connect_study():
+#     data = json.loads(request.data) if request.data else request.form.to_dict()
+#     code = data['code']
+#     experiment = Experiment.query.filter_by(code=code).first()
+#     if not experiment:
+#         return json.dumps({'response': jsonify_responses('', ''), 'user': {}, 'experiment': {}})
+#
+#     # already in experiment so no need to change anything
+#     user_in_experiment = MobileUser.query.filter_by(email=data['email'], code=code).first()
+#     if user_in_experiment:
+#         return json.dumps({'response': jsonify_responses('Welcome back!', ''),
+#                            'user': to_json(user_in_experiment),
+#                            'experiment': to_json(experiment)})
+#
+#     # at this point user needs to be enrolled either as switching experiment or new user
+#     total_enrolled = len(MobileUser.query.filter_by(code=code).all())
+#     data['condition'] = get_next_condition(total_enrolled, experiment.ps_per_condition)
+#
+#     # user in one experiment and moving to another
+#     existing_user = MobileUser.query.filter_by(email=data['email']).first()
+#     if existing_user:
+#         _, response, user = existing_user.update_experiment_info(code, data['condition'])
+#         return json.dumps({'response': response, 'user': to_json(user), 'experiment': to_json(experiment)})
+#
+#     # enrolling as first timer in an experiment
+#     _, user_response, new_user = MobileUser.add_user(data)
+#     _, cal_response, __ = CalendarConfig.add(data)
+#     response = jsonify_responses(user_response, cal_response)
+#     return json.dumps({'response': response, 'user': to_json(new_user), 'experiment': to_json(experiment)})
 
-    # already in experiment so no need to change anything
-    user_in_experiment = MobileUser.query.filter_by(email=data['email'], code=code).first()
-    if user_in_experiment:
-        return json.dumps({'response': jsonify_responses('Welcome back!', ''),
-                           'user': to_json(user_in_experiment),
-                           'experiment': to_json(experiment)})
 
-    # at this point user needs to be enrolled either as switching experiment or new user
-    total_enrolled = len(MobileUser.query.filter_by(code=code).all())
-    data['condition'] = get_next_condition(total_enrolled, experiment.ps_per_condition)
-
-    # user in one experiment and moving to another
-    existing_user = MobileUser.query.filter_by(email=data['email']).first()
-    if existing_user:
-        _, response, user = existing_user.update_experiment_info(code, data['condition'])
-        return json.dumps({'response': response, 'user': to_json(user), 'experiment': to_json(experiment)})
-
-    # enrolling as first timer in an experiment
-    _, user_response, new_user = MobileUser.add_user(data)
-    _, cal_response, __ = CalendarConfig.add(data)
-    response = jsonify_responses(user_response, cal_response)
-    return json.dumps({'response': response, 'user': to_json(new_user), 'experiment': to_json(experiment)})
-
-
-def jsonify_responses(user_response, cal_response):
-    return {'user_response': user_response, 'cal_response': cal_response}
+# def jsonify_responses(user_response, cal_response):
+#     return {'user_response': user_response, 'cal_response': cal_response}
 
 
 @app.route('/mobile/add/calendar-config', methods=['POST'])
@@ -455,7 +455,7 @@ def android_google_login_participant():
     login_user(user)
 
     android_app_deeplink = 'beehive://androidlogin'
-    redirect_url = "{}?{}?{}".format(android_app_deeplink, user.firstname, str(user))
+    redirect_url = "{}?{}?{}".format(android_app_deeplink, user.firstname, user.email)
     return redirect(redirect_url)
 
 
@@ -1178,9 +1178,11 @@ def _jinja2_strformatonly_time(time_str):
 def _jinja2_strformat_ftime(datestr):
     return datetime.strptime(datestr, '%Y-%m-%d %H:%M:%S')
 
+
 @app.template_filter('onlydatefmt')
 def _jinja2_strformat_onlydatefmt(date):
     return date.strftime('%Y-%m-%d')
+
 
 @app.template_filter('ms_to_datetime')
 def _jinja2_ms_to_datetime_ftime(time_milli):

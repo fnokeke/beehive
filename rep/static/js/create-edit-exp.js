@@ -409,7 +409,7 @@ function create_protocol_handler() {
         notif_time = sleep_time
     }
 
-    var notif_appid = $('#protocol-notif-appid').val();
+    var notif_appid;
     var details;
     var protocol_method = $('#protocol-method').val();
     if (protocol_method === 'none') {
@@ -417,10 +417,13 @@ function create_protocol_handler() {
         details = '';
     } else if (protocol_method === 'pam') {
         details = 'pam';
+        notif_appid = 'pam';
     } else if (protocol_method === 'push_survey') {
         details = $('#protocol-survey-details').val();
+        notif_appid = 'push_survey';
     } else if (protocol_method === 'push_notification') {
         details = $('#protocol-notif-details').val();
+        notif_appid = $('#protocol-notif-appid').val();
     }
 
     var protocol = {
