@@ -64,15 +64,9 @@ def mobile_worker_id():
     if status == -1:
         return json.dumps({'status': -1, 'response': response, 'worker_id': -1, 'survey_link': ''})
 
-    valid_codes = ["mturk", "tech", "hci", "uncdf"]
-    if not data['study_code'] in valid_codes:
-        return json.dumps({'status': -1,
-                           'response': "Invalid study code. Check it and try again.",
-                           'worker_id': -1,
-                           'survey_link': ''})
-
     TP_Admin.add_user(data)
-    user_response = response + '\nYour HIT Code: {}\nClick to complete survey:'.format(worker.worker_code)
+    user_response = response + '\nYour Study Code: {}'.format(worker.worker_code)
+    # user_response = response + '\nYour HIT Code: {}\nClick to complete survey:'.format(worker.worker_code)
 
     survey_link = 'http://bit.ly/surveyOne'
     if data['study_code'] == 'tech':
