@@ -1,54 +1,62 @@
 {% extends "base.html" %}
 
 {% block title %}
-  Download
+    Download
 {% endblock %}
 
 {% block cover %}
-  <link href="{{ url_for('static', filename='cover.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='cover.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
 
-  <div class="container">
-
-    <div class="page-header">
-      <h2>Android Suite</h2>
-    </div>
-
-    <div>
+    <div class="container">
 
         <div class="page-header">
-            <h4>Appstats</h4>
-            <p>
-                <a href="{{ url_for('static', filename='downloads/appstats.apk') }}">Appstats 2.22</a>
-            </p>
+            <h2>Android Suite</h2>
+        </div>
+
+        <div>
+
+            <div class="page-header">
+                <h4>Appstats</h4>
+                <p>
+                    <a href="{{ url_for('static', filename='downloads/appstats.apk') }}">Appstats 2.22</a>
+                </p>
+
+            </div>
+
+            <div class="page-header">
+                <h4>Beehive App</h4>
+                <p>
+                    <a href="{{ url_for('static', filename='downloads/beehive-1.9.apk') }}">Beehive 1.9</a>
+                </p>
+            </div>
+
+            <div class="page-header">
+                <h4>App Monitoring</h4>
+                <p>
+                    <a href="{{ url_for('static', filename='downloads/goodvibe.apk') }}">Goodvibe Monitoring</a>
+                </p>
+
+            </div>
+
+            <div class="page-header">
+                <h4>Goodvibe - Intervention</h4>
+                <p>
+                    <a href="{{ url_for('static', filename='downloads/goodvibe-intv.apk') }}">Goodvibe Intv</a>
+                </p>
+
+            </div>
+
+            <div class="page-header">
+                <h4>GeoPlaces</h4>
+                <p>
+                    <a href="{{ url_for('static', filename='downloads/geoplaces-1.6.apk') }}">Geo Places 1.6</a>
+                </p>
+            </div>
 
         </div>
 
-      <div class="page-header">
-        <h4>Beehive App</h4>
-        <p>
-          <a href="{{ url_for('static', filename='downloads/beehive-1.9.apk') }}">Beehive 1.9</a>
-        </p>
-      </div>
-
-      <div class="page-header">
-        <h4>Goodvibe App</h4>
-        <p>
-          <a href="{{ url_for('static', filename='downloads/goodvibe-2.5.apk') }}">Goodvibe 2.5</a>
-        </p>
-
-      </div>
-
-      <div class="page-header">
-        <h4>GeoPlaces</h4>
-        <p>
-          <a href="{{ url_for('static', filename='downloads/geoplaces-1.6.apk') }}">Geo Places 1.6</a>
-        </p>
-      </div>
-
     </div>
-
-  </div>
 {% endblock %}
