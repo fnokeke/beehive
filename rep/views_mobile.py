@@ -65,17 +65,17 @@ def mobile_worker_id():
         return json.dumps({'status': -1, 'response': response, 'worker_id': -1, 'survey_link': ''})
 
     TP_Admin.add_user(data)
-    user_response = response + '\nYour Study Code: {}'.format(worker.worker_code)
+    # user_response = response + '\nYour Study Code: {}'.format(worker.worker_code)
     # user_response = response + '\nYour HIT Code: {}\nClick to complete survey:'.format(worker.worker_code)
 
-    survey_link = 'http://bit.ly/surveyOne'
-    if data['study_code'] == 'tech':
-        survey_link = 'http://bit.ly/surveyTech'
+    # survey_link = 'http://bit.ly/surveyOne'
+    # if data['study_code'] == 'tech':
+    #     survey_link = 'http://bit.ly/surveyTech'
 
     server_response = {'status': 200,
-                       'response': user_response,
+                       'response': response,
                        'worker_id': worker.worker_id,
-                       'survey_link': survey_link}
+                       'survey_link': ''}
     return json.dumps(server_response)
 
 

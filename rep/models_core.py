@@ -321,7 +321,7 @@ class MturkPrelimRecruit(db.Model):
         if enrolled_worker:
             return (200, 'Worker already added.', enrolled_worker)
         elif enrolled_device:
-            return (-1, 'Device already registered to another worker Id.', enrolled_worker)
+            return (-1, 'Device already registered.', enrolled_worker)
 
         new_worker = MturkPrelimRecruit(info)
         db.session.add(new_worker)

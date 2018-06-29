@@ -150,7 +150,8 @@ class TP_Enrolled(db.Model):
 
         existing_device = TP_Enrolled.query.filter_by(device_id=info['device_id']).first()
         if existing_device:
-            return (-1, 'Device already registered with another WorkerId.', existing_device)
+            return (200, 'Welcome back! Device already registered.', existing_device)
+            # return (-1, 'Device already registered with another WorkerId.', existing_device)
 
         new_worker = TP_Enrolled(info)
         db.session.add(new_worker)
