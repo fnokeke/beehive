@@ -302,6 +302,7 @@ class TP_FgAppLog(db.Model):
 
     def __init__(self, info):
         self.worker_id = info['worker_id']
+        self.code = info['code']
         self.app_id = info['app_id'][:30]
         self.time_seconds = info['time_seconds']
         self.time_millis = info['time_millis']
@@ -311,6 +312,7 @@ class TP_FgAppLog(db.Model):
             'id': str(self.id),
             'created_at': str(self.created_at),
             'worker_id': self.worker_id,
+            'code': self.code,
             'app_id': self.app_id,
             'time_seconds': self.time_seconds,
             'time_millis': self.time_millis
@@ -320,13 +322,14 @@ class TP_FgAppLog(db.Model):
     @staticmethod
     def add_stats(info):
         worker_id = info['worker_id']
+        code = info['code']
         logs = info['logs']
         rows = logs.split(';')
 
         for row in rows:
             if row == "": continue
             app_id, time_seconds, time_millis = row.split(",")
-            entry = {'worker_id': worker_id, 'app_id': app_id, 'time_seconds': time_seconds, 'time_millis': time_millis}
+            entry = {'worker_id': worker_id, 'code': code, 'app_id': app_id, 'time_seconds': time_seconds, 'time_millis': time_millis}
             new_stats = TP_FgAppLog(entry)
             db.session.add(new_stats)
 
@@ -395,6 +398,7 @@ class TP_ScreenLog(db.Model):
 
     def __init__(self, info):
         self.worker_id = info['worker_id']
+        self.code = info['code']
         self.event = info['event']
         self.time_millis = info['time_millis']
 
@@ -403,6 +407,7 @@ class TP_ScreenLog(db.Model):
             'id': str(self.id),
             'created_at': str(self.created_at),
             'worker_id': self.worker_id,
+            'code': self.code,
             'event': self.event,
             'time_millis': self.time_millis
         }
@@ -411,13 +416,14 @@ class TP_ScreenLog(db.Model):
     @staticmethod
     def add_stats(info):
         worker_id = info['worker_id']
+        code = info['code']
         logs = info['logs']
         rows = logs.split(';')
 
         for row in rows:
             if row == "": continue
             event, time_millis = row.split(",")
-            entry = {'worker_id': worker_id, 'event': event, 'time_millis': time_millis}
+            entry = {'worker_id': worker_id, 'code': code, 'event': event, 'time_millis': time_millis}
             new_stats = TP_ScreenLog(entry)
             db.session.add(new_stats)
 
