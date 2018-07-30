@@ -196,6 +196,7 @@ $('#protocol-method').on('change', function () {
         $("#div-partial-time-config").removeClass("hidden");
         $("#protocol-pam").removeClass("hidden");
         $("#protocol-push-survey").addClass("hidden");
+        $("#protocol-one-time-notif").addClass("hidden");
         $("#protocol-push-notif").addClass("hidden");
         $("#protocol-vibration-phone-usage").addClass("hidden");
         $("#protocol-vibration-app-usage").addClass("hidden");
@@ -204,6 +205,17 @@ $('#protocol-method').on('change', function () {
         $("#div-partial-time-config").removeClass("hidden");
         $("#protocol-pam").addClass("hidden");
         $("#protocol-push-survey").removeClass("hidden");
+        $("#protocol-one-time-notif").addClass("hidden");
+        $("#protocol-push-notif").addClass("hidden");
+        $("#protocol-vibration-phone-usage").addClass("hidden");
+        $("#protocol-vibration-app-usage").addClass("hidden");
+    }
+    else if ($(this).val() === "push_one_time_notif") {
+        $("#div-partial-time-config").addClass("hidden");
+        $("#div-protocol-start-end-dates").addClass("hidden");
+        $("#protocol-pam").addClass("hidden");
+        $("#protocol-push-survey").addClass("hidden");
+        $("#protocol-one-time-notif").removeClass("hidden");
         $("#protocol-push-notif").addClass("hidden");
         $("#protocol-vibration-phone-usage").addClass("hidden");
         $("#protocol-vibration-app-usage").addClass("hidden");
@@ -214,6 +226,7 @@ $('#protocol-method').on('change', function () {
         $("#protocol-vibration-phone-usage").removeClass("hidden");
         $("#protocol-push-survey").addClass("hidden");
         $("#protocol-push-notif").addClass("hidden");
+        $("#protocol-one-time-notif").addClass("hidden");
         $("#protocol-vibration-app-usage").addClass("hidden");
     }
     else if ($(this).val() === "vibration_by_app_usage") {
@@ -222,6 +235,7 @@ $('#protocol-method').on('change', function () {
         $("#protocol-vibration-app-usage").removeClass("hidden");
         $("#protocol-push-survey").addClass("hidden");
         $("#protocol-push-notif").addClass("hidden");
+        $("#protocol-one-time-notif").addClass("hidden");
         $("#protocol-vibration-phone-usage").addClass("hidden");
     }
 });
@@ -260,7 +274,7 @@ $('#notification-fixed-random').click(function () {
 
 //////////////////////////////////////////////////////////
 
-function create_experiment_handler() {
+function create_experiment_handler(code) {
     // Clean up data and call server api
     var response_field = '#review-experiment-error';
 
@@ -290,6 +304,7 @@ function create_experiment_handler() {
 
     var url = '/add/experiment';
     var data = {
+        'code': code,
         'label': label,
         'title': title,
         'description': description,
@@ -412,6 +427,7 @@ function create_protocol_handler() {
     var notif_appid;
     var details;
     var protocol_method = $('#protocol-method').val();
+    console.log("before push_one_time_called");
     if (protocol_method === 'none') {
         notif_type = 'none';
         details = '';
@@ -424,6 +440,10 @@ function create_protocol_handler() {
     } else if (protocol_method === 'push_notification') {
         details = $('#protocol-notif-details').val();
         notif_appid = $('#protocol-notif-appid').val();
+    } else if (protocol_method === 'push_one_time_notif') {
+        details = $('#protocol-one-time-details').val();
+        notif_appid = 'push_one_time_notif';
+        console.log("push_one_time_called");
     }
 
     var protocol = {
@@ -461,9 +481,15 @@ function update_protocols_view() {
 
 function beautify_protocol(protocol) {
     console.log('beautify: ', protocol);
-    var details = protocol.notif_details.replace(/\n/gi, " / ") + '<br> ~~~~~ <br>';
+    var details;
     if (protocol.method === 'push_notification') {
-        details += protocol.notif_appid.replace(/\n/gi, " / ");
+        details = protocol.notif_details.substr(0,15) + "... / " + protocol.notif_appid.substr(0,20) + "...";
+    } else if (protocol.method === 'push_survey') {
+        details = "{" + protocol.notif_details.substr(0,50) + "... }";
+    } else {
+        details = protocol.notif_details.substr(0,30);
+        // details = protocol.notif_details.replace(/\n/gi, " / ");
+        // details = protocol.notif_details.replace(/\n/gi, " / ") + '<br> ~~~~~ <br>';
     }
     return details;
 }

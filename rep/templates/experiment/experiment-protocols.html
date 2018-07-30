@@ -40,32 +40,36 @@
                 <table class="table table-hover" id="experiment-protocols-table">
                     <thead>
                     <tr class="bg-primary">
-                        <th> NO </th>
-                        <th> LABEL </th>
-                        <th> START DATE </th>
-                        <th> END DATE </th>
-                        <th> FREQUENCY </th>
-                        <th> METHOD </th>
-                        <th> DETAILS </th>
-                        <th> APP ID </th>
-                        <th> TYPE </th>
-                        <th> TIME </th>
-                        <th> HALF NOTIFY </th>
+{#                        <th> NO </th>#}
+                        <th> Label </th>
+                        <th> Start Date </th>
+                        <th> End Date</th>
+                        <th> Frequency </th>
+                        <th> Method </th>
+                        <th> Details </th>
+                        <th> Time </th>
+                        <th> Half Notify </th>
                     </tr>
                     </thead>
 
                     <tbody>
                     {% for protocol in protocols %}
                         <tr>
-                            <td class="col-md-1">{{ loop.index }}</td>
+{#                            <td class="col-md-1">{{ loop.index }}</td>#}
                             <td class="col-md-1"> {{ protocol.label }} </td>
                             <td class="col-md-1"> {{ protocol.start_date }}  </td>
                             <td class="col-md-1"> {{ protocol.end_date }} </td>
                             <td class="col-md-1"> {{ protocol.frequency }} </td>
                             <td class="col-md-1"> {{ protocol.method }} </td>
-                            <td class="col-md-1"> {{ protocol.notif_details }} </td>
-                            <td class="col-md-1"> {{ protocol.notif_appid }} </td>
-                            <td class="col-md-1"> {{ protocol.notif_type }} </td>
+                            <td class="col-md-1">
+                                {% if protocol.method == 'push_survey' %}
+                                {{ protocol.notif_details[0:20] + "...}" }}
+                                {% elif protocol.method == "push_notification" %}
+                                    {{ protocol.notif_details[0:20] + "..." }}
+                                {% else %}
+                                {{ protocol.notif_details }}
+                                {% endif %}
+                            </td>
                             <td class="col-md-1"> {{ protocol.notif_time }} </td>
                             <td class="col-md-1"> {{ protocol.probable_half_notify }} </td>
                         </tr>

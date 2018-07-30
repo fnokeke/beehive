@@ -88,12 +88,12 @@
             <h3>
                 {{ "Edit Study" if experiment else "New Study" }}
 
-            <button type="button"
-                    class="btn btn-danger float-i-right"
-                    onclick='delete_study("{{ experiment.code if experiment else None }}")'>
-                <span class="glyphicon glyphicon-trash"></span>
-                Delete Study
-            </button>
+                <button type="button"
+                        class="btn btn-danger float-i-right"
+                        onclick='delete_study("{{ experiment.code if experiment else None }}")'>
+                    <span class="glyphicon glyphicon-trash"></span>
+                    Delete Study
+                </button>
 
 
             </h3>
@@ -177,7 +177,7 @@
                             class="form-control"
                             id="exp-start-date"
                             data-provide="datepicker"
-                            data-date-start-date="{{ today_date }}"
+                            data-date-start-date="0d"
                             data-date-format="yyyy-mm-dd"
                             data-date-today-highlight="true"
                             value="{{ experiment.start_date | onlydatefmt if experiment else today_date }}"
@@ -488,7 +488,7 @@
                 <button type="button"
                         class="btn btn-primary btn-lg"
                         id="create_experiment_btn"
-                        onclick="create_experiment_handler()">
+                        onclick='create_experiment_handler("{{ experiment.code if experiment else None }}")'>
                     <span class="glyphicon glyphicon-ok"></span>
                     {{ 'Update & Launch Experiment' if experiment else 'Launch New Experiment' }}
                 </button>
@@ -550,7 +550,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
+                        <div class="form-group row" id="div-protocol-start-end-dates">
                             <label class="col-xs-2 col-form-label">Dates</label>
                             <div class="col-xs-10">
                                 <div class="input-group input-daterange">
@@ -559,7 +559,8 @@
                                             id="protocol-start-date"
                                             class="form-control"
                                             placeholder="yyyy-mm-dd"
-                                            data-date-start-date="{{ today_date }}"
+                                            {#                                            data-date-start-date="{{ today_date }}"#}
+                                            data-date-start-date="0d"
                                             data-date-today-highlight=true
                                             data-date-format='yyyy-mm-dd'
                                             value="{{ today_date }}">
@@ -597,6 +598,7 @@
                                     <option value="pam">PAM</option>
                                     <option value="push_survey">Push survey</option>
                                     <option value="push_notification">Push notification</option>
+                                    <option value="push_one_time_notif">Push one-time notification</option>
                                     <option value="vibration_by_phone_usage">Vibrate based on phone usage</option>
                                     <option value="vibration_by_app_usage">Vibrate based on app usage</option>
                                 </select>
@@ -604,25 +606,43 @@
                         </div>
 
                         <div id="protocol-pam" class="hidden">
-                            <input type="text" id="protocol-pam-details" value="pam" hidden />
+                            <input type="text" id="protocol-pam-details" value="pam" hidden/>
                         </div>
 
                         <div id="protocol-push-survey" class="hidden">
 
                             <div class="form-group row">
-                                <label class="col-xs-2 col-form-label">Question/Type</label>
+                                <label class="col-xs-2 col-form-label">Survey</label>
                                 <div class="col-xs-10">
-                                    {#                                  allows up to 30 pairs (each 50 chars) then 100 char space #}
-                                    <textarea maxlength="1600" name="protocol-survey-details"
-                                              id="protocol-survey-details"
-                                              class="form-control"
-                                              cols="20" rows="3" placeholder="e.g. Your age? $1$"></textarea>
+                                    <textarea
+                                            maxlength="1600"
+                                            name="protocol-survey-details"
+                                            id="protocol-survey-details"
+                                            class="form-control"
+                                            placeholder='e.g. { "title": "productivity", "elements": [{ "identifier": "today-checkin", "type": "textfield", "text": "How was your day today?"}]  }'
+                                            cols="20" rows="10"></textarea>
                                     <span>
-                                        <em class="small">One question/type pair per line. </em>
-                                        <br>
-                                        <em class="small">Question types: 1-number, 2-text, 3-multichoice.</em>
+                                        <em class="small">Paste ResearchSuite JSON survey <strong>-> title/elements</strong> value here. <a
+                                                href="https://github.com/fnokeke/beehive/wiki/Creating-Surveys"
+                                                target="_blank">More examples.</a></em>
 
                                     </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="protocol-one-time-notif" class="hidden">
+
+                            <div class="form-group row">
+                                <label class="col-xs-2 col-form-label">Message</label>
+                                <div class="col-xs-10">
+                                    <textarea
+                                            maxlength="800"
+                                            name="protocol-one-time-details"
+                                            id="protocol-one-time-details"
+                                            class="form-control"
+                                            placeholder="Enter message here."
+                                            cols="10" rows="5"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -657,7 +677,7 @@
 
                         </div>
 
-                        {%  include "partials/protocol-time-config.html" %}
+                        {% include "partials/protocol-time-config.html" %}
 
                         <div id="protocol-vibration-phone-usage" class="hidden">
 

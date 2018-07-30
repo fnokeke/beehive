@@ -1,10 +1,13 @@
 from db_init import db
 from utils import to_json
 from flask import Response, abort
+from sqlalchemy import create_engine
 
 import datetime
 import json
 import uuid
+
+from config import SQLALCHEMY_DATABASE_URI
 
 
 # Database model for experiments
@@ -69,21 +72,22 @@ class Experiment(db.Model):
         return code
 
     @staticmethod
-    def add_experiment(exp):
+    def add_experiment(info):
         msg = "New experiment was successfully created."
-        existing_experiment = Experiment.query.filter_by(owner=exp['owner'], label=exp['label']).first()
+        existing_experiment = Experiment.query.filter_by(owner=info['owner'], label=info['label']).first()
         if existing_experiment:  # recreate new experiment with updated details but same code
-            exp['code'] = existing_experiment.code
-            Experiment.delete_experiment(existing_experiment.code)
-            msg = "Experiment was successfully updated."
+            # Experiment.delete_experiment(existing_experiment.code)
+            info['code'] = existing_experiment.code
+            Experiment.update_experiment(info)
+            return 200, "Experiment was successfully updated.", info
 
-        new_experiment = Experiment(exp)
+        new_experiment = Experiment(info)
         db.session.add(new_experiment)
         db.session.commit()
         # new_experiment = Experiment.query.filter_by(owner=exp['owner'], label=exp['label']).first()
 
         # Add protocols  to protocols table
-        protocols = json.loads(exp['protocols'])
+        protocols = json.loads(info['protocols'])
         for p in protocols:
             p['exp_code'] = new_experiment.code
             Protocol.add_protocol(p)
@@ -100,19 +104,43 @@ class Experiment(db.Model):
         # db.session.commit()
 
     @staticmethod
-    def update_experiment(update):
-        experiment = Experiment.query.filter_by(code=update['code']).first()
-        for key, value in update.iteritems():
-            setattr(experiment, key, value)
+    def update_experiment(info):
+        experiment = Experiment.query.filter_by(code=info['code']).first()
+        experiment.label = info.get('label')
+        experiment.title = info.get('title')
+        experiment.description = info.get('description')
+        experiment.start_date = info.get('start_date')
+        experiment.end_date = info.get('end_date')
+        experiment.rescuetime = info.get('rescuetime')
+        experiment.calendar = info.get('calendar')
+        experiment.phone_notif = info.get('phone_notif')
+        experiment.screen_events = info.get('screen_events')
+        experiment.app_usage = info.get('app_usage')
 
-        experiment.code = update.get('code')
-        experiment.label = update.get('label')
-        experiment.title = update.get('title')
-        experiment.description = update.get('description')
-        experiment.start_date = update.get('start_date')
-        experiment.end_date = update.get('end_date')
-        experiment.screen_events = update.get('screen_events')
+        engine = create_engine(SQLALCHEMY_DATABASE_URI)
+        stmt = Protocol.__table__.delete().where(Protocol.exp_code == info['code'])
+        engine.execute(stmt)
+        # db.session.commit()
+
+        # for p in db.session.query(Protocol).filter_by(code=info['code']).all():
+        #     db.session.delete(p)
+        #     db.session.commit()
+
+        # stmt = Users.__table__.delete().where(Users.id.in_(subquery...))
+
+        protocols = json.loads(info['protocols'])
+        for p in protocols:
+            p['exp_code'] = info['code']
+            Protocol.add_protocol(p)
+
         db.session.commit()
+
+        # p = db.session.query(Protocol).filter(Protocol.id == pid).first()
+        # db.session.delete(p)
+        # db.session.commit()
+
+
+
         return experiment
 
     @staticmethod
