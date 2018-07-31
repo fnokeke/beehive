@@ -281,6 +281,13 @@ function create_or_edit_exp(code) {
 
     var owner = $('#exp-owner').val();
     var label = $('#exp-label').val();
+
+    if (label === '') {
+        show_error_msg("#exp-label-status", "Study label cannot be an empty field.");
+        return;
+    }
+
+
     var title = $('#exp-title').val();
     var description = $('#exp-description').val();
     var start_date = $('#exp-start-date').val();
@@ -536,10 +543,11 @@ function redraw_protocols_table(viewId) {
         var isNewStudy = $('#newDivId').data('isnew');
         view = '<table id="protocol-list-table" class="table table-striped table-bordered"><tr>' +
             '<th class="center-text"> Label </th>' +
-            '<th class="center-text"> Frequency </th>' +
+            '<th class="center-text"> Freq </th>' +
             '<th class="center-text"> Start Date </th>' +
             '<th class="center-text"> End Date </th>' +
             '<th class="center-text"> Method </th>' +
+            '<th class="center-text"> Time </th>' +
             '<th class="center-text"> Details </th>' +
             '<th class="center-text"> Half Notify </th>';
 
@@ -563,6 +571,7 @@ function redraw_protocols_table(viewId) {
                 '<td class="center-text">' + formatDate(protocol.start_date) + '</td>' +
                 '<td class="center-text">' + formatDate(protocol.end_date) + '</td>' +
                 '<td class="center-text">' + protocol.method + '</td>' +
+                '<td class="center-text">' + protocol.notif_time + '</td>' +
                 '<td class="center-text">' + details + '</td>' +
                 '<td class="center-text">' + protocol.probable_half_notify + '</td>';
 

@@ -120,13 +120,6 @@ class Experiment(db.Model):
         engine = create_engine(SQLALCHEMY_DATABASE_URI)
         stmt = Protocol.__table__.delete().where(Protocol.exp_code == info['code'])
         engine.execute(stmt)
-        # db.session.commit()
-
-        # for p in db.session.query(Protocol).filter_by(code=info['code']).all():
-        #     db.session.delete(p)
-        #     db.session.commit()
-
-        # stmt = Users.__table__.delete().where(Users.id.in_(subquery...))
 
         protocols = json.loads(info['protocols'])
         for p in protocols:
@@ -134,12 +127,6 @@ class Experiment(db.Model):
             Protocol.add_protocol(p)
 
         db.session.commit()
-
-        # p = db.session.query(Protocol).filter(Protocol.id == pid).first()
-        # db.session.delete(p)
-        # db.session.commit()
-
-
 
         return experiment
 

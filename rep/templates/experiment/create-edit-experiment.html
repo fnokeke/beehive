@@ -142,7 +142,7 @@
                            type="text"
                            id="exp-label"
                            value="{{ experiment.label if experiment else '' }}"
-                           placeholder="unique label to identify experiment (visible to only you)"
+                           placeholder="unique label to identify experiment (not visible to participants)"
                     />
                 </div>
             </div>
@@ -493,6 +493,8 @@
                     {{ 'Update & Launch Experiment' if experiment else 'Launch New Experiment' }}
                 </button>
                 <input type="text" class="noshow" value="{{ current_user.email }}" id="exp-owner">
+                <br>
+                <span id="exp-label-status"></span>
 
             </div>
 
