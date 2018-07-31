@@ -488,7 +488,7 @@
                 <button type="button"
                         class="btn btn-primary btn-lg"
                         id="create_experiment_btn"
-                        onclick='create_experiment_handler("{{ experiment.code if experiment else None }}")'>
+                        onclick='create_or_edit_exp("{{ experiment.code if experiment else None }}")'>
                     <span class="glyphicon glyphicon-ok"></span>
                     {{ 'Update & Launch Experiment' if experiment else 'Launch New Experiment' }}
                 </button>
@@ -579,7 +579,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
+                        <div class="form-group row" id="div-protocol-frequency">
                             <label class="col-xs-2 col-form-label">Frequency</label>
                             <div class="col-xs-10">
                                 <select class="form-control" id="protocol-frequency">
@@ -598,7 +598,7 @@
                                     <option value="pam">PAM</option>
                                     <option value="push_survey">Push survey</option>
                                     <option value="push_notification">Push notification</option>
-                                    <option value="push_one_time_notif">Push one-time notification</option>
+                                    <option value="push_one_time_survey">Push one-time survey</option>
                                     <option value="vibration_by_phone_usage">Vibrate based on phone usage</option>
                                     <option value="vibration_by_app_usage">Vibrate based on app usage</option>
                                 </select>
@@ -625,8 +625,9 @@
                                         <em class="small">Paste ResearchSuite JSON survey <strong>-> title/elements</strong> value here. <a
                                                 href="https://github.com/fnokeke/beehive/wiki/Creating-Surveys"
                                                 target="_blank">More examples.</a></em>
-
                                     </span>
+                                    <br>
+                                    <span id="push-survey-status"></span>
                                 </div>
                             </div>
                         </div>
@@ -634,15 +635,23 @@
                         <div id="protocol-one-time-notif" class="hidden">
 
                             <div class="form-group row">
-                                <label class="col-xs-2 col-form-label">Message</label>
+                                <label class="col-xs-2 col-form-label">Survey</label>
                                 <div class="col-xs-10">
                                     <textarea
-                                            maxlength="800"
+                                            maxlength="1600"
                                             name="protocol-one-time-details"
                                             id="protocol-one-time-details"
                                             class="form-control"
-                                            placeholder="Enter message here."
-                                            cols="10" rows="5"></textarea>
+                                            placeholder='e.g. { "title": "productivity", "elements": [{ "identifier": "today-checkin", "type": "textfield", "text": "How was your day today?"}]  }'
+                                            cols="20" rows="10"></textarea>
+                                    <span>
+                                        <em class="small">Paste ResearchSuite JSON survey <strong>-> title/elements</strong> value here. <a
+                                                href="https://github.com/fnokeke/beehive/wiki/Creating-Surveys"
+                                                target="_blank">More examples.</a></em>
+
+                                    </span>
+                                    <br>
+                                    <span id="one-time-survey-status"></span>
                                 </div>
                             </div>
                         </div>

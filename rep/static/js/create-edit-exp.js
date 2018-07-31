@@ -210,8 +210,9 @@ $('#protocol-method').on('change', function () {
         $("#protocol-vibration-phone-usage").addClass("hidden");
         $("#protocol-vibration-app-usage").addClass("hidden");
     }
-    else if ($(this).val() === "push_one_time_notif") {
+    else if ($(this).val() === "push_one_time_survey") {
         $("#div-partial-time-config").addClass("hidden");
+        $("#div-protocol-frequency").addClass("hidden");
         $("#div-protocol-start-end-dates").addClass("hidden");
         $("#protocol-pam").addClass("hidden");
         $("#protocol-push-survey").addClass("hidden");
@@ -274,7 +275,7 @@ $('#notification-fixed-random').click(function () {
 
 //////////////////////////////////////////////////////////
 
-function create_experiment_handler(code) {
+function create_or_edit_exp(code) {
     // Clean up data and call server api
     var response_field = '#review-experiment-error';
 
@@ -381,7 +382,6 @@ function delete_protocol_handler(id) {
 
 // TO DO: Handle create protocol by adding to local storage
 function create_protocol_handler() {
-    $('#add-protocol-modal').modal('hide');
 
     // Sorry! No Web Storage support..
     if (typeof(Storage) === "undefined") {
@@ -427,7 +427,20 @@ function create_protocol_handler() {
     var notif_appid;
     var details;
     var protocol_method = $('#protocol-method').val();
-    console.log("before push_one_time_called");
+
+    function isValidSurvey(details, surveyResponse) {
+        try {
+            JSON.parse(details);
+            return true;
+        } catch (e) {
+            show_error_msg(surveyResponse, "Invalid JSON entry. Please validate <a href='https://jsonlint.com/' " +
+                "target='_blank'>using this link</a> and try again.");
+            console.log("error parsing: ", details);
+            console.log(e.toString());
+            return false;
+        }
+    }
+
     if (protocol_method === 'none') {
         notif_type = 'none';
         details = '';
@@ -436,14 +449,24 @@ function create_protocol_handler() {
         notif_appid = 'pam';
     } else if (protocol_method === 'push_survey') {
         details = $('#protocol-survey-details').val();
+        if (!isValidSurvey(details, '#push-survey-status')) {
+            console.log('not valid push');
+            return;
+        }
         notif_appid = 'push_survey';
     } else if (protocol_method === 'push_notification') {
         details = $('#protocol-notif-details').val();
         notif_appid = $('#protocol-notif-appid').val();
-    } else if (protocol_method === 'push_one_time_notif') {
+    } else if (protocol_method === 'push_one_time_survey') {
         details = $('#protocol-one-time-details').val();
-        notif_appid = 'push_one_time_notif';
-        console.log("push_one_time_called");
+        if (!isValidSurvey(details, '#one-time-survey-status')) {
+            console.log('not valid one-time');
+            return;
+        }
+        notif_appid = 'push_one_time_survey';
+        notif_type = 'one_time';
+        $('#protocol-start-date').val(new Date().toJSON().slice(0, 10));
+        $('#protocol-end-date').val(new Date().toJSON().slice(0, 10));
     }
 
     var protocol = {
@@ -466,7 +489,14 @@ function create_protocol_handler() {
 
     // Update protocols view
     redraw_protocols_table();
+    $('#add-protocol-modal').modal('hide');
 }
+
+
+$("#add-protocol-modal").on("hide.bs.modal", function () {
+    show_plain_msg('#push-survey-status', '');
+    show_plain_msg('#one-time-survey-status', '');
+});
 
 
 /////////////////////////////////////////////////////////
@@ -483,11 +513,11 @@ function beautify_protocol(protocol) {
     console.log('beautify: ', protocol);
     var details;
     if (protocol.method === 'push_notification') {
-        details = protocol.notif_details.substr(0,15) + "... / " + protocol.notif_appid.substr(0,20) + "...";
-    } else if (protocol.method === 'push_survey') {
-        details = "{" + protocol.notif_details.substr(0,50) + "... }";
+        details = protocol.notif_details.substr(0, 15) + "... / " + protocol.notif_appid.substr(0, 20) + "...";
+    } else if (protocol.method === 'push_survey' || protocol.method === 'push_one_time_survey') {
+        details = "{" + protocol.notif_details.substr(0, 50) + "... }";
     } else {
-        details = protocol.notif_details.substr(0,30);
+        details = protocol.notif_details.substr(0, 30);
         // details = protocol.notif_details.replace(/\n/gi, " / ");
         // details = protocol.notif_details.replace(/\n/gi, " / ") + '<br> ~~~~~ <br>';
     }
@@ -524,7 +554,7 @@ function redraw_protocols_table(viewId) {
         for (var i = protocols.length - 1; i >= 0; i--) {
             protocol = protocols[i];
             details = protocol.notif_details;
-            if (protocol.method === 'push_notification' || protocol.method === 'push_survey') {
+            if (protocol.method === 'push_notification' || protocol.method === 'push_survey' || protocol.method === 'push_one_time_survey') {
                 details = beautify_protocol(protocol);
             }
             row = '<tr>' +
