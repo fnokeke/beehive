@@ -1,5 +1,16 @@
 // '<td><button id={1} class="btn btn-link">{0}</button></td>'.format(exp.title, exp.code)
 
+
+if (localStorage.gcal_code === "undefined") {
+    $("#div-gcal-beehive-connected").hide();
+    $("#div-gcal-beehive-success").hide();
+    console.log("localStorage.gcal_code is undefined");
+} else {
+    $("#div-gcal-beehive-connected").show();
+    $("#div-gcal-beehive-success").show();
+    console.log("localStorage.gcal_code is good");
+}
+
 $('#download-gcal-btn').click(function () {
     var start = $('#gcal-start-date').val();
     var end = $('#gcal-end-date').val();
@@ -32,11 +43,18 @@ $('#btn-save-gcal-code').click(function () {
         resp = JSON.parse(resp);
         console.log('result: ', resp["is_valid"]);
         if (resp['is_valid']) {
-            show_success_msg(status, resp['response']);
+            // show_success_msg(status, resp['response']);
             localStorage.gcal_code = gcalCode;
+            $("#div-gcal-beehive-connected").show();
+            $("#div-gcal-beehive-success").show();
+            console.log('gcal_code is valid.');
+
         } else {
             show_error_msg(status, resp['response']);
-            localStorage.gcal_code = undefined;
+            localStorage.gcal_code = "undefined";
+            $("#div-gcal-beehive-connected").hide();
+            $("#div-gcal-beehive-success").hide();
+            console.log('gcal_code denied.');
         }
     }).fail(function (error) {
         console.log('error:', error);

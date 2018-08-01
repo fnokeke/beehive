@@ -1,84 +1,86 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-  {{current_user.firstname + ' | Home'}}
+    {{ current_user.firstname + ' | Home' }}
 {% endblock %}
 
 {% block brand_name %}
-GCal + Beehive
+    GCal + Beehive
 {% endblock %}
 
 {% block user_type %}
-<em>
-  gcal_user
-</em>
+    <em>
+        gcal_user
+    </em>
 
 {% endblock %}
 {% block contents %}
 
-  <div class="container">
+    <div class="container">
 
-    <div class="page-header">
-      <h3>Welcome,
-        {{gcal_user.firstname}}
-      </h3>
-    </div>
+        <div class="page-header">
+            <h3>Welcome,
+                {{ gcal_user.firstname }}
+            </h3>
+        </div>
 
 
-    <div>
+        <div>
 
-      {% if not gcal_user.connected %}
-        <span class='text-danger'>
+            {% if not gcal_user.connected %}
+                <span class='text-danger'>
           <em>
             Google calender is not connected.
           </em>
         </span>
 
-      {% else %}
-          {% if gcal_user.code %}
-              <label for="gcal-code">Update your experiment code:</label>
-          {% else %}
-              <label for="gcal-code">You need to enter your experiment code:</label>
-          {%  endif %}
-          <input
-                  type="text"
-                  id="id-gcal-code"
-                  class="form-control"
-                  value = "{{ gcal_user.code or ''}}"
-                  placeholder="enter code here">
-          <br>
-          <button type="submit" id="btn-save-gcal-code" class="btn btn-primary">Submit</button>
-          <br>
-          <input
-                  style="display: none"
-                  type="text"
-                  id="gcal_email_from_hidden_element"
-                  value="{{ current_user.email }}"/>
-          <div> <span id="gcal-code-status"></span> <div>
-          <br>
-          <br>
+            {% else %}
+                {% if gcal_user.code %}
+                    <label for="gcal-code">Update your experiment code:</label>
+                {% else %}
+                    <label for="gcal-code">You need to enter your experiment code:</label>
+                {% endif %}
+                <input
+                        type="text"
+                        id="id-gcal-code"
+                        class="form-control"
+                        value="{{ gcal_user.code or '' }}"
+                        placeholder="enter code here">
+                <br>
+                <button type="submit" id="btn-save-gcal-code" class="btn btn-primary">Submit</button>
+                <br>
+                <input
+                        style="display: none"
+                        type="text"
+                        id="gcal_email_from_hidden_element"
+                        value="{{ current_user.email }}"/>
+                <div>
+                    <span id="gcal-code-status"></span>
+                    <div>
+                        <br>
 
-        <span class='text-success'>
-          <em>
-            Google calender is connected to Beehive.
-          </em>
-        </span>
+                        <div id="div-gcal-beehive-connected">
+                            <span class='text-success'>
+                                <em> Google calender is connected to Beehive. </em>
+                            </span>
+                        </div>
 
-      <br> <br> <br> <br> <br>
-      <div class="row text-success text-center">
-          <span style="font-size: 30px"> SUCCESS </span></div>
-      </div>
+                        <br> <br> <br> <br> <br>
+                        <div class="row text-success text-center" id="div-gcal-beehive-success">
+                            <span style="font-size: 30px"> SUCCESS </span>
+                            <br>
+                            <span style="font-size: 50px" class="glyphicon glyphicon-ok-circle"> </span>
+                        </div>
 
-      <div class="row text-success text-center">
-          <span style="font-size: 50px" class="glyphicon glyphicon-ok-circle"> </span> </div>
-      </div>
-      {% endif %}
+                    </div>
+
+                </div>
+            {% endif %}
+
+
+        </div>
 
 
     </div>
-
-
-
-  </div>
 
 {% endblock %}
