@@ -54,27 +54,29 @@
                         type="text"
                         id="gcal_email_from_hidden_element"
                         value="{{ current_user.email }}"/>
-                <div>
-                    <span id="gcal-code-status"></span>
-                    <div>
-                        <br>
 
-                        <div id="div-gcal-beehive-connected">
+                <span id="gcal-code-status"></span>
+                {% if current_user.code %}
+                    <div>
+                        <div>
+                            <br>
+
+                            <div id="div-gcal-beehive-connected">
                             <span class='text-success'>
                                 <em> Google calender is connected to Beehive. </em>
                             </span>
-                        </div>
+                            </div>
 
-                        <br> <br> <br> <br> <br>
-                        <div class="row text-success text-center" id="div-gcal-beehive-success">
-                            <span style="font-size: 30px"> SUCCESS </span>
-                            <br>
-                            <span style="font-size: 50px" class="glyphicon glyphicon-ok-circle"> </span>
+                            <br> <br> <br> <br> <br>
+                            <div class="row text-success text-center" id="div-gcal-beehive-success">
+                                <span style="font-size: 30px"> SUCCESS </span>
+                                <br>
+                                <span style="font-size: 50px" class="glyphicon glyphicon-ok-circle"> </span>
+                            </div>
                         </div>
-
                     </div>
+                {% endif %}
 
-                </div>
             {% endif %}
 
 

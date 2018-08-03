@@ -43,7 +43,7 @@ $('#btn-save-gcal-code').click(function () {
         resp = JSON.parse(resp);
         console.log('result: ', resp["is_valid"]);
         if (resp['is_valid']) {
-            // show_success_msg(status, resp['response']);
+            show_success_msg(status, resp['response']);
             localStorage.gcal_code = gcalCode;
             $("#div-gcal-beehive-connected").show();
             $("#div-gcal-beehive-success").show();
