@@ -238,9 +238,9 @@ class Participant(db.Model):
     def __init__(self, profile, google_credentials):
         print google_credentials
         self.email = profile['email']
-        self.firstname = profile['firstname']
-        self.lastname = profile['lastname']
-        self.gender = profile['gender']
+        self.firstname = profile.get('firstname')
+        self.lastname = profile.get('lastname')
+        self.gender = profile.get('gender')
         self.google_credentials = google_credentials
 
     def __repr__(self):

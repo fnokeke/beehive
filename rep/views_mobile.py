@@ -29,8 +29,7 @@ def fetch_study():
     response = {
         'experiment': json.loads(str(experiment)) if experiment else None,
         'protocols': [to_json(p) for p in protocols] if protocols else [],
-        'login_type': ['google_login'],
-        'google_login_type': 'google_no_ohmage'
+        'login_type': 'google_login'  # google_login or user_pwd
     }
     status = 200
 

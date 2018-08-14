@@ -451,11 +451,46 @@ def android_google_login_participant():
 
     profile = service.userinfo().get().execute()
     user = Participant.from_profile(profile, credentials.to_json())
+    phone_type = 'android'
     session['user_type'] = 'participant'
     login_user(user)
 
     android_app_deeplink = 'beehive://androidlogin'
     redirect_url = "{}?{}?{}".format(android_app_deeplink, user.firstname, user.email)
+    return redirect(redirect_url)
+
+
+@app.route('/ios_google_login_participant')
+def ios_google_login_participant():
+    flow = OAuth2WebServerFlow(
+        client_id=app.config['GOOGLE_CLIENT_ID'],
+        client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+        scope=app.config['GOOGLE_SCOPE_PARTICIPANT'],
+        access_type='offline',
+        prompt='consent',
+        redirect_uri=url_for(
+            'ios_google_login_participant', _external=True))
+
+    auth_code = request.args.get('code')
+    if not auth_code:
+        auth_uri = flow.step1_get_authorize_url()
+        return redirect(auth_uri)
+
+    credentials = flow.step2_exchange(auth_code, http=httplib2.Http())
+    if credentials.access_token_expired:
+        credentials.refresh(httplib2.Http())
+
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('oauth2', 'v2', http=http)
+
+    profile = service.userinfo().get().execute()
+    user = Participant.from_profile(profile, credentials.to_json())
+    phone_type = 'ios'
+    session['user_type'] = 'participant'
+    login_user(user)
+
+    ios_app_deeplink = 'beehive://ioslogin'
+    redirect_url = "{}?{}?{}".format(ios_app_deeplink, user.firstname, user.email)
     return redirect(redirect_url)
 
 
