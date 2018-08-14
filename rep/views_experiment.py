@@ -62,13 +62,19 @@ def update_firebase_topic(code):
     requests.post(url, headers=headers, data=data)
 
 
+def is_editing(experiment):
+    return 'code' in experiment
+
+
 @app.route('/add/experiment', methods=['POST'])
 def add_experiment():
     experiment = request.form.to_dict()
     status, response, _ = Experiment.add_experiment(experiment)
 
-    if status == 200 and experiment['code']:
+    if is_editing(experiment):
         update_firebase_topic(experiment['code'])
+
+    if status == 200:
         return response
     else:
         return Response(response, status=status, mimetype='application/json')

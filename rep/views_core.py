@@ -386,27 +386,6 @@ def get_intv_type(experiment):
         intv_type = 'text_image'
     return intv_type
 
-# @app.route('/update/experiment', methods=['POST'])
-# def update_experiment():
-#     data = json.loads(request.data) if request.data else request.form.to_dict()
-#     data['start'] = '{} 05:00:00 -0500'.format(data['start'])
-#     data['end'] = '{} 05:00:00 -0500'.format(data['end'])
-#     data['start'] = datetime.strptime(data['start'], '%Y-%m-%d %H:%M:%S -0500')
-#     data['end'] = datetime.strptime(data['end'], '%Y-%m-%d %H:%M:%S -0500')
-#     updated_exp = Experiment.update_experiment(data)
-#     return str(updated_exp)
-#
-
-# @app.route('/update/group', methods=['POST'])
-# def update_group():
-#     update = {
-#         'code': request.form.get('code'),
-#         'no_of_condition': request.form.get('no_of_condition'),
-#         'ps_per_condition': request.form.get('ps_per_condition')
-#     }
-#     updated_exp = Experiment.update_group(update)
-#     return str(updated_exp)
-
 
 @app.route('/fetch/experiments', methods=['GET'])
 def fetch_experiments():

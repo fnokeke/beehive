@@ -312,7 +312,6 @@ function create_or_edit_exp(code) {
 
     var url = '/add/experiment';
     var data = {
-        'code': code,
         'label': label,
         'title': title,
         'description': description,

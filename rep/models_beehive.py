@@ -44,8 +44,6 @@ class Experiment(db.Model):
         self.app_usage = info.get('app_usage')
         self.owner = info['owner']
 
-        print 'info[start_date] = ', info['start_date']
-
     def __repr__(self):
         result = {
             'owner': self.owner,
@@ -75,7 +73,7 @@ class Experiment(db.Model):
     def add_experiment(info):
         msg = "New experiment was successfully created."
         existing_experiment = Experiment.query.filter_by(owner=info['owner'], label=info['label']).first()
-        if existing_experiment:  # recreate new experiment with updated details but same code
+        if existing_experiment:
             # Experiment.delete_experiment(existing_experiment.code)
             info['code'] = existing_experiment.code
             Experiment.update_experiment(info)
