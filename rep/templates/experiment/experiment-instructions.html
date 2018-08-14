@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Study Instructions
+{% endblock %}
+
+
+{% block navbar_links %}
+
+    <ul class="nav navbar-nav nav-link-text">
+        <li>
+            <a href="{{ url_for('experiments') }}">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+                Go Back
+            </a>
+        </li>
+
+        {% if experiment %}
+            <li class="active">
+                <a href="#">
+                    <span class="glyphicon glyphicon-hourglass"></span>
+                    Study | {{ experiment.code }}
+                </a>
+            </li>
+
+        {% endif %}
+
+    </ul>
+
+{% endblock %}
+
+{% block contents %}
+
+    <div class="container">
+        {% if experiment.rescuetime %}
+            {% include "partials/instructions/info-rescuetime.html" %}
+        {% endif %}
+
+        {% if experiment.calendar %}
+            {% include "partials/instructions/info-calendar.html" %}
+        {% endif %}
+
+        {% if experiment.phone_notif or experiment.screen_events or experiment.app_usage %}
+            {% include "partials/instructions/info-mobile.html" %}
+        {% endif %}
+    </div>
+
+
+
+{% endblock %}
+

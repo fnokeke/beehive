@@ -164,6 +164,11 @@ def user_loader(user_id):
         raise ValueError('Unidentified user type used with user_loader')
 
 
+@login_manager.unauthorized_handler
+def unauth_handler():
+    return redirect("/")
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
@@ -657,6 +662,18 @@ def fetch_uploaded_intv(code):
 @login_required
 def auth_omh():
     return redirect(OMHOauth.AUTH_CODE_URL)
+
+
+@app.route('/guest_mode')
+def guest_mode():
+    profile = {
+        "email": "guest@beehive",
+        "google_credentials": "{}"
+    }
+    user = Researcher.from_profile(profile)
+    login_user(user)
+    session['user_type'] = 'researcher'
+    return redirect(url_for('experiments'))
 
 # Google login for researchers
 @app.route('/google_login_researcher')

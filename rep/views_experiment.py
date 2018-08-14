@@ -80,6 +80,15 @@ def add_experiment():
         return Response(response, status=status, mimetype='application/json')
 
 
+@app.route('/instructions/experiment/<code>')
+def experiment_instructions(code):
+    ctx = {
+        'user_type': 'researcher',
+        'today_date': datetime.now().strftime('%Y-%m-%d'),
+        'experiment': Experiment.query.filter_by(code=code).first()
+    }
+    return render_template('experiment/experiment-instructions.html', **ctx)
+
 # Endpoint to display participants in an experiment
 @app.route('/participants/experiment/<code>')
 def experiment_participants(code):

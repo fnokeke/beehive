@@ -86,9 +86,18 @@
 
         <div id="newDivId" class="page-header" data-isnew={{ experiment == undefined }}>
             <h3>
-                {{ "Edit Study" if experiment else "New Study" }}
+                {{ "" if experiment else "New Study" }}
+                {% if experiment %}
+                    <a href="/instructions/experiment/{{ experiment.code }}"
+                       target="_blank" class="btn btn-primary float-i-left">
+                        <span class="glyphicon glyphicon-info-sign"></span>
+                        Onboarding Details
+                    </a>
+
+                {% endif %}
 
                 <button type="button"
+                        {{ 'disabled' if current_user.email == 'guest@beehive' else '' }}
                         class="btn btn-danger float-i-right"
                         onclick='delete_study("{{ experiment.code if experiment else None }}")'>
                     <span class="glyphicon glyphicon-trash"></span>
@@ -487,6 +496,7 @@
 
             <div class="text-center">
                 <button type="button"
+                        {{ 'disabled' if current_user.email == 'guest@beehive' else '' }}
                         class="btn btn-primary btn-lg"
                         id="create_experiment_btn"
                         onclick='create_or_edit_exp("{{ experiment.code if experiment else None }}")'>
@@ -625,9 +635,10 @@
                                             placeholder='e.g. { "title": "productivity", "elements": [{ "identifier": "today-checkin", "type": "textfield", "text": "How was your day today?"}]  }'
                                             cols="20" rows="10"></textarea>
                                     <span>
-                                        <em class="small">Paste ResearchSuite JSON survey <strong>-> title/elements</strong> value here. <a
-                                                href="https://github.com/fnokeke/beehive/wiki/Creating-Surveys"
-                                                target="_blank">More examples.</a></em>
+                                        <em class="small">Paste ResearchSuite JSON survey <strong>-> title/elements</strong> value here.
+                                            <a
+                                                    href="https://github.com/fnokeke/beehive/wiki/Creating-Surveys"
+                                                    target="_blank">More examples.</a></em>
                                     </span>
                                     <br>
                                     <span id="push-survey-status"></span>
