@@ -534,7 +534,7 @@ function redraw_protocols_table(viewId) {
     var protocolsViewId = viewId || '#protocols-list-view';
     var protocols = localStorage.getItem("protocols");
     var view = '<div class="text-center text-primary"> ' +
-        '<h5> No protocols created. Click on the add protocol button to create a new protocol. </h5>' +
+        '<h5> No contexts created. Click on the add context button to create a new context. </h5>' +
         '</div>';
 
     if (protocols && (JSON.parse(protocols).length > 0)) {
