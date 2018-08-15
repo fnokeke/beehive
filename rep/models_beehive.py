@@ -417,7 +417,7 @@ class Protocol(db.Model):
             'end_date': str(self.end_date),
             'frequency': str(self.frequency),
             'method': str(self.method),
-            'notif_details': self.notif_details.encode('utf-8'),
+            'notif_details': self.notif_details.encode('utf-8') if self.notif_details else None,
             'notif_appid': str(self.notif_appid),
             'notif_type': str(self.notif_type),
             'notif_time': str(self.notif_time),
