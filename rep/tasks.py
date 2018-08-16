@@ -1,3 +1,4 @@
+# coding=utf-8
 from celery import Celery
 from celery.schedules import crontab
 from datetime import date, timedelta
@@ -82,9 +83,10 @@ def sendgrid_email(recipient, subject, msg):
     print "***email nudge sent to user. status = %s *****" % response.status_code
 
 
-def nudge_by_email(user, msg):
-    subject = "Beehive daily planner."
-    sendgrid_email(user.email, subject, msg)
+def nudge_by_email(email, msg, did_plan):
+    prefix = "Good Job! 👏🏼👏🏼" if did_plan else "Fail! 😞"
+    subject = "Beehive daily planner check-in: %s" % prefix
+    sendgrid_email(email, subject, msg)
 
 
 @celery.task()
@@ -95,11 +97,13 @@ def nudge_gcal_planners():
     users = GcalUser.query.filter_by(code='eddycu').all()
     for user in users:
         events = fetch_today_events(user)
-        message = "You did not plan any events for date: %s." % given_date
+        message = "Sadly, you did not plan any events for date: %s." % given_date
+        planned = False
         if len(events) > 0:
             message = "Great job! You had %s events planned for %s." % (len(events),  given_date)
+            planned = True
 
-        nudge_by_email(user, message)
+        nudge_by_email(user.email, message, planned)
 
     return "Successfully nudged %s user(s) today (%s)!" % (len(users), given_date)
 
