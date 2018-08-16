@@ -25,16 +25,19 @@ def make_celery(app):
 
 ############
 # other celery configs are located in config.py
-# run celery verbose: celery -A tasks.celery worker --loglevel=info --beat
+# 1) to run celery task first start redis-server using: redis-server
+# 2) run celery in verbose mode: celery -A rep.tasks.celery worker --loglevel=info --beat
+# 3) add your your celery task (a function) and schedule (fixed time or interval). see example below
+# 4) Enjoy!
 ############
 app.config.update(
     CELERY_TIMEZONE="America/New_York",
     CELERYBEAT_SCHEDULE={
         'export-data': {
-            'task': 'rep.tasks.export_data',
-            # 'schedule': timedelta(seconds=15)
-            'schedule': crontab(
-                hour="03", minute='00')
+            'task': 'rep.tasks.trivial_task',
+            'schedule': timedelta(seconds=15)
+            # 'schedule': crontab(
+            #     hour="03", minute='00')
         },
     },)
 
@@ -42,33 +45,38 @@ celery = make_celery(app)
 
 
 @celery.task()
-def export_data():
-    yesterday = date.today() - timedelta(1)
-    yesterday = yesterday.strftime('%Y-%m-%d')
+def trivial_task():
+    return "Trivial task completed!"
 
-    all_users = Researcher.get_all_users()
-    for user in all_users:
-        print '*** Exporting for user: {} ***'.format(user)
 
-        if user.is_location_active:
-            calname = app.config['LOCATION']
-            resp = export.to_cal(calname, user.moves_access_token, yesterday, user.google_credentials)
-            print 'Location resp: {}'.format(resp)
-        else:
-            print 'Skipping location for {}'.format(user)
-
-        if user.is_mood_active:
-            calname = app.config['MOOD']
-            resp = export.to_cal(calname, user.pam_access_token, yesterday, user.google_credentials)
-            print 'Mood resp: {}'.format(resp)
-        else:
-            print 'Skipping mood for {}'.format(user)
-
-        if user.is_sn_active:
-            calname = app.config['SN']
-            resp = export.to_cal(calname, user.rescuetime_access_token, yesterday, user.google_credentials)
-            print 'SN resp: {}'.format(resp)
-        else:
-            print 'Skipping social networks for {}'.format(user)
-
-    return 'Export completed! Exported events for {} users.'.format(len(all_users))
+# @celery.task()
+# def export_data():
+    # yesterday = date.today() - timedelta(1)
+    # yesterday = yesterday.strftime('%Y-%m-%d')
+    #
+    # all_users = Researcher.get_all_users()
+    # for user in all_users:
+    #     print '*** Exporting for user: {} ***'.format(user)
+    #
+    #     if user.is_location_active:
+    #         calname = app.config['LOCATION']
+    #         resp = export.to_cal(calname, user.moves_access_token, yesterday, user.google_credentials)
+    #         print 'Location resp: {}'.format(resp)
+    #     else:
+    #         print 'Skipping location for {}'.format(user)
+    #
+    #     if user.is_mood_active:
+    #         calname = app.config['MOOD']
+    #         resp = export.to_cal(calname, user.pam_access_token, yesterday, user.google_credentials)
+    #         print 'Mood resp: {}'.format(resp)
+    #     else:
+    #         print 'Skipping mood for {}'.format(user)
+    #
+    #     if user.is_sn_active:
+    #         calname = app.config['SN']
+    #         resp = export.to_cal(calname, user.rescuetime_access_token, yesterday, user.google_credentials)
+    #         print 'SN resp: {}'.format(resp)
+    #     else:
+    #         print 'Skipping social networks for {}'.format(user)
+    #
+    # return 'Export completed! Exported events for {} users.'.format(len(all_users))
