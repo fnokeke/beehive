@@ -3,6 +3,17 @@ from celery.schedules import crontab
 from datetime import date, timedelta
 
 from rep import app
+
+import requests
+import json
+from datetime import datetime
+
+from rep.models import GcalUser
+
+import sendgrid
+from sendgrid.helpers.mail import *
+from secret_keys import SENDGRID_API_KEY
+
 from rep import export
 from rep.models import Researcher
 
@@ -34,7 +45,7 @@ app.config.update(
     CELERY_TIMEZONE="America/New_York",
     CELERYBEAT_SCHEDULE={
         'export-data': {
-            'task': 'rep.tasks.trivial_task',
+            'task': 'rep.tasks.nudge_gcal_planners',
             'schedule': timedelta(seconds=15)
             # 'schedule': crontab(
             #     hour="03", minute='00')
@@ -48,6 +59,47 @@ celery = make_celery(app)
 def trivial_task():
     return "Trivial task completed!"
 
+
+def fetch_today_events(user):
+    url = 'https://slm.smalldata.io/mobile/calendar/events'
+    data = json.dumps({'email': user.email, 'date': datetime.now().strftime('%Y-%m-%d')})
+    r = requests.post(url, data=data)
+    events = []
+    if r.status_code == 200:
+        results = json.loads(r.text)
+        events = results['events']
+    return events
+
+
+def sendgrid_email(recipient, subject, msg):
+    sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
+    from_email = sendgrid.Email("beehive@smalldata.io")
+    to_email = sendgrid.Email(recipient)
+    html_msg = "<p>%s</p>" % msg
+    content = Content("text/html", html_msg)
+    mail_to_send = Mail(from_email, subject, to_email, content)
+    response = sg.client.mail.send.post(request_body=mail_to_send.get())
+    print "***email nudge sent to user. status = %s *****" % response.status_code
+
+
+def nudge_by_email(user, msg):
+    subject = "Beehive daily planner."
+    sendgrid_email(user.email, subject, msg)
+
+
+@celery.task()
+def nudge_gcal_planners():
+    today_date = datetime.now().strftime('%Y-%m-%d')
+    users = GcalUser.query.filter_by(code='eddycu').all()
+    for user in users:
+        events = fetch_today_events(user)
+        message = "You did not plan any events for date: %s." % today_date
+        if len(events) > 0:
+            message = "Great job! You had %s events planned for %s." % (len(events), today_date)
+
+        nudge_by_email(user, message)
+
+    return "Successfully nudged %s user(s) today (%s)!" % (len(users), today_date)
 
 # @celery.task()
 # def export_data():

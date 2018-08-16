@@ -315,7 +315,7 @@ def check_cal_conn():
 def get_all_events():
     data = json.loads(request.data) if request.data else request.form.to_dict()
     email, date = data['email'], data['date']
-    user = Participant.query.filter_by(email=email).first()
+    user = GcalUser.query.filter_by(email=email).first()
     events = -1
     if user and date:
         events = Calendar(email, email, user.google_credentials).get_all_events(date)

@@ -353,6 +353,17 @@ def is_rescuetime_admin():
     return False
 
 
+def sendgrid_email(recipient, subject, msg):
+    sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
+    from_email = sendgrid.Email("beehive@smalldata.io")
+    to_email = sendgrid.Email(recipient)
+    html_msg = "<p>%s</p>" % msg
+    content = Content("text/html", html_msg)
+    mail_to_send = Mail(from_email, subject, to_email, content)
+    response = sg.client.mail.send.post(request_body=mail_to_send.get())
+    print "email nudge sent to user", response.status_code
+
+
 # Sendgrid email client
 def sendgrid_send_data_missing_email(msg, recipient):
     sg = sendgrid.SendGridAPIClient(apikey=SENDGRID_API_KEY)
