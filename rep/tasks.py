@@ -46,9 +46,9 @@ app.config.update(
     CELERYBEAT_SCHEDULE={
         'export-data': {
             'task': 'rep.tasks.nudge_gcal_planners',
-            'schedule': timedelta(seconds=15)
-            # 'schedule': crontab(
-            #     hour="03", minute='00')
+            # 'schedule': timedelta(seconds=15)
+            'schedule': crontab(
+                hour="07", minute='00')
         },
     },)
 
@@ -89,17 +89,19 @@ def nudge_by_email(user, msg):
 
 @celery.task()
 def nudge_gcal_planners():
-    today_date = datetime.now().strftime('%Y-%m-%d')
+    # today_date = datetime.now().strftime('%Y-%m-%d')
+    given_date = date.today() - timedelta(days=1)
+    given_date.strftime('%Y-%m-%d')
     users = GcalUser.query.filter_by(code='eddycu').all()
     for user in users:
         events = fetch_today_events(user)
-        message = "You did not plan any events for date: %s." % today_date
+        message = "You did not plan any events for date: %s." % given_date
         if len(events) > 0:
-            message = "Great job! You had %s events planned for %s." % (len(events), today_date)
+            message = "Great job! You had %s events planned for %s." % (len(events),  given_date)
 
         nudge_by_email(user, message)
 
-    return "Successfully nudged %s user(s) today (%s)!" % (len(users), today_date)
+    return "Successfully nudged %s user(s) today (%s)!" % (len(users), given_date)
 
 # @celery.task()
 # def export_data():
