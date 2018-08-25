@@ -1,0 +1,71 @@
+{% include 'experiment/experiment-navbar.html' %}
+
+{% block contents %}
+    <div class="container">
+        <div class="page-header">
+            <h3> <span class="glyphicon glyphicon-picture"> </span> PAM events </h3>
+        </div>
+
+        <div>
+            <p class="text-info"> Code: <strong> {{ experiment.code }} </strong>
+                &nbsp; &nbsp; | &nbsp; &nbsp;
+                Title: <strong> {{ experiment.title }} </strong>
+            </p>
+
+            <hr/>
+
+            <button
+                    type="button"
+                    class="btn btn-primary "
+                    onclick="window.location.href='/download/ipam/{{  experiment.code  }}';">
+                <span class="glyphicon glyphicon-cloud-download"></span>
+                Download PAM data
+            </button>
+
+            <br/>
+            <br/>
+
+            {% if pam_events | length < 1 %}
+            <br/> <br/>
+            <hr/>
+            <br/>
+            <h4 class=" text-center text-info">PAM events data not available for this experiment. </h4>
+            <br/>
+            <hr/>
+            {% else %}
+                <table class="table table-hover" id="experiment-screen-events-table">
+                    <thead>
+                    <tr class="bg-primary">
+                        <th> No </th>
+                        <th> Email </th>
+                        <th> Affect<br>Arousal </th>
+                        <th> Affect<br>Valence </th>
+                        <th> Mood</th>
+                        <th> Negative<br>Effect</th>
+                        <th> Positive<br>Effect</th>
+                        <th> Timestamp </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for event in pam_events %}
+                        <tr>
+                            <td class="col-md-1">{{ loop.index }}</td>
+                            <td class="col-md-1"> {{ event.email }} </td>
+                            <td class="col-md-1"> {{ event.affect_arousal }} </td>
+                            <td class="col-md-1"> {{ event.affect_valence }} </td>
+                            <td class="col-md-1"> {{ event.mood }} </td>
+                            <td class="col-md-1"> {{ event.negative_affect }} </td>
+                            <td class="col-md-1"> {{ event.positive_affect }} </td>
+                            <td class="col-md-1"> {{ event.timestamp_z }} </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+{% endblock %}

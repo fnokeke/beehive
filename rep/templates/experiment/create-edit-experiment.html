@@ -32,39 +32,53 @@
                             Dashboards <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu nav-link-text">
-                            <li><a href="/participants/experiment/{{ experiment.code }}">
+                            <li><a href="/participants/display/{{ experiment.code }}">
                                 <span class="glyphicon glyphicon-user"></span>
                                 Participants
                             </a>
                             </li>
-                            <li><a href="/app-analytics/experiment/{{ experiment.code }}">
+                            <li><a href="/app-analytics/display/{{ experiment.code }}">
                                 <span class="glyphicon glyphicon-phone"></span>
                                 App Analytics
                             </a>
                             </li>
                             {% if protocols|length > 0 %}
-                                <li><a href="/protocols/experiment/{{ experiment.code }}">
+                                <li><a href="/contexts/display/{{ experiment.code }}">
                                     <span class="glyphicon glyphicon-bell"></span>
                                     Contexts
                                 </a>
                                 </li>
                             {% endif %}
                             {% if experiment and experiment.app_usage %}
-                                <li><a href="/app-usage/experiment/{{ experiment.code }}">
+                                <li><a href="/app-usage/display/{{ experiment.code }}">
                                     <span class="glyphicon glyphicon-equalizer"></span>
                                     App usage
                                 </a>
                                 </li>
                             {% endif %}
                             {% if experiment and experiment.screen_events %}
-                                <li><a href="/screen-events/experiment/{{ experiment.code }}">
+                                <li><a href="/screen-events/display/{{ experiment.code }}">
                                     <span class="glyphicon glyphicon-modal-window"></span>
                                     Screen events
                                 </a>
                                 </li>
                             {% endif %}
+                            {% if show_pam %}
+                                <li><a href="/ipam-events/display/{{ experiment.code }}">
+                                    <span class="glyphicon glyphicon-picture"></span>
+                                    Pam events
+                                </a>
+                                </li>
+                            {% endif %}
+                            {% if show_survey %}
+                                <li><a href="/survey-events/display/{{ experiment.code }}">
+                                    <span class="glyphicon glyphicon-list-alt"></span>
+                                    Survey events
+                                </a>
+                                </li>
+                            {% endif %}
                             <li role="separator" class="divider"></li>
-                            <li><a href="/download/all-data/experiment/{{ experiment.code }}">
+                            <li><a href="/download/all-data/{{ experiment.code }}">
                                 <span class="glyphicon glyphicon-cloud-download"></span>
                                 Download All Data
                             </a>

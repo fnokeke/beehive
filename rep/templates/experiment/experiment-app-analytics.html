@@ -21,7 +21,7 @@
             <button
                     type="button"
                     class="btn btn-primary "
-                    onclick="window.location.href='/download/app-analytics/experiment/{{  experiment.code  }}';">
+                    onclick="window.location.href='/download/app-analytics/{{  experiment.code  }}';">
                 <span class="glyphicon glyphicon-cloud-download"></span>
                 Download app analytics data
             </button>
@@ -49,7 +49,7 @@
                     </thead>
 
                     <tbody>
-                    {% for event in events %}
+                    {% for event in inapp_events %}
                         <tr>
                             <td class="col-md-1">{{ loop.index }}</td>
                             <td class="col-md-1"> {{ event.email }} </td>

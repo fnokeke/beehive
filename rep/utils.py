@@ -88,3 +88,14 @@ def to_datetime(date_str, fmt=None):
     if not fmt:
         fmt = '%Y-%m-%d %H:%M:%S'
     return datetime.strptime(date_str, fmt)
+
+
+def get_state(method, protocols):
+    state = False
+    for p in protocols:
+        if p.method == method:
+            state = True
+            break
+    return state
+
+

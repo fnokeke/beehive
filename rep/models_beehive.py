@@ -1,13 +1,11 @@
-from db_init import db
-from utils import to_json
-from flask import Response, abort
-from sqlalchemy import create_engine
-
 import datetime
 import json
 import uuid
 
+from sqlalchemy import create_engine
+
 from config import SQLALCHEMY_DATABASE_URI
+from db_init import db
 
 
 # Database model for experiments
@@ -706,7 +704,7 @@ class MobileSurvey(db.Model):
     email = db.Column(db.String(50), db.ForeignKey('participant.email'))
     code = db.Column(db.String(10), db.ForeignKey('experiment.code'))
     header = db.Column(db.String(200))
-    response = db.Column(db.String(200))
+    response = db.Column(db.String(500))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, info):

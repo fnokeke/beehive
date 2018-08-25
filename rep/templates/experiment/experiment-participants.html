@@ -1,8 +1,4 @@
-
-
-
 {% include 'experiment/experiment-navbar.html' %}
-
 
 {% block contents %}
     <div class="container">
@@ -44,7 +40,7 @@
                                     <button
                                             type="button"
                                             class="btn btn-primary "
-                                            onclick="window.location.href='/download/rescuetime-participants/experiment/{{  experiment.code  }}';">
+                                            onclick="window.location.href='/download/rescuetime-participants/{{  experiment.code  }}';">
                                         <span class="glyphicon glyphicon-cloud-download"></span>
                                         Download RescueTime participant data
                                     </button>
@@ -99,7 +95,7 @@
                                     <button
                                             type="button"
                                             class="btn btn-primary "
-                                            onclick="window.location.href='/download/participants/experiment/{{  experiment.code  }}';">
+                                            onclick="window.location.href='/download/participants/{{  experiment.code  }}';">
                                         <span class="glyphicon glyphicon-cloud-download"></span>
                                         Download other participants data
                                     </button>
@@ -157,7 +153,7 @@
             <button
                     type="button"
                     class="btn btn-primary "
-                    onclick="window.location.href='/download/participants/experiment/{{  experiment.code  }}';">
+                    onclick="window.location.href='/download/participants/{{  experiment.code  }}';">
                 <span class="glyphicon glyphicon-cloud-download"></span>
                 Download participant data
             </button>

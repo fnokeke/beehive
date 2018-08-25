@@ -1,14 +1,12 @@
-from rep import app
-from flask import request, Response
-
-from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_FacebookLog, TP_ScreenLog, \
-    MobileUser, PAM, MobileSurvey
-from rep.models import Participant
-from rep.models import MobileNotifLogs
-
 import json
 
+from flask import request, Response
+
+from rep import app
 from rep.models import Experiment, Protocol
+from rep.models import MobileNotifLogs
+from rep.models import TP_DailyResetHour, TP_Enrolled, TP_Admin, TP_FBStats, TP_FgAppLog, TP_FacebookLog, TP_ScreenLog, \
+    MobileUser, PAM, MobileSurvey
 from rep.models_beehive import NotifEvent, InAppAnalytics
 from rep.utils import to_json
 

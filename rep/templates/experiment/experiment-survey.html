@@ -1,13 +1,9 @@
-
-
-
 {% include 'experiment/experiment-navbar.html' %}
-
 
 {% block contents %}
     <div class="container">
         <div class="page-header">
-            <h3> <span class="glyphicon glyphicon-modal-window"> </span> Screen events </h3>
+            <h3> <span class="glyphicon glyphicon-list-alt"> </span> Survey events </h3>
         </div>
 
         <div>
@@ -21,40 +17,40 @@
             <button
                     type="button"
                     class="btn btn-primary "
-                    onclick="window.location.href='/download/screen-events/{{  experiment.code  }}';">
+                    onclick="window.location.href='/download/survey/{{  experiment.code  }}';">
                 <span class="glyphicon glyphicon-cloud-download"></span>
-                Download screen events data
+                Download survey data
             </button>
 
             <br/>
             <br/>
 
-            {% if screen_events | length < 1 %}
+            {% if survey_events | length < 1 %}
             <br/> <br/>
             <hr/>
             <br/>
-            <h4 class=" text-center text-info">Screen events data not available for this experiment. </h4>
+            <h4 class=" text-center text-info">Survey events data not available for this experiment. </h4>
             <br/>
             <hr/>
             {% else %}
                 <table class="table table-hover" id="experiment-screen-events-table">
                     <thead>
                     <tr class="bg-primary">
-                        <th> NO </th>
-                        <th> WORKER ID </th>
-                        <th> EVENT </th>
-                        <th> TIME (millis) </th>
-                        <th> DATE </th>
+                        <th> No </th>
+                        <th> Email </th>
+                        <th> Header </th>
+                        <th> Response </th>
+                        <th> Date </th>
                     </tr>
                     </thead>
 
                     <tbody>
-                    {% for event in screen_events %}
+                    {% for event in survey_events %}
                         <tr>
                             <td class="col-md-1">{{ loop.index }}</td>
-                            <td class="col-md-1"> {{ event.worker_id }} </td>
-                            <td class="col-md-1"> {{ event.event }}  </td>
-                            <td class="col-md-1"> {{ event.time_millis }} </td>
+                            <td class="col-md-1"> {{ event.email }} </td>
+                            <td class="col-md-1"> {{ event.header }} </td>
+                            <td class="col-md-1"> {{ event.response }} </td>
                             <td class="col-md-1"> {{ event.created_at }} </td>
                         </tr>
                     {% endfor %}
