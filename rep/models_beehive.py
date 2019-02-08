@@ -139,7 +139,7 @@ class Researcher(db.Model):
     lastname = db.Column(db.String(120))
     gender = db.Column(db.String(10))
     picture = db.Column(db.String(120))
-    google_credentials = db.Column(db.String(2500), unique=True)
+    google_credentials = db.Column(db.String(2800), unique=True)
 
     def __init__(self, profile):
         self.email = profile.get('email', '')
@@ -228,7 +228,7 @@ class Participant(db.Model):
     firstname = db.Column(db.String(120))
     lastname = db.Column(db.String(120))
     gender = db.Column(db.String(10))
-    google_credentials = db.Column(db.String(2500), unique=True)
+    google_credentials = db.Column(db.String(2800), unique=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, profile, google_credentials):
